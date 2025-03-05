@@ -71,6 +71,15 @@ module.exports = {
           border: 'var(--sidebar-border)',
           ring: 'var(--sidebar-ring)',
         },
+        /* more */
+        button: {
+          DEFAULT: 'var(--button)',
+          foreground: 'var(--button-foreground)',
+        },
+        text: {
+          DEFAULT: 'var(--text)',
+          foreground: 'var(--text-foreground)',
+        },
       },
       keyframes: {
         'accordion-down': {

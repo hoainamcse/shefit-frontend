@@ -36,7 +36,7 @@ export function getMenuList(pathname: string): Group[] {
       groupLabel: '',
       menus: [
         {
-          href: '/dashboard',
+          href: '#',
           label: 'Dashboard',
           icon: LayoutGrid,
           submenus: [],
@@ -52,7 +52,7 @@ export function getMenuList(pathname: string): Group[] {
           icon: BookTextIcon,
           submenus: [
             {
-              href: '#',
+              href: '/admin/video-courses',
               label: 'Khoá học Video',
             },
             {
@@ -124,7 +124,7 @@ export function getMenuList(pathname: string): Group[] {
       groupLabel: 'Settings',
       menus: [
         {
-          href: '/users',
+          href: '#',
           label: 'Users',
           icon: Users,
         },
