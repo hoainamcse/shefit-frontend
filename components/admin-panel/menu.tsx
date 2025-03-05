@@ -100,11 +100,11 @@ export function Menu({ isOpen }: MenuProps) {
                       <LogOut size={18} />
                     </span>
                     <p className={cn('whitespace-nowrap', isOpen === false ? 'opacity-0 hidden' : 'opacity-100')}>
-                      Sign out
+                      Đăng xuất
                     </p>
                   </Button>
                 </TooltipTrigger>
-                {isOpen === false && <TooltipContent side="right">Sign out</TooltipContent>}
+                {isOpen === false && <TooltipContent side="right">Đăng xuất</TooltipContent>}
               </Tooltip>
             </TooltipProvider>
           </li>

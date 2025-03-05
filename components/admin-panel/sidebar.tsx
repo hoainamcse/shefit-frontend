@@ -24,7 +24,7 @@ export function Sidebar() {
       <div
         onMouseEnter={() => setIsHover(true)}
         onMouseLeave={() => setIsHover(false)}
-        className="relative h-full flex flex-col px-3 py-4 overflow-y-auto shadow-md dark:shadow-zinc-800"
+        className="relative h-full flex flex-col px-3 py-4 overflow-y-auto shadow-md dark:shadow-neutral-800"
       >
         <Button
           className={cn(
@@ -42,7 +42,7 @@ export function Sidebar() {
                 !getOpenState() ? '-translate-x-96 opacity-0 hidden' : 'translate-x-0 opacity-100'
               )}
             >
-              Brand
+              Shefit.vn
             </h1>
           </Link>
         </Button>

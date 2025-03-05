@@ -46,7 +46,8 @@ export function CollapseMenuButton({ icon: Icon, label, active, submenus, isOpen
         <Button variant={isSubmenuActive ? 'secondary' : 'ghost'} className="w-full justify-start h-10">
           <div className="w-full items-center flex justify-between">
             <div className="flex items-center">
-              <span className="mr-4">
+              <span className="mr-6">
+                {/* mr-4 */}
                 <Icon size={18} />
               </span>
               <p
@@ -75,7 +76,7 @@ export function CollapseMenuButton({ icon: Icon, label, active, submenus, isOpen
             asChild
           >
             <Link href={href}>
-              <span className="mr-4 ml-2">
+              <span className="mx-2">
                 <Dot size={18} />
               </span>
               <p

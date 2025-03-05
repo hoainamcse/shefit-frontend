@@ -1,4 +1,15 @@
-import { Tag, Users, Settings, Bookmark, SquarePen, LayoutGrid, LucideIcon } from 'lucide-react'
+import {
+  Users,
+  Settings,
+  LayoutGrid,
+  LucideIcon,
+  HandPlatterIcon,
+  BookTextIcon,
+  ShoppingBagIcon,
+  CreditCardIcon,
+  ChartPieIcon,
+  RssIcon,
+} from 'lucide-react'
 
 type Submenu = {
   href: string
@@ -33,32 +44,79 @@ export function getMenuList(pathname: string): Group[] {
       ],
     },
     {
-      groupLabel: 'Contents',
+      groupLabel: 'Quản lý',
       menus: [
         {
           href: '',
-          label: 'Posts',
-          icon: SquarePen,
+          label: 'Khoá học',
+          icon: BookTextIcon,
           submenus: [
             {
-              href: '/posts',
-              label: 'All Posts',
+              href: '#',
+              label: 'Khoá học Video',
             },
             {
-              href: '/posts/new',
-              label: 'New Post',
+              href: '#',
+              label: 'Khoá học Zoom',
+            },
+            {
+              href: '#',
+              label: 'Khoá học 1-on-1',
+            },
+            {
+              href: '#',
+              label: 'Thư viện bài tập',
+            },
+            {
+              href: '#',
+              label: 'Nhóm cơ & dụng cụ',
             },
           ],
         },
         {
-          href: '/categories',
-          label: 'Categories',
-          icon: Bookmark,
+          href: '',
+          label: 'Thực đơn',
+          icon: HandPlatterIcon,
+          submenus: [
+            {
+              href: '#',
+              label: 'Danh sách thực đơn',
+            },
+            {
+              href: '#',
+              label: 'Thư viện món ăn',
+            },
+          ],
         },
         {
-          href: '/tags',
-          label: 'Tags',
-          icon: Tag,
+          href: '#',
+          label: 'E-commerce',
+          icon: ShoppingBagIcon,
+        },
+        {
+          href: '',
+          label: 'Body quiz',
+          icon: ChartPieIcon,
+          submenus: [
+            {
+              href: '#',
+              label: 'Tạo quiz',
+            },
+            {
+              href: '#',
+              label: 'User data',
+            },
+          ],
+        },
+        {
+          href: '#',
+          label: 'Membership',
+          icon: CreditCardIcon,
+        },
+        {
+          href: '#',
+          label: 'Blog',
+          icon: RssIcon,
         },
       ],
     },
@@ -71,8 +129,8 @@ export function getMenuList(pathname: string): Group[] {
           icon: Users,
         },
         {
-          href: '/account',
-          label: 'Account',
+          href: '#',
+          label: 'Tài khoản',
           icon: Settings,
         },
       ],
