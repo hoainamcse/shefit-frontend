@@ -52,7 +52,7 @@ export function getMenuList(pathname: string): Group[] {
           icon: BookTextIcon,
           submenus: [
             {
-              href: '/admin/video-courses',
+              href: '#',
               label: 'Khoá học Video',
             },
             {
@@ -64,7 +64,7 @@ export function getMenuList(pathname: string): Group[] {
               label: 'Khoá học 1-on-1',
             },
             {
-              href: '#',
+              href: '/admin/exercises',
               label: 'Thư viện bài tập',
             },
             {

@@ -5,23 +5,23 @@ export function Footer() {
     <div className="z-20 w-full bg-background/95 shadow backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-4 md:mx-8 flex h-14 items-center">
         <p className="text-xs md:text-sm leading-loose text-muted-foreground text-left">
-          Built on top of{' '}
+        &copy; 2025 Copyright{' '}
           <Link
-            href="https://ui.shadcn.com"
+            href="https://shefit.vn"
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium underline underline-offset-4"
           >
-            shadcn/ui
+            Shefit.vn
           </Link>
-          . The source code is available on{' '}
+          . Powered by{' '}
           <Link
-            href="https://github.com/salimi-my/shadcn-ui-sidebar"
+            href="https://rockship.co"
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium underline underline-offset-4"
           >
-            GitHub
+            Rockship
           </Link>
           .
         </p>
