@@ -66,7 +66,7 @@ const orders: Order[] = [
   },
 ]
 
-export default function VideoClassesPage() {
+export default function OrdersPage() {
   const columns: ColumnDef<Order>[] = [
     {
       accessorKey: 'name',

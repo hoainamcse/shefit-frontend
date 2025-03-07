@@ -108,7 +108,9 @@ function MuscleGroups() {
       ),
     },
   ]
+
   const headerExtraContent = <AddButton text="Thêm nhóm cơ" />
+
   return (
     <DataTable
       headerExtraContent={headerExtraContent}
@@ -196,7 +198,9 @@ function Equipments() {
       ),
     },
   ]
+
   const headerExtraContent = <AddButton text="Thêm dụng cụ" />
+
   return (
     <DataTable
       headerExtraContent={headerExtraContent}
