@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Switch } from '@/components/ui/switch'
 import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
 
 type Membership = {
@@ -36,6 +37,7 @@ type OneOnOneClass = {
   level: 'beginner' | 'intermediate' | 'advanced'
   membership?: Membership
   type: 'video' | 'live'
+  is_public: boolean
 }
 
 const oneOnOneClasses: OneOnOneClass[] = [
@@ -55,6 +57,7 @@ const oneOnOneClasses: OneOnOneClass[] = [
       name: 'Độ mông 4 tuần',
     },
     type: 'video',
+    is_public: true,
   },
   {
     id: '2',
@@ -72,6 +75,7 @@ const oneOnOneClasses: OneOnOneClass[] = [
       name: 'Độ mông 4 tuần',
     },
     type: 'video',
+    is_public: true,
   },
   {
     id: '3',
@@ -89,6 +93,7 @@ const oneOnOneClasses: OneOnOneClass[] = [
       name: 'Độ mông 4 tuần',
     },
     type: 'live',
+    is_public: false,
   },
   {
     id: '4',
@@ -106,6 +111,7 @@ const oneOnOneClasses: OneOnOneClass[] = [
       name: 'Độ mông 4 tuần',
     },
     type: 'video',
+    is_public: true,
   },
   {
     id: '5',
@@ -123,6 +129,7 @@ const oneOnOneClasses: OneOnOneClass[] = [
       name: 'Độ mông 4 tuần',
     },
     type: 'live',
+    is_public: true,
   },
 ]
 
@@ -185,6 +192,11 @@ export default function OneOnOneClassesPage() {
           {row.type}
         </Badge>
       ),
+    },
+    {
+      accessorKey: 'is_public',
+      header: 'Public',
+      render: ({ row }) => <Switch defaultChecked={row.is_public} />,
     },
     {
       accessorKey: 'actions',

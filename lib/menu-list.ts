@@ -79,11 +79,11 @@ export function getMenuList(pathname: string): Group[] {
           icon: HandPlatterIcon,
           submenus: [
             {
-              href: '#',
+              href: '/admin/meal-plans',
               label: 'Danh sách thực đơn',
             },
             {
-              href: '#',
+              href: '/admin/dishes',
               label: 'Thư viện món ăn',
             },
           ],

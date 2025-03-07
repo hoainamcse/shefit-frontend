@@ -55,7 +55,7 @@ const products: Product[] = [
       },
     ],
     category: 'Clothing',
-    images: ['https://via.placeholder.com/150', 'https://via.placeholder.com/150'],
+    images: ['https://m.media-amazon.com/images/I/81RE9EBCagL._AC_UF1000,1000_QL80_.jpg'],
   },
   {
     id: '2',
@@ -80,7 +80,7 @@ const products: Product[] = [
       },
     ],
     category: 'Clothing',
-    images: ['https://via.placeholder.com/150', 'https://via.placeholder.com/150'],
+    images: ['https://m.media-amazon.com/images/I/81RE9EBCagL._AC_UF1000,1000_QL80_.jpg'],
   },
   {
     id: '3',
@@ -105,7 +105,7 @@ const products: Product[] = [
       },
     ],
     category: 'Clothing',
-    images: ['https://via.placeholder.com/150', 'https://via.placeholder.com/150'],
+    images: ['https://m.media-amazon.com/images/I/81RE9EBCagL._AC_UF1000,1000_QL80_.jpg'],
   },
   {
     id: '4',
@@ -130,7 +130,7 @@ const products: Product[] = [
       },
     ],
     category: 'Clothing',
-    images: ['https://via.placeholder.com/150', 'https://via.placeholder.com/150'],
+    images: ['https://m.media-amazon.com/images/I/81RE9EBCagL._AC_UF1000,1000_QL80_.jpg'],
   },
   {
     id: '5',
@@ -155,7 +155,7 @@ const products: Product[] = [
       },
     ],
     category: 'Clothing',
-    images: ['https://via.placeholder.com/150', 'https://via.placeholder.com/150'],
+    images: ['https://m.media-amazon.com/images/I/81RE9EBCagL._AC_UF1000,1000_QL80_.jpg'],
   },
 ]
 
@@ -199,6 +199,13 @@ export default function ProductsPage() {
     {
       accessorKey: 'category',
       header: 'Phân loại',
+    },
+    {
+      accessorKey: 'images',
+      header: 'Hình ảnh',
+      render: ({ row }) => {
+        return <img src={row.images[0]} alt={`${row.name} thumbnail`} className="h-12 rounded" />
+      },
     },
     {
       accessorKey: 'actions',

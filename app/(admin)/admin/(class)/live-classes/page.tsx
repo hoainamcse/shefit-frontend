@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Switch } from '@/components/ui/switch'
 import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
 
 type Membership = {
@@ -35,6 +36,7 @@ type LiveClass = {
   trainer: Trainer
   level: 'beginner' | 'intermediate' | 'advanced'
   membership?: Membership
+  is_public: boolean
 }
 
 const liveClasses: LiveClass[] = [
@@ -53,6 +55,7 @@ const liveClasses: LiveClass[] = [
       id: '1',
       name: 'Độ mông 4 tuần',
     },
+    is_public: true,
   },
   {
     id: '2',
@@ -69,6 +72,7 @@ const liveClasses: LiveClass[] = [
       id: '1',
       name: 'Độ mông 4 tuần',
     },
+    is_public: true,
   },
   {
     id: '3',
@@ -85,6 +89,7 @@ const liveClasses: LiveClass[] = [
       id: '1',
       name: 'Độ mông 4 tuần',
     },
+    is_public: false,
   },
   {
     id: '4',
@@ -101,6 +106,7 @@ const liveClasses: LiveClass[] = [
       id: '1',
       name: 'Độ mông 4 tuần',
     },
+    is_public: true,
   },
   {
     id: '5',
@@ -117,6 +123,7 @@ const liveClasses: LiveClass[] = [
       id: '1',
       name: 'Độ mông 4 tuần',
     },
+    is_public: false,
   },
 ]
 
@@ -170,6 +177,11 @@ export default function LiveClassesPage() {
       accessorKey: 'membership',
       header: 'Membership',
       render: ({ row }) => row.membership?.name ?? '_',
+    },
+    {
+      accessorKey: 'is_public',
+      header: 'Public',
+      render: ({ row }) => <Switch defaultChecked={row.is_public} />,
     },
     {
       accessorKey: 'actions',
