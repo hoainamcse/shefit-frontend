@@ -12,7 +12,7 @@ const images = [EatImage, EatImage, EatImage, EatImage, EatImage]
 
 export default function Menu() {
   return (
-    <div className="max-lg:px-5 px-10 text-[40px] max-lg:text-[30px] max-lg:leading-9 leading-[50px] text-[#FF7873] xl:my-40 max-lg:mt-10 font-bold mx-auto text-center bg-white">
+    <div className="max-lg:px-5 px-10 text-[40px] max-lg:text-[30px] max-lg:leading-9 leading-[50px] text-text xl:my-40 max-lg:mt-10 font-bold mx-auto text-center bg-white">
       <div>Ăn uống khoa học</div>
       <div className="text-black mb-5">
         “Độ” Dáng Nhanh Hơn Với Menu Theo Từng Mục <br></br> Tiêu Từ Chuyên Gia
@@ -44,7 +44,7 @@ export default function Menu() {
         <CarouselNext />
       </Carousel>
       <Link href={"/menu"}>
-        <Button className="bg-[#13D8A7] hover:bg-[#11c296] flex p-4 mt-16 text-xl mx-auto justify-center rounded-[100px] w-[296px]">
+        <Button className="bg-button hover:bg-[#11c296] flex p-4 mt-16 text-xl mx-auto justify-center rounded-[100px] w-[296px]">
           Xem menu
         </Button>
       </Link>

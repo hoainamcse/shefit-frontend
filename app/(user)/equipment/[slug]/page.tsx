@@ -34,7 +34,7 @@ export default function Equipment() {
               <Button
                 className={
                   isSelected === "S"
-                    ? "bg-[#FFAEB0] text-white hover:bg-[#fda1a2]"
+                    ? "bg-primary text-white hover:bg-[#fda1a2]"
                     : "bg-white text-[#737373] border-[#737373] hover:bg-[#dbdbdb]"
                 }
                 onClick={() => setIsSelected("S")}
@@ -44,7 +44,7 @@ export default function Equipment() {
               <Button
                 className={
                   isSelected === "M"
-                    ? "bg-[#FFAEB0] text-white hover:bg-[#fda1a2]"
+                    ? "bg-primary text-white hover:bg-[#fda1a2]"
                     : "bg-white text-[#737373] border-[#737373] hover:bg-[#dbdbdb]"
                 }
                 onClick={() => setIsSelected("M")}
@@ -54,7 +54,7 @@ export default function Equipment() {
               <Button
                 className={
                   isSelected === "L"
-                    ? "bg-[#FFAEB0] text-white hover:bg-[#fda1a2]"
+                    ? "bg-primary text-white hover:bg-[#fda1a2]"
                     : "bg-white text-[#737373] border-[#737373] hover:bg-[#dbdbdb]"
                 }
                 onClick={() => setIsSelected("L")}
@@ -86,8 +86,8 @@ export default function Equipment() {
               </div>
             </div>
             <div className="w-full flex gap-3 justify-center">
-              <Button className="w-full rounded-full bg-[#13D8A7] hover:bg-[#11c296]">Mua ngay</Button>
-              <Button className="border-[#13D8A7] text-[#13D8A7] rounded-full w-full bg-white hover:bg-[#11c29628]">
+              <Button className="w-full rounded-full bg-button hover:bg-[#11c296]">Mua ngay</Button>
+              <Button className="border-button text-button rounded-full w-full bg-white hover:bg-[#11c29628]">
                 Lưu
               </Button>
             </div>

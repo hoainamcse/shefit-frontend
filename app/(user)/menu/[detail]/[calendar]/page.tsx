@@ -71,7 +71,7 @@ export default function MenuDetailCalendar() {
           <p className="text-[#737373]">Chef Phương Anh - 30 ngày</p>
         </div>
         <div className="w-full max-lg:p-4">
-          <div className="bg-[#FFAEB0] h-[228px] w-full rounded-[20px] my-20 max-lg:my-2">
+          <div className="bg-primary h-[228px] w-full rounded-[20px] my-20 max-lg:my-2">
             <div className="xl:w-[696px] max-lg:w-full mx-auto text-white h-full flex flex-col items-center justify-center">
               <div className="text-center text-[40px] font-bold mb-10">Kết quả</div>
               <ul className="text-[#F7F7F7] text-xl list-disc mr-auto max-lg:px-8">
@@ -83,7 +83,7 @@ export default function MenuDetailCalendar() {
           </div>
         </div>
         <div className="mr-auto text-xl my-20 max-lg:my-0 max-lg:p-4">
-          <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-[40px] max-lg:text-[30px] mb-5">
+          <div className="font-[family-name:var(--font-coiny)] text-text text-[40px] max-lg:text-[30px] mb-5">
             Menu theo lịch
           </div>
           <div>

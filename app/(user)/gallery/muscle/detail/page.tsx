@@ -32,7 +32,7 @@ export default function MuscleDetail() {
         <li className="text-xl text-[#737373]">Máy chạy bộ</li>
         <li className="text-xl text-[#737373]">Massage bụng</li>
       </div>
-      <Button className="bg-[#13D8A7] hover:bg-[#11c296] p-4 mt-6 text-xl rounded-[100px]">Lưu</Button>
+      <Button className="bg-button hover:bg-[#11c296] p-4 mt-6 text-xl rounded-[100px]">Lưu</Button>
     </div>
   )
 }

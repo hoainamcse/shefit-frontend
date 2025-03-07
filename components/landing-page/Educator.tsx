@@ -15,7 +15,7 @@ export default function EducatorCard() {
                 <div className="flex flex-col gap-4 text-center mx-auto text-xl">
                   <div className="font-semibold mt-5">HLV Nam Nguyễn</div>
                   <div className="text-[#8E8E93]">Chuyên kháng lực và định hình đường cong.</div>
-                  <Button className="rounded-[26px] text-white text-[26px] bg-[#13D8A7] hover:bg-[#11c296]">Liên hệ</Button>
+                  <Button className="rounded-[26px] text-white text-[26px] bg-button hover:bg-[#11c296]">Liên hệ</Button>
                 </div>
               </div>
             </CarouselItem>

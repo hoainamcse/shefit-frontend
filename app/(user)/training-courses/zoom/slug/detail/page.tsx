@@ -74,7 +74,7 @@ export default function DetailPage() {
                       {session.name} / {session.time}
                     </p>
                   </div>
-                  <div className="text-[#FFAEB0] text-xl">Vào lớp</div>
+                  <div className="text-primary text-xl">Vào lớp</div>
                 </div>
               ))}
             </TabsContent>

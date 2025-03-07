@@ -24,14 +24,14 @@ export default function Home() {
       <Intro />
       <Route />
       <div className="xl:px-14 max-lg:px-2 bg-white">
-        <Card className="bg-[#FFAEB0] rounded-[20px] text-white my-36 py-16 max-lg:py-4">
+        <Card className="bg-primary rounded-[20px] text-white my-36 py-16 max-lg:py-4">
           <div className="mx-auto text-center xl:w-full max-lg:w-60">
             <div className="items-center xl:text-[40px] max-lg:text-base leading-[45px] text-center font-bold text-wrap mb-8 mt-4">
               Chị đã muốn độ dáng với lộ trình<br></br> <span className="text-[#57ECC8]">“Tone Body”</span> trọn vẹn
               chưa?
             </div>
             <div className="xl:text-2xl max-lg:text-xs">Ăn đúng, tập chuẩn sớm, đẹp sớm!</div>
-            <Button className="bg-[#13D8A7] hover:bg-[#11c296] flex p-4 mt-6 text-xl mx-auto justify-center rounded-[100px] xl:w-[696px] max-lg:w-full max-lg:h-8 max-lg:text-[14px]">
+            <Button className="bg-button hover:bg-[#11c296] flex p-4 mt-6 text-xl mx-auto justify-center rounded-[100px] xl:w-[696px] max-lg:w-full max-lg:h-8 max-lg:text-[14px]">
               Bắt đầu
             </Button>
           </div>
@@ -39,12 +39,12 @@ export default function Home() {
       </div>
       <Body />
       <div className="xl:px-14 max-lg:px-2 max-lg:w-full bg-white">
-        <Card className="bg-[#FFAEB0] rounded-[20px] text-white xl:my-36 flex flex-col xl:py-16">
+        <Card className="bg-primary rounded-[20px] text-white xl:my-36 flex flex-col xl:py-16">
           <div className="mx-auto text-center w-full">
             <div className="items-center text-[40px] max-lg:text-[22px] leading-[45px] text-center font-bold text-wrap xl:mb-8 xl:mt-4">
               Bạn không biết mình thuộc loại phom <br></br> dáng nào?
             </div>
-            <Button className="bg-[#13D8A7] hover:bg-[#11c296] flex p-4 xl:mt-6 text-xl mx-auto justify-center rounded-[100px] xl:w-[696px] max-lg:w-full">
+            <Button className="bg-button hover:bg-[#11c296] flex p-4 xl:mt-6 text-xl mx-auto justify-center rounded-[100px] xl:w-[696px] max-lg:w-full">
               Phân tích phom dáng
             </Button>
           </div>
@@ -80,7 +80,7 @@ export default function Home() {
       <div className="flex flex-col justify-center items-center mt-40">
         <div className="text-[40px] max-lg:text-[30px] leading-[47px] text-center font-bold text-wrap mb-8 mt-4 text-[#212121]">
           Cộng đồng&nbsp;
-          <span className="text-[#FF7873]">
+          <span className="text-text">
             Shefit
             <br />
           </span>
@@ -95,7 +95,7 @@ export default function Home() {
           <FacebookIcon />
           <YoutubeIcon />
         </div>
-        <Button className="bg-[#13D8A7] hover:bg-[#11c296] w-[444px] max-lg:w-[139px] h-[68px] max-lg:h-[40px] rounded-[98px] text-xl max-lg:text-base mt-8 mb-8">
+        <Button className="bg-button hover:bg-[#11c296] w-[444px] max-lg:w-[139px] h-[68px] max-lg:h-[40px] rounded-[98px] text-xl max-lg:text-base mt-8 mb-8">
           Tham gia ngay!
         </Button>
       </div>

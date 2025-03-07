@@ -166,7 +166,7 @@ export default function Cart() {
               )}
             />
 
-            <Button type="submit" className="w-full bg-[#13D8A7] hover:bg-[#11c296] rounded-full h-16 text-2xl">
+            <Button type="submit" className="w-full bg-button hover:bg-[#11c296] rounded-full h-16 text-2xl">
               Mua ngay
             </Button>
           </form>

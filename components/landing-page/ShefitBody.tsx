@@ -14,12 +14,12 @@ export default function Body() {
   return (
     <div className="mb-12 bg-[#FFF3F3] h-[1059px] justify-center text-center flex flex-col">
       <div className="mx-auto w-full">
-        <div className="text-[40px] max-lg:text-[30px] max-lg:leading-9 leading-[50px] text-[#FF7873] mt-20 font-bold xl:w-[415px] max-lg:w-full mx-auto">
+        <div className="text-[40px] max-lg:text-[30px] max-lg:leading-9 leading-[50px] text-text mt-20 font-bold xl:w-[415px] max-lg:w-full mx-auto">
           <div>
             Tone Body <span className="text-black">chuẩn theo đúng loại phom dáng</span>
           </div>
         </div>
-        <div className="text-[20px] max-lg:text-base text-[#FF7873] mt-4 xl:w-[575px] max-lg:w-full mx-auto max-lg:px-5">
+        <div className="text-[20px] max-lg:text-base text-text mt-4 xl:w-[575px] max-lg:w-full mx-auto max-lg:px-5">
           Mỗi loại phom dáng có đặc điểm riêng, việc phối bài tập phù hợp sẽ giúp bạn đạt hiệu quả tối ưu và sở hữu vóc
           dáng cân đối nhất
         </div>
@@ -28,35 +28,35 @@ export default function Body() {
             <TabsTrigger
               value="tab1"
               className="border-none xl:text-2xl text-base p-2 rounded-[14px] flex items-center justify-center gap-2
-    data-[state=active]:text-[#FFAEB0] data-[state=active]:bg-white text-[#8E8E93]"
+    data-[state=active]:text-primary data-[state=active]:bg-white text-[#8E8E93]"
             >
               <PearIcon /> Quả lê
             </TabsTrigger>
             <TabsTrigger
               value="tab2"
               className="border-none xl:text-2xl text-base p-2 rounded-[14px] flex items-center justify-center gap-2
-    data-[state=active]:text-[#FFAEB0] data-[state=active]:bg-white text-[#8E8E93]"
+    data-[state=active]:text-primary data-[state=active]:bg-white text-[#8E8E93]"
             >
               <AppleIcon /> Quả táo
             </TabsTrigger>
             <TabsTrigger
               value="tab3"
               className="border-none xl:text-2xl text-base p-2 rounded-[14px] flex items-center justify-center gap-2
-    data-[state=active]:text-[#FFAEB0] data-[state=active]:bg-white text-[#8E8E93]"
+    data-[state=active]:text-primary data-[state=active]:bg-white text-[#8E8E93]"
             >
               <RectangleIcon /> Chữ nhật
             </TabsTrigger>
             <TabsTrigger
               value="tab4"
               className="border-none xl:text-2xl text-base p-2 rounded-[14px] flex items-center justify-center gap-2
-    data-[state=active]:text-[#FFAEB0] data-[state=active]:bg-white text-[#8E8E93]"
+    data-[state=active]:text-primary data-[state=active]:bg-white text-[#8E8E93]"
             >
               <ClockIcon /> Đồng hồ cát
             </TabsTrigger>
             <TabsTrigger
               value="tab5"
               className="border-none xl:text-2xl text-base p-2 rounded-[14px] flex items-center justify-center gap-2
-    data-[state=active]:text-[#FFAEB0] data-[state=active]:bg-white text-[#8E8E93]"
+    data-[state=active]:text-primary data-[state=active]:bg-white text-[#8E8E93]"
             >
               <TriangleIcon /> Tam giác ngược
             </TabsTrigger>

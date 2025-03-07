@@ -25,7 +25,7 @@ const images = [
 export default function Stand() {
   return (
     <div className="max-lg:mx-5 text-[40px] max-lg:text-[30px] leading-[50px] mt-20 font-bold mx-auto text-center bg-white px-10">
-      <span className="text-[#FF7873]">Tiết kiệm 25%</span> với mã <br /> SHEFIT 25
+      <span className="text-text">Tiết kiệm 25%</span> với mã <br /> SHEFIT 25
       <div className="text-base max-lg:text-[16px] text-[#737373] xl:w-[856px] max-lg:w-full mx-auto mt-4 mb-5">
         Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
         industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
@@ -62,7 +62,7 @@ export default function Stand() {
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
-      <Button className="bg-[#13D8A7] hover:bg-[#11c296] flex p-4 mt-6 text-xl mx-auto justify-center rounded-[100px] w-[296px]">
+      <Button className="bg-button hover:bg-[#11c296] flex p-4 mt-6 text-xl mx-auto justify-center rounded-[100px] w-[296px]">
         Xem giỏ hàng
       </Button>
     </div>

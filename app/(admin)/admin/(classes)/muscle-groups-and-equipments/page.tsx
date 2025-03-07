@@ -2,9 +2,7 @@
 
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { AddButton } from '@/components/buttons/add-button'
-import { MainButton } from '@/components/buttons/main-button'
 import { ColumnDef, DataTable } from '@/components/data-table'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -15,12 +13,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Separator } from '@/components/ui/separator'
-import { getYoutubeThumbnail } from '@/lib/youtube'
 import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
 
 export default function MuscleGroupsAndEquipmentsPage() {
   return (
-    <ContentLayout title="Tổng hợp nhóm cơ & dụng cụ">
+    <ContentLayout title="Nhóm cơ & dụng cụ">
       <div className="flex items-center space-x-4">
         <MuscleGroups />
         <Separator orientation="vertical" />

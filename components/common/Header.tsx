@@ -58,7 +58,7 @@ export default function Header() {
   ];
 
   const contactButton = (
-    <Button className="rounded-2xl bg-[#13D8A7] hover:bg-[#11c296]">
+    <Button className="rounded-2xl bg-button hover:bg-[#11c296]">
       Liên hệ với chúng tôi
     </Button>
   );

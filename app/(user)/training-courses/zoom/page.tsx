@@ -48,10 +48,10 @@ export default async function Zoom({ params }: { params: Promise<{ slug: string 
         </ScrollArea>
       </div>
       <div className="flex justify-center gap-4">
-        <Link href={`/training-courses/zoom/slug`} className="rounded-full w-1/3 bg-[#13D8A7] hover:bg-[#11c296]">
-          <Button className="w-full rounded-full bg-[#13D8A7] hover:bg-[#11c296]">Bắt đầu</Button>
+        <Link href={`/training-courses/zoom/slug`} className="rounded-full w-1/3 bg-button hover:bg-[#11c296]">
+          <Button className="w-full rounded-full bg-button hover:bg-[#11c296]">Bắt đầu</Button>
         </Link>
-        <Button variant="secondary" className="border-[#13D8A7] text-[#13D8A7] rounded-full w-1/3 bg-white">
+        <Button variant="secondary" className="border-button text-button rounded-full w-1/3 bg-white">
           Lưu
         </Button>
       </div>
