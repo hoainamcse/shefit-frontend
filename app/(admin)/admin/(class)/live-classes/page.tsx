@@ -33,7 +33,7 @@ type LiveClass = {
   equipments: string[]
   muscles: string[]
   trainer: Trainer
-  level: 'beginner' | 'advanced' | 'advanced'
+  level: 'beginner' | 'intermediate' | 'advanced'
   membership?: Membership
 }
 
@@ -44,7 +44,7 @@ const liveClasses: LiveClass[] = [
     description: 'This is a dumbbell row exercise.',
     equipments: ['Recline Bike', 'Upright Bike'],
     muscles: ['Glutues', 'Quadriceps'],
-    level: 'advanced',
+    level: 'beginner',
     trainer: {
       id: '1',
       name: 'John Doe',
@@ -60,7 +60,7 @@ const liveClasses: LiveClass[] = [
     description: 'This is a dumbbell row exercise.',
     equipments: ['Recline Bike', 'Upright Bike'],
     muscles: ['Glutues', 'Quadriceps'],
-    level: 'advanced',
+    level: 'intermediate',
     trainer: {
       id: '1',
       name: 'John Doe',
@@ -92,7 +92,7 @@ const liveClasses: LiveClass[] = [
     description: 'This is a dumbbell row exercise.',
     equipments: ['Recline Bike', 'Upright Bike'],
     muscles: ['Glutues', 'Quadriceps'],
-    level: 'advanced',
+    level: 'beginner',
     trainer: {
       id: '1',
       name: 'John Doe',
@@ -108,7 +108,7 @@ const liveClasses: LiveClass[] = [
     description: 'This is a dumbbell row exercise.',
     equipments: ['Recline Bike', 'Upright Bike'],
     muscles: ['Glutues', 'Quadriceps'],
-    level: 'advanced',
+    level: 'intermediate',
     trainer: {
       id: '1',
       name: 'John Doe',
@@ -160,12 +160,16 @@ export default function LiveClassesPage() {
     {
       accessorKey: 'level',
       header: 'Level',
-      render: ({ row }) => <span className="capitalize">{row.level}</span>,
+      render: ({ row }) => (
+        <Badge variant="outline" className="capitalize">
+          {row.level}
+        </Badge>
+      ),
     },
     {
       accessorKey: 'membership',
       header: 'Membership',
-      render: ({ row }) => row.membership?.name ?? '-',
+      render: ({ row }) => row.membership?.name ?? '_',
     },
     {
       accessorKey: 'actions',

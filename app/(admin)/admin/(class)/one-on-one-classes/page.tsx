@@ -26,7 +26,7 @@ type Trainer = {
   name: string
 }
 
-type VideoClass = {
+type OneOnOneClass = {
   id: string
   name: string
   description: string
@@ -35,16 +35,17 @@ type VideoClass = {
   trainer: Trainer
   level: 'beginner' | 'intermediate' | 'advanced'
   membership?: Membership
+  type: 'video' | 'live'
 }
 
-const videoClasses: VideoClass[] = [
+const oneOnOneClasses: OneOnOneClass[] = [
   {
     id: '1',
-    name: 'Sports Nutrition',
+    name: 'Fitness Trainer',
     description: 'This is a dumbbell row exercise.',
-    equipments: ['Jump Rope', 'Wheel Roller'],
-    muscles: ['Abs', 'Calves'],
-    level: 'intermediate',
+    equipments: ['Belt Squat', 'Power Rack'],
+    muscles: ['Trapezius', 'Soleus'],
+    level: 'beginner',
     trainer: {
       id: '1',
       name: 'John Doe',
@@ -53,13 +54,14 @@ const videoClasses: VideoClass[] = [
       id: '1',
       name: 'Độ mông 4 tuần',
     },
+    type: 'video',
   },
   {
     id: '2',
-    name: 'Sports Nutrition',
+    name: 'Fitness Trainer',
     description: 'This is a dumbbell row exercise.',
-    equipments: ['Jump Rope', 'Wheel Roller'],
-    muscles: ['Abs', 'Calves'],
+    equipments: ['Belt Squat', 'Power Rack'],
+    muscles: ['Trapezius', 'Soleus'],
     level: 'intermediate',
     trainer: {
       id: '1',
@@ -69,14 +71,15 @@ const videoClasses: VideoClass[] = [
       id: '1',
       name: 'Độ mông 4 tuần',
     },
+    type: 'video',
   },
   {
     id: '3',
-    name: 'Sports Nutrition',
+    name: 'Fitness Trainer',
     description: 'This is a dumbbell row exercise.',
-    equipments: ['Jump Rope', 'Wheel Roller'],
-    muscles: ['Abs', 'Calves'],
-    level: 'intermediate',
+    equipments: ['Belt Squat', 'Power Rack'],
+    muscles: ['Trapezius', 'Soleus'],
+    level: 'advanced',
     trainer: {
       id: '1',
       name: 'John Doe',
@@ -85,14 +88,15 @@ const videoClasses: VideoClass[] = [
       id: '1',
       name: 'Độ mông 4 tuần',
     },
+    type: 'live',
   },
   {
     id: '4',
-    name: 'Sports Nutrition',
+    name: 'Fitness Trainer',
     description: 'This is a dumbbell row exercise.',
-    equipments: ['Jump Rope', 'Wheel Roller'],
-    muscles: ['Abs', 'Calves'],
-    level: 'intermediate',
+    equipments: ['Belt Squat', 'Power Rack'],
+    muscles: ['Trapezius', 'Soleus'],
+    level: 'beginner',
     trainer: {
       id: '1',
       name: 'John Doe',
@@ -101,13 +105,14 @@ const videoClasses: VideoClass[] = [
       id: '1',
       name: 'Độ mông 4 tuần',
     },
+    type: 'video',
   },
   {
     id: '5',
-    name: 'Sports Nutrition',
+    name: 'Fitness Trainer',
     description: 'This is a dumbbell row exercise.',
-    equipments: ['Jump Rope', 'Wheel Roller'],
-    muscles: ['Abs', 'Calves'],
+    equipments: ['Belt Squat', 'Power Rack'],
+    muscles: ['Trapezius', 'Soleus'],
     level: 'intermediate',
     trainer: {
       id: '1',
@@ -117,11 +122,12 @@ const videoClasses: VideoClass[] = [
       id: '1',
       name: 'Độ mông 4 tuần',
     },
+    type: 'live',
   },
 ]
 
-export default function VideoClassesPage() {
-  const columns: ColumnDef<VideoClass>[] = [
+export default function OneOnOneClassesPage() {
+  const columns: ColumnDef<OneOnOneClass>[] = [
     {
       accessorKey: 'name',
       header: 'Tên',
@@ -160,12 +166,25 @@ export default function VideoClassesPage() {
     {
       accessorKey: 'level',
       header: 'Level',
-      render: ({ row }) => <span className="capitalize">{row.level}</span>,
+      render: ({ row }) => (
+        <Badge variant="outline" className="capitalize">
+          {row.level}
+        </Badge>
+      ),
     },
     {
       accessorKey: 'membership',
       header: 'Membership',
       render: ({ row }) => row.membership?.name ?? '-',
+    },
+    {
+      accessorKey: 'type',
+      header: 'Loại',
+      render: ({ row }) => (
+        <Badge variant="outline" className="capitalize">
+          {row.type}
+        </Badge>
+      ),
     },
     {
       accessorKey: 'actions',
@@ -204,11 +223,11 @@ export default function VideoClassesPage() {
   )
 
   return (
-    <ContentLayout title="Khoá học Video">
+    <ContentLayout title="Khoá học Zoom">
       <DataTable
         headerExtraContent={headerExtraContent}
         searchPlaceholder="Tìm kiếm theo tên, ..."
-        data={videoClasses}
+        data={oneOnOneClasses}
         columns={columns}
         onSelectChange={() => {}}
       />

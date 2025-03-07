@@ -60,7 +60,7 @@ export function getMenuList(pathname: string): Group[] {
               label: 'Khoá học Zoom',
             },
             {
-              href: '#',
+              href: '/admin/one-on-one-classes',
               label: 'Khoá học 1-on-1',
             },
             {
@@ -94,15 +94,15 @@ export function getMenuList(pathname: string): Group[] {
           icon: ShoppingBagIcon,
           submenus: [
             {
-              href: '#',
+              href: '/admin/categories',
               label: 'Phân loại',
             },
             {
-              href: '#',
+              href: '/admin/products',
               label: 'Sản phẩm',
             },
             {
-              href: '#',
+              href: '/admin/orders',
               label: 'Đơn hàng',
             },
           ],
