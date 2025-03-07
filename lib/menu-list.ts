@@ -52,11 +52,11 @@ export function getMenuList(pathname: string): Group[] {
           icon: BookTextIcon,
           submenus: [
             {
-              href: '#',
+              href: '/admin/video-classes',
               label: 'Khoá học Video',
             },
             {
-              href: '#',
+              href: '/admin/live-classes',
               label: 'Khoá học Zoom',
             },
             {
@@ -68,7 +68,7 @@ export function getMenuList(pathname: string): Group[] {
               label: 'Thư viện bài tập',
             },
             {
-              href: '#',
+              href: '/admin/muscle-groups-and-equipments',
               label: 'Nhóm cơ & dụng cụ',
             },
           ],
@@ -89,9 +89,23 @@ export function getMenuList(pathname: string): Group[] {
           ],
         },
         {
-          href: '#',
+          href: '',
           label: 'E-commerce',
           icon: ShoppingBagIcon,
+          submenus: [
+            {
+              href: '#',
+              label: 'Phân loại',
+            },
+            {
+              href: '#',
+              label: 'Sản phẩm',
+            },
+            {
+              href: '#',
+              label: 'Đơn hàng',
+            },
+          ],
         },
         {
           href: '',

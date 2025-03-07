@@ -11,7 +11,7 @@ import { CheckedState } from '@radix-ui/react-checkbox'
 export interface ColumnDef<T = any> {
   accessorKey: Extract<keyof T, string> | string
   header?: string | JSX.Element
-  render?: ({ row }: { row: T }) => JSX.Element
+  render?: ({ row }: { row: T }) => string | JSX.Element
 }
 
 interface DataTableProps {
@@ -37,7 +37,7 @@ export function DataTable({ data, columns, headerExtraContent, searchPlaceholder
   const checkedLen = useMemo(() => Object.values(selected).filter((v) => v === true).length, [selected])
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full">
       <div className="flex justify-between items-center gap-2">
         <div className="relative">
           <Input className="peer ps-9" placeholder={searchPlaceholder} type="text" />

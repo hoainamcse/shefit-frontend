@@ -14,70 +14,122 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { getYoutubeThumbnail } from '@/lib/youtube'
 import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
 
-type TrainingCourses = {
+type Membership = {
+  id: string
+  name: string
+}
+
+type Trainer = {
+  id: string
+  name: string
+}
+
+type LiveClass = {
   id: string
   name: string
   description: string
   equipments: string[]
   muscles: string[]
-  url: string
+  trainer: Trainer
+  level: 'beginner' | 'advanced' | 'advanced'
+  membership?: Membership
 }
 
-const trainingCourses = [
+const liveClasses: LiveClass[] = [
   {
     id: '1',
-    name: 'Dumbbell Row',
+    name: 'Pilates Matworkk',
     description: 'This is a dumbbell row exercise.',
-    equipments: ['Barbell', 'Dumbbell'],
-    muscles: ['Biceps', 'Triceps'],
-    url: 'https://www.youtube.com/watch?v=5PoEksoJNaw',
+    equipments: ['Recline Bike', 'Upright Bike'],
+    muscles: ['Glutues', 'Quadriceps'],
+    level: 'advanced',
+    trainer: {
+      id: '1',
+      name: 'John Doe',
+    },
+    membership: {
+      id: '1',
+      name: 'Độ mông 4 tuần',
+    },
   },
   {
     id: '2',
-    name: 'Dumbbell Row',
+    name: 'Pilates Matworkk',
     description: 'This is a dumbbell row exercise.',
-    equipments: ['Barbell', 'Dumbbell'],
-    muscles: ['Biceps', 'Triceps'],
-    url: 'https://www.youtube.com/watch?v=5PoEksoJNaw',
+    equipments: ['Recline Bike', 'Upright Bike'],
+    muscles: ['Glutues', 'Quadriceps'],
+    level: 'advanced',
+    trainer: {
+      id: '1',
+      name: 'John Doe',
+    },
+    membership: {
+      id: '1',
+      name: 'Độ mông 4 tuần',
+    },
   },
   {
     id: '3',
-    name: 'Dumbbell Row',
+    name: 'Pilates Matworkk',
     description: 'This is a dumbbell row exercise.',
-    equipments: ['Barbell', 'Dumbbell'],
-    muscles: ['Biceps', 'Triceps'],
-    url: 'https://www.youtube.com/watch?v=5PoEksoJNaw',
+    equipments: ['Recline Bike', 'Upright Bike'],
+    muscles: ['Glutues', 'Quadriceps'],
+    level: 'advanced',
+    trainer: {
+      id: '1',
+      name: 'John Doe',
+    },
+    membership: {
+      id: '1',
+      name: 'Độ mông 4 tuần',
+    },
   },
   {
     id: '4',
-    name: 'Dumbbell Row',
+    name: 'Pilates Matworkk',
     description: 'This is a dumbbell row exercise.',
-    equipments: ['Barbell', 'Dumbbell'],
-    muscles: ['Biceps', 'Triceps'],
-    url: 'https://www.youtube.com/watch?v=5PoEksoJNaw',
+    equipments: ['Recline Bike', 'Upright Bike'],
+    muscles: ['Glutues', 'Quadriceps'],
+    level: 'advanced',
+    trainer: {
+      id: '1',
+      name: 'John Doe',
+    },
+    membership: {
+      id: '1',
+      name: 'Độ mông 4 tuần',
+    },
   },
   {
     id: '5',
-    name: 'Dumbbell Row',
+    name: 'Pilates Matworkk',
     description: 'This is a dumbbell row exercise.',
-    equipments: ['Barbell', 'Dumbbell'],
-    muscles: ['Biceps', 'Triceps'],
-    url: 'https://www.youtube.com/watch?v=5PoEksoJNaw',
+    equipments: ['Recline Bike', 'Upright Bike'],
+    muscles: ['Glutues', 'Quadriceps'],
+    level: 'advanced',
+    trainer: {
+      id: '1',
+      name: 'John Doe',
+    },
+    membership: {
+      id: '1',
+      name: 'Độ mông 4 tuần',
+    },
   },
 ]
 
-export default function ExercisesPage() {
-  const columns: ColumnDef<TrainingCourses>[] = [
+export default function LiveClassesPage() {
+  const columns: ColumnDef<LiveClass>[] = [
     {
       accessorKey: 'name',
       header: 'Tên',
     },
     {
-      accessorKey: 'description',
-      header: 'Thông tin',
+      accessorKey: 'trainer',
+      header: 'HLV',
+      render: ({ row }) => row.trainer.name,
     },
     {
       accessorKey: 'equipments',
@@ -106,16 +158,14 @@ export default function ExercisesPage() {
       ),
     },
     {
-      accessorKey: 'url',
-      header: 'Video',
-      render: ({ row }) => {
-        const thumbnail = getYoutubeThumbnail(row.url)
-        return (
-          <a href={row.url} target="_blank">
-            <img src={thumbnail} alt={`${row.name} thumbnail`} className="h-12 rounded" />
-          </a>
-        )
-      },
+      accessorKey: 'level',
+      header: 'Level',
+      render: ({ row }) => <span className="capitalize">{row.level}</span>,
+    },
+    {
+      accessorKey: 'membership',
+      header: 'Membership',
+      render: ({ row }) => row.membership?.name ?? '-',
     },
     {
       accessorKey: 'actions',
@@ -154,11 +204,11 @@ export default function ExercisesPage() {
   )
 
   return (
-    <ContentLayout title="Thư viện bài tập">
+    <ContentLayout title="Khoá học Zoom">
       <DataTable
         headerExtraContent={headerExtraContent}
         searchPlaceholder="Tìm kiếm theo tên, ..."
-        data={trainingCourses}
+        data={liveClasses}
         columns={columns}
         onSelectChange={() => {}}
       />
