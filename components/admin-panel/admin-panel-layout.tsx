@@ -1,34 +1,16 @@
-'use client'
+import { cookies } from 'next/headers'
 
-import { Footer } from '@/components/admin-panel/footer'
-import { Sidebar } from '@/components/admin-panel/sidebar'
-import { useSidebar } from '@/hooks/use-sidebar'
-import { useStore } from '@/hooks/use-store'
-import { cn } from '@/lib/utils'
+import { Sidebar, SidebarContent } from '@/components/admin-panel/sidebar'
+import { SidebarProvider } from '@/components/providers/sidebar-provider'
 
-export default function AdminPanelLayout({ children }: { children: React.ReactNode }) {
-  const sidebar = useStore(useSidebar, (x) => x)
-  if (!sidebar) return null
-  const { getOpenState, settings } = sidebar
+export default async function AdminPanelLayout({ children }: { children: React.ReactNode }) {
+  const cookieStore = await cookies()
+  const defaultOpen = cookieStore.get('sidebar_state')?.value === 'true'
+
   return (
-    <>
+    <SidebarProvider defaultOpen={defaultOpen}>
       <Sidebar />
-      <main
-        className={cn(
-          'min-h-[calc(100vh_-_56px)] bg-background/95 dark:bg-neutral-900 transition-[margin-left] ease-in-out duration-300',
-          !settings.disabled && (!getOpenState() ? 'lg:ml-[90px]' : 'lg:ml-72')
-        )}
-      >
-        {children}
-      </main>
-      <footer
-        className={cn(
-          'transition-[margin-left] ease-in-out duration-300',
-          !settings.disabled && (!getOpenState() ? 'lg:ml-[90px]' : 'lg:ml-72')
-        )}
-      >
-        <Footer />
-      </footer>
-    </>
+      <SidebarContent>{children}</SidebarContent>
+    </SidebarProvider>
   )
 }
