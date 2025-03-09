@@ -80,7 +80,7 @@ export default function MealPlansPage() {
     },
     {
       accessorKey: 'calory',
-      header: 'Calory',
+      header: 'Mức calo',
     },
     {
       accessorKey: 'diet',
@@ -123,7 +123,7 @@ export default function MealPlansPage() {
   const headerExtraContent = (
     <>
       <AddButton text="Thêm thực đơn" />
-      <MainButton text="Nhập dữ liệu" variant="outline" icon={Import} />
+      <MainButton text="Nhập thực đơn" variant="outline" icon={Import} />
     </>
   )
 

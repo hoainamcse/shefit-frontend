@@ -109,7 +109,7 @@ export default function DishesPage() {
   const headerExtraContent = (
     <>
       <AddButton text="Thêm món ăn" />
-      <MainButton text="Nhập dữ liệu" variant="outline" icon={Import} />
+      <MainButton text="Nhập món ăn" variant="outline" icon={Import} />
     </>
   )
 

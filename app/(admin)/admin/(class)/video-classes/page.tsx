@@ -215,7 +215,7 @@ export default function VideoClassesPage() {
   const headerExtraContent = (
     <>
       <AddButton text="Thêm khoá học" />
-      <MainButton text="Nhập dữ liệu" variant="outline" icon={Import} />
+      <MainButton text="Nhập khoá học" variant="outline" icon={Import} />
     </>
   )
 

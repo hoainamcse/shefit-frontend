@@ -149,7 +149,7 @@ export default function ExercisesPage() {
   const headerExtraContent = (
     <>
       <AddButton text="Thêm bài tập" />
-      <MainButton text="Nhập dữ liệu" variant="outline" icon={Import} />
+      <MainButton text="Nhập bài tập" variant="outline" icon={Import} />
     </>
   )
 

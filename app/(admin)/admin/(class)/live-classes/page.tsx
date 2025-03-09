@@ -212,12 +212,7 @@ export default function LiveClassesPage() {
       ),
     },
   ]
-  const headerExtraContent = (
-    <>
-      <AddButton text="Thêm khoá học" />
-      <MainButton text="Nhập dữ liệu" variant="outline" icon={Import} />
-    </>
-  )
+  const headerExtraContent = <AddButton text="Thêm khoá học" />
 
   return (
     <ContentLayout title="Khoá học Zoom">
