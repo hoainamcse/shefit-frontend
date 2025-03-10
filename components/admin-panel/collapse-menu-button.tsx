@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { ChevronDown, Dot, LucideIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { DropdownMenuArrow } from '@radix-ui/react-dropdown-menu'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -17,7 +18,6 @@ import {
   DropdownMenuContent,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
-import { usePathname } from 'next/navigation'
 
 type Submenu = {
   href: string
@@ -94,29 +94,27 @@ export function CollapseMenuButton({ icon: Icon, label, active, submenus, isOpen
     </Collapsible>
   ) : (
     <DropdownMenu>
-      <TooltipProvider disableHoverableContent>
-        <Tooltip delayDuration={100}>
-          <TooltipTrigger asChild>
-            <DropdownMenuTrigger asChild>
-              <Button variant={isSubmenuActive ? 'secondary' : 'ghost'} className="w-full justify-start h-10 mb-1">
-                <div className="w-full items-center flex justify-between">
-                  <div className="flex items-center">
-                    <span className={cn(isOpen === false ? '' : 'mr-4')}>
-                      <Icon size={18} />
-                    </span>
-                    <p className={cn('max-w-[200px] truncate', isOpen === false ? 'opacity-0' : 'opacity-100')}>
-                      {label}
-                    </p>
-                  </div>
+      <Tooltip disableHoverableContent>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <Button variant={isSubmenuActive ? 'secondary' : 'ghost'} className="w-full justify-start h-10 mb-1">
+              <div className="w-full items-center flex justify-between">
+                <div className="flex items-center">
+                  <span className={cn(isOpen === false ? '' : 'mr-4')}>
+                    <Icon size={18} />
+                  </span>
+                  <p className={cn('max-w-[200px] truncate', isOpen === false ? 'opacity-0' : 'opacity-100')}>
+                    {label}
+                  </p>
                 </div>
-              </Button>
-            </DropdownMenuTrigger>
-          </TooltipTrigger>
-          <TooltipContent side="right" align="start" alignOffset={2}>
-            {label}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+              </div>
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent side="right" align="start" alignOffset={2}>
+          {label}
+        </TooltipContent>
+      </Tooltip>
       <DropdownMenuContent side="right" sideOffset={25} align="start">
         <DropdownMenuLabel className="max-w-[190px] truncate">{label}</DropdownMenuLabel>
         <DropdownMenuSeparator />

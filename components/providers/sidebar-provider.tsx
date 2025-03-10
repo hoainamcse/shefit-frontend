@@ -2,7 +2,9 @@
 
 import * as React from 'react'
 
+import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -88,7 +90,11 @@ const SidebarProvider = React.forwardRef<
     [open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
   )
 
-  return <SidebarContext.Provider value={contextValue}>{children}</SidebarContext.Provider>
+  return (
+    <SidebarContext.Provider value={contextValue}>
+      <TooltipProvider delayDuration={100}>{children}</TooltipProvider>
+    </SidebarContext.Provider>
+  )
 })
 SidebarProvider.displayName = 'SidebarProvider'
 
