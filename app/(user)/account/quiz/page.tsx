@@ -11,7 +11,7 @@ import ImageTitle from "@/assets/image/ImageTitle.png"
 import { Checkbox } from "@/components/ui/checkbox"
 import Body from "@/assets/image/Body.png"
 import MenuDetail from "@/assets/image/MenuDetail.png"
-
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 export default function BodyQuiz() {
   const form = useForm({})
 
@@ -39,9 +39,21 @@ export default function BodyQuiz() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xl font-normal">1. Tên của bạn?</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Câu trả lời" className="text-lg text-gray-500 bg-white h-12" />
+                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+                        <AccordionItem value="item-1" className="border-b-0">
+                          <AccordionTrigger>
+                            <FormLabel className="text-xl font-normal">1. Tên của bạn?</FormLabel>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <Input
+                              {...field}
+                              placeholder="Câu trả lời"
+                              className="text-lg text-gray-500 bg-white h-12"
+                            />
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -53,9 +65,21 @@ export default function BodyQuiz() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xl  font-normal">2. Số điện thoại</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Câu trả lời" className="text-lg text-gray-500 bg-white h-12" />
+                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+                        <AccordionItem value="item-1" className="border-b-0">
+                          <AccordionTrigger>
+                            <FormLabel className="text-xl font-normal">2. Số điện thoại</FormLabel>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <Input
+                              {...field}
+                              placeholder="Câu trả lời"
+                              className="text-lg text-gray-500 bg-white h-12"
+                            />
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -67,11 +91,23 @@ export default function BodyQuiz() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xl  font-normal">
-                      3. Chị vui lòng trả lời về tính trạng thai sản? 
-                    </FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Câu trả lời" className="text-lg text-gray-500 bg-white h-12" />
+                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+                        <AccordionItem value="item-1" className="border-b-0">
+                          <AccordionTrigger>
+                            <FormLabel className="text-xl font-normal">
+                              3. Chị vui lòng trả lời về tính trạng thai sản? 
+                            </FormLabel>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <Input
+                              {...field}
+                              placeholder="Câu trả lời"
+                              className="text-lg text-gray-500 bg-white h-12"
+                            />
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -83,9 +119,21 @@ export default function BodyQuiz() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xl  font-normal">4. Chiều Cao Của Chị (cm) ?</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Câu trả lời" className="text-lg text-gray-500 bg-white h-12" />
+                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+                        <AccordionItem value="item-1" className="border-b-0">
+                          <AccordionTrigger>
+                            <FormLabel className="text-xl font-normal">4. Chiều Cao Của Chị (cm) ?</FormLabel>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <Input
+                              {...field}
+                              placeholder="Câu trả lời"
+                              className="text-lg text-gray-500 bg-white h-12"
+                            />
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -96,9 +144,21 @@ export default function BodyQuiz() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xl  font-normal">5. Tuổi của chị ?</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Câu trả lời" className="text-lg text-gray-500 bg-white h-12" />
+                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+                        <AccordionItem value="item-1" className="border-b-0">
+                          <AccordionTrigger>
+                            <FormLabel className="text-xl font-normal">5. Tuổi của chị ?</FormLabel>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <Input
+                              {...field}
+                              placeholder="Câu trả lời"
+                              className="text-lg text-gray-500 bg-white h-12"
+                            />
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -109,9 +169,21 @@ export default function BodyQuiz() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xl  font-normal">6. Cân Nặng Hiện Tại Của Chị (kg)</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Câu trả lời" className="text-lg text-gray-500 bg-white h-12" />
+                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+                        <AccordionItem value="item-1" className="border-b-0">
+                          <AccordionTrigger>
+                            <FormLabel className="text-xl font-normal">6. Cân Nặng Hiện Tại Của Chị (kg)</FormLabel>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <Input
+                              {...field}
+                              placeholder="Câu trả lời"
+                              className="text-lg text-gray-500 bg-white h-12"
+                            />
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -122,9 +194,21 @@ export default function BodyQuiz() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xl  font-normal">7. Mục Tiêu Của Chị Về Cân Nặng</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Câu trả lời" className="text-lg text-gray-500 bg-white h-12" />
+                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+                        <AccordionItem value="item-1" className="border-b-0">
+                          <AccordionTrigger>
+                            <FormLabel className="text-xl font-normal">7. Mục Tiêu Của Chị Về Cân Nặng</FormLabel>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <Input
+                              {...field}
+                              placeholder="Câu trả lời"
+                              className="text-lg text-gray-500 bg-white h-12"
+                            />
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -135,16 +219,24 @@ export default function BodyQuiz() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xl  font-normal">8. Vóc Dáng Hiện Tại Của Chị?</FormLabel>
                     <FormControl>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-14 mx-auto mt-6">
-                        {Array.from({ length: 12 }).map((_, index) => (
-                          <div key={`image-${index}`} className="flex items-center flex-col">
-                            <Image src={ImageTitle} alt="" className="aspect-[3/3] object-cover rounded-xl" />
-                            <Checkbox className="mt-2 size-8" />
-                          </div>
-                        ))}
-                      </div>
+                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+                        <AccordionItem value="item-1" className="border-b-0">
+                          <AccordionTrigger>
+                            <FormLabel className="text-xl font-normal">8. Vóc Dáng Hiện Tại Của Chị?</FormLabel>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-14 mx-auto mt-6">
+                              {Array.from({ length: 12 }).map((_, index) => (
+                                <div key={`image-${index}`} className="flex items-center flex-col">
+                                  <Image src={ImageTitle} alt="" className="aspect-[3/3] object-cover rounded-xl" />
+                                  <Checkbox className="mt-2 size-8" />
+                                </div>
+                              ))}
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -155,16 +247,24 @@ export default function BodyQuiz() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xl  font-normal">9. Vóc Dáng Mong Muốn Của Chị?</FormLabel>
                     <FormControl>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-14 mx-auto mt-6">
-                        {Array.from({ length: 12 }).map((_, index) => (
-                          <div key={`image-${index}`} className="flex items-center flex-col">
-                            <Image src={ImageTitle} alt="" className="aspect-[3/3] object-cover rounded-xl" />
-                            <Checkbox className="mt-2 size-8" />
-                          </div>
-                        ))}
-                      </div>
+                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+                        <AccordionItem value="item-1" className="border-b-0">
+                          <AccordionTrigger>
+                            <FormLabel className="text-xl font-normal">9. Vóc Dáng Mong Muốn Của Chị?</FormLabel>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-14 mx-auto mt-6">
+                              {Array.from({ length: 12 }).map((_, index) => (
+                                <div key={`image-${index}`} className="flex items-center flex-col">
+                                  <Image src={ImageTitle} alt="" className="aspect-[3/3] object-cover rounded-xl" />
+                                  <Checkbox className="mt-2 size-8" />
+                                </div>
+                              ))}
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -172,15 +272,25 @@ export default function BodyQuiz() {
               />
               <div className="w-full mb-10">
                 <div className="font-[family-name:var(--font-coiny)] text-3xl text-text">Số đo các vòng</div>
-                <p className="">
-                  Hãy chuẩn bị 1 thước dây để đo chính xác nhất các vòng, điều này sẽ giúp HLV Shefit xác định phom dáng
-                  của chị
-                </p>
-                <Image
-                  src={Body}
-                  alt=""
-                  className="mt-5 aspect-[3/3] object-cover rounded-xl xl:size-[875px] mx-auto"
-                />
+                <FormControl>
+                  <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+                    <AccordionItem value="item-1" className="border-b-0">
+                      <AccordionTrigger>
+                        <FormLabel className="text-xl font-normal">
+                          Hãy chuẩn bị 1 thước dây để đo chính xác nhất các vòng, điều này sẽ giúp HLV Shefit xác định
+                          phom dáng của chị
+                        </FormLabel>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <Image
+                          src={Body}
+                          alt=""
+                          className="mt-5 aspect-[3/3] object-cover rounded-xl xl:size-[875px] mx-auto"
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </FormControl>
               </div>
               <div>
                 <div className="font-[family-name:var(--font-coiny)] text-3xl text-text">Câu hỏi phần thực đơn</div>
@@ -191,9 +301,23 @@ export default function BodyQuiz() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xl  font-normal">11. Chị Có Bị Dị Ứng Với Thức Ăn Nào Không?</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Câu trả lời" className="text-lg text-gray-500 bg-white h-12" />
+                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+                        <AccordionItem value="item-1" className="border-b-0">
+                          <AccordionTrigger>
+                            <FormLabel className="text-xl font-normal">
+                              11. Chị Có Bị Dị Ứng Với Thức Ăn Nào Không?
+                            </FormLabel>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <Input
+                              {...field}
+                              placeholder="Câu trả lời"
+                              className="text-lg text-gray-500 bg-white h-12"
+                            />
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -204,9 +328,23 @@ export default function BodyQuiz() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xl  font-normal">12. Chị Thường Ăn Nhiều Thành Phần Gì?</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Câu trả lời" className="text-lg text-gray-500 bg-white h-12" />
+                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+                        <AccordionItem value="item-1" className="border-b-0">
+                          <AccordionTrigger>
+                            <FormLabel className="text-xl font-normal">
+                              12. Chị Thường Ăn Nhiều Thành Phần Gì?
+                            </FormLabel>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <Input
+                              {...field}
+                              placeholder="Câu trả lời"
+                              className="text-lg text-gray-500 bg-white h-12"
+                            />
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -217,11 +355,23 @@ export default function BodyQuiz() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xl  font-normal">
-                      13. Trong quá khứ chị đã từng thử ăn kiêng theo chế độ nào?
-                    </FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Câu trả lời" className="text-lg text-gray-500 bg-white h-12" />
+                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+                        <AccordionItem value="item-1" className="border-b-0">
+                          <AccordionTrigger>
+                            <FormLabel className="text-xl font-normal">
+                              13. Trong quá khứ chị đã từng thử ăn kiêng theo chế độ nào?
+                            </FormLabel>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <Input
+                              {...field}
+                              placeholder="Câu trả lời"
+                              className="text-lg text-gray-500 bg-white h-12"
+                            />
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -232,11 +382,23 @@ export default function BodyQuiz() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xl  font-normal">
-                      14. Chị Có Hay Ăn Vặt Không?  (Bánh Tráng Trộn, Trà Sữa, Bánh Ngọt...)
-                    </FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Câu trả lời" className="text-lg text-gray-500 bg-white h-12" />
+                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+                        <AccordionItem value="item-1" className="border-b-0">
+                          <AccordionTrigger>
+                            <FormLabel className="text-xl font-normal">
+                              14. Chị Có Hay Ăn Vặt Không?  (Bánh Tráng Trộn, Trà Sữa, Bánh Ngọt...)
+                            </FormLabel>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <Input
+                              {...field}
+                              placeholder="Câu trả lời"
+                              className="text-lg text-gray-500 bg-white h-12"
+                            />
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
