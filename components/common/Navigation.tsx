@@ -1,5 +1,3 @@
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ExerciseYogaIconGray } from "../icons/ExerciseYogaIconGray"
 import { FoodGrainsIconGray } from "../icons/FoodGrainsIconGray"
@@ -12,19 +10,19 @@ export default function Navigation() {
       <Link href="/training-courses">
         <div className="flex flex-col items-center gap-1">
           <ExerciseYogaIconGray />
-          <p className="text-black">Khóa tập</p>
+          <p className="text-[#8E8E93]">Khóa tập</p>
         </div>
       </Link>
       <Link href="/menu">
         <div className="flex flex-col items-center gap-1">
           <FoodGrainsIconGray />
-          <p className="text-black">Thực đơn</p>
+          <p className="text-[#8E8E93]">Thực đơn</p>
         </div>
       </Link>
       <Link href="/equipment">
         <div className="flex flex-col items-center gap-1">
           <GymIconGray />
-          <p className="text-black">Dụng cụ</p>
+          <p className="text-[#8E8E93]">Dụng cụ</p>
         </div>
       </Link>
       <Link href="/account">
