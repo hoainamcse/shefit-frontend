@@ -242,7 +242,16 @@ export default function OneOnOneClassesPage() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <MainButton text="Nhập khoá học (Video)" variant="outline" icon={Import} />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <MainButton text="Nhập khoá học" variant="outline" icon={Import} />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem onClick={() => router.push('/admin/video-classes/new')}>
+            <Video /> Khoá học Video
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </>
   )
 
