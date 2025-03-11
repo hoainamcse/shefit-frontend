@@ -13,17 +13,17 @@ import {
 export default function BodyQuiz() {
   return (
     <div>
-      <div className="bg-[#FFAEB01A] py-[33px] px-[87px]">
+      <div className="bg-[#FFAEB01A] py-[33px] px-5 sm:px-9 lg:px-[87px]">
         <div className="text-center text-[#000000] text-[30px] leading-[33px] font-[Coiny] mb-7">
           Body Quiz
         </div>
-        <div className="text-center text-[#737373] text-[20px] leading-[30px] px-20 mb-7">
+        <div className="text-center text-[#737373] text-base sm:text-[20px] leading-[30px] px-0 sm:px-8 lg:px-20 mb-7">
           Làm bảng câu hỏi để Shefit giúp chị hiểu rõ mình thuộc loại nào trong
           5 loại phom dáng, các chỉ số hình thể cần cải thiện và lộ trình “độ
           dáng” phù hợp nhất
         </div>
 
-        <div className="relative w-full aspect-[9/2]">
+        <div className="relative w-full aspect-[2/1] sm:aspect-[3/1] lg:aspect-[9/2]">
           <Image
             src="/body-quiz-image.jpg"
             alt="Body Quiz Image"
@@ -41,7 +41,7 @@ export default function BodyQuiz() {
         </div>
       </div>
 
-      <div className="py-20 px-[60px]">
+      <div className="py-12 sm:py-16 lg:py-20 px-5 sm:px-9 lg:px-[60px]">
         <div className="text-[#FF7873] text-[30px] leading-[33px] font-[Coiny] mb-10">
           Kết quả
         </div>

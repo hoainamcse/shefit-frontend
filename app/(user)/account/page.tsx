@@ -34,22 +34,22 @@ export default function Account() {
   return (
     <div>
       <Tabs defaultValue="body-quiz">
-        <div className="pt-[120px] px-[60px] pb-[80px]">
-          <div className="text-[#FF7873] text-[40px] leading-[60px] font-bold mb-10 ">
+        <div className="pt-16 sm:pt-24 lg:pt-[120px] px-5 sm:px-9 lg:px-[56px] xl:px-[60px] pb-8 sm:pb-14 lg:pb-[80px]">
+          <div className="font-[Coiny] text-[#FF7873] text-[30px] sm:text-[40px] leading-[33px] sm:leading-[60px] font-bold mb-8 sm:mb-10 ">
             Xin chào Dale!
           </div>
 
-          <TabsList className="bg-background gap-7 pl-0">
+          <TabsList className="w-full lg:w-fit flex-wrap bg-background gap-y-3 sm:gap-y-5 gap-x-7 pl-0 h-fit lg:h-9">
             {TABS.map((tabItem) => (
               <TabsTrigger
                 value={tabItem.value}
                 className={`h-10 gap-[5px] ${
                   tabItem.color ? `text-[${tabItem.color}]` : ""
-                } data-[state=active]:border border-solid border-[#FFAEB0] data-[state=active]:shadow-none data-[state=active]:text-[#FFAEB0] px-[18px]`}
+                } data-[state=active]:border border-solid border-[#FFAEB0] data-[state=active]:shadow-none data-[state=active]:text-[#FFAEB0] px-2.5 sm:px-3.5 xl:px-[18px]`}
                 key={tabItem.value}
               >
                 {tabItem.icon}
-                <span className="pt-1 text-[20px] leading-[30px]">
+                <span className="pt-1 text-base sm:text-[20px] sm:leading-[30px]">
                   {tabItem.label}
                 </span>
               </TabsTrigger>

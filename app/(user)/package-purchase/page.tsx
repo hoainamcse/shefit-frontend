@@ -31,12 +31,12 @@ export default function PackagePurchase() {
       </div>
 
       <div className="flex flex-col gap-16">
-        {Object.keys(PACKAGES).map((key) => (
+        {(Object.keys(PACKAGES) as Array<keyof typeof PACKAGES>).map((key) => (
           <div key={key} className="bg-[#FFAEB01A] rounded-[20px] py-7 px-5">
             <div>
               <div className="flex justify-between">
                 <div className="font-[Coiny] text-[#000000] text-xl md:text-2xl mb-[18px]">
-                  Gói {PACKAGES[key as keyof typeof PACKAGES].name}
+                  Gói {PACKAGES[key].name}
                 </div>
 
                 <Dialog>
@@ -46,13 +46,13 @@ export default function PackagePurchase() {
                   <DialogContent className="max-md:px-2 max-w-[90%] lg:max-w-[824px]">
                     <DialogHeader className="pb-6">
                       <DialogTitle className="text-[#FF7873] font-[Coiny] text-3xl md:text-[40px] md:leading-[44px] text-center">
-                        {PACKAGES[key as keyof typeof PACKAGES].packageText}
-                        {PACKAGES[key as keyof typeof PACKAGES].name}
+                        {PACKAGES[key].packageText}
+                        {PACKAGES[key].name}
                       </DialogTitle>
                     </DialogHeader>
 
                     <div className="w-full h-[400px] overflow-y-auto">
-                      <div>{PACKAGES[key as keyof typeof PACKAGES].detail}</div>
+                      <div>{PACKAGES[key].detail}</div>
                     </div>
 
                     <DialogFooter className="pt-6 text-center">
@@ -70,11 +70,9 @@ export default function PackagePurchase() {
               </div>
 
               <ul className="list-disc pl-7 text-base md:text-xl text-[#737373] max-w-[340px] mb-[18px]">
-                {PACKAGES[key as keyof typeof PACKAGES].description.map(
-                  (item, index) => (
-                    <li key={index}>{item}</li>
-                  )
-                )}
+                {PACKAGES[key].description.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
               </ul>
 
               <Link href={`/package-purchase/${key}`}>

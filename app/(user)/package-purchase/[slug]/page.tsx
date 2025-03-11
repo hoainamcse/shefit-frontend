@@ -17,9 +17,10 @@ import {
 
 export default function PackageDetail() {
   const params = useParams();
+  const packageName = params.slug as keyof typeof PACKAGES;
   const router = useRouter();
 
-  return PACKAGES[params.slug as keyof typeof PACKAGES] ? (
+  return PACKAGES[packageName] ? (
     <div className="flex">
       <div className="py-16 px-5 md:py-16 md:px-10 xl:p-[60px] flex-1 max-w-[832px]">
         <div
@@ -31,16 +32,13 @@ export default function PackageDetail() {
         </div>
 
         <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[Coiny] mb-7">
-          Gói {PACKAGES[params.slug as keyof typeof PACKAGES].number}:{" "}
-          {PACKAGES[params.slug as keyof typeof PACKAGES].name}
+          Gói {PACKAGES[packageName].number}: {PACKAGES[packageName].name}
         </div>
 
         <ul className="list-disc pl-7 text-base md:text-xl text-[#737373] mb-7">
-          {PACKAGES[params.slug as keyof typeof PACKAGES].description.map(
-            (item, index) => (
-              <li key={index}>{item}</li>
-            )
-          )}
+          {PACKAGES[packageName].description.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
         </ul>
 
         <div className="mb-8">
