@@ -15,6 +15,7 @@ import ComunityImage from "@/assets/image/Comunity.png"
 import { ZaloIcon } from "@/components/icons/ZaloIcon"
 import { FacebookIcon } from "@/components/icons/FacebookIcon"
 import { YoutubeIcon } from "@/components/icons/YoutubeIcon"
+import Footer from "@/components/common/Footer"
 
 export default function Home() {
   return (
@@ -99,6 +100,7 @@ export default function Home() {
           Tham gia ngay!
         </Button>
       </div>
+      <Footer />
     </div>
   )
 }

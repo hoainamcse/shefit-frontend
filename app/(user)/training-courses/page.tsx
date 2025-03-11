@@ -80,9 +80,9 @@ export default function TrainingCoursesPage() {
                     <Image
                       src="/temp/VideoCard.jpg"
                       alt="temp/28461621e6ffe301d1ec8b477ebc7c45"
-                      className="aspect-[2/3] object-cover rounded-xl mb-4"
-                      width={300}
-                      height={450}
+                      className="aspect-[2/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
+                      width={585}
+                      height={373}
                     />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>
@@ -131,9 +131,9 @@ export default function TrainingCoursesPage() {
                 <Image
                   src="/temp/VideoCard.jpg"
                   alt="temp/5d642fad586a1b35298d7108963b6837"
-                  className="aspect-[5/3] object-cover rounded-xl mb-4"
-                  width={300}
-                  height={450}
+                  className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
+                  width={585}
+                  height={373}
                 />
                 <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 <Link href={isSelected === "video" ? "training-courses/video" : "training-courses/zoom"}>
