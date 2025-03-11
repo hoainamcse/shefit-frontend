@@ -1,5 +1,8 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+import { Copy, Edit, Ellipsis, Import, Trash2 } from 'lucide-react'
+
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { AddButton } from '@/components/buttons/add-button'
 import { MainButton } from '@/components/buttons/main-button'
@@ -15,7 +18,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Switch } from '@/components/ui/switch'
-import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
 
 type Membership = {
   id: string
@@ -128,6 +130,8 @@ const videoClasses: VideoClass[] = [
 ]
 
 export default function VideoClassesPage() {
+  const router = useRouter()
+
   const columns: ColumnDef<VideoClass>[] = [
     {
       accessorKey: 'name',
@@ -198,10 +202,7 @@ export default function VideoClassesPage() {
               <Copy /> Sao chép khoá học ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Eye /> Xem
-            </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push(`/admin/video-classes/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive focus:text-destructive">
@@ -214,7 +215,7 @@ export default function VideoClassesPage() {
   ]
   const headerExtraContent = (
     <>
-      <AddButton text="Thêm khoá học" />
+      <AddButton text="Thêm khoá học" onClick={() => router.push('/admin/video-classes/new')} />
       <MainButton text="Nhập khoá học" variant="outline" icon={Import} />
     </>
   )

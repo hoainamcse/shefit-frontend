@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { Coiny, Encode_Sans_Expanded } from 'next/font/google'
 import localFont from 'next/font/local'
-import './globals.css'
 
+import './globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
+import { ReactQueryProvider } from '@/components/providers/react-query-provider'
 
 const bdLifelessGrotesk = localFont({
   src: [
@@ -75,9 +76,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${bdLifelessGrotesk.className} ${coiny.variable} ${encode.variable} antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {children}
-        </ThemeProvider>
+        <ReactQueryProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            {children}
+          </ThemeProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   )
