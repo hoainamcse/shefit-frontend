@@ -9,19 +9,37 @@ import { getValuable } from '@/lib/utils'
 import { Form } from '@/components/ui/form'
 import { MainButton } from '@/components/buttons/main-button'
 import { FormTextField } from '@/components/forms/fields/form-text-field'
-import { FormSelectField } from '@/components/forms/fields/form-select-field'
 import { FormTextareaField } from '@/components/forms/fields/form-textarea-field'
 import { FormMultiSelectField } from '@/components/forms/fields/form-multi-select-field'
+import { FormCheckboxField } from '@/components/forms/fields/form-checkbox-field'
+import { FormRadioField } from '@/components/forms/fields/form-radio-field'
+import { FileUploader } from '../file-uploader'
+import { Label } from '../ui/label'
 
 const FormSchema = z.object({
-  id: z.string().optional(),
-  course_name: z.string().min(1, 'Course name is required'),
-  summary: z.string().min(1, 'Summary is required'),
-  description: z.string().min(1, 'Description is required'),
-  equipment_ids: z.array(z.string()).min(1, 'Equipment is required'),
-  muscle_group_ids: z.array(z.string()).min(1, 'Muscle group is required'),
-  trainer_id: z.string().min(1, 'Trainer is required'),
-  membership_id: z.string().optional(),
+  course_name: z.string().min(2, {
+    message: 'Tên khóa học phải có ít nhất 2 ký tự',
+  }),
+  course_format: z.enum(['video', 'live']),
+  summary: z.string().min(2, {
+    message: 'Tóm tắt phải có ít nhất 2 ký tự',
+  }),
+  description: z.string().min(2, {
+    message: 'Mô tả phải có ít nhất 2 ký tự',
+  }),
+  trainer: z.string().min(2, {
+    message: 'HLV phải có ít nhất 2 ký tự',
+  }),
+  form_category: z.array(z.enum(['pear', 'apple', 'rectangle', 'hourglass', 'inverted_triangle'])),
+  difficulty_level: z.enum(['beginner', 'intermediate', 'advanced']),
+  cover_image: z.string(),
+  thumbnail_image: z.string(),
+  equipment_ids: z.array(z.string()).refine((value) => value.length > 0, {
+    message: 'Bạn phải chọn ít nhất 1 loại dụng cụ',
+  }),
+  muscle_group_ids: z.array(z.string()).refine((value) => value.length > 0, {
+    message: 'Bạn phải chọn ít nhất 1 nhóm cơ',
+  }),
 })
 
 type FormData = z.infer<typeof FormSchema>
@@ -31,25 +49,6 @@ interface CreateContactFormProps {
   isEdit?: boolean
   onSuccess?: () => void
 }
-
-const trainers = [
-  {
-    value: '1',
-    label: 'Chris Bumstead',
-  },
-  {
-    value: '2',
-    label: 'Ramon Dino',
-  },
-  {
-    value: '3',
-    label: 'Wesley Vissers',
-  },
-  {
-    value: '4',
-    label: 'Hadi Choopan',
-  },
-]
 
 const equipments = [
   {
@@ -117,18 +116,41 @@ const muscleGroups = [
   },
 ]
 
-const memberships = [
+const difficultyLevels = [
   {
-    value: '1',
-    label: 'Free',
+    value: 'beginner',
+    label: 'Beginner',
   },
   {
-    value: '2',
-    label: 'Paid',
+    value: 'intermediate',
+    label: 'Intermediate',
   },
   {
-    value: '3',
-    label: 'Pro',
+    value: 'advanced',
+    label: 'Advanced',
+  },
+]
+
+const formCategories = [
+  {
+    value: 'pear',
+    label: 'Dáng quả lê',
+  },
+  {
+    value: 'apple',
+    label: 'Dáng quả táo',
+  },
+  {
+    value: 'rectangle',
+    label: 'Dáng chữ nhật',
+  },
+  {
+    value: 'hourglass',
+    label: 'Dáng đồng hồ cát',
+  },
+  {
+    value: 'inverted_triangle',
+    label: 'Dáng tam giác ngược',
   },
 ]
 
@@ -160,25 +182,37 @@ function EditClassForm({ data, isEdit = false, onSuccess }: CreateContactFormPro
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
           <FormTextField form={form} name="course_name" label="Tên khoá" required placeholder="Nhập tên khoá học" />
-          <FormSelectField form={form} name="trainer_id" label="HLV" options={trainers} placeholder="Chọn HLV" />
+          <FormTextField form={form} name="trainer" label="HLV" required placeholder="Nhập tên HLV" />
         </div>
         <FormTextareaField form={form} name="summary" label="Tóm tắt" required placeholder="Nhập tóm tắt" />
         <FormTextareaField form={form} name="description" label="Thông tin" required placeholder="Nhập thông tin" />
-        <FormSelectField
+        <FormMultiSelectField
           form={form}
-          name="membership_id"
-          label="Gói membership"
-          options={memberships}
-          placeholder="Chọn gói membership"
+          name="equipment_ids"
+          label="Dụng cụ"
+          options={equipments}
+          placeholder="Chọn dụng cụ"
         />
-        <MainButton text="Lưu" className="w-full" loading={mutation.isPending} />
         <FormMultiSelectField
           form={form}
           name="muscle_group_ids"
-          label="Nội dung"
+          label="Nhóm cơ"
           options={muscleGroups}
-          placeholder="Chọn nội dung"
+          placeholder="Chọn nhóm cơ"
         />
+        <div className="grid grid-cols-2 gap-4">
+          <FormCheckboxField form={form} name="form_category" label="Dáng" required data={formCategories} />
+          <FormRadioField form={form} name="difficulty_level" label="Độ khó" required data={difficultyLevels} />
+        </div>
+        <div className="space-y-4">
+          <Label>Hình khoá</Label>
+          <FileUploader />
+        </div>
+        <div className="space-y-4">
+          <Label>Hình đại diện khoá</Label>
+          <FileUploader />
+        </div>
+        <MainButton text="Lưu" className="w-full" loading={mutation.isPending} />
       </form>
     </Form>
   )

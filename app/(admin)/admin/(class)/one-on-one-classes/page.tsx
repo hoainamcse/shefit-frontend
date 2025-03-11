@@ -15,7 +15,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Switch } from '@/components/ui/switch'
-import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
+import { Copy, Edit, Ellipsis, Eye, Import, Radio, Trash2, Video } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 type Membership = {
   id: string
@@ -134,6 +135,8 @@ const oneOnOneClasses: OneOnOneClass[] = [
 ]
 
 export default function OneOnOneClassesPage() {
+  const router = useRouter()
+
   const columns: ColumnDef<OneOnOneClass>[] = [
     {
       accessorKey: 'name',
@@ -213,10 +216,7 @@ export default function OneOnOneClassesPage() {
               <Copy /> Sao chép khoá học ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Eye /> Xem
-            </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push(`/admin/${row.type}-classes/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive focus:text-destructive">
@@ -229,7 +229,19 @@ export default function OneOnOneClassesPage() {
   ]
   const headerExtraContent = (
     <>
-      <AddButton text="Thêm khoá học" />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <AddButton text="Thêm khoá học" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem onClick={() => router.push('/admin/video-classes/new')}>
+            <Video /> Khoá học Video
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push('/admin/live-classes/new')}>
+            <Radio /> Khoá học Zoom
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <MainButton text="Nhập khoá học (Video)" variant="outline" icon={Import} />
     </>
   )

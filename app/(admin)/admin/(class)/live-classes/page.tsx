@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Switch } from '@/components/ui/switch'
 import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 type Membership = {
   id: string
@@ -128,6 +129,8 @@ const liveClasses: LiveClass[] = [
 ]
 
 export default function LiveClassesPage() {
+  const router = useRouter()
+
   const columns: ColumnDef<LiveClass>[] = [
     {
       accessorKey: 'name',
@@ -198,10 +201,7 @@ export default function LiveClassesPage() {
               <Copy /> Sao chép khoá học ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Eye /> Xem
-            </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push(`/admin/live-classes/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive focus:text-destructive">
@@ -212,7 +212,7 @@ export default function LiveClassesPage() {
       ),
     },
   ]
-  const headerExtraContent = <AddButton text="Thêm khoá học" />
+  const headerExtraContent = <AddButton text="Thêm khoá học" onClick={() => router.push('/admin/live-classes/new')} />
 
   return (
     <ContentLayout title="Khoá học Zoom">
