@@ -50,7 +50,7 @@ interface CreateContactFormProps {
   onSuccess?: () => void
 }
 
-const equipments = [
+export const equipments = [
   {
     value: '1',
     label: 'Barbell',
@@ -77,7 +77,7 @@ const equipments = [
   },
 ]
 
-const muscleGroups = [
+export const muscleGroups = [
   {
     value: '1',
     label: 'Chest',

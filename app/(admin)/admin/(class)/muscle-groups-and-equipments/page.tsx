@@ -2,8 +2,14 @@
 
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { AddButton } from '@/components/buttons/add-button'
+import { MainButton } from '@/components/buttons/main-button'
 import { ColumnDef, DataTable } from '@/components/data-table'
+import { FileUploader } from '@/components/file-uploader'
+import { FormMultiSelectField } from '@/components/forms/fields/form-multi-select-field'
+import { FormTextField } from '@/components/forms/fields/form-text-field'
+import { FormTextareaField } from '@/components/forms/fields/form-textarea-field'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,8 +18,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Form } from '@/components/ui/form'
+import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
+import { useForm } from 'react-hook-form'
 
 export default function MuscleGroupsAndEquipmentsPage() {
   return (
@@ -109,7 +118,11 @@ function MuscleGroups() {
     },
   ]
 
-  const headerExtraContent = <AddButton text="Thêm nhóm cơ" />
+  const headerExtraContent = (
+    <CreateExerciseDialog>
+      <AddButton text="Thêm nhóm cơ" />
+    </CreateExerciseDialog>
+  )
 
   return (
     <DataTable
@@ -199,7 +212,11 @@ function Equipments() {
     },
   ]
 
-  const headerExtraContent = <AddButton text="Thêm dụng cụ" />
+  const headerExtraContent = (
+    <CreateExerciseDialog>
+      <AddButton text="Thêm dụng cụ" />
+    </CreateExerciseDialog>
+  )
 
   return (
     <DataTable
@@ -209,5 +226,35 @@ function Equipments() {
       columns={columns}
       onSelectChange={() => {}}
     />
+  )
+}
+
+function CreateExerciseDialog({ children }: { children: React.ReactNode }) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Thêm nhóm cơ</DialogTitle>
+        </DialogHeader>
+        <CreateExerciseForm />
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function CreateExerciseForm() {
+  const form = useForm()
+  return (
+    <Form {...form}>
+      <form className="space-y-6">
+        <FormTextField form={form} name="name" label="Tên" required placeholder="Nhập tên bài tập" />
+        <div className="space-y-4">
+          <Label>Hình</Label>
+          <FileUploader />
+        </div>
+        <MainButton text="Tạo" className="w-full" />
+      </form>
+    </Form>
   )
 }

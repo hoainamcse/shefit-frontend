@@ -4,8 +4,13 @@ import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { AddButton } from '@/components/buttons/add-button'
 import { MainButton } from '@/components/buttons/main-button'
 import { ColumnDef, DataTable } from '@/components/data-table'
+import { equipments, muscleGroups } from '@/components/forms/edit-class-form'
+import { FormMultiSelectField } from '@/components/forms/fields/form-multi-select-field'
+import { FormTextField } from '@/components/forms/fields/form-text-field'
+import { FormTextareaField } from '@/components/forms/fields/form-textarea-field'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,8 +19,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Form } from '@/components/ui/form'
 import { getYoutubeThumbnail } from '@/lib/youtube'
 import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
+import { useForm } from 'react-hook-form'
 
 type Exercise = {
   id: string
@@ -148,7 +155,9 @@ export default function ExercisesPage() {
   ]
   const headerExtraContent = (
     <>
-      <AddButton text="Thêm bài tập" />
+      <CreateExerciseDialog>
+        <AddButton text="Thêm bài tập" />
+      </CreateExerciseDialog>
       <MainButton text="Nhập bài tập" variant="outline" icon={Import} />
     </>
   )
@@ -163,5 +172,47 @@ export default function ExercisesPage() {
         onSelectChange={() => {}}
       />
     </ContentLayout>
+  )
+}
+
+function CreateExerciseDialog({ children }: { children: React.ReactNode }) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Thêm bài tập</DialogTitle>
+        </DialogHeader>
+        <CreateExerciseForm />
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function CreateExerciseForm() {
+  const form = useForm()
+  return (
+    <Form {...form}>
+      <form className="space-y-6">
+        <FormTextField form={form} name="name" label="Tên" required placeholder="Nhập tên bài tập" />
+        <FormTextareaField form={form} name="description" label="Thông tin" />
+        <FormMultiSelectField
+          form={form}
+          name="equipment_ids"
+          label="Dụng cụ"
+          options={equipments}
+          placeholder="Chọn dụng cụ"
+        />
+        <FormMultiSelectField
+          form={form}
+          name="muscle_group_ids"
+          label="Nhóm cơ"
+          options={muscleGroups}
+          placeholder="Chọn nhóm cơ"
+        />
+        <FormTextField form={form} name="url" label="Link Youtube" placeholder="Nhập link Youtube" />
+        <MainButton text="Tạo" className="w-full" />
+      </form>
+    </Form>
   )
 }
