@@ -1,8 +1,6 @@
-import Layout from "@/components/common/Layout"
 import EducatorAvatar from "@/assets/image/EducatorAvatar.png"
 import React from "react"
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import { MainButton } from "@/components/buttons/main-button"
 
 export default function TrainersPage() {

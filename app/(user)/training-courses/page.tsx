@@ -81,6 +81,8 @@ export default function TrainingCoursesPage() {
                       src="/temp/VideoCard.jpg"
                       alt="temp/28461621e6ffe301d1ec8b477ebc7c45"
                       className="aspect-[2/3] object-cover rounded-xl mb-4"
+                      width={300}
+                      height={450}
                     />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>
@@ -109,10 +111,7 @@ export default function TrainingCoursesPage() {
           </div>
           <div className="flex justify-center gap-4">
             <p
-              className={cn(
-                "cursor-pointer",
-                isSelected === "video" ? "underline text-text" : "text-[#737373]"
-              )}
+              className={cn("cursor-pointer", isSelected === "video" ? "underline text-text" : "text-[#737373]")}
               onClick={() => setIsSelected("video")}
             >
               Video
@@ -133,6 +132,8 @@ export default function TrainingCoursesPage() {
                   src="/temp/VideoCard.jpg"
                   alt="temp/5d642fad586a1b35298d7108963b6837"
                   className="aspect-[5/3] object-cover rounded-xl mb-4"
+                  width={300}
+                  height={450}
                 />
                 <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 <Link href={isSelected === "video" ? "training-courses/video" : "training-courses/zoom"}>

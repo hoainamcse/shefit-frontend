@@ -1,22 +1,19 @@
-import { PropsWithChildren } from "react";
-import Header from "./Header";
-import { cn } from "@/lib/utils";
+import { PropsWithChildren } from "react"
+import Header from "./Header"
+import { cn } from "@/lib/utils"
+import Footer from "./Footer"
 
 interface LayoutProps extends PropsWithChildren {
-  withFooter?: boolean;
-  className?: string;
+  withFooter?: boolean
+  className?: string
 }
 
-export default function Layout({
-  children,
-  withFooter,
-  className,
-}: LayoutProps) {
+export default function Layout({ children, withFooter, className }: LayoutProps) {
   return (
     <>
       <Header />
-      <div className={cn("p-4", className)}>{children}</div>
-      {withFooter && <footer>Footer</footer>}
+      <div className={cn("p-4 mb-44", className)}>{children}</div>
+      <Footer />
     </>
-  );
+  )
 }

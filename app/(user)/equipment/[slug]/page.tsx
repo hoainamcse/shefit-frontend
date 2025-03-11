@@ -6,6 +6,18 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { CloseIcon } from "@/components/icons/CloseIcon"
 
 export default function Equipment() {
   const [isSelected, setIsSelected] = useState("size")
@@ -86,7 +98,20 @@ export default function Equipment() {
               </div>
             </div>
             <div className="w-full flex gap-3 justify-center">
-              <Button className="w-full rounded-full bg-button hover:bg-[#11c296]">Mua ngay</Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" className="w-full rounded-full bg-button hover:bg-[#11c296] text-white hover:text-white">
+                    Mua ngay
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader className="flex flex-col items-center text-center">
+                    <AlertDialogCancel className="absolute top-4 right-4 border-none hover:bg-white shadow-none active:bg-none"><CloseIcon /></AlertDialogCancel>
+                    <AlertDialogTitle className="text-text font-[family-name:var(--font-coiny)] text-[40px] pt-10">Đặt hàng thành công</AlertDialogTitle>
+                    <AlertDialogDescription className="text-gray-500 text-[20px] pb-10">NV CSKH sẽ liên hệ để xác nhận đơn hàng</AlertDialogDescription>
+                  </AlertDialogHeader>
+                </AlertDialogContent>
+              </AlertDialog>
               <Button className="border-button text-button rounded-full w-full bg-white hover:bg-[#11c29628]">
                 Lưu
               </Button>
@@ -94,9 +119,7 @@ export default function Equipment() {
           </div>
         </div>
         <div className="flex flex-col gap-5 mb-20">
-          <div className="font-[family-name:var(--font-coiny)] text-text xl:text-[40px] max-lg:text-[30px]">
-            Title
-          </div>
+          <div className="font-[family-name:var(--font-coiny)] text-text xl:text-[40px] max-lg:text-[30px]">Title</div>
           <p className="text-[#737373] xl:text-xl max-lg:text-base">
             Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis.
             Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus
