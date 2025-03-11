@@ -8,7 +8,7 @@ export default async function Zoom({ params }: { params: Promise<{ slug: string 
   return (
     <div className="flex flex-col gap-10 mt-10">
       <div>
-        <p className=" font-[family-name:var(--font-coiny)] text-text text-2xl">Tất cả khoá tập</p>
+        <p className=" font-[family-name:var(--font-coiny)] text-text text-2xl">Thông tin khoá</p>
         <p>
           Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
           nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad
@@ -49,9 +49,9 @@ export default async function Zoom({ params }: { params: Promise<{ slug: string 
       </div>
       <div className="flex justify-center gap-4">
         <Link href={`/training-courses/zoom/slug`} className="rounded-full w-1/3 bg-button hover:bg-[#11c296]">
-          <Button className="w-full rounded-full bg-button hover:bg-[#11c296]">Bắt đầu</Button>
+          <Button className="w-full rounded-full bg-button hover:bg-[#11c296] h-14">Bắt đầu</Button>
         </Link>
-        <Button variant="secondary" className="border-button text-button rounded-full w-1/3 bg-white">
+        <Button variant="secondary" className="border-button text-button rounded-full w-1/3 bg-white h-14">
           Lưu
         </Button>
       </div>

@@ -81,9 +81,9 @@ export default function MenuDetail() {
         </div>
         <div className="gap-5 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
           <Link href="/menu/[detail]/[calendar]" as="/menu/1/1" className="w-full">
-            <Button className="w-full rounded-3xl text-xl bg-button text-white hover:bg-[#11c296]">Bắt đầu</Button>
+            <Button className="w-full rounded-full text-xl bg-button text-white hover:bg-[#11c296] h-14">Bắt đầu</Button>
           </Link>
-          <Button className="w-full rounded-3xl text-xl bg-white border-button text-button">Lưu</Button>
+          <Button className="w-full rounded-full text-xl bg-white border-button text-button h-14">Lưu</Button>
         </div>
       </div>
     </div>

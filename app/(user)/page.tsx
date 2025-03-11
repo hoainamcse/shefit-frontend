@@ -32,7 +32,7 @@ export default function Home() {
               chưa?
             </div>
             <div className="xl:text-2xl max-lg:text-xs">Ăn đúng, tập chuẩn sớm, đẹp sớm!</div>
-            <Button className="bg-button hover:bg-[#11c296] flex p-4 mt-6 text-xl mx-auto justify-center rounded-[100px] xl:w-[696px] max-lg:w-full max-lg:h-8 max-lg:text-[14px]">
+            <Button className="bg-button hover:bg-[#11c296] flex p-4 mt-6 text-xl mx-auto justify-center rounded-full xl:w-[696px] max-lg:w-full max-lg:h-8 max-lg:text-[14px] h-[81px]">
               Bắt đầu
             </Button>
           </div>
@@ -45,7 +45,7 @@ export default function Home() {
             <div className="items-center text-[40px] max-lg:text-[22px] leading-[45px] text-center font-bold text-wrap xl:mb-8 xl:mt-4">
               Bạn không biết mình thuộc loại phom <br></br> dáng nào?
             </div>
-            <Button className="bg-button hover:bg-[#11c296] flex p-4 xl:mt-6 text-xl mx-auto justify-center rounded-[100px] xl:w-[696px] max-lg:w-full">
+            <Button className="bg-button hover:bg-[#11c296] flex p-4 xl:mt-6 text-xl mx-auto justify-center rounded-full xl:w-[696px] max-lg:w-full h-[81px]">
               Phân tích phom dáng
             </Button>
           </div>

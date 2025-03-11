@@ -46,8 +46,8 @@ const scheduleData = [
 export default function DetailPage() {
   return (
     <div className="flex flex-col gap-10 mt-10">
-      <Tabs defaultValue={scheduleData[0].value}>
-        <TabsList>
+      <Tabs defaultValue={scheduleData[0].value} className="[state=active]:bg-[#91EBD5] data-[state=active]:shadow-none">
+        <TabsList className="bg-white">
           {scheduleData.map((day) => (
             <TabsTrigger key={day.value} value={day.value} className="p-0 w-16 h-16 text-xl font-medium">
               Thứ <br />

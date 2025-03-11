@@ -10,7 +10,7 @@ export default function RouteCard() {
   return (
     <div className="xl:flex max-lg:block gap-10 justify-between">
       <div className="xl:w-[464px] max-lg:w-full text-xl text-center">
-        <Button className="max-lg:mt-10 bg-primary hover:bg-[#fca5a6] flex w-full justify-between p-4 rounded-lg">
+        <Button className="max-lg:mt-10 bg-primary hover:bg-[#fca5a6] flex w-full justify-between p-4 rounded-lg h-[62px]">
           <div className="flex items-center">
             <PersonIcon /> <p className="text-xl ml-4">Gói Easy Slim</p>
           </div>
@@ -35,7 +35,7 @@ export default function RouteCard() {
         </div>
       </div>
       <div className="xl:w-[464px] max-lg:w-full text-xl text-center">
-        <Button className="max-lg:mt-10 bg-[#FC6363] hover:bg-[#eb7b7b] flex w-full justify-between p-4 rounded-lg">
+        <Button className="max-lg:mt-10 bg-[#FC6363] hover:bg-[#eb7b7b] flex w-full justify-between p-4 rounded-lg h-[62px]">
           <div className="flex items-center">
             <PersonIcon /> <p className="text-xl ml-4">Gói Easy Slim</p>
           </div>
@@ -60,7 +60,7 @@ export default function RouteCard() {
         </div>
       </div>
       <div className="xl:w-[464px] max-lg:w-full text-xl text-center">
-        <Button className="max-lg:mt-10 bg-[#B60606] hover:bg-[#b60606b7] flex w-full justify-between p-4 rounded-lg">
+        <Button className="max-lg:mt-10 bg-[#B60606] hover:bg-[#b60606b7] flex w-full justify-between p-4 rounded-lg h-[62px]">
           <div className="flex items-center">
             <PersonIcon /> <p className="text-xl ml-4">Gói Easy Slim</p>
           </div>

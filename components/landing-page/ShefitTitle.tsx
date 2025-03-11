@@ -19,7 +19,7 @@ export default function Title() {
           kết hợp dinh dưỡng để có body đẹp hiện đại. Tập ở bất kì đâu, thấy được kết quả hàng tuần!
         </p>
         <div className="w-full">
-          <Button className="py-2 px-9 lg:w-[254px] mt-4 rounded-[26px] text-[20px] font-[400] max-lg:text-[16px] max-lg:w-[190px] bg-button hover:bg-[#11c296]">
+          <Button className="py-2 px-9 lg:w-[254px] mt-4 rounded-[26px] text-[20px] font-[400] max-lg:text-[16px] max-lg:w-[190px] bg-button hover:bg-[#11c296] h-[38px]">
             Xem khoá Tone Body
           </Button>
         </div>

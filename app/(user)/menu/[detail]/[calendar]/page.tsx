@@ -113,12 +113,12 @@ export default function MenuDetailCalendar() {
             <div className="text-[#737373]">KCAL 300 Pro 11 Fat 9 Carb 8 Fiber 7</div>
           </div>
           <Table className="w-[400px] text-center border border-collapse">
-            <TableHead>
+            <TableHeader>
               <TableRow>
-                <TableHeader className="text-center border">Thành phần</TableHeader>
-                <TableHeader className="text-center border">Nguyên liệu</TableHeader>
+                <TableHead className="border text-center">Thành phần</TableHead>
+                <TableHead className="border text-center">Nguyên liệu</TableHead>
               </TableRow>
-            </TableHead>
+            </TableHeader>
             <TableBody className="text-[#737373]">
               {data.map((item) => (
                 <TableRow key={item.id}>
@@ -141,12 +141,12 @@ export default function MenuDetailCalendar() {
             <div className="text-[#737373]">KCAL 300 Pro 11 Fat 9 Carb 8 Fiber 7</div>
           </div>
           <Table className="w-[400px] text-center border border-collapse">
-            <TableHead>
+            <TableHeader>
               <TableRow>
-                <TableHeader className="text-center border">Thành phần</TableHeader>
-                <TableHeader className="text-center border">Nguyên liệu</TableHeader>
+                <TableHead className="border text-center">Thành phần</TableHead>
+                <TableHead className="border text-center">Nguyên liệu</TableHead>
               </TableRow>
-            </TableHead>
+            </TableHeader>
             <TableBody className="text-[#737373]">
               {data.map((item) => (
                 <TableRow key={item.id}>
@@ -169,12 +169,12 @@ export default function MenuDetailCalendar() {
             <div className="text-[#737373]">KCAL 300 Pro 11 Fat 9 Carb 8 Fiber 7</div>
           </div>
           <Table className="w-[400px] text-center border border-collapse">
-            <TableHead>
+            <TableHeader>
               <TableRow>
-                <TableHeader className="text-center border">Thành phần</TableHeader>
-                <TableHeader className="text-center border">Nguyên liệu</TableHeader>
+                <TableHead className="border text-center">Thành phần</TableHead>
+                <TableHead className="border text-center">Nguyên liệu</TableHead>
               </TableRow>
-            </TableHead>
+            </TableHeader>
             <TableBody className="text-[#737373]">
               {data.map((item) => (
                 <TableRow key={item.id}>
@@ -197,12 +197,12 @@ export default function MenuDetailCalendar() {
             <div className="text-[#737373]">KCAL 300 Pro 11 Fat 9 Carb 8 Fiber 7</div>
           </div>
           <Table className="w-[400px] text-center border border-collapse">
-            <TableHead>
+            <TableHeader>
               <TableRow>
-                <TableHeader className="text-center border">Thành phần</TableHeader>
-                <TableHeader className="text-center border">Nguyên liệu</TableHeader>
+                <TableHead className="border text-center">Thành phần</TableHead>
+                <TableHead className="border text-center">Nguyên liệu</TableHead>
               </TableRow>
-            </TableHead>
+            </TableHeader>
             <TableBody className="text-[#737373]">
               {data.map((item) => (
                 <TableRow key={item.id}>

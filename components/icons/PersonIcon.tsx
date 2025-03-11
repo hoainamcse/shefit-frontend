@@ -4,7 +4,7 @@ interface PersonIconProps extends React.ComponentPropsWithoutRef<"svg"> {
 
 export function PersonIcon({}: PersonIconProps) {
   return (
-    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="36px" height="36px" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         fillRule="evenodd"
         clipRule="evenodd"

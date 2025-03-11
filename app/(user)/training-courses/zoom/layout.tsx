@@ -11,7 +11,7 @@ export default async function CourseLayout({
   const { slug } = await params
   return (
     <Layout>
-      <div className="p-6 max-w-screen-xl mx-auto mb-20">
+      <div className="p-6 max-w-screen-2xl mx-auto mb-20">
         <img
           src="/temp/courseDetail.png"
           alt={`${slug}`}

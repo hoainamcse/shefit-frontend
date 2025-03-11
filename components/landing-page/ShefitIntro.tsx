@@ -65,7 +65,7 @@ export default function Intro() {
             </p>
           </div>
           <div className="w-full flex justify-center">
-            <Button className="py-2 px-9 xl:w-[254px] max-lg:w-[190px] mt-4 rounded-[26px] max-lg:text-[16px] xl:text-[20px] font-normal bg-button hover:bg-[#11c296]">
+            <Button className="py-2 px-9 xl:w-[254px] max-lg:w-[190px] mt-4 rounded-full max-lg:text-[16px] xl:text-[20px] font-normal bg-button hover:bg-[#11c296] h-[56px]">
               Xem khoá Tone Body
             </Button>
           </div>
