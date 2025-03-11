@@ -24,7 +24,7 @@ export default function Body() {
           dáng cân đối nhất
         </div>
         <Tabs defaultValue="tab1">
-          <TabsList className="flex flex-wrap justify-center mt-8 border-none gap-4 md:gap-6 lg:gap-10">
+          <TabsList className="flex flex-wrap justify-center mt-8 border-none gap-4 md:gap-6 lg:gap-10 bg-[#FFF3F3]">
             <TabsTrigger
               value="tab1"
               className="border-none xl:text-2xl text-base p-2 rounded-[14px] flex items-center justify-center gap-2
