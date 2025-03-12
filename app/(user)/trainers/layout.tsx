@@ -4,7 +4,7 @@ export default async function TrainersLayout({ children }: { children: React.Rea
   //TODO: Use this slug later on for fetching data
   return (
     <Layout>
-      <div className="p-6 max-w-screen-3xl mx-auto mb-20">{children}</div>
+      <div className="px-6 max-w-screen-3xl mx-auto mb-20">{children}</div>
     </Layout>
   )
 }
