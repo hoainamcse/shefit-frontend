@@ -15,9 +15,9 @@ export default function TrainersPage() {
           nascetur justo sit.
         </p>
       </div>
-      <div className="flex flex-col gap-20 mx-auto mt-6">
+      <div className="flex flex-col mx-auto mt-6">
         {Array.from({ length: 6 }).map((_, index) => (
-          <div key={`menu-${index}`} className="flex items-center gap-20">
+          <div key={`menu-${index}`} className="flex items-center justify-between">
             {index % 2 === 1 ? (
               <div className="flex max-sm:flex-col items-center gap-20">
                 <div className="bg-primary max-sm:bg-white xl:text-[40px] lg:text-2xl text-gray-500 rounded-[55px] xl:p-10 lg:p-10 md:p-8 sm:p-6 max-sm:text-base">
