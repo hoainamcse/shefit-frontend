@@ -8,9 +8,9 @@ export function CloseIcon({}: CloseIconProps) {
       <path
         d="M6 6L1 1M6 6L11 11M6 6L11 1M6 6L1 11"
         stroke="black"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   )
