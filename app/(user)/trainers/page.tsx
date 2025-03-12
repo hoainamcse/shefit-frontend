@@ -20,7 +20,7 @@ export default function TrainersPage() {
           <div key={`menu-${index}`} className="flex items-center gap-20">
             {index % 2 === 1 ? (
               <div className="flex max-sm:flex-col items-center gap-20">
-                <div className="bg-primary max-sm:bg-white xl:text-[40px] max-xl:text-2xl text-gray-500 rounded-[55px] xl:p-10 max-sm:p-0 max-sm:text-base">
+                <div className="bg-primary max-sm:bg-white xl:text-[40px] lg:text-2xl text-gray-500 rounded-[55px] xl:p-10 lg:p-10 md:p-8 sm:p-6 max-sm:text-base">
                   Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis.
                   Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
                   penatibus bibendum ad curae consequat.
@@ -46,7 +46,7 @@ export default function TrainersPage() {
                     <p className="text-gray-500 max-lg:text-sm">Chuyên kháng lực và định hình đường cong.</p>
                   </div>
                 </div>
-                <div className="bg-primary max-sm:bg-white xl:text-[40px] max-lg:text-2xl text-gray-500 rounded-[55px] xl:p-10 max-sm:p-0 max-sm:text-base">
+                <div className="bg-primary max-sm:bg-white xl:text-[40px] lg:text-2xl text-gray-500 rounded-[55px] xl:p-10 lg:p-10 md:p-8 sm:p-6 max-sm:text-base">
                   Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis.
                   Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
                   penatibus bibendum ad curae consequat.
