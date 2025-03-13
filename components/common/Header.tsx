@@ -62,11 +62,11 @@ export default function Header() {
 
   return (
     <header className="bg-primary sticky top-0 z-50">
-      <div className="max-w-screen-xl mx-auto flex justify-between items-center p-3">
+      <div className="max-w-screen-2xl mx-auto flex justify-between items-center p-3">
         <Link href="/">
           <Image src="/logo-light.png" alt="logo-light" width={136} height={40} />
         </Link>
-        <div className="justify-center items-center gap-6 text-background hidden md:flex">
+        <div className="justify-center items-center gap-6 text-background hidden lg:flex">
           {navItems.map((item, index) => (
             <Link key={`navItem-${index}`} href={item.url} className="flex flex-col items-center gap-1">
               <item.icon />
@@ -77,7 +77,7 @@ export default function Header() {
         </div>
         <Sheet>
           <SheetTrigger asChild>
-            <button className="md:hidden">
+            <button className="lg:hidden">
               <MenuIcon />
             </button>
           </SheetTrigger>
