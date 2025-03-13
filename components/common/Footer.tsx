@@ -53,8 +53,8 @@ export default function Footer() {
                   <li className="text-[#E8E5E5] text-xl">Email: info@thehealthyhouse.vn</li>
                   <div className="flex gap-3">
                     <ZaloIcon />
-                    <YoutubeIcon />
                     <FacebookIcon />
+                    <YoutubeIcon />
                   </div>
                 </ul>
               </div>
