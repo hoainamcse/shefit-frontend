@@ -98,24 +98,24 @@ export default function Policy() {
           <p>
             Khách Hàng xác nhận và chấp thuận rằng Công Ty có quyền tiết lộ thông tin cá nhân của Khách Hàng cho bên thứ
             ba trong các trường hợp sau:
-            <ul className="list-disc pl-5">
-              <li>
-                (i) Công Ty tiến hành mua hoặc bán bất kỳ doanh nghiệp hoặc tài sản nào mà trong những trường hợp đó
-                chúng tôi có thể tiết lộ thông tin cá nhân cho những người bán, người mua tiềm năng cũng như các bên thứ
-                ba khác liên quan đến doanh nghiệp hoặc tài sản đó khi cần thiết.
-              </li>
-              <li>
-                (ii) Công Ty có trách nhiệm tiết lộ bất kỳ cơ quan pháp lý, cơ quan quản lý nhà nước, cơ quan chính phủ,
-                cơ quan thuế hoặc cơ quan thực thi pháp luật hoặc bất kỳ cơ quan khác hoặc các chủ sở hữu có thẩm quyền
-                liên quan nếu Công Ty có cơ sở hợp lý để tin rằng việc tiết lộ thông tin cá nhân của Khách Hàng là cần
-                thiết để thực hiện bất kỳ nghĩa vụ, yêu cầu hoặc thỏa thuận, bất kể là tự nguyện hoặc bắt buộc, được xem
-                như là kết quả của việc hợp tác theo lệnh, điều tra và/hoặc yêu cầu theo thẩm quyền của bất kỳ các cơ
-                quan này. Trong phạm vi phát luật cho phép, trong mọi trường hợp, Khách Hàng đồng ý không thực hiện bất
-                kỳ hành động và/hoặc từ bỏ quyền thực hiện bất kỳ hành động nào chống lại Công Ty liên quan đến việc
-                tiết lộ thông tin cá nhân trong những trường hợp này.
-              </li>
-            </ul>
           </p>
+          <ul className="list-disc pl-5">
+            <li>
+              (i) Công Ty tiến hành mua hoặc bán bất kỳ doanh nghiệp hoặc tài sản nào mà trong những trường hợp đó chúng
+              tôi có thể tiết lộ thông tin cá nhân cho những người bán, người mua tiềm năng cũng như các bên thứ ba khác
+              liên quan đến doanh nghiệp hoặc tài sản đó khi cần thiết.
+            </li>
+            <li>
+              (ii) Công Ty có trách nhiệm tiết lộ bất kỳ cơ quan pháp lý, cơ quan quản lý nhà nước, cơ quan chính phủ,
+              cơ quan thuế hoặc cơ quan thực thi pháp luật hoặc bất kỳ cơ quan khác hoặc các chủ sở hữu có thẩm quyền
+              liên quan nếu Công Ty có cơ sở hợp lý để tin rằng việc tiết lộ thông tin cá nhân của Khách Hàng là cần
+              thiết để thực hiện bất kỳ nghĩa vụ, yêu cầu hoặc thỏa thuận, bất kể là tự nguyện hoặc bắt buộc, được xem
+              như là kết quả của việc hợp tác theo lệnh, điều tra và/hoặc yêu cầu theo thẩm quyền của bất kỳ các cơ quan
+              này. Trong phạm vi phát luật cho phép, trong mọi trường hợp, Khách Hàng đồng ý không thực hiện bất kỳ hành
+              động và/hoặc từ bỏ quyền thực hiện bất kỳ hành động nào chống lại Công Ty liên quan đến việc tiết lộ thông
+              tin cá nhân trong những trường hợp này.
+            </li>
+          </ul>
         </li>
         <li>
           <p>Thời gian lưu trữ thông tin cá nhân:</p>

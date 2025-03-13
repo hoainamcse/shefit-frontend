@@ -6,6 +6,7 @@ import { ZaloIcon } from "../icons/ZaloIcon"
 import { YoutubeIcon } from "../icons/YoutubeIcon"
 import { FacebookIcon } from "../icons/FacebookIcon"
 import Navigation from "./Navigation"
+import Link from "next/link"
 export default function Footer() {
   return (
     <div>
@@ -25,8 +26,12 @@ export default function Footer() {
               <div className="grid grid-cols-2 max-sm:grid-cols-1">
                 <ul className="flex flex-col gap-3">
                   <li className="font-bold text-3xl">Về Shefit</li>
-                  <li className="text-[#E8E5E5] text-xl">Chính sách</li>
-                  <li className="text-[#E8E5E5] text-xl">Về chúng tôi</li>
+                  <li className="text-[#E8E5E5] text-xl">
+                    <Link href="/policy">Chính sách</Link>
+                  </li>
+                  <li className="text-[#E8E5E5] text-xl">
+                    <Link href="/about">Về chúng tôi</Link>
+                  </li>
                   <li className="text-[#E8E5E5] text-xl">Tuyển dụng</li>
                 </ul>
                 <ul className="flex flex-col gap-3">
