@@ -1,18 +1,11 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { MainButton } from "@/components/buttons/main-button";
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { MainButton } from '@/components/buttons/main-button'
 
 function GoogleIcon() {
   return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clipPath="url(#clip0_894_1146)">
         <path
           d="M8.86055 0.789433C6.46258 1.62131 4.39457 3.20024 2.96029 5.29431C1.526 7.38838 0.801037 9.8872 0.891883 12.4237C0.982729 14.9603 1.88459 17.4008 3.46501 19.3869C5.04543 21.373 7.22109 22.8 9.67243 23.4582C11.6598 23.971 13.7419 23.9935 15.7399 23.5238C17.5499 23.1173 19.2233 22.2476 20.5962 21.0001C22.0251 19.662 23.0623 17.9597 23.5962 16.0763C24.1763 14.0282 24.2796 11.8743 23.8981 9.78006H12.7381V14.4094H19.2012C19.072 15.1478 18.7952 15.8525 18.3873 16.4814C17.9795 17.1102 17.4489 17.6504 16.8274 18.0694C16.0383 18.5917 15.1486 18.943 14.2156 19.1007C13.2798 19.2747 12.32 19.2747 11.3843 19.1007C10.4358 18.9048 9.53863 18.5134 8.74993 17.9513C7.48271 17.0543 6.5312 15.7799 6.03118 14.3101C5.52285 12.8126 5.52285 11.1893 6.03118 9.69193C6.3871 8.64234 6.97549 7.68669 7.75243 6.89631C8.64154 5.97521 9.76718 5.3168 11.0058 4.99333C12.2445 4.66985 13.5484 4.6938 14.7743 5.06256C15.7321 5.35641 16.6079 5.87008 17.3318 6.56256C18.0606 5.83756 18.7881 5.11068 19.5143 4.38193C19.8893 3.99006 20.2981 3.61693 20.6674 3.21568C19.5622 2.18728 18.2649 1.387 16.8499 0.860683C14.2731 -0.0749616 11.4536 -0.100106 8.86055 0.789433Z"
@@ -48,87 +41,61 @@ function GoogleIcon() {
           <stop offset="1" stopColor="white" />
         </linearGradient>
         <clipPath id="clip0_894_1146">
-          <rect
-            width="24"
-            height="24"
-            fill="white"
-            transform="translate(0.5)"
-          />
+          <rect width="24" height="24" fill="white" transform="translate(0.5)" />
         </clipPath>
       </defs>
     </svg>
-  );
+  )
 }
 
 function FacebookIcon() {
   return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M15.1199 5.32003H16.9999V2.14003C16.0896 2.04538 15.175 1.99865 14.2599 2.00003C11.5399 2.00003 9.67986 3.66003 9.67986 6.70003V9.32003H6.60986V12.88H9.67986V22H13.3599V12.88H16.4199L16.8799 9.32003H13.3599V7.05003C13.3599 6.00003 13.6399 5.32003 15.1199 5.32003Z"
         fill="#007AFE"
       />
     </svg>
-  );
+  )
 }
 
-export default function Login() {
-  async function login(formData: FormData) {
-    "use server";
+function RegisterForm() {
+  async function register(formData: FormData) {
+    'use server'
 
-    console.log(formData);
+    console.log(formData)
   }
 
   return (
-    <form action={login} className="space-y-6">
-      <p className="text-text">
-        Đăng ký tài khoản để xem +100 khóa tập, +1000 động tác, +30 thực đơn
-        giúp bạn Độ Dáng tại bất kì đâu!
-      </p>
+    <form action={register} className="space-y-6">
+      <div className="mx-auto space-y-2">
+        <Label htmlFor="fullname">Tên</Label>
+        <Input placeholder="Nhập tên của bạn" id="fullname" name="fullname" type="text" />
+      </div>
+      <div className="mx-auto space-y-2">
+        <Label htmlFor="phoneNumber">Số điện thoại</Label>
+        <Input placeholder="Nhập số điện thoại của bạn" id="phoneNumber" name="phone_number" type="text" />
+      </div>
       <div className="mx-auto space-y-2">
         <Label htmlFor="username">Tên đăng nhập</Label>
-        <Input
-          placeholder="Nhập tên đăng nhập của bạn"
-          id="username"
-          name="username"
-          type="text"
-        />
+        <Input placeholder="Nhập tên đăng nhập của bạn" id="username" name="username" type="text" />
       </div>
       <div className="mx-auto space-y-2">
         <Label htmlFor="password">Mật khẩu</Label>
-        <Input
-          placeholder="Nhập mật khẩu của bạn"
-          id="password"
-          name="password"
-          type="password"
-        />
+        <Input placeholder="Nhập mật khẩu của bạn" id="password" name="password" type="password" />
       </div>
-      <MainButton type="submit" className="w-full p-3 rounded-3xl" text="Đăng nhập" />
-      <Button variant="ghost" className="w-full p-3 rounded-3xl" asChild>
-        <Link href="/auth/register">Đăng ký</Link>
-      </Button>
+      <MainButton type="submit" className="w-full p-3 rounded-3xl" text="Đăng ký" />
       <p className="text-sm text-center text-[#8E8E93]">Hoặc</p>
-      <Button
-        type="submit"
-        variant="secondary"
-        className="w-full p-3 rounded-3xl gap-2"
-      >
+      <Button type="submit" variant="secondary" className="w-full p-3 rounded-3xl gap-2">
         <GoogleIcon />
         Đăng nhập bằng Google
       </Button>
-      <Button
-        type="submit"
-        variant="secondary"
-        className="w-full p-3 rounded-3xl gap-2"
-      >
+      <Button type="submit" variant="secondary" className="w-full p-3 rounded-3xl gap-2">
         <FacebookIcon />
         Đăng nhập bằng Facebook
       </Button>
     </form>
-  );
+  )
 }
+
+export { RegisterForm }

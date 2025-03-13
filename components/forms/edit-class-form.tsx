@@ -3,7 +3,6 @@
 import z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
 
 import { getValuable } from '@/lib/utils'
 import { Form } from '@/components/ui/form'
@@ -155,26 +154,13 @@ const formCategories = [
 ]
 
 function EditClassForm({ data, isEdit = false, onSuccess }: CreateContactFormProps) {
-  // const queryClient = useQueryClient();
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
     defaultValues: data ? { ...data } : undefined,
   })
-  const mutation = useMutation({
-    // mutationFn: isEdit ? (_data: FormData) => console.log('update', data?.id as string, _data) : console.log('create'),
-    onSuccess: () => {
-      // queryClient.invalidateQueries({ queryKey: ['salesReps'] });
-      // toast.success(isEdit ? 'Contact has been updated' : 'Contact has been created')
-      form.reset()
-      // onSuccess()
-    },
-    onError: (err: any) => {
-      // toast.error(err.error?.message || err.message || 'Contact has not been created')
-    },
-  })
 
   const onSubmit = (data: FormData) => {
-    mutation.mutate(getValuable(data))
+    console.log(getValuable(data))
   }
 
   return (
@@ -212,7 +198,7 @@ function EditClassForm({ data, isEdit = false, onSuccess }: CreateContactFormPro
           <Label>Hình đại diện khoá</Label>
           <FileUploader />
         </div>
-        <MainButton text="Lưu" className="w-full" loading={mutation.isPending} />
+        <MainButton text="Lưu" className="w-full" />
       </form>
     </Form>
   )
