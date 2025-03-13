@@ -80,6 +80,7 @@ export default function Equipment() {
                 <Button
                   className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-xl font-bold items-center flex"
                   onClick={() => setQuantity(quantity - 1)}
+                  disabled={quantity <= 1}
                 >
                   -
                 </Button>
@@ -100,15 +101,24 @@ export default function Equipment() {
             <div className="w-full flex gap-3 justify-center">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="outline" className="w-full rounded-full bg-button hover:bg-[#11c296] text-white hover:text-white">
+                  <Button
+                    variant="outline"
+                    className="w-full rounded-full bg-button hover:bg-[#11c296] text-white hover:text-white"
+                  >
                     Mua ngay
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader className="flex flex-col items-center text-center">
-                    <AlertDialogCancel className="absolute top-4 right-4 border-none hover:bg-white shadow-none active:bg-none"><CloseIcon /></AlertDialogCancel>
-                    <AlertDialogTitle className="text-text font-[family-name:var(--font-coiny)] text-[40px] pt-10">Đặt hàng thành công</AlertDialogTitle>
-                    <AlertDialogDescription className="text-gray-500 text-[20px] pb-10">NV CSKH sẽ liên hệ để xác nhận đơn hàng</AlertDialogDescription>
+                    <AlertDialogCancel className="absolute top-4 right-4 border-none hover:bg-white shadow-none active:bg-none">
+                      <CloseIcon />
+                    </AlertDialogCancel>
+                    <AlertDialogTitle className="text-text font-[family-name:var(--font-coiny)] text-[40px] pt-10">
+                      Đặt hàng thành công
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="text-gray-500 text-[20px] pb-10">
+                      NV CSKH sẽ liên hệ để xác nhận đơn hàng
+                    </AlertDialogDescription>
                   </AlertDialogHeader>
                 </AlertDialogContent>
               </AlertDialog>
@@ -138,15 +148,12 @@ export default function Equipment() {
           </div>
           <div className="grid xl:grid-cols-12 lg:grid-cols-10 md:grid-cols-6 sm:grid-cols-4 gap-10">
             {Array.from({ length: 10 }).map((_, index) => (
-              <Link href={`/equipment/${index}`} key={index}>
-                <div key={`menu-${index}`} className="xl:text-xl max-lg:text-base">
-                  <div className="relative group">
-                    <Image src={ShoppingImage} alt="" className="aspect-1 object-cover rounded-xl mb-4" />
-                    <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-                  </div>
-                  <div className="font-medium">Cơ bụng</div>
+              <div key={`menu-${index}`} className="xl:text-xl max-lg:text-base">
+                <div className="relative group">
+                  <Image src={ShoppingImage} alt="" className="aspect-1 object-cover rounded-xl mb-4" />
                 </div>
-              </Link>
+                <div className="font-medium">Cơ bụng</div>
+              </div>
             ))}
           </div>
         </div>
