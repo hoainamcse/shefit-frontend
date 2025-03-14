@@ -143,7 +143,7 @@ export default function PurchasesPackages() {
         </div>
       </div>
 
-      <Link href="/package-purchase">
+      <Link href="/packages">
         <Button className="w-full bg-[#13D8A7] h-[38px] md:h-[48px] lg:h-[60px] rounded-[58px] text-base md:text-xl">
           Mua thêm gói
         </Button>

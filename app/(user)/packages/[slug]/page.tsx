@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { BackIcon } from "@/components/icons/BackIcon";
 import { QrCodeIcon } from "@/components/icons/qr-code-icon";
-import { PACKAGES } from "../const";
+import { PACKAGES } from "../../account/_components/purchase-package";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
