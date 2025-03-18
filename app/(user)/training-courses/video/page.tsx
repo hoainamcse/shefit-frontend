@@ -69,7 +69,7 @@ export default async function Zoom({ params }: { params: Promise<{ slug: string 
           <Link href={`/training-courses/video/detail`} className="rounded-full w-1/3 bg-button hover:bg-[#11c296]">
             <Button className="w-full rounded-full bg-button hover:bg-[#11c296] h-14">Bắt đầu</Button>
           </Link>
-          <Button variant="secondary" className="border-button text-button rounded-full w-1/3 bg-white h-14">
+          <Button variant="secondary" className="text-button rounded-full w-1/3 bg-white h-14 border-2 border-button">
             Lưu
           </Button>
         </div>

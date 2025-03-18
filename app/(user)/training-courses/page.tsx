@@ -75,7 +75,7 @@ export default function TrainingCoursesPage() {
           <CarouselContent>
             {Array.from({ length: 12 }).map((_, index) => (
               <CarouselItem key={`menu-${index}`} className="md:basis-1/2 lg:basis-[22%]">
-                <div>
+                <div className="text-center">
                   <div className="relative group">
                     <Image
                       src="/temp/VideoCard.jpg"
@@ -86,9 +86,10 @@ export default function TrainingCoursesPage() {
                     />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>
-                  <p className="font-medium">Giảm cân</p>
-                  <p className="text-[#737373]">Ăn chay giảm cân</p>
-                  <p className="text-[#737373]">Chef Phương Anh - 30 ngày</p>
+                  <p className="font-medium">Easy Slim - Zoom</p>
+                  <p className="text-[#737373]">
+                    Độ Mông Đào</p>
+                  <p className="text-[#737373]">Miss Vi Salano - 4 Tuần</p>
                 </div>
               </CarouselItem>
             ))}
@@ -140,9 +141,12 @@ export default function TrainingCoursesPage() {
                   <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
               </div>
-              <p className="font-medium">{isSelected === "video" ? "Easy Slim - Video" : "Easy Slim - Zoom"}</p>
-              <p className="text-[#737373]">Độ Mông Đào</p>
-              <p className="text-[#737373]">Miss Vi Salano - 4 Tuần</p>
+              <div className="flex justify-between">
+                <div><p className="font-medium">{isSelected === "video" ? "Easy Slim - Video" : "Easy Slim - Zoom"}</p>
+                  <p className="text-[#737373]">Độ Mông Đào</p>
+                  <p className="text-[#737373]">Miss Vi Salano - 4 Tuần</p></div>
+                <div className="text-gray-500">Dáng: Quả lê</div>
+              </div>
             </div>
           ))}
         </div>

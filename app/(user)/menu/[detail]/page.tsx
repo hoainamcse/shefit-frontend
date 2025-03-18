@@ -15,7 +15,7 @@ export default function MenuDetail() {
       <div className="xl:block max-lg:hidden">
         <Header />
       </div>
-      <div className="flex flex-col items-center justify-center mt-16 max-lg:mt-0 mx-auto xl:w-[1800px] max-lg:w-full">
+      <div className="flex flex-col items-center justify-center mt-16 max-lg:mt-0 mx-auto p-10 max-w-screen-3xl mb-20">
         <div className="relative w-full">
           <Link href="/menu" className="absolute top-0 left-0 mt-8 ml-2 xl:hidden max-lg:block hover:bg-transparent focus:bg-transparent active:bg-transparent">
             <Button className="flex items-center gap-2 text-xl bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent">
@@ -31,9 +31,8 @@ export default function MenuDetail() {
           <p className="text-[#737373]">Chef Phương Anh - 30 ngày</p>
         </div>
         <div className="w-full max-lg:p-4">
-          <div className="bg-primary h-[228px] w-full rounded-[20px] my-20 max-lg:my-2">
-            <div className="xl:w-[696px] max-lg:w-full mx-auto text-white h-full flex flex-col items-center justify-center">
-              <div className="text-center text-[40px] font-bold mb-10">Kết quả</div>
+          <div className="bg-primary py-12 w-full rounded-[20px] my-20 max-lg:my-2">
+            <div className="xl:px-20 max-lg:w-full mx-auto text-white h-full flex flex-col items-center justify-center">
               <ul className="text-[#F7F7F7] text-xl list-disc mr-auto max-lg:px-8">
                 <li>Giảm cân</li>
                 <li>Chay thanh đạm</li>
@@ -83,7 +82,7 @@ export default function MenuDetail() {
           <Link href="/menu/[detail]/[calendar]" as="/menu/1/1" className="w-full">
             <Button className="w-full rounded-full text-xl bg-button text-white hover:bg-[#11c296] h-14">Bắt đầu</Button>
           </Link>
-          <Button className="w-full rounded-full text-xl bg-white border-button text-button h-14">Lưu</Button>
+          <Button className="w-full rounded-full text-xl bg-white text-button h-14 border-2 border-button">Lưu</Button>
         </div>
       </div>
     </div>

@@ -18,6 +18,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { CloseIcon } from "@/components/icons/CloseIcon"
+import { AddIcon } from "@/components/icons/AddIcon"
+import { MinusIcon } from "@/components/icons/MinusIcon"
 
 export default function Equipment() {
   const [isSelected, setIsSelected] = useState("size")
@@ -41,13 +43,13 @@ export default function Equipment() {
             <p className="font-medium xl:text-[30px] max-lg:text-xl">Áo Jump Suit V12</p>
             <p className="text-[#737373]">Đen</p>
             <p className="text-[#00C7BE] text-2xl font-semibold">350.000 vnđ</p>
-            <div className="flex gap-3 items-center text-xl">
-              <div>Size:</div>
+            <div className="flex gap-3 items-center">
+              <div className="text-xl">Size:</div>
               <Button
                 className={
                   isSelected === "S"
-                    ? "bg-primary text-white hover:bg-[#fda1a2]"
-                    : "bg-white text-[#737373] border-[#737373] hover:bg-[#dbdbdb]"
+                    ? "bg-primary text-white hover:bg-[#fda1a2] text-xl"
+                    : "bg-white text-[#737373] border-[#737373] hover:bg-[#dbdbdb] border-2 text-xl"
                 }
                 onClick={() => setIsSelected("S")}
               >
@@ -56,8 +58,8 @@ export default function Equipment() {
               <Button
                 className={
                   isSelected === "M"
-                    ? "bg-primary text-white hover:bg-[#fda1a2]"
-                    : "bg-white text-[#737373] border-[#737373] hover:bg-[#dbdbdb]"
+                    ? "bg-primary text-white hover:bg-[#fda1a2] text-xl"
+                    : "bg-white text-[#737373] border-[#737373] hover:bg-[#dbdbdb] border-2 text-xl"
                 }
                 onClick={() => setIsSelected("M")}
               >
@@ -66,8 +68,8 @@ export default function Equipment() {
               <Button
                 className={
                   isSelected === "L"
-                    ? "bg-primary text-white hover:bg-[#fda1a2]"
-                    : "bg-white text-[#737373] border-[#737373] hover:bg-[#dbdbdb]"
+                    ? "bg-primary text-white hover:bg-[#fda1a2] text-xl"
+                    : "bg-white text-[#737373] border-[#737373] hover:bg-[#dbdbdb] border-2 text-xl"
                 }
                 onClick={() => setIsSelected("L")}
               >
@@ -78,23 +80,23 @@ export default function Equipment() {
               <div className="text-nowrap">Số lượng:</div>
               <div className="flex items-center gap-2">
                 <Button
-                  className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-xl font-bold items-center flex"
+                  className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-xl font-bold items-center flex border-2"
                   onClick={() => setQuantity(quantity - 1)}
                   disabled={quantity <= 1}
                 >
-                  -
+                  <MinusIcon />
                 </Button>
                 <Input
-                  className="w-40"
+                  className="w-24 text-center border-2 border-[#737373] text-xl font-bold"
                   type="number"
                   value={quantity}
                   onChange={(e) => setQuantity(parseInt(e.target.value))}
                 />
                 <Button
-                  className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-xl font-bold items-center flex"
+                  className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-xl font-bold items-center flex border-2"
                   onClick={() => setQuantity(quantity + 1)}
                 >
-                  +
+                  <AddIcon />
                 </Button>
               </div>
             </div>
@@ -122,7 +124,7 @@ export default function Equipment() {
                   </AlertDialogHeader>
                 </AlertDialogContent>
               </AlertDialog>
-              <Button className="border-button text-button rounded-full w-full bg-white hover:bg-[#11c29628]">
+              <Button className="border-button border-2 text-button rounded-full w-full bg-white hover:bg-[#11c29628]">
                 Lưu
               </Button>
             </div>

@@ -90,7 +90,7 @@ export default function MenuPage() {
                 className="aspect-[5/3] object-cover rounded-xl mb-4"
               />
               <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-              <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
+              <NextButton className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1" />
             </div>
             <p className="font-medium">Giảm cân</p>
             <p className="text-[#737373]">Ăn chay giảm cân</p>
