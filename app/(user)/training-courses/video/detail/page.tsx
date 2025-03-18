@@ -1,8 +1,18 @@
+"use client"
+
 import Image from "next/image"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useState } from "react"
+import { CloseIcon } from "@/components/icons/CloseIcon"
+import { Button } from "@/components/ui/button"
 
-export default async function Video() {
+export default function Video() {
   //TODO Use this slug later on for fetching data
+  const [showVideo, setShowVideo] = useState(false)
+
+  const handleImageClick = () => {
+    setShowVideo(true)
+  }
   return (
     <div className="flex flex-col gap-10 mt-10">
       <div className="mb-20">
@@ -18,7 +28,7 @@ export default async function Video() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
           {Array.from({ length: 12 }).map((_, index) => (
             <div key={`menu-${index}`} className="text-xl">
-              <div className="relative group">
+              <div className="relative group cursor-pointer" onClick={handleImageClick}>
                 <Image src="/temp/VideoCard.jpg" alt="" className="aspect-[5/3] object-cover rounded-xl mb-4" width={585} height={373} />
                 <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
               </div>
@@ -48,9 +58,9 @@ export default async function Video() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
           {Array.from({ length: 12 }).map((_, index) => (
             <div key={`menu-${index}`} className="text-xl">
-              <div className="relative group">
-                <Image src="/temp/VideoCard.jpg" alt="" className="aspect-[5/3] object-cover rounded-xl mb-4" 
-                width={585} height={373}/>
+              <div className="relative group cursor-pointer" onClick={handleImageClick}>
+                <Image src="/temp/VideoCard.jpg" alt="" className="aspect-[5/3] object-cover rounded-xl mb-4"
+                  width={585} height={373} />
                 <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
               </div>
               <div className="flex justify-between">
@@ -66,6 +76,26 @@ export default async function Video() {
           ))}
         </div>
       </div>
+      {showVideo && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowVideo(false)}>
+          <div className="relative w-[90%] flex items-center justify-center" onClick={e => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              className="absolute -top-10 right-0 text-white text-xl font-bold"
+              onClick={() => setShowVideo(false)}
+            >
+              <CloseIcon />
+            </Button>
+            <iframe
+              className="h-[calc(100vw*9/16)] max-h-[720px] w-full rounded-xl"
+              src="https://www.youtube.com/embed/_4VRmEYFVcg" title=""
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

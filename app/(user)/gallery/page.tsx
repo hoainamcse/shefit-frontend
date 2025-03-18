@@ -19,7 +19,7 @@ export default async function Gallery() {
             <Link href="/gallery/muscle" key={index}>
               <div key={`menu-${index}`} className="text-xl">
                 <div className="relative group">
-                  <Image src="/temp/VideoCard.jpg" alt="" className="aspect-[5/3] object-cover rounded-xl mb-4" />
+                  <Image src="/temp/VideoCard.jpg" alt="" className="aspect-[5/3] object-cover rounded-xl mb-4" width={585} height={373} />
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
                 <p className="font-bold">Cơ bụng</p>
@@ -42,7 +42,7 @@ export default async function Gallery() {
             <Link href="/gallery/food" key={index}>
               <div key={`menu-${index}`} className="text-xl">
                 <div className="relative group">
-                  <Image src="/temp/Food.png" alt="" className="aspect-[5/3] object-cover rounded-xl mb-4" />
+                  <Image src="/temp/Food.png" alt="" className="aspect-[5/3] object-cover rounded-xl mb-4" width={585} height={373}/>
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
                 <p className="font-bold">Keto</p>

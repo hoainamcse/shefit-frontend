@@ -18,6 +18,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { GalleryIcon } from "../icons/GalleryIcon"
+import { url } from "inspector"
 
 export default function Header() {
   const navItems = [
@@ -50,6 +52,11 @@ export default function Header() {
       label: "Blog healthy",
       icon: BookIcon,
       url: "/blog",
+    },
+    {
+      label: "Thư viện",
+      icon: GalleryIcon,
+      url: "/gallery",
     },
     {
       label: "Tài khoản",
