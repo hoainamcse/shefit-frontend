@@ -6,7 +6,7 @@ export default async function VideoClassPage({ params }: { params: Promise<{ cla
 
   return (
     <ContentLayout title="Video Class">
-      <EditClassForm />
+      <EditClassForm format="video" />
     </ContentLayout>
   )
 }

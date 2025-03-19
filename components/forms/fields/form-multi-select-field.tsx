@@ -27,7 +27,7 @@ interface FormMultiSelectFieldProps {
   placeholder?: string
 }
 
-export function FormMultiSelectField({
+function FormMultiSelectField({
   form,
   name,
   label,
@@ -67,3 +67,5 @@ export function FormMultiSelectField({
     />
   )
 }
+
+export { FormMultiSelectField }

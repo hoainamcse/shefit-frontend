@@ -17,21 +17,14 @@ interface FormRadioFieldProps {
   withAsterisk?: boolean
 }
 
-export function FormRadioField({
-  form,
-  data: items,
-  name,
-  label,
-  description,
-  withAsterisk = false,
-}: FormRadioFieldProps) {
+function FormRadioField({ form, data: items, name, label, description, withAsterisk = false }: FormRadioFieldProps) {
   return (
     <FormField
       control={form.control}
       name={name}
       render={({ field }) => (
         <FormItem>
-          <div className="mb-4">
+          <div>
             {label && (
               <FormLabel>
                 {label} {withAsterisk && <span className="text-destructive">*</span>}
@@ -57,3 +50,5 @@ export function FormRadioField({
     />
   )
 }
+
+export { FormRadioField }

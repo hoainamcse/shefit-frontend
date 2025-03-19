@@ -18,7 +18,7 @@ interface FormSelectFieldProps {
   placeholder?: string
 }
 
-export function FormSelectField({
+function FormSelectField({
   form,
   name,
   label,
@@ -59,3 +59,5 @@ export function FormSelectField({
     />
   )
 }
+
+export { FormSelectField }

@@ -49,4 +49,4 @@ function FormTextareaField<
   )
 }
 
-export default FormTextareaField
+export { FormTextareaField }

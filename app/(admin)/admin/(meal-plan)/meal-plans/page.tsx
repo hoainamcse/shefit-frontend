@@ -88,7 +88,7 @@ export default function MealPlansPage() {
     },
     {
       accessorKey: 'is_public',
-      header: 'Public',
+      header: 'Hiển thị',
       render: ({ row }) => <Switch defaultChecked={row.is_public} />,
     },
     {

@@ -3,21 +3,26 @@
 import z from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
+import { redirect } from 'next/navigation'
+import { useActionState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { getValuable } from '@/lib/utils'
 import { Form } from '@/components/ui/form'
 import { MainButton } from '@/components/buttons/main-button'
-import FormInputField from '@/components/forms/fields/form-input-field'
-import FormTextareaField from '@/components/forms/fields/form-textarea-field'
-import { FormMultiSelectField } from '@/components/forms/fields/form-multi-select-field'
-import { FormCheckboxField } from '@/components/forms/fields/form-checkbox-field'
-import { FormRadioField } from '@/components/forms/fields/form-radio-field'
+import {
+  FormInputField,
+  FormTextareaField,
+  FormSelectField,
+  FormSwitchField,
+  FormCheckboxField,
+  FormRadioField,
+  FormMultiSelectField,
+} from '@/components/forms/fields'
 import { FileUploader } from '@/components/file-uploader'
 import { Label } from '@/components/ui/label'
-import { useActionState, useTransition } from 'react'
 import { createCourse } from '@/network/server/courses'
 import { DIFFICULTY_LEVEL_OPTIONS, FORM_CATEGORY_OPTIONS } from '@/lib/label'
+import type { Course, CourseFormat } from '@/models/course'
 
 const formSchema = z.object({
   id: z.number().int().optional(),
@@ -40,9 +45,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>
 interface CreateContactFormProps {
-  data?: any
-  isEdit?: boolean
-  onSuccess?: () => void
+  format: CourseFormat
 }
 
 export const equipments = [
@@ -111,33 +114,34 @@ export const muscleGroups = [
   },
 ]
 
-function EditClassForm({ data, isEdit = false, onSuccess }: CreateContactFormProps) {
+function EditClassForm({ format }: CreateContactFormProps) {
+  const [isPending, startTransition] = useTransition()
+  // const [state, action, isPending] = useActionState(createCourse, null)
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       course_name: '',
-      course_format: 'video',
+      course_format: format,
       summary: '',
       description: '',
       trainer: '',
       form_categories: [],
-      // difficulty_level: '',
+      difficulty_level: 'beginner',
       visible_in: [],
       cover_image: '',
       thumbnail_image: '',
       equipment_ids: [],
       muscle_group_ids: [],
-      is_public: false,
+      is_public: true,
     },
   })
 
   function onSubmit(data: FormData) {
-    console.log('Form submitted with data:', data)
-    toast(
-      <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-        <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-      </pre>
-    )
+    startTransition(async () => {
+      await createCourse(data as Omit<Course, 'id' | 'created_at' | 'updated_at'>)
+      toast.success('Tạo khoá học thành công')
+      redirect('/admin/video-classes')
+    })
   }
 
   return (
@@ -169,7 +173,7 @@ function EditClassForm({ data, isEdit = false, onSuccess }: CreateContactFormPro
           data={muscleGroups}
           placeholder="Chọn nhóm cơ"
         />
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <FormCheckboxField
             form={form}
             name="form_categories"
@@ -184,6 +188,7 @@ function EditClassForm({ data, isEdit = false, onSuccess }: CreateContactFormPro
             withAsterisk
             data={DIFFICULTY_LEVEL_OPTIONS}
           />
+          <FormSwitchField form={form} name="is_public" label="Hiển thị" withAsterisk />
         </div>
         <div className="space-y-4">
           <Label>Hình khoá</Label>
@@ -193,7 +198,7 @@ function EditClassForm({ data, isEdit = false, onSuccess }: CreateContactFormPro
           <Label>Hình đại diện khoá</Label>
           <FileUploader />
         </div>
-        <MainButton text="Lưu" className="w-full" />
+        <MainButton text="Lưu" className="w-full" loading={isPending} />
       </form>
     </Form>
   )

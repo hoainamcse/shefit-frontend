@@ -78,7 +78,7 @@ export default function RootLayout({
       <body className={`${bdLifelessGrotesk.className} ${coiny.variable} ${encode.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
-          <Toaster />
+          <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>
     </html>

@@ -24,14 +24,13 @@ export async function getCourse(course_id: string): Promise<ApiResponse<Course>>
 }
 
 export async function createCourse(
-  // previousState,
+  // previousState: any,
   data: Omit<Course, 'id' | 'created_at' | 'updated_at'>
 ): Promise<ApiResponse<Course>> {
-  const response = await fetchDataServer('/v1/courses/', {
+  const response = await fetchDataServer('/v1/courses', {
     method: 'POST',
     body: JSON.stringify(data),
     credentials: 'include',
   })
-  console.log('Response: ', 'abc')
   return await response.json()
 }

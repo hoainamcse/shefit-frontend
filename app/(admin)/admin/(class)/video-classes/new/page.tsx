@@ -4,7 +4,7 @@ import { EditClassForm } from '@/components/forms/edit-class-form'
 export default function VideoClassPage() {
   return (
     <ContentLayout title="Video Class">
-      <EditClassForm />
+      <EditClassForm format="video" />
     </ContentLayout>
   )
 }

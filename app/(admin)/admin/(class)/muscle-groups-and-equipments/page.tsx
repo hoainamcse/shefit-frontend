@@ -5,7 +5,7 @@ import { AddButton } from '@/components/buttons/add-button'
 import { MainButton } from '@/components/buttons/main-button'
 import { ColumnDef, DataTable } from '@/components/data-table'
 import { FileUploader } from '@/components/file-uploader'
-import FormInputField from '@/components/forms/fields/form-input-field'
+import { FormInputField } from '@/components/forms/fields'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import {

@@ -6,7 +6,7 @@ export default async function LiveClassPage({ params }: { params: Promise<{ clas
 
   return (
     <ContentLayout title="Live Class">
-      <EditClassForm />
+      <EditClassForm format="live" />
     </ContentLayout>
   )
 }

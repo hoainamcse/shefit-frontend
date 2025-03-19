@@ -7,8 +7,7 @@ import { Form } from '@/components/ui/form'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 
-import FormInputField from '@/components/forms/fields/form-input-field'
-import { FormSelectField } from '@/components/forms/fields/form-select-field'
+import { FormInputField, FormSelectField } from '@/components/forms/fields'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { getValuable } from '@/lib/utils'
 
@@ -127,7 +126,12 @@ export default function AccountInformation() {
       <div className="pb-16 md:pb-16 px-5 sm:px-9 lg:px-[56px] xl:px-[60px] flex-1 lg:max-w-[832px]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormInputField form={form} name="username" label="Tên đăng nhập" placeholder="Nhập tên đăng nhập của bạn" />
+            <FormInputField
+              form={form}
+              name="username"
+              label="Tên đăng nhập"
+              placeholder="Nhập tên đăng nhập của bạn"
+            />
 
             <FormInputField form={form} name="password" label="Mật khẩu" placeholder="Nhập mật khẩu của bạn" />
 

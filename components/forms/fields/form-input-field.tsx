@@ -49,4 +49,4 @@ function FormInputField<
   )
 }
 
-export default FormInputField
+export { FormInputField }

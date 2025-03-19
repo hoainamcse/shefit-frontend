@@ -17,21 +17,14 @@ interface FormCheckboxFieldProps {
   withAsterisk?: boolean
 }
 
-export function FormCheckboxField({
-  form,
-  data,
-  name,
-  label,
-  description,
-  withAsterisk = false,
-}: FormCheckboxFieldProps) {
+function FormCheckboxField({ form, data, name, label, description, withAsterisk = false }: FormCheckboxFieldProps) {
   return (
     <FormField
       control={form.control}
       name={name}
       render={() => (
         <FormItem>
-          <div className="mb-4">
+          <div>
             {label && (
               <FormLabel>
                 {label} {withAsterisk && <span className="text-destructive">*</span>}
@@ -69,3 +62,5 @@ export function FormCheckboxField({
     />
   )
 }
+
+export { FormCheckboxField }

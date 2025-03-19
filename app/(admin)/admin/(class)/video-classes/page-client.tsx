@@ -58,7 +58,7 @@ export default function VideoClassesPageClient({ data }: { data: ListResponse<Co
     },
     {
       accessorKey: 'is_public',
-      header: 'Public',
+      header: 'Hiển thị',
       render: ({ row }) => <Switch defaultChecked={row.is_public} />,
     },
     {
