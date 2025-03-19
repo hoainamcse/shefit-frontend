@@ -32,7 +32,7 @@ import {
 import { CreateCourseForm } from '@/components/forms/create-course-form'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
-export default function VideoClassesPageClient({ data }: { data: ListResponse<Course> }) {
+export default function LiveClassesPageClient({ data }: { data: ListResponse<Course> }) {
   const router = useRouter()
 
   const columns: ColumnDef<Course>[] = [
@@ -87,7 +87,7 @@ export default function VideoClassesPageClient({ data }: { data: ListResponse<Co
               <Copy /> Sao chép khoá học ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.push(`/admin/video-classes/${row.id}`)}>
+            <DropdownMenuItem onClick={() => router.push(`/admin/live-classes/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive focus:text-destructive">
@@ -131,9 +131,9 @@ function CreateCourseDialog() {
       <DialogContent className="max-w-4xl" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Thêm khoá học</DialogTitle>
-          <DialogDescription>Tạo khoá học video</DialogDescription>
+          <DialogDescription>Tạo khoá học Zoom</DialogDescription>
           <ScrollArea className="h-[600px]" type="always">
-            <CreateCourseForm format="video" onSuccess={onSuccess} />
+            <CreateCourseForm format="live" onSuccess={onSuccess} />
           </ScrollArea>
         </DialogHeader>
       </DialogContent>

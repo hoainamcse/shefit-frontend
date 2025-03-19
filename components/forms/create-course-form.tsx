@@ -3,7 +3,6 @@
 import z from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
-import { redirect } from 'next/navigation'
 import { useActionState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -44,8 +43,9 @@ const formSchema = z.object({
 })
 
 type FormData = z.infer<typeof formSchema>
-interface CreateContactFormProps {
+interface CreateCourseFormProps {
   format: CourseFormat
+  onSuccess?: () => void
 }
 
 export const equipments = [
@@ -114,7 +114,7 @@ export const muscleGroups = [
   },
 ]
 
-function EditClassForm({ format }: CreateContactFormProps) {
+function CreateCourseForm({ format, onSuccess }: CreateCourseFormProps) {
   const [isPending, startTransition] = useTransition()
   // const [state, action, isPending] = useActionState(createCourse, null)
   const form = useForm<FormData>({
@@ -140,7 +140,7 @@ function EditClassForm({ format }: CreateContactFormProps) {
     startTransition(async () => {
       await createCourse(data as Omit<Course, 'id' | 'created_at' | 'updated_at'>)
       toast.success('Tạo khoá học thành công')
-      redirect('/admin/video-classes')
+      onSuccess?.()
     })
   }
 
@@ -204,4 +204,4 @@ function EditClassForm({ format }: CreateContactFormProps) {
   )
 }
 
-export { EditClassForm }
+export { CreateCourseForm }

@@ -1,10 +1,10 @@
 import { ContentLayout } from '@/components/admin-panel/content-layout'
-import { EditClassForm } from '@/components/forms/edit-class-form'
+import { CreateCourseForm } from '@/components/forms/create-course-form'
 
 export default function LiveClassPage() {
   return (
     <ContentLayout title="Live Class">
-      <EditClassForm format="live" />
+      <CreateCourseForm format="live" />
     </ContentLayout>
   )
 }
