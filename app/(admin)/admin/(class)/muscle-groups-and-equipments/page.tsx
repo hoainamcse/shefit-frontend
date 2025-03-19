@@ -5,9 +5,7 @@ import { AddButton } from '@/components/buttons/add-button'
 import { MainButton } from '@/components/buttons/main-button'
 import { ColumnDef, DataTable } from '@/components/data-table'
 import { FileUploader } from '@/components/file-uploader'
-import { FormMultiSelectField } from '@/components/forms/fields/form-multi-select-field'
-import { FormTextField } from '@/components/forms/fields/form-text-field'
-import { FormTextareaField } from '@/components/forms/fields/form-textarea-field'
+import FormInputField from '@/components/forms/fields/form-input-field'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import {
@@ -248,7 +246,7 @@ function CreateExerciseForm() {
   return (
     <Form {...form}>
       <form className="space-y-6">
-        <FormTextField form={form} name="name" label="Tên" required placeholder="Nhập tên bài tập" />
+        <FormInputField form={form} name="name" label="Tên" required placeholder="Nhập tên bài tập" />
         <div className="space-y-4">
           <Label>Hình</Label>
           <FileUploader />

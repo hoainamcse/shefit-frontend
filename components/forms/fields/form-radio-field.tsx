@@ -3,21 +3,28 @@ import { UseFormReturn } from 'react-hook-form'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
-type Option = {
+type RadioOption = {
   value: string
   label: string
 }
 
-interface FormCheckboxFieldProps {
+interface FormRadioFieldProps {
   form: UseFormReturn<any>
-  data: Option[]
   name: string
+  data: RadioOption[]
   label?: string
   description?: string
-  required?: boolean
+  withAsterisk?: boolean
 }
 
-export function FormRadioField({ form, data: items, name, label, description, required }: FormCheckboxFieldProps) {
+export function FormRadioField({
+  form,
+  data: items,
+  name,
+  label,
+  description,
+  withAsterisk = false,
+}: FormRadioFieldProps) {
   return (
     <FormField
       control={form.control}
@@ -27,7 +34,7 @@ export function FormRadioField({ form, data: items, name, label, description, re
           <div className="mb-4">
             {label && (
               <FormLabel>
-                {label} {required && <span className="text-destructive">*</span>}
+                {label} {withAsterisk && <span className="text-destructive">*</span>}
               </FormLabel>
             )}
             {description && <FormDescription>{description}</FormDescription>}

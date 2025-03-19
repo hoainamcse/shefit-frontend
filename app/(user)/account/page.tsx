@@ -1,7 +1,4 @@
-"use client";
-
-import { useRouter, useSearchParams } from "next/navigation";
-
+import Link from "next/link";
 import { BodyIcon } from "@/components/icons/BodyIcon";
 import { CartIcon } from "@/components/icons/cart-icon";
 import { PackageBoxIcon } from "@/components/icons/package-box-icon";
@@ -34,10 +31,9 @@ const TABS = [
   },
 ];
 
-export default function Account() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const tab = searchParams.get("tab");
+export default async function Account(props: { searchParams: Promise<{ tab: string }> }) {
+  const searchParams = await props.searchParams;
+  const tab = searchParams.tab;
 
   return (
     <div>
@@ -55,16 +51,14 @@ export default function Account() {
                   tabItem.color ? `text-[${tabItem.color}]` : ""
                 } data-[state=active]:border border-solid border-[#FFAEB0] data-[state=active]:shadow-none data-[state=active]:text-[#FFAEB0] px-2.5 sm:px-3.5 xl:px-[18px]`}
                 key={tabItem.value}
-                onClick={() =>
-                  router.push(`/account?tab=${tabItem.value}`, {
-                    scroll: false,
-                  })
-                }
+                asChild
               >
-                {tabItem.icon}
-                <span className="pt-1 text-base sm:text-[20px] sm:leading-[30px]">
-                  {tabItem.label}
-                </span>
+                <Link href={`?tab=${tabItem.value}`}  >
+                  {tabItem.icon}
+                  <span className="pt-1 text-base sm:text-[20px] sm:leading-[30px]">
+                    {tabItem.label}
+                  </span>
+                </Link>
               </TabsTrigger>
             ))}
           </TabsList>

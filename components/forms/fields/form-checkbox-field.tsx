@@ -3,21 +3,28 @@ import { UseFormReturn } from 'react-hook-form'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 
-type Option = {
+type CheckboxOption = {
   value: string
   label: string
 }
 
 interface FormCheckboxFieldProps {
   form: UseFormReturn<any>
-  data: Option[]
   name: string
+  data: CheckboxOption[]
   label?: string
   description?: string
-  required?: boolean
+  withAsterisk?: boolean
 }
 
-export function FormCheckboxField({ form, data: items, name, label, description, required }: FormCheckboxFieldProps) {
+export function FormCheckboxField({
+  form,
+  data,
+  name,
+  label,
+  description,
+  withAsterisk = false,
+}: FormCheckboxFieldProps) {
   return (
     <FormField
       control={form.control}
@@ -27,12 +34,12 @@ export function FormCheckboxField({ form, data: items, name, label, description,
           <div className="mb-4">
             {label && (
               <FormLabel>
-                {label} {required && <span className="text-destructive">*</span>}
+                {label} {withAsterisk && <span className="text-destructive">*</span>}
               </FormLabel>
             )}
             {description && <FormDescription>{description}</FormDescription>}
           </div>
-          {items.map((item) => (
+          {data.map((item) => (
             <FormField
               key={item.value}
               control={form.control}

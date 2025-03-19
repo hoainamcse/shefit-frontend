@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { type UseFormReturn } from 'react-hook-form'
 
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -12,7 +11,7 @@ import {
   renderMultiSelectOptions,
 } from '@/components/multi-select'
 
-type SelectOption = {
+type MultiSelectOption = {
   value: string
   label: string
   group?: string
@@ -21,21 +20,21 @@ type SelectOption = {
 interface FormMultiSelectFieldProps {
   form: UseFormReturn<any>
   name: string
+  data: MultiSelectOption[]
   label?: string
-  required?: boolean
+  description?: string
+  withAsterisk?: boolean
   placeholder?: string
-  description?: string | React.JSX.Element
-  options: SelectOption[]
 }
 
 export function FormMultiSelectField({
   form,
   name,
   label,
-  required = false,
+  withAsterisk = false,
   placeholder,
   description,
-  options = [],
+  data = [],
 }: FormMultiSelectFieldProps) {
   return (
     <FormField
@@ -45,7 +44,7 @@ export function FormMultiSelectField({
         <FormItem>
           {label && (
             <FormLabel>
-              {label} {required && <span className="text-destructive">*</span>}
+              {label} {withAsterisk && <span className="text-destructive">*</span>}
             </FormLabel>
           )}
           <MultiSelect onValueChange={field.onChange} defaultValue={field.value}>
@@ -56,7 +55,7 @@ export function FormMultiSelectField({
             </FormControl>
             <MultiSelectContent>
               <MultiSelectList>
-                {renderMultiSelectOptions(options)}
+                {renderMultiSelectOptions(data)}
                 <MultiSelectEmpty>{'No results found'}</MultiSelectEmpty>
               </MultiSelectList>
             </MultiSelectContent>

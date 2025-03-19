@@ -2,20 +2,23 @@ type CourseFormat = 'video' | 'live'
 
 type FormCategory = 'pear' | 'apple' | 'rectangle' | 'hourglass' | 'inverted_triangle'
 
-type DifficultyLevel = 'beginner' | 'immediate' | 'advanced'
+type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced'
 
 type Course = {
   id: number
   course_name: string
   course_format: CourseFormat
   summary: string
+  description: string
   trainer: string
   form_categories: FormCategory[]
   difficulty_level: DifficultyLevel
+  visible_in: string[]
   cover_image: string
   thumbnail_image: string
   equipment_ids: string[]
   muscle_group_ids: string[]
+  is_public: boolean
   created_at: string
   updated_at: string
 }

@@ -1,48 +1,44 @@
 'use client'
 
 import z from 'zod'
+import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { getValuable } from '@/lib/utils'
 import { Form } from '@/components/ui/form'
 import { MainButton } from '@/components/buttons/main-button'
-import { FormTextField } from '@/components/forms/fields/form-text-field'
-import { FormTextareaField } from '@/components/forms/fields/form-textarea-field'
+import FormInputField from '@/components/forms/fields/form-input-field'
+import FormTextareaField from '@/components/forms/fields/form-textarea-field'
 import { FormMultiSelectField } from '@/components/forms/fields/form-multi-select-field'
 import { FormCheckboxField } from '@/components/forms/fields/form-checkbox-field'
 import { FormRadioField } from '@/components/forms/fields/form-radio-field'
-import { FileUploader } from '../file-uploader'
-import { Label } from '../ui/label'
+import { FileUploader } from '@/components/file-uploader'
+import { Label } from '@/components/ui/label'
+import { useActionState, useTransition } from 'react'
+import { createCourse } from '@/network/server/courses'
+import { DIFFICULTY_LEVEL_OPTIONS, FORM_CATEGORY_OPTIONS } from '@/lib/label'
 
-const FormSchema = z.object({
-  course_name: z.string().min(2, {
-    message: 'Tên khóa học phải có ít nhất 2 ký tự',
-  }),
-  course_format: z.enum(['video', 'live']),
-  summary: z.string().min(2, {
-    message: 'Tóm tắt phải có ít nhất 2 ký tự',
-  }),
-  description: z.string().min(2, {
-    message: 'Mô tả phải có ít nhất 2 ký tự',
-  }),
-  trainer: z.string().min(2, {
-    message: 'HLV phải có ít nhất 2 ký tự',
-  }),
-  form_category: z.array(z.enum(['pear', 'apple', 'rectangle', 'hourglass', 'inverted_triangle'])),
-  difficulty_level: z.enum(['beginner', 'intermediate', 'advanced']),
+const formSchema = z.object({
+  id: z.number().int().optional(),
+  course_name: z.string().min(1, { message: 'Course name is required' }),
+  course_format: z.string(),
+  summary: z.string().min(30, { message: 'Summary must be at least 30 characters' }),
+  description: z.string().min(30, { message: 'Description must be at least 30 characters' }),
+  trainer: z.string().min(1, { message: 'Trainer is required' }),
+  form_categories: z.array(z.string()).nonempty(),
+  difficulty_level: z.string(),
+  visible_in: z.array(z.string()),
   cover_image: z.string(),
   thumbnail_image: z.string(),
-  equipment_ids: z.array(z.string()).refine((value) => value.length > 0, {
-    message: 'Bạn phải chọn ít nhất 1 loại dụng cụ',
-  }),
-  muscle_group_ids: z.array(z.string()).refine((value) => value.length > 0, {
-    message: 'Bạn phải chọn ít nhất 1 nhóm cơ',
-  }),
+  equipment_ids: z.array(z.string()).nonempty(),
+  muscle_group_ids: z.array(z.string()).nonempty(),
+  is_public: z.boolean(),
+  created_at: z.string().datetime().optional(),
+  updated_at: z.string().datetime().optional(),
 })
 
-type FormData = z.infer<typeof FormSchema>
-
+type FormData = z.infer<typeof formSchema>
 interface CreateContactFormProps {
   data?: any
   isEdit?: boolean
@@ -115,80 +111,79 @@ export const muscleGroups = [
   },
 ]
 
-const difficultyLevels = [
-  {
-    value: 'beginner',
-    label: 'Beginner',
-  },
-  {
-    value: 'intermediate',
-    label: 'Intermediate',
-  },
-  {
-    value: 'advanced',
-    label: 'Advanced',
-  },
-]
-
-const formCategories = [
-  {
-    value: 'pear',
-    label: 'Dáng quả lê',
-  },
-  {
-    value: 'apple',
-    label: 'Dáng quả táo',
-  },
-  {
-    value: 'rectangle',
-    label: 'Dáng chữ nhật',
-  },
-  {
-    value: 'hourglass',
-    label: 'Dáng đồng hồ cát',
-  },
-  {
-    value: 'inverted_triangle',
-    label: 'Dáng tam giác ngược',
-  },
-]
-
 function EditClassForm({ data, isEdit = false, onSuccess }: CreateContactFormProps) {
   const form = useForm<FormData>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: data ? { ...data } : undefined,
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      course_name: '',
+      course_format: 'video',
+      summary: '',
+      description: '',
+      trainer: '',
+      form_categories: [],
+      // difficulty_level: '',
+      visible_in: [],
+      cover_image: '',
+      thumbnail_image: '',
+      equipment_ids: [],
+      muscle_group_ids: [],
+      is_public: false,
+    },
   })
 
-  const onSubmit = (data: FormData) => {
-    console.log(getValuable(data))
+  function onSubmit(data: FormData) {
+    console.log('Form submitted with data:', data)
+    toast(
+      <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+        <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+      </pre>
+    )
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
-          <FormTextField form={form} name="course_name" label="Tên khoá" required placeholder="Nhập tên khoá học" />
-          <FormTextField form={form} name="trainer" label="HLV" required placeholder="Nhập tên HLV" />
+          <FormInputField
+            form={form}
+            name="course_name"
+            label="Tên khoá"
+            withAsterisk
+            placeholder="Nhập tên khoá học"
+          />
+          <FormInputField form={form} name="trainer" label="HLV" withAsterisk placeholder="Nhập tên HLV" />
         </div>
-        <FormTextareaField form={form} name="summary" label="Tóm tắt" required placeholder="Nhập tóm tắt" />
-        <FormTextareaField form={form} name="description" label="Thông tin" required placeholder="Nhập thông tin" />
+        <FormTextareaField form={form} name="summary" label="Tóm tắt" withAsterisk placeholder="Nhập tóm tắt" />
+        <FormTextareaField form={form} name="description" label="Thông tin" withAsterisk placeholder="Nhập thông tin" />
         <FormMultiSelectField
           form={form}
           name="equipment_ids"
           label="Dụng cụ"
-          options={equipments}
+          data={equipments}
           placeholder="Chọn dụng cụ"
         />
         <FormMultiSelectField
           form={form}
           name="muscle_group_ids"
           label="Nhóm cơ"
-          options={muscleGroups}
+          data={muscleGroups}
           placeholder="Chọn nhóm cơ"
         />
         <div className="grid grid-cols-2 gap-4">
-          <FormCheckboxField form={form} name="form_category" label="Dáng" required data={formCategories} />
-          <FormRadioField form={form} name="difficulty_level" label="Độ khó" required data={difficultyLevels} />
+          <FormCheckboxField
+            form={form}
+            name="form_categories"
+            label="Dáng"
+            withAsterisk
+            data={FORM_CATEGORY_OPTIONS}
+          />
+          <FormRadioField
+            form={form}
+            name="difficulty_level"
+            label="Độ khó"
+            withAsterisk
+            data={DIFFICULTY_LEVEL_OPTIONS}
+          />
         </div>
         <div className="space-y-4">
           <Label>Hình khoá</Label>

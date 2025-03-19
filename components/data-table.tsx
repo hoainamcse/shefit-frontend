@@ -54,7 +54,7 @@ export function DataTable({ data, columns, headerExtraContent, searchPlaceholder
               <TableRow>
                 {/* <TableHead className="w-[100px]">Invoice</TableHead>
               <TableHead className="text-right">Amount</TableHead> */}
-                {onSelectChange && (
+                {data.length > 0 && onSelectChange && (
                   <TableHead className="w-10 px-3">
                     <Checkbox
                       checked={checkedLen > 0 && checkedLen < data.length ? 'indeterminate' : !!checkedLen}
@@ -87,6 +87,13 @@ export function DataTable({ data, columns, headerExtraContent, searchPlaceholder
                   ))}
                 </TableRow>
               ))}
+              {data.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
+                    Không có dữ liệu
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
             {/* <TableFooter>
               <TableRow>

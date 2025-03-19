@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { type UseFormReturn, type FieldValues, type Path } from 'react-hook-form'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
 
-type FormTextareaFieldProps<
+type FormInputFieldProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues extends FieldValues | undefined = undefined
@@ -13,9 +13,9 @@ type FormTextareaFieldProps<
   label?: string
   description?: string
   withAsterisk?: boolean
-} & Omit<React.ComponentPropsWithoutRef<typeof Textarea>, 'form' | 'name'>
+} & Omit<React.ComponentPropsWithoutRef<typeof Input>, 'form' | 'name'>
 
-function FormTextareaField<
+function FormInputField<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues extends FieldValues | undefined = undefined
@@ -26,7 +26,7 @@ function FormTextareaField<
   description,
   withAsterisk = false,
   ...inputProps
-}: FormTextareaFieldProps<TFieldValues, TContext, TTransformedValues>) {
+}: FormInputFieldProps<TFieldValues, TContext, TTransformedValues>) {
   return (
     <FormField
       control={form.control}
@@ -39,7 +39,7 @@ function FormTextareaField<
             </FormLabel>
           )}
           <FormControl>
-            <Textarea {...inputProps} {...field} />
+            <Input {...inputProps} {...field} />
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />
@@ -49,4 +49,4 @@ function FormTextareaField<
   )
 }
 
-export default FormTextareaField
+export default FormInputField

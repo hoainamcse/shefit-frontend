@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { type UseFormReturn } from 'react-hook-form'
 
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -12,21 +11,21 @@ type SelectOption = {
 interface FormSelectFieldProps {
   form: UseFormReturn<any>
   name: string
+  data: SelectOption[]
   label?: string
-  required?: boolean
+  description?: string
+  withAsterisk?: boolean
   placeholder?: string
-  description?: string | React.JSX.Element
-  options: SelectOption[]
 }
 
 export function FormSelectField({
   form,
   name,
   label,
-  required = false,
+  withAsterisk = false,
   placeholder,
   description,
-  options = [],
+  data = [],
 }: FormSelectFieldProps) {
   return (
     <FormField
@@ -36,7 +35,7 @@ export function FormSelectField({
         <FormItem>
           {label && (
             <FormLabel>
-              {label} {required && <span className="text-destructive">*</span>}
+              {label} {withAsterisk && <span className="text-destructive">*</span>}
             </FormLabel>
           )}
           <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -46,7 +45,7 @@ export function FormSelectField({
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              {options.map((option) => (
+              {data.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
                 </SelectItem>

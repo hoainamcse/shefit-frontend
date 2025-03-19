@@ -6,8 +6,8 @@ import { MainButton } from '@/components/buttons/main-button'
 import { ColumnDef, DataTable } from '@/components/data-table'
 import { equipments, muscleGroups } from '@/components/forms/edit-class-form'
 import { FormMultiSelectField } from '@/components/forms/fields/form-multi-select-field'
-import { FormTextField } from '@/components/forms/fields/form-text-field'
-import { FormTextareaField } from '@/components/forms/fields/form-textarea-field'
+import FormInputField from '@/components/forms/fields/form-input-field'
+import FormTextareaField from '@/components/forms/fields/form-textarea-field'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -194,23 +194,23 @@ function CreateExerciseForm() {
   return (
     <Form {...form}>
       <form className="space-y-6">
-        <FormTextField form={form} name="name" label="Tên" required placeholder="Nhập tên bài tập" />
+        <FormInputField form={form} name="name" label="Tên" required placeholder="Nhập tên bài tập" />
         <FormTextareaField form={form} name="description" label="Thông tin" />
         <FormMultiSelectField
           form={form}
           name="equipment_ids"
           label="Dụng cụ"
-          options={equipments}
+          data={equipments}
           placeholder="Chọn dụng cụ"
         />
         <FormMultiSelectField
           form={form}
           name="muscle_group_ids"
           label="Nhóm cơ"
-          options={muscleGroups}
+          data={muscleGroups}
           placeholder="Chọn nhóm cơ"
         />
-        <FormTextField form={form} name="url" label="Link Youtube" placeholder="Nhập link Youtube" />
+        <FormInputField form={form} name="url" label="Link Youtube" placeholder="Nhập link Youtube" />
         <MainButton text="Tạo" className="w-full" />
       </form>
     </Form>
