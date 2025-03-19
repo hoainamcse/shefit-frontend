@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  images: {
+    domains: ['www.ritfitsports.com'],
+  },
 }
 
 export default nextConfig

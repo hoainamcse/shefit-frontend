@@ -4,6 +4,7 @@ import ImagteTitle from "@/assets/image/ImageTitle.png"
 import Link from "next/link"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
+import { getEquipments } from "@/network/server/equipments"
 
 function SelectHero({ placeholder }: { placeholder: string }) {
   const data = [
@@ -41,7 +42,10 @@ function SelectHero({ placeholder }: { placeholder: string }) {
   )
 }
 
-export default function Equipment() {
+export default async function Equipment() {
+  const equipmentsResponse = await getEquipments();
+  const equipments = equipmentsResponse.data || [];
+
   return (
     <div className="flex flex-col gap-10">
       <Image src={ImagteTitle} className="w-full object-cover xl:h-[628px]" alt="" />
@@ -57,18 +61,18 @@ export default function Equipment() {
           </div>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-10">
-          {Array.from({ length: 15 }).map((_, index) => (
-            <Link href={`/equipment/${index}`} key={index}>
-              <div key={`menu-${index}`} className="text-xl">
+          {equipments.map((equipment) => (
+            <Link href={`/equipment/${equipment.id}`} key={equipment.id}>
+              <div key={`menu-${equipment.id}`} className="text-xl">
                 <div className="relative group">
-                  <Image src={ShoppingImage} alt="" className="aspect-1 object-cover rounded-xl mb-4" />
+                  <Image src={equipment.image} alt="" className="aspect-1 object-cover rounded-xl mb-4" width={858} height={373} />
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
                 <div className="flex gap-2 mb-2">
                   <Button className="rounded-full w-8 h-8 bg-[#000000]"></Button>
                   <Button className="rounded-full w-8 h-8 bg-[#AFA69F]"></Button>
                 </div>
-                <p className="font-medium">Áo Jump Suit V12</p>
+                <p className="font-medium">{equipment.name}</p>
                 <p className="text-[#737373]">Đen</p>
                 <p className="text-[#737373]">350.000 vnđ</p>
               </div>

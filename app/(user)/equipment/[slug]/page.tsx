@@ -48,8 +48,8 @@ export default function Equipment() {
               <Button
                 className={
                   isSelected === "S"
-                    ? "bg-primary text-white hover:bg-[#fda1a2] text-xl"
-                    : "bg-white text-[#737373] border-[#737373] hover:bg-[#dbdbdb] border-2 text-xl"
+                    ? "bg-primary text-white hover:bg-[#fda1a2]"
+                    : "bg-white text-[#737373] border-[#737373] hover:bg-[#dbdbdb] border-2"
                 }
                 onClick={() => setIsSelected("S")}
               >
@@ -58,8 +58,8 @@ export default function Equipment() {
               <Button
                 className={
                   isSelected === "M"
-                    ? "bg-primary text-white hover:bg-[#fda1a2] text-xl"
-                    : "bg-white text-[#737373] border-[#737373] hover:bg-[#dbdbdb] border-2 text-xl"
+                    ? "bg-primary text-white hover:bg-[#fda1a2]"
+                    : "bg-white text-[#737373] border-[#737373] hover:bg-[#dbdbdb] border-2"
                 }
                 onClick={() => setIsSelected("M")}
               >
@@ -68,8 +68,8 @@ export default function Equipment() {
               <Button
                 className={
                   isSelected === "L"
-                    ? "bg-primary text-white hover:bg-[#fda1a2] text-xl"
-                    : "bg-white text-[#737373] border-[#737373] hover:bg-[#dbdbdb] border-2 text-xl"
+                    ? "bg-primary text-white hover:bg-[#fda1a2]"
+                    : "bg-white text-[#737373] border-[#737373] hover:bg-[#dbdbdb] border-2"
                 }
                 onClick={() => setIsSelected("L")}
               >
@@ -87,10 +87,16 @@ export default function Equipment() {
                   <MinusIcon />
                 </Button>
                 <Input
-                  className="w-24 text-center border-2 border-[#737373] text-xl font-bold"
+                  className="w-24 text-center border-2 border-[#737373] text-2xl font-bold pr-0"
                   type="number"
                   value={quantity}
-                  onChange={(e) => setQuantity(parseInt(e.target.value))}
+                  min={1}
+                  onChange={(e) => {
+                    const newValue = parseInt(e.target.value);
+                    if (newValue >= 1) {
+                      setQuantity(newValue);
+                    }
+                  }}
                 />
                 <Button
                   className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-xl font-bold items-center flex border-2"
