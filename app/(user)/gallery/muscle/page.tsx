@@ -1,13 +1,12 @@
-"use client"
-
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import React, { useState } from "react"
+import React from "react"
 import Link from "next/link"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { getMuscleGroups } from "@/network/server/muscle-group"
 
-export default function Muscle() {
-  const [isSelected, setIsSelected] = useState("video")
-  //TODO Use this slug later on for fetching data
+export default async function Muscle() {
+  const muscleGroups = await getMuscleGroups()
   return (
     <div className="flex flex-col gap-10 mt-10">
       <div className="mb-20">
@@ -20,29 +19,27 @@ export default function Muscle() {
             Molestie
           </p>
         </div>
-        <div className="flex justify-center gap-4 mb-20">
-          <p
-            className={cn("cursor-pointer", isSelected === "video" ? "underline text-text" : "text-[#737373]")}
-            onClick={() => setIsSelected("video")}
-          >
-            Có dụng cụ
-          </p>
-          <p
-            className={cn("cursor-pointer", isSelected === "zoom" ? "underline text-text" : "text-[#737373]")}
-            onClick={() => setIsSelected("zoom")}
-          >
-            Không có dụng cụ
-          </p>
+        <div className="flex justify-center mb-20">
+          <Tabs defaultValue="video">
+            <TabsList>
+              <TabsTrigger value="video" className={cn("underline text-text")}>
+                Có dụng cụ
+              </TabsTrigger>
+              <TabsTrigger value="zoom" className={cn("underline text-text")}>
+                Không có dụng cụ
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
-          {Array.from({ length: 12 }).map((_, index) => (
-            <Link href="/gallery/muscle/detail" key={index}>
-              <div key={`menu-${index}`} className="text-xl">
+          {muscleGroups.data?.map((muscleGroup) => (
+            <Link href="/gallery/muscle/detail" key={muscleGroup.id}>
+              <div key={`menu-${muscleGroup.id}`} className="text-xl">
                 <div className="relative group">
-                  <Image src="/temp/VideoCard.jpg" alt="" className="aspect-[5/3] object-cover rounded-xl mb-4" width={585} height={373}/>
+                  <img src={muscleGroup.image} alt="" className="aspect-[5/3] object-cover rounded-xl mb-4" width={585} height={373} />
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
-                <p className="font-bold">Cơ bụng</p>
+                <p className="font-bold">{muscleGroup.name}</p>
               </div>
             </Link>
           ))}
