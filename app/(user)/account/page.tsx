@@ -9,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BodyQuiz from "./_components/body-quiz";
 import PurchasePackage from "./_components/purchase-package";
 import AccountInformation from "./_components/account-information";
+import Exercise from "../exercise/page";
+import Cart from "../cart/page";
 
 const TABS = [
   { value: "body-quiz", label: "Body Quiz", icon: <QuizIcon /> },
@@ -47,9 +49,8 @@ export default async function Account(props: { searchParams: Promise<{ tab: stri
             {TABS.map((tabItem) => (
               <TabsTrigger
                 value={tabItem.value}
-                className={`h-10 gap-[5px] ${
-                  tabItem.color ? `text-[${tabItem.color}]` : ""
-                } data-[state=active]:border border-solid border-[#FFAEB0] data-[state=active]:shadow-none data-[state=active]:text-[#FFAEB0] px-2.5 sm:px-3.5 xl:px-[18px]`}
+                className={`h-10 gap-[5px] ${tabItem.color ? `text-[${tabItem.color}]` : ""
+                  } data-[state=active]:border border-solid border-[#FFAEB0] data-[state=active]:shadow-none data-[state=active]:text-[#FFAEB0] px-2.5 sm:px-3.5 xl:px-[18px]`}
                 key={tabItem.value}
                 asChild
               >
@@ -67,8 +68,14 @@ export default async function Account(props: { searchParams: Promise<{ tab: stri
         <TabsContent value="body-quiz">
           <BodyQuiz />
         </TabsContent>
+        <TabsContent value="shape">
+          <Exercise />
+        </TabsContent>
         <TabsContent value="buy-package">
           <PurchasePackage />
+        </TabsContent>
+        <TabsContent value="cart">
+          <Cart />
         </TabsContent>
         <TabsContent value="account-information">
           <AccountInformation />

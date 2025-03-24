@@ -24,7 +24,7 @@ export default function Cart() {
   }
   //TODO Use this slug later on for fetching data
   return (
-    <div className="xl:flex mt-10 w-full justify-between gap-20">
+    <div className="xl:flex mt-10 w-full justify-between gap-20 px-14">
       <div className="w-full text-2xl max-lg:mb-20">
         {Array.from({ length: 3 }).map((_, index) => (
           <div key={`menu-${index}`} className="flex justify-between items-center mb-5">

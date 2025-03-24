@@ -3,7 +3,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import Link from "next/link"
 export default function Exercise() {
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 px-14">
       <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
         <AccordionItem value="item-1" className="border-b-0">
           <AccordionTrigger className="text-3xl text-text font-[family-name:var(--font-coiny)] hover:no-underline">

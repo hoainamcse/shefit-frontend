@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/sheet"
 import { GalleryIcon } from "../icons/GalleryIcon"
 import { url } from "inspector"
+import { StarIcon } from "../icons/StarIcon"
 
 export default function Header() {
   const navItems = [
@@ -59,13 +60,18 @@ export default function Header() {
       url: "/gallery",
     },
     {
+      label: "HLV 24/7",
+      icon: StarIcon,
+      url: "#",
+    },
+    {
       label: "Tài khoản",
       icon: AccountIcon,
       url: "/account",
     },
   ]
 
-  const contactButton = <Button className="rounded-2xl bg-button hover:bg-[#11c296]">Liên hệ với chúng tôi</Button>
+  const loginButton = <Button className="rounded-2xl bg-button hover:bg-[#11c296] px-10">Đăng nhập</Button>
 
   return (
     <header className="bg-primary sticky top-0 z-50">
@@ -80,7 +86,7 @@ export default function Header() {
               {item.label}
             </Link>
           ))}
-          {contactButton}
+          {loginButton}
         </div>
         <Sheet>
           <SheetTrigger asChild>
@@ -101,7 +107,7 @@ export default function Header() {
                 </Link>
               ))}
             </div>
-            <SheetFooter className="mt-6">{contactButton}</SheetFooter>
+            <SheetFooter className="mt-6">{loginButton}</SheetFooter>
           </SheetContent>
         </Sheet>
       </div>
