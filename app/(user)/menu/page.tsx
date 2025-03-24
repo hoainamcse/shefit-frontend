@@ -9,7 +9,7 @@ import {
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-
+import { getListMealPlans } from "@/network/server/meal-plans";
 function SelectHero({ placeholder }: { placeholder: string }) {
   const data = [
     {
@@ -50,9 +50,9 @@ function SelectHero({ placeholder }: { placeholder: string }) {
   );
 }
 
-const NextButton = ({ className }: { className?: string }) => {
+const NextButton = ({ className, href }: { className?: string, href: string }) => {
   return (
-    <Link href="/menu/detail">
+    <Link href={href}>
       <button
         type="button"
         className={`bg-background p-2 rounded-3xl text-text ${className}`}
@@ -63,7 +63,10 @@ const NextButton = ({ className }: { className?: string }) => {
   );
 };
 
-export default function MenuPage() {
+export default async function MenuPage() {
+  const mealPlansResponse = await getListMealPlans();
+  const mealPlans = mealPlansResponse.data || [];
+
   return (
     <Layout>
       <div className="max-w-screen-md mx-auto">
@@ -81,20 +84,20 @@ export default function MenuPage() {
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-screen-xl mx-auto mt-6">
-        {Array.from({ length: 12 }).map((_, index) => (
-          <div key={`menu-${index}`}>
+        {mealPlans.map((mealPlan) => (
+          <div key={`menu-${mealPlan.id}`}>
             <div className="relative group">
               <img
-                src="/temp/aeea640b5fd39bcba797af397def6419.jpg"
-                alt="temp/aeea640b5fd39bcba797af397def6419"
+                src={mealPlan.image}
+                alt={mealPlan.title}
                 className="aspect-[5/3] object-cover rounded-xl mb-4"
               />
               <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-              <NextButton className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1" />
+              <NextButton className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1" href={`/menu/${mealPlan.id}`} />
             </div>
-            <p className="font-medium">Giảm cân</p>
-            <p className="text-[#737373]">Ăn chay giảm cân</p>
-            <p className="text-[#737373]">Chef Phương Anh - 30 ngày</p>
+            <p className="font-medium">{mealPlan.title}</p>
+            <p className="text-[#737373]">{mealPlan.subtitle}</p>
+            <p className="text-[#737373]">Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày</p>
           </div>
         ))}
       </div>
