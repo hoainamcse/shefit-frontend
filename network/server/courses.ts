@@ -1,14 +1,17 @@
 'use server'
 
+import { revalidateTag } from 'next/cache'
+
 import type { Course } from '@/models/course'
 import type { ApiResponse, ListResponse } from '@/models/response'
 import { fetchDataServer } from '@/network/helpers/fetch-data-server'
 
-export async function getCourses(): Promise<ListResponse<Course>> {
-  const response = await fetchDataServer('/v1/courses/', {
+export async function getCourses(format: 'video' | 'live'): Promise<ListResponse<Course>> {
+  const response = await fetchDataServer(`/v1/courses/?course_format=${format}`, {
+    cache: 'force-cache',
     next: {
-      revalidate: 0,
-      tags: ['courses'],
+      revalidate: false,
+      tags: [`courses:${format}`],
     },
   })
   return await response.json()
@@ -32,5 +35,6 @@ export async function createCourse(
     body: JSON.stringify(data),
     credentials: 'include',
   })
+  revalidateTag(`courses:${data.course_format}`)
   return await response.json()
 }

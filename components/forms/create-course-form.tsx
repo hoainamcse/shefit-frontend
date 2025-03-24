@@ -3,7 +3,6 @@
 import z from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
-import { redirect } from 'next/navigation'
 import { useActionState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -44,82 +43,32 @@ const formSchema = z.object({
 })
 
 type FormData = z.infer<typeof formSchema>
-interface CreateContactFormProps {
+interface CreateCourseFormProps {
+  data?: Course
   format: CourseFormat
+  onSuccess?: () => void
 }
 
 export const equipments = [
   {
     value: '1',
-    label: 'Barbell',
-  },
-  {
-    value: '2',
     label: 'Dumbbell',
-  },
-  {
-    value: '3',
-    label: 'Kettlebell',
-  },
-  {
-    value: '4',
-    label: 'Cable',
-  },
-  {
-    value: '5',
-    label: 'Machine',
-  },
-  {
-    value: '6',
-    label: 'Bodyweight',
   },
 ]
 
 export const muscleGroups = [
   {
     value: '1',
-    label: 'Chest',
-  },
-  {
-    value: '2',
-    label: 'Back',
-  },
-  {
-    value: '3',
-    label: 'Shoulders',
-  },
-  {
-    value: '4',
-    label: 'Legs',
-  },
-  {
-    value: '5',
-    label: 'Arms',
-  },
-  {
-    value: '6',
-    label: 'Abs',
-  },
-  {
-    value: '7',
-    label: 'Biceps',
-  },
-  {
-    value: '8',
     label: 'Triceps',
-  },
-  {
-    value: '9',
-    label: 'Quads',
   },
 ]
 
-function EditClassForm({ format }: CreateContactFormProps) {
+function CreateCourseForm({ data, format, onSuccess }: CreateCourseFormProps) {
   const [isPending, startTransition] = useTransition()
   // const [state, action, isPending] = useActionState(createCourse, null)
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: data || {
       course_name: '',
       course_format: format,
       summary: '',
@@ -140,7 +89,7 @@ function EditClassForm({ format }: CreateContactFormProps) {
     startTransition(async () => {
       await createCourse(data as Omit<Course, 'id' | 'created_at' | 'updated_at'>)
       toast.success('Tạo khoá học thành công')
-      redirect('/admin/video-classes')
+      onSuccess?.()
     })
   }
 
@@ -198,10 +147,10 @@ function EditClassForm({ format }: CreateContactFormProps) {
           <Label>Hình đại diện khoá</Label>
           <FileUploader />
         </div>
-        <MainButton text="Lưu" className="w-full" loading={isPending} />
+        {!data && <MainButton text="Lưu" className="w-full" loading={isPending} />}
       </form>
     </Form>
   )
 }
 
-export { EditClassForm }
+export { CreateCourseForm }
