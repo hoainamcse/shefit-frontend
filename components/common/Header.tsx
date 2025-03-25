@@ -27,7 +27,7 @@ export default function Header() {
     {
       label: "Khoá tập",
       icon: ExerciseYogaIcon,
-      url: "/training-courses",
+      url: "/courses",
     },
     {
       label: "Thực đơn",

@@ -43,7 +43,7 @@ export default async function CoursePage() {
                       <span className="text-gray-900 dark:text-gray-50">{day.day}</span>
                       <p>{day.content}</p>
                     </div>
-                    <Link href={`/training-courses/zoom/slug/detail`}>
+                    <Link href={`/courses/zoom/slug/detail`}>
                       <ArrowPinkIcon />
                     </Link>
                   </li>
