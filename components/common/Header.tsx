@@ -71,7 +71,11 @@ export default function Header() {
     },
   ]
 
-  const loginButton = <Button className="rounded-2xl bg-button hover:bg-[#11c296] px-10">Đăng nhập</Button>
+  const loginButton = (
+    <Link href="/auth/login">
+      <Button className="rounded-2xl bg-button hover:bg-[#11c296] px-10">Đăng nhập</Button>
+    </Link>
+  )
 
   return (
     <header className="bg-primary sticky top-0 z-50">
