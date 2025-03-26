@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Copy, Edit, Ellipsis, Eye, Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 type Order = {
   id: string
@@ -67,6 +68,7 @@ const orders: Order[] = [
 ]
 
 export default function OrdersPage() {
+  const router = useRouter()
   const columns: ColumnDef<Order>[] = [
     {
       accessorKey: 'name',
@@ -104,7 +106,7 @@ export default function OrdersPage() {
               <Copy /> Sao chép đơn hàng ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push(`/admin/orders/${row.id}`)}>
               <Eye /> Xem
             </DropdownMenuItem>
             <DropdownMenuItem>
