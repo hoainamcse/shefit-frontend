@@ -4,11 +4,10 @@ import Header from "@/components/common/Header"
 import { BackIcon } from "@/components/icons/BackIcon"
 import Link from "next/link"
 import { getMealPlanDetails } from "@/network/server/meal-plans"
-import { use } from "react"
-export default async function MenuDetail({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params)
+
+export default async function MenuDetail({ params }: { params: { id: string } }) {
   try {
-    const { data: mealPlan } = await getMealPlanDetails(id)
+    const { data: mealPlan } = await getMealPlanDetails(params.id)
 
     if (!mealPlan) {
       throw new Error("Không tìm thấy thông tin thực đơn")
