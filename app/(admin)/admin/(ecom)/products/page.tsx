@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Copy, Edit, Ellipsis, Eye, Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 type Color = {
   id: string
@@ -160,6 +161,8 @@ const products: Product[] = [
 ]
 
 export default function ProductsPage() {
+  const router = useRouter()
+
   const columns: ColumnDef<Product>[] = [
     {
       accessorKey: 'name',
@@ -237,7 +240,7 @@ export default function ProductsPage() {
     },
   ]
 
-  const headerExtraContent = <AddButton text="Thêm sản phẩm" />
+  const headerExtraContent = <AddButton text="Thêm sản phẩm" onClick={() => router.push('/admin/products/create')} />
 
   return (
     <ContentLayout title="Sản phẩm">
