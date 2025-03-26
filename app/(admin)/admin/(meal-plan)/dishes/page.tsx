@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 type Dish = {
   id: string
@@ -61,6 +62,7 @@ const mealPlans: Dish[] = [
 ]
 
 export default function DishesPage() {
+  const router = useRouter()
   const columns: ColumnDef<Dish>[] = [
     {
       accessorKey: 'name',
@@ -108,7 +110,7 @@ export default function DishesPage() {
   ]
   const headerExtraContent = (
     <>
-      <AddButton text="Thêm món ăn" />
+      <AddButton text="Thêm món ăn" onClick={() => router.push('/admin/dishes/create')} />
       <MainButton text="Nhập món ăn" variant="outline" icon={Import} />
     </>
   )

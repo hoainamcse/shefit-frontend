@@ -235,17 +235,17 @@ export default function CreateProduct() {
                 name="sizes"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sizes</FormLabel>
+                    <FormLabel>Kích cỡ</FormLabel>
                     <FormControl>
                       <MultiSelect
                         value={field.value}
                         onValueChange={(value) => field.onChange(value)}
                       >
                         <MultiSelectTrigger>
-                          <MultiSelectValue placeholder="Select sizes" />
+                          <MultiSelectValue placeholder="Chọn kích cỡ" />
                         </MultiSelectTrigger>
                         <MultiSelectContent>
-                          <MultiSelectSearch placeholder="Search sizes..." />
+                          <MultiSelectSearch placeholder="Tìm kiếm kích cỡ..." />
                           <MultiSelectList>
                             {AVAILABLE_SIZES.map((size) => (
                               <MultiSelectItem
@@ -269,17 +269,17 @@ export default function CreateProduct() {
                 name="colors"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Colors</FormLabel>
+                    <FormLabel>Màu sắc</FormLabel>
                     <FormControl>
                       <MultiSelect
                         value={field.value}
                         onValueChange={(value) => field.onChange(value)}
                       >
                         <MultiSelectTrigger>
-                          <MultiSelectValue placeholder="Select colors" />
+                          <MultiSelectValue placeholder="Chọn màu sắc" />
                         </MultiSelectTrigger>
                         <MultiSelectContent>
-                          <MultiSelectSearch placeholder="Search colors..." />
+                          <MultiSelectSearch placeholder="Tìm kiếm màu sắc..." />
                           <MultiSelectList>
                             {AVAILABLE_COLORS.map((color) => (
                               <MultiSelectItem
