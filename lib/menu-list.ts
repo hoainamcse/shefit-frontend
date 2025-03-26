@@ -113,12 +113,12 @@ export function getMenuList(pathname: string): Group[] {
           icon: ChartPieIcon,
           submenus: [
             {
-              href: '#',
+              href: '/admin/quizzes',
               label: 'Tạo quiz',
             },
             {
-              href: '#',
-              label: 'User data',
+              href: '/admin/quizzes/results',
+              label: 'Kết quả quiz',
             },
           ],
         },
