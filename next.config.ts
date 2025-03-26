@@ -6,29 +6,26 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: ['assets.example.com', 'www.ritfitsports.com', 'athleanx.com', 'example.com', ''],
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'assets.example.com',
-        port: '',
-        pathname: '/account123/**',
-        search: '',
+        hostname: '**.cloudfront.net',
       },
       {
         protocol: 'https',
-        hostname: 'example.com',
-        port: '',
-        pathname: '/images/**',
+        hostname: '**.cloudinary.com',
       },
       {
         protocol: 'https',
-        hostname: 'cdn.shopify.com',
-        port: '',
-        pathname: '/s/files/1/0574/1215/7598/t/16/assets/**',
+        hostname: '**.amazonaws.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.unsplash.com',
       },
     ],
   },
+
 }
 
 export default nextConfig

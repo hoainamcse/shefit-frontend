@@ -57,6 +57,8 @@ const NextButton = ({ className }: { className?: string }) => {
   )
 }
 
+export const fetchCache = 'default-no-store'
+
 export default async function TrainingCoursesPage() {
   const courses = await getCourses("video")
   const coursesZoom = await getCourses("live")

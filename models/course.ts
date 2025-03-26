@@ -4,6 +4,14 @@ type FormCategory = 'pear' | 'apple' | 'rectangle' | 'hourglass' | 'inverted_tri
 
 type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced'
 
+type Live = {
+  id: number
+  description: string
+  day_of_week: string
+  start_time: string
+  end_time: string
+}
+
 type Course = {
   id: number
   course_name: string
@@ -21,6 +29,7 @@ type Course = {
   is_public: boolean
   created_at: string
   updated_at: string
+  live: Live
 }
 
 export type { CourseFormat, FormCategory, DifficultyLevel, Course }

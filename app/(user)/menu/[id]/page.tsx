@@ -5,9 +5,14 @@ import { BackIcon } from "@/components/icons/BackIcon"
 import Link from "next/link"
 import { getMealPlanDetails } from "@/network/server/meal-plans"
 
-export default async function MenuDetail({ params }: { params: { id: string } }) {
+export default async function MenuDetail({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   try {
-    const { data: mealPlan } = await getMealPlanDetails(params.id)
+    const { id } = await params
+    const { data: mealPlan } = await getMealPlanDetails(id)
 
     if (!mealPlan) {
       throw new Error("Không tìm thấy thông tin thực đơn")
