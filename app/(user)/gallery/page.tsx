@@ -2,6 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { getMuscleGroups } from "@/network/server/muscle-group"
 import { getMealIngredients } from "@/network/server/meal-ingredients"
+export const dynamic = 'force-dynamic';
 
 export default async function Gallery() {
   const muscleGroups = await getMuscleGroups()

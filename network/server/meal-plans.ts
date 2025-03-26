@@ -5,7 +5,7 @@ import { ApiResponse, ListResponse } from '@/models/response'
 export async function getListMealPlans(): Promise<ListResponse<MealPlan>> {
     const response = await fetchData('/v1/meal-plans/', {
         next: {
-            revalidate: 0,
+            revalidate: 3600,
             tags: ['meal-plans'],
         },
     })
@@ -15,7 +15,7 @@ export async function getListMealPlans(): Promise<ListResponse<MealPlan>> {
 export async function getMealPlanDetails(meal_plan_id: string): Promise<ApiResponse<MealPlan>> {
     const response = await fetchData(`/v1/meal-plans/${meal_plan_id}`, {
         next: {
-            revalidate: 0,
+            revalidate: 3600,
             tags: ['meal-plans'],
         },
     })
@@ -25,7 +25,7 @@ export async function getMealPlanDetails(meal_plan_id: string): Promise<ApiRespo
 export async function getMealPlanByDay(meal_plan_id: string): Promise<ApiResponse<MealPlan>> {
     const response = await fetchData(`/v1/meal-plans/${meal_plan_id}/days`, {
         next: {
-            revalidate: 0,
+            revalidate: 3600,
             tags: ['meal-plans'],
         },
     })
@@ -35,7 +35,7 @@ export async function getMealPlanByDay(meal_plan_id: string): Promise<ApiRespons
 export async function getMealPlanDishes(meal_plan_id: string, day_id: string): Promise<ApiResponse<any>> {
     const response = await fetchData(`/v1/meal-plans/${meal_plan_id}/days/${day_id}/dishes`, {
         next: {
-            revalidate: 0,
+            revalidate: 3600,
             tags: ['meal-plans'],
         },
     })

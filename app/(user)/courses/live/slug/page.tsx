@@ -1,58 +1,105 @@
-import { ArrowPinkIcon } from "@/components/icons/ArrowPinkIcon"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import Link from "next/link"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-type CourseDay = {
-  day: number
-  content: string
-}
+const scheduleData = [
+  {
+    day: "2",
+    value: "thu2",
+    sessions: [
+      { id: 1, name: "Mông Đào", time: "5-6am" },
+      { id: 2, name: "Mông Đào", time: "8-9am" },
+    ],
+  },
+  {
+    day: "3",
+    value: "thu3",
+    sessions: [{ id: 1, name: "Mông Đào", time: "6-7am" }],
+  },
+  {
+    day: "4",
+    value: "thu4",
+    sessions: [
+      { id: 1, name: "Mông Đào", time: "7-8am" },
+      { id: 2, name: "Mông Đào", time: "9-10am" },
+    ],
+  },
+  {
+    day: "5",
+    value: "thu5",
+    sessions: [{ id: 1, name: "Mông Đào", time: "8-9am" }],
+  },
+  {
+    day: "6",
+    value: "thu6",
+    sessions: [
+      { id: 1, name: "Mông Đào", time: "6-7am" },
+      { id: 2, name: "Mông Đào", time: "10-11am" },
+    ],
+  },
+  {
+    day: "7",
+    value: "thu7",
+    sessions: [{ id: 1, name: "Mông Đào", time: "7-8am" }],
+  },
+]
 
-type CourseWeek = {
-  week: number
-  days: CourseDay[]
-}
-
-const mapCourseData = (totalWeeks: number): CourseWeek[] => {
-  return Array.from({ length: totalWeeks }, (_, weekIndex) => ({
-    week: weekIndex + 1,
-    days: Array.from({ length: 7 }, (_, dayIndex) => ({
-      day: dayIndex + 1,
-      content: `Nội dung ngày ${dayIndex + 1}`,
-    })),
-  }))
-}
-
-export default async function CoursePage() {
-  const totalWeeks = 4
-  const courseData = mapCourseData(totalWeeks)
-
+export default function DetailPage() {
   return (
     <div className="flex flex-col gap-10 mt-10">
-      <Accordion type="multiple" className="mt-3">
-        {courseData.map((week) => (
-          <AccordionItem key={week.week} value={`week-${week.week}`}>
-            <AccordionTrigger className="font-[family-name:var(--font-coiny)] text-text text-[30px]">
-              <div>Tuần {week.week}</div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <ol className="flex flex-col gap-2 text-xl">
-                {week.days.map((day) => (
-                  <li key={day.day} className="flex justify-between items-center">
-                    <div className="flex gap-1">
-                      <span className="font-semibold text-gray-900 dark:text-gray-50">Ngày </span>
-                      <span className="text-gray-900 dark:text-gray-50">{day.day}</span>
-                      <p>{day.content}</p>
-                    </div>
-                    <Link href={`/courses/zoom/slug/detail`}>
-                      <ArrowPinkIcon />
-                    </Link>
-                  </li>
-                ))}
-              </ol>
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
+      <Tabs defaultValue={scheduleData[0].value} className="[state=active]:bg-[#91EBD5] data-[state=active]:shadow-none">
+        <TabsList className="bg-white">
+          {scheduleData.map((day) => (
+            <TabsTrigger key={day.value} value={day.value} className="
+            rounded-full 
+            mx-[10px] 
+            my-5 
+            w-[63px] 
+            h-[64px] 
+            flex 
+            flex-col 
+            items-center 
+            justify-center 
+            font-medium 
+            text-xl 
+            cursor-pointer 
+            data-[state=active]:bg-[#91EBD5] 
+            data-[state=active]:text-white
+              bg-transparent
+              hover:bg-[#91EBD5]/10
+              transition-colors
+              duration-200
+            "
+            >
+              Thứ <br />
+              {day.day}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        <div className="ml-2 mt-10">
+          {scheduleData.map((day) => (
+            <TabsContent
+              key={day.value}
+              value={day.value}
+              className="space-y-2 text-sm leading-7 text-gray-600 dark:text-gray-500 flex flex-col gap-5"
+            >
+              {day.sessions.map((session) => (
+                <div key={session.id} className="flex justify-between">
+                  <div>
+                    <p className="font-[family-name:var(--font-coiny)] text-[30px] flex gap-2">
+                      Ca
+                      <span>{session.id}</span>
+                    </p>
+                    <p className="text-[#737373] text-xl">
+                      {session.name} / {session.time}
+                    </p>
+                  </div>
+                  <div className="text-primary text-xl">Vào lớp</div>
+                </div>
+              ))}
+            </TabsContent>
+          ))}
+        </div>
+      </Tabs>
     </div>
   )
 }

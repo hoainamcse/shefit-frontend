@@ -5,7 +5,7 @@ import { ListResponse } from "@/models/response"
 export async function getMealIngredients(): Promise<ListResponse<MealIngredient>> {
     const response = await fetchData("/v1/meal-ingredients/", {
         next: {
-            revalidate: 0,
+            revalidate: 3600,
             tags: ["meal-ingredients"],
         },
     })
