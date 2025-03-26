@@ -1,8 +1,12 @@
 import Image from "next/image"
 import Link from "next/link"
+import { getMuscleGroups } from "@/network/server/muscle-group"
+import { getMealIngredients } from "@/network/server/meal-ingredients"
+export const dynamic = 'force-dynamic';
 
 export default async function Gallery() {
-  //TODO Use this slug later on for fetching data
+  const muscleGroups = await getMuscleGroups()
+  const mealIngredients = await getMealIngredients()
   return (
     <div className="flex flex-col gap-10 mt-10">
       <div className="mb-20">
@@ -15,14 +19,14 @@ export default async function Gallery() {
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
-          {Array.from({ length: 12 }).map((_, index) => (
-            <Link href="/gallery/muscle" key={index}>
-              <div key={`menu-${index}`} className="text-xl">
+          {muscleGroups.data.map((muscleGroup) => (
+            <Link href={`/gallery/muscle/${muscleGroup.id}`} key={muscleGroup.id}>
+              <div key={`menu-${muscleGroup.id}`} className="text-xl">
                 <div className="relative group">
-                  <Image src="/temp/VideoCard.jpg" alt="" className="aspect-[5/3] object-cover rounded-xl mb-4" width={585} height={373} />
+                  <Image src={muscleGroup.image} alt="" className="aspect-[5/3] object-cover rounded-xl mb-4" width={585} height={373} />
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
-                <p className="font-bold">Cơ bụng</p>
+                <p className="font-bold">{muscleGroup.name}</p>
               </div>
             </Link>
           ))}
@@ -38,14 +42,14 @@ export default async function Gallery() {
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
-          {Array.from({ length: 12 }).map((_, index) => (
-            <Link href="/gallery/food" key={index}>
-              <div key={`menu-${index}`} className="text-xl">
+          {mealIngredients.data.map((mealIngredient) => (
+            <Link href={`/gallery/meal/${mealIngredient.id}`} key={mealIngredient.id}>
+              <div key={`menu-${mealIngredient.id}`} className="text-xl">
                 <div className="relative group">
-                  <Image src="/temp/Food.png" alt="" className="aspect-[5/3] object-cover rounded-xl mb-4" width={585} height={373}/>
+                  <Image src={mealIngredient.image} alt="" className="aspect-[5/3] object-cover rounded-xl mb-4" width={585} height={373} />
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
-                <p className="font-bold">Keto</p>
+                <p className="font-bold">{mealIngredient.name}</p>
               </div>
             </Link>
           ))}

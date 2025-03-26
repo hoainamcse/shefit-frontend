@@ -3,7 +3,6 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import Link from "next/link"
 
 export default async function Zoom({ params }: { params: Promise<{ slug: string }> }) {
-  //TODO Use this slug later on for fetching data
   const { slug } = await params
   return (
     <div className="flex flex-col gap-10 mt-10">
@@ -48,7 +47,7 @@ export default async function Zoom({ params }: { params: Promise<{ slug: string 
         </ScrollArea>
       </div>
       <div className="flex justify-center gap-4">
-        <Link href={`/training-courses/zoom/slug`} className="rounded-full w-1/3 bg-button hover:bg-[#11c296]">
+        <Link href={`/courses/zoom/slug`} className="rounded-full w-1/3 bg-button hover:bg-[#11c296]">
           <Button className="w-full rounded-full bg-button hover:bg-[#11c296] h-14">Bắt đầu</Button>
         </Link>
         <Button variant="secondary" className="border-button text-button rounded-full w-1/3 bg-white h-14">

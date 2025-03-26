@@ -1,48 +1,19 @@
 import Image from "next/image"
-import MenuDetailImage from "@/assets/image/MenuDetail.png"
 import { Button } from "@/components/ui/button"
 import Header from "@/components/common/Header"
-import MenuResponsive from "@/assets/image/MenuResponsive.png"
 import Link from "next/link"
 import { BackIcon } from "@/components/icons/BackIcon"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getMealPlanDetails } from "@/network/server/meal-plans"
 import { getMealPlanDishes } from "@/network/server/meal-plans"
-export default async function MenuDetailCalendar({ params }: { params: { detail: string } }) {
-  const { data: mealPlan } = await getMealPlanDetails(params.detail)
-  const { data: mealPlanDishes } = await getMealPlanDishes(params.detail, "1")
-  const data: Array<{
-    id: number
-    name: string
-    sales: string
-  }> = [
-      {
-        id: 1,
-        name: "Thịt cá",
-        sales: "",
-      },
-      {
-        id: 2,
-        name: "Rau củ",
-        sales: "",
-      },
-      {
-        id: 3,
-        name: "Tinh bột",
-        sales: "",
-      },
-      {
-        id: 4,
-        name: "Gia vị",
-        sales: "",
-      },
-      {
-        id: 5,
-        name: "Khác",
-        sales: "",
-      },
-    ]
+import { use } from "react"
+
+export default async function MenuDetailCalendar({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  const { data: mealPlan } = await getMealPlanDetails(id)
+  const { data: mealPlanDishes } = await getMealPlanDishes(id, "1")
+
   return (
     <div>
       <div className="xl:block max-lg:hidden">
@@ -91,7 +62,7 @@ export default async function MenuDetailCalendar({ params }: { params: { detail:
               <TabsTrigger
                 key={i + 1}
                 value={`${i + 1}`}
-                className={`
+                className="
               rounded-full 
               mx-[10px] 
               my-5 
@@ -110,7 +81,7 @@ export default async function MenuDetailCalendar({ params }: { params: { detail:
               hover:bg-[#91EBD5]/10
               transition-colors
               duration-200
-            `}
+            "
               >
                 <div>Ngày {i + 1}</div>
               </TabsTrigger>

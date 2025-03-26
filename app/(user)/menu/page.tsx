@@ -10,6 +10,9 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { getListMealPlans } from "@/network/server/meal-plans";
+
+export const dynamic = 'force-dynamic';
+
 function SelectHero({ placeholder }: { placeholder: string }) {
   const data = [
     {

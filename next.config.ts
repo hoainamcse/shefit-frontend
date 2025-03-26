@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: ['assets.example.com', 'www.ritfitsports.com'],
+    domains: ['assets.example.com', 'www.ritfitsports.com', 'athleanx.com', 'example.com', ''],
     remotePatterns: [
       {
         protocol: 'https',

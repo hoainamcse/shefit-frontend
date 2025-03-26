@@ -1,4 +1,4 @@
-type MuscleGroup = {
+type MealIngredient = {
     id: number
     name: string
     image: string
@@ -6,4 +6,4 @@ type MuscleGroup = {
     updated_at: string
 }
 
-export type { MuscleGroup }
+export type { MealIngredient }

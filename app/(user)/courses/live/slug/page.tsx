@@ -1,5 +1,4 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import Link from "next/link"
 
 const scheduleData = [
   {
@@ -49,7 +48,27 @@ export default function DetailPage() {
       <Tabs defaultValue={scheduleData[0].value} className="[state=active]:bg-[#91EBD5] data-[state=active]:shadow-none">
         <TabsList className="bg-white">
           {scheduleData.map((day) => (
-            <TabsTrigger key={day.value} value={day.value} className="p-0 w-16 h-16 text-xl font-medium">
+            <TabsTrigger key={day.value} value={day.value} className="
+            rounded-full 
+            mx-[10px] 
+            my-5 
+            w-[63px] 
+            h-[64px] 
+            flex 
+            flex-col 
+            items-center 
+            justify-center 
+            font-medium 
+            text-xl 
+            cursor-pointer 
+            data-[state=active]:bg-[#91EBD5] 
+            data-[state=active]:text-white
+              bg-transparent
+              hover:bg-[#91EBD5]/10
+              transition-colors
+              duration-200
+            "
+            >
               Thứ <br />
               {day.day}
             </TabsTrigger>

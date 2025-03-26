@@ -7,7 +7,7 @@ import { AccountIconGray } from "../icons/AccountIconGray"
 export default function Navigation() {
   return (
     <div className="flex gap-5 justify-between w-full px-5 py-4">
-      <Link href="/training-courses">
+      <Link href="/courses">
         <div className="flex flex-col items-center gap-1">
           <ExerciseYogaIconGray />
           <p className="text-[#8E8E93]">Khóa tập</p>
