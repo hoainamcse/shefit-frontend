@@ -4,22 +4,33 @@ import Header from "@/components/common/Header"
 import Link from "next/link"
 import { BackIcon } from "@/components/icons/BackIcon"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getMealPlanDetails } from "@/network/server/meal-plans"
 import { getMealPlanDishes } from "@/network/server/meal-plans"
-import { use } from "react"
+import { getMealPlanByDay } from "@/network/server/meal-plans"
 
-export default async function MenuDetailCalendar({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params)
+const mealTimeMapping: { [key: string]: string } = {
+  breakfast: "Bữa sáng",
+  lunch: "Bữa trưa",
+  dinner: "Bữa tối",
+  snack: "Bữa phụ",
+  protein_source: "Thịt cá",
+  vegetable: "Rau củ",
+  starch: "Tinh bột",
+  spices: "Gia vị",
+  others: "Khác"
+};
+
+export default async function MenuDetailCalendar({ params }: { params: { id: string } }) {
+  const { id } = params
+  const { data: mealPlanByDay } = await getMealPlanByDay(id)
   const { data: mealPlan } = await getMealPlanDetails(id)
-  const { data: mealPlanDishes } = await getMealPlanDishes(id, "1")
-
   return (
     <div>
       <div className="xl:block max-lg:hidden">
         <Header />
       </div>
-      <div className="flex flex-col items-center justify-center mt-16 max-lg:mt-0 mx-auto xl:w-[1800px] max-lg:w-full">
+      <div className="flex flex-col items-center justify-center mt-16 max-lg:mt-0 mx-auto max-w-screen-2xl px-10">
         <div className="relative w-full">
           <Link
             href="#"
@@ -29,7 +40,7 @@ export default async function MenuDetailCalendar({ params }: { params: Promise<{
               <BackIcon /> Quay về
             </Button>
           </Link>
-          <Image src={mealPlan.image} alt="Menu detail image" className="xl:block max-lg:hidden" />
+          <img src={mealPlan.image} alt="Menu detail image" className="xl:block max-lg:hidden w-full h-[680px] object-cover rounded-xl" />
         </div>
         <div className="mr-auto text-xl mt-8 max-lg:p-4">
           <p className="font-bold">{mealPlan.goal}</p>
@@ -37,12 +48,12 @@ export default async function MenuDetailCalendar({ params }: { params: Promise<{
           <p className="text-[#737373]">Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày</p>
         </div>
         <div className="w-full max-lg:p-4">
-          <div className="bg-primary h-[228px] w-full rounded-[20px] my-20 max-lg:my-2">
+          <div className="bg-primary py-5 w-full rounded-[20px] my-20 max-lg:my-2">
             <div className="xl:w-[696px] max-lg:w-full mx-auto text-white h-full flex flex-col items-center justify-center">
               <div className="text-center text-[40px] font-bold mb-10">Kết quả</div>
               <ul className="text-[#F7F7F7] text-xl list-disc mr-auto max-lg:px-8">
-                {mealPlanDishes.map((dish: any) => (
-                  <li key={dish.id}>{dish.name}</li>
+                {mealPlan.meal_ingredients.map((ingredient) => (
+                  <li key={ingredient.id}>{ingredient.name}</li>
                 ))}
               </ul>
             </div>
@@ -62,136 +73,68 @@ export default async function MenuDetailCalendar({ params }: { params: Promise<{
               <TabsTrigger
                 key={i + 1}
                 value={`${i + 1}`}
-                className="
-              rounded-full 
-              mx-[10px] 
-              my-5 
-              w-[63px] 
-              h-[64px] 
-              flex 
-              flex-col 
-              items-center 
-              justify-center 
-              font-medium 
-              text-xl 
-              cursor-pointer 
-              data-[state=active]:bg-[#91EBD5] 
-              data-[state=active]:text-white
-              bg-transparent
-              hover:bg-[#91EBD5]/10
-              transition-colors
-              duration-200
-            "
+                className="rounded-full mx-[10px] my-5 w-[63px] h-[64px] flex flex-col items-center justify-center font-medium text-xl cursor-pointer data-[state=active]:bg-[#91EBD5] data-[state=active]:text-white bg-transparent hover:bg-[#91EBD5]/10 transition-colors duration-200"
               >
-                <div>Ngày {i + 1}</div>
+                <div>Ngày <br /> {i + 1}</div>
               </TabsTrigger>
             ))}
           </TabsList>
+          {Array.from({ length: mealPlan.number_of_days }, async (_, i) => {
+            const dayId = `${i + 1}`
+            const { data: dayDishes } = await getMealPlanDishes(id, dayId)
+
+            return (
+              <TabsContent key={dayId} value={dayId}>
+                {dayDishes.map((dish: any) => (
+                  <div key={dish.id} className="mb-10 flex flex-col xl:w-full xl:text-xl max-lg:text-base gap-8 max-lg:px-4">
+                    <img src={dish.image} alt="Menu detail image" className="w-full h-[680px] object-cover rounded-xl" />
+                    <div>
+                      <div className="font-medium">
+                        <span className="text-[#91EBD5]">{mealTimeMapping[dish.meal_time]}</span>: {dish.name}
+                      </div>
+                      <div className="text-[#737373]">
+                        KCAL {dish.calories} Pro {dish.protein} Fat {dish.fat} Carb {dish.carbs} Fiber {dish.fiber}
+                      </div>
+                    </div>
+                    <Table className="w-[400px] text-center border border-collapse">
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="border text-center">Thành phần</TableHead>
+                          <TableHead className="border text-center">Nguyên liệu</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody className="text-[#737373]">
+                        <TableRow>
+                          <TableCell className="border">Thịt cá</TableCell>
+                          <TableCell className="border">{dish.protein_source}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="border">Rau củ</TableCell>
+                          <TableCell className="border">{dish.vegetable}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="border">Tinh bột</TableCell>
+                          <TableCell className="border">{dish.starch}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="border">Gia vị</TableCell>
+                          <TableCell className="border">{dish.spices}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="border">Khác</TableCell>
+                          <TableCell className="border">{dish.others}</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                    <div className="xl:w-full text-[#737373]">
+                      {dish.description}
+                    </div>
+                  </div>
+                ))}
+              </TabsContent>
+            )
+          })}
         </Tabs>
-        <div className="mb-10 flex flex-col xl:w-full xl:text-xl max-lg:text-base gap-8 max-lg:px-4">
-          <Image src={mealPlanDishes[0].image} alt="Menu detail image" className="xl:w-full" />
-          <div>
-            <div className="font-medium">Bữa Sáng: {mealPlanDishes[0].name}</div>
-            <div className="text-[#737373]">KCAL {mealPlanDishes[0].calories} Pro {mealPlanDishes[0].protein} Fat {mealPlanDishes[0].fat} Carb {mealPlanDishes[0].carbs} Fiber {mealPlanDishes[0].fiber}</div>
-          </div>
-          <Table className="w-[400px] text-center border border-collapse">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="border text-center">Thành phần</TableHead>
-                <TableHead className="border text-center">Nguyên liệu</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="text-[#737373]">
-              {mealPlanDishes[0].ingredients.map((ingredient: any) => (
-                <TableRow key={ingredient.id}>
-                  <TableCell className="border">{ingredient.name}</TableCell>
-                  <TableCell className="border text-right">{ingredient.sales}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="xl:w-full text-[#737373]">
-            {mealPlanDishes[0].description}
-          </div>
-        </div>
-        <div className="mb-10 flex flex-col xl:w-full xl:text-xl max-lg:text-base gap-8 max-lg:px-4">
-          <Image src={mealPlanDishes[1].image} alt="Menu detail image" className="xl:w-full" />
-          <div>
-            <div className="font-medium">Bữa Trưa: {mealPlanDishes[1].name}</div>
-            <div className="text-[#737373]">KCAL {mealPlanDishes[1].calories} Pro {mealPlanDishes[1].protein} Fat {mealPlanDishes[1].fat} Carb {mealPlanDishes[1].carbs} Fiber {mealPlanDishes[1].fiber}</div>
-          </div>
-          <Table className="w-[400px] text-center border border-collapse">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="border text-center">Thành phần</TableHead>
-                <TableHead className="border text-center">Nguyên liệu</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="text-[#737373]">
-              {mealPlanDishes[1].ingredients.map((ingredient: any) => (
-                <TableRow key={ingredient.id}>
-                  <TableCell className="border">{ingredient.name}</TableCell>
-                  <TableCell className="border text-right">{ingredient.sales}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="xl:w-full text-[#737373]">
-            {mealPlanDishes[1].description}
-          </div>
-        </div>
-        <div className="mb-10 flex flex-col xl:w-full xl:text-xl max-lg:text-base gap-8 max-lg:px-4">
-          <Image src={mealPlanDishes[2].image} alt="Menu detail image" className="xl:w-full" />
-          <div>
-            <div className="font-medium">Bữa Tối: {mealPlanDishes[2].name}</div>
-            <div className="text-[#737373]">KCAL {mealPlanDishes[2].calories} Pro {mealPlanDishes[2].protein} Fat {mealPlanDishes[2].fat} Carb {mealPlanDishes[2].carbs} Fiber {mealPlanDishes[2].fiber}</div>
-          </div>
-          <Table className="w-[400px] text-center border border-collapse">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="border text-center">Thành phần</TableHead>
-                <TableHead className="border text-center">Nguyên liệu</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="text-[#737373]">
-              {mealPlanDishes[2].ingredients.map((ingredient: any) => (
-                <TableRow key={ingredient.id}>
-                  <TableCell className="border">{ingredient.name}</TableCell>
-                  <TableCell className="border text-right">{ingredient.sales}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="xl:w-full text-[#737373]">
-            {mealPlanDishes[2].description}
-          </div>
-        </div>
-        <div className="mb-10 flex flex-col xl:w-full xl:text-xl max-lg:text-base gap-8 max-lg:px-4">
-          <Image src={mealPlanDishes[3].image} alt="Menu detail image" className="xl:w-full" />
-          <div>
-            <div className="font-medium">Bữa Phụ: {mealPlanDishes[3].name}</div>
-            <div className="text-[#737373]">KCAL {mealPlanDishes[3].calories} Pro {mealPlanDishes[3].protein} Fat {mealPlanDishes[3].fat} Carb {mealPlanDishes[3].carbs} Fiber {mealPlanDishes[3].fiber}</div>
-          </div>
-          <Table className="w-[400px] text-center border border-collapse">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="border text-center">Thành phần</TableHead>
-                <TableHead className="border text-center">Nguyên liệu</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="text-[#737373]">
-              {mealPlanDishes[3].ingredients.map((ingredient: any) => (
-                <TableRow key={ingredient.id}>
-                  <TableCell className="border">{ingredient.name}</TableCell>
-                  <TableCell className="border text-right">{ingredient.sales}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="xl:w-full text-[#737373]">
-            {mealPlanDishes[3].description}
-          </div>
-        </div>
       </div>
     </div>
   )

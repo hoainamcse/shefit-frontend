@@ -11,9 +11,9 @@ export default async function ZoomDetail({ params }: { params: Promise<{ live_id
   const equipment = await getEquipments()
   const muscleGroup = await getMuscleGroups()
   return (
-    <div className="flex flex-col gap-10 mt-10">
-      <div className="p-6 max-w-screen-2xl mx-auto mb-20 flex flex-col gap-10">
-        <img src={course.data.thumbnail_image} alt={`${live_id}`} className=" rounded-xl mb-4" />
+    <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full">
+      <div className="p-6 mb-20 flex flex-col gap-10">
+        <img src={course.data.thumbnail_image} alt={`${live_id}`} className="rounded-xl mb-4 w-full h-[680px] object-cover" />
         <div className="flex justify-between">
           <div>
             <p className="font-medium">Easy Slim - Video</p>

@@ -64,7 +64,7 @@ export default async function TrainingCoursesPage() {
   const coursesZoom = await getCourses("live")
   return (
     <Layout>
-      <div className="max-w-screen-xl mx-auto">
+      <div className="max-w-screen-2xl mx-auto">
         <p className="text-center font-[family-name:var(--font-coiny)] text-text text-2xl my-4">
           Khoá tập hot nhất tháng
         </p>
@@ -101,7 +101,7 @@ export default async function TrainingCoursesPage() {
         </Carousel>
         <div className="flex gap-6"></div>
       </div>
-      <div className="max-w-screen-xl mx-auto">
+      <div className="max-w-screen-2xl mx-auto">
         <div className="max-w-screen-lg mx-auto my-12 flex flex-col gap-4">
           <p className="text-center font-[family-name:var(--font-coiny)] text-text text-2xl">Tất cả khoá tập</p>
           <p className="text-base text-center text-[#737373]">

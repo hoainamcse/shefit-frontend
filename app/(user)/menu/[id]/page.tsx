@@ -1,8 +1,8 @@
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import Header from "@/components/common/Header"
 import { BackIcon } from "@/components/icons/BackIcon"
-import Link from "next/link"
 import { getMealPlanDetails } from "@/network/server/meal-plans"
 
 export default async function MenuDetail({
@@ -30,7 +30,7 @@ export default async function MenuDetail({
                 <BackIcon /> Quay về
               </Button>
             </Link>
-            <img src={mealPlan.image} alt="Menu detail image" className="xl:block max-lg:hidden" />
+            <img src={mealPlan.image} alt="Menu detail image" className="xl:block max-lg:hidden w-full h-[680px] object-cover rounded-xl" />
           </div>
           <div className="mr-auto text-xl mt-8 max-lg:p-4">
             <p className="font-bold">{mealPlan.goal}</p>

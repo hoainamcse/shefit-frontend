@@ -27,7 +27,7 @@ const mapCourseData = (totalWeeks: number): CourseWeek[] => {
 export default async function CoursePage({ params }: { params: Promise<{ video_id: string }> }) {
     const { video_id } = await params
     const weeks = await getWeeks(video_id)
-    const days = await getDays(video_id, weeks.data[0].id.toString())
+    const days = await getDays(video_id, weeks.data[0]?.id.toString())
     const totalWeeks = weeks.data.length
     const courseData = mapCourseData(totalWeeks)
 
