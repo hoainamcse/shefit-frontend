@@ -21,8 +21,8 @@ const mealTimeMapping: { [key: string]: string } = {
   others: "Khác"
 };
 
-export default async function MenuDetailCalendar({ params }: { params: { id: string } }) {
-  const { id } = params
+export default async function MenuDetailCalendar({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const { data: mealPlanByDay } = await getMealPlanByDay(id)
   const { data: mealPlan } = await getMealPlanDetails(id)
   return (
