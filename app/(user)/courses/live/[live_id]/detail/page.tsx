@@ -2,6 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getCourse } from "@/network/server/courses"
 import { getLives } from "@/network/server/live"
 import { Live } from "@/models/live"
+import Link from "next/link"
 
 const formatToVNTime = (time: string) => {
     const [hours] = time.split(':');
@@ -16,7 +17,7 @@ export default async function DetailPage({ params }: { params: Promise<{ live_id
 
     return (
         <div className="p-6 max-w-screen-2xl mx-auto mb-20 flex flex-col gap-10">
-            <img src={course.data.thumbnail_image} alt={`${live_id}`} className=" rounded-xl mb-4" />
+            <img src={course.data.thumbnail_image} alt={`${live_id}`} className=" rounded-xl mb-4 w-full h-[680px] object-cover" />
             <div className="flex justify-between">
                 <div>
                     <p className="font-medium">{course.data.course_name}</p>
@@ -77,7 +78,9 @@ export default async function DetailPage({ params }: { params: Promise<{ live_id
                                                     {item.description} / {formatToVNTime(item.start_time)} - {formatToVNTime(item.end_time)}
                                                 </p>
                                             </div>
-                                            <div className="text-primary text-xl">Vào lớp</div>
+                                            <Link href={`https://us05web.zoom.us/j/85444899811?pwd=PQMxNmwIEaB2cEkQs7i6847VXaiozO.1`} target="_blank">
+                                                <div className="text-primary text-xl">Vào lớp</div>
+                                            </Link>
                                         </div>
                                     ))}
                             </div>

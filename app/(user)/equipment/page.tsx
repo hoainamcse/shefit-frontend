@@ -65,7 +65,7 @@ export default async function Equipment() {
             <Link href={`/equipment/${equipment.id}`} key={equipment.id}>
               <div key={`menu-${equipment.id}`} className="text-xl">
                 <div className="relative group">
-                  <Image src={equipment.image} alt="" className="aspect-1 object-cover rounded-xl mb-4" width={858} height={373} />
+                  <img src={equipment.image} alt="" className="aspect-1 object-cover rounded-xl mb-4 w-full h-[373px]" />
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
                 <div className="flex gap-2 mb-2">

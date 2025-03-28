@@ -69,14 +69,13 @@ export default async function MenuDetail({
               <CarouselContent>
                 {mealPlan.meal_ingredients.map((ingredient) => (
                   <CarouselItem key={ingredient.id} className="max-lg:basis-1/3 xl:basis-[11%]">
-                    <div>
+                    <div className="w-[168px]">
                       <img
                         src={ingredient.image}
                         alt={ingredient.name}
-                        width={168}
-                        height={175}
+                        className="w-[168px] h-[175px] object-cover rounded-xl"
                       />
-                      <div>{ingredient.name}</div>
+                      <div className="text-lg max-lg:text-base w-full">{ingredient.name}</div>
                     </div>
                   </CarouselItem>
                 ))}

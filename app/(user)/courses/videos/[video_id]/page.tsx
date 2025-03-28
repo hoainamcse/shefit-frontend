@@ -29,7 +29,7 @@ export default async function VideoDetail({ params }: { params: Promise<{ video_
           </ul>
         </div>
         <div>
-          <p className=" font-[family-name:var(--font-coiny)] text-text text-2xl xl:text-[40px]">Thông tin khoá</p>
+          <p className=" font-[family-name:var(--font-coiny)] text-text text-2xl xl:text-[40px] mb-4">Thông tin khoá</p>
           <p>
             {course.data.description}
           </p>
@@ -37,13 +37,13 @@ export default async function VideoDetail({ params }: { params: Promise<{ video_
         <div>
           <p className=" font-[family-name:var(--font-coiny)] text-text text-2xl xl:text-[40px]">Dụng cụ</p>
           <ScrollArea className="w-screen-max-xl">
-            <div className="flex w-max space-x-4 py-4">
+            <div className="flex space-x-4 py-4 w-full">
               {equipment.data.map((equipment, index) => (
-                <figure key={`equipment-${equipment.id}-${index}`} className="shrink-0">
+                <figure key={`equipment-${equipment.id}-${index}`} className="shrink-0 w-[168px]">
                   <div className="overflow-hidden rounded-md">
-                    <img src={equipment.image} alt={equipment.name} width={168} height={175} />
+                    <img src={equipment.image} alt={equipment.name} className="w-[168px] h-[175px] object-cover rounded-xl" />
                   </div>
-                  <figcaption className="pt-2 font-semibold text-xs text-muted-foreground">{equipment.name}</figcaption>
+                  <figcaption className="pt-2 font-semibold text-lg max-lg:text-base text-muted-foreground w-full">{equipment.name}</figcaption>
                 </figure>
               ))}
             </div>
@@ -53,13 +53,13 @@ export default async function VideoDetail({ params }: { params: Promise<{ video_
         <div>
           <p className=" font-[family-name:var(--font-coiny)] text-text text-2xl xl:text-[40px]">Nhóm cơ</p>
           <ScrollArea className="w-screen-max-xl">
-            <div className="flex w-max space-x-4 py-4">
+            <div className="flex w-full space-x-4 py-4">
               {muscleGroup.data.map((muscleGroup, index) => (
-                <figure key={`muscleGroup-${muscleGroup.id}-${index}`} className="shrink-0">
+                <figure key={`muscleGroup-${muscleGroup.id}-${index}`} className="shrink-0 w-[168px]">
                   <div className="overflow-hidden rounded-md">
-                    <img src={muscleGroup.image} alt={muscleGroup.name} width={168} height={175} />
+                    <img src={muscleGroup.image} alt={muscleGroup.name} className="w-[168px] h-[175px] object-cover rounded-xl" />
                   </div>
-                  <figcaption className="pt-2 font-semibold text-xs text-muted-foreground">{muscleGroup.name}</figcaption>
+                  <figcaption className="pt-2 font-semibold text-xl max-lg:text-base text-muted-foreground w-full">{muscleGroup.name}</figcaption>
                 </figure>
               ))}
             </div>
