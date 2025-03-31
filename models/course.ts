@@ -29,7 +29,7 @@ type Course = {
   is_public: boolean
   created_at: string
   updated_at: string
-  live: Live
+  // live: Live
 }
 
 export type { CourseFormat, FormCategory, DifficultyLevel, Course }
