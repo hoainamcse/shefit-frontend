@@ -1,7 +1,12 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { MainButton } from '@/components/buttons/main-button'
+import { register } from '@/network/server/auth'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 function GoogleIcon() {
   return (
@@ -60,14 +65,31 @@ function FacebookIcon() {
 }
 
 function RegisterForm() {
-  async function register(formData: FormData) {
-    'use server'
+  const router = useRouter()
 
-    console.log(formData)
+  async function handleSubmit(formData: FormData) {
+    try {
+      const data = {
+        fullname: formData.get('fullname')?.toString() || '',
+        phone_number: formData.get('phone_number')?.toString() || '',
+        username: formData.get('username')?.toString() || '',
+        password: formData.get('password')?.toString() || '',
+      }
+      const response = await register(data)
+
+      if (response.status === 400) {
+        toast.error('Đăng ký thất bại!')
+      } else {
+        toast.success('Đăng ký thành công!')
+        router.push('/auth/login')
+      }
+    } catch (error) {
+      console.error('Error during registration:', error)
+    }
   }
 
   return (
-    <form action={register} className="space-y-6">
+    <form action={handleSubmit} className="space-y-6">
       <div className="mx-auto space-y-2">
         <Label htmlFor="fullname">Tên</Label>
         <Input placeholder="Nhập tên của bạn" id="fullname" name="fullname" type="text" />

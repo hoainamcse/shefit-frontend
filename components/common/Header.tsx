@@ -1,3 +1,5 @@
+'use client'
+
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -19,10 +21,39 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { GalleryIcon } from "../icons/GalleryIcon"
-import { url } from "inspector"
 import { StarIcon } from "../icons/StarIcon"
+import { useState, useEffect } from "react"
 
 export default function Header() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem('access_token')
+    const refreshToken = localStorage.getItem('refresh_token')
+    setIsLoggedIn(!!accessToken && !!refreshToken)
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+    setIsLoggedIn(false)
+  }
+
+  const authButton = isLoggedIn ? (
+    <Button
+      onClick={handleLogout}
+      className="rounded-2xl bg-button hover:bg-[#11c296] px-10"
+    >
+      Đăng xuất
+    </Button>
+  ) : (
+    <Link href="/auth/login">
+      <Button className="rounded-2xl bg-button hover:bg-[#11c296] px-10">
+        Đăng nhập
+      </Button>
+    </Link>
+  )
+
   const navItems = [
     {
       label: "Khoá tập",
@@ -71,12 +102,6 @@ export default function Header() {
     },
   ]
 
-  const loginButton = (
-    <Link href="/auth/login">
-      <Button className="rounded-2xl bg-button hover:bg-[#11c296] px-10">Đăng nhập</Button>
-    </Link>
-  )
-
   return (
     <header className="bg-primary sticky top-0 z-50">
       <div className="max-w-screen-2xl mx-auto flex justify-between items-center p-3">
@@ -90,7 +115,7 @@ export default function Header() {
               {item.label}
             </Link>
           ))}
-          {loginButton}
+          {authButton}
         </div>
         <Sheet>
           <SheetTrigger asChild>
@@ -111,7 +136,7 @@ export default function Header() {
                 </Link>
               ))}
             </div>
-            <SheetFooter className="mt-6">{loginButton}</SheetFooter>
+            <SheetFooter className="mt-6">{authButton}</SheetFooter>
           </SheetContent>
         </Sheet>
       </div>

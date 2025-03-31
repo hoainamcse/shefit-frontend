@@ -1,8 +1,13 @@
+'use client'
+
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { MainButton } from '@/components/buttons/main-button'
+import { login } from '@/network/server/auth'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 function GoogleIcon() {
   return (
@@ -60,15 +65,31 @@ function FacebookIcon() {
   )
 }
 
-function LoginForm() {
-  async function login(formData: FormData) {
-    'use server'
+export default function LoginForm() {
+  const router = useRouter()
+  async function handleSubmit(formData: FormData) {
+    try {
+      const data = {
+        username: formData.get('username')?.toString() || '',
+        password: formData.get('password')?.toString() || '',
+        grant_type: 'password' as const,
+      }
 
-    console.log(formData)
+      const response = await login(data)
+
+      localStorage.setItem('access_token', response.access_token)
+      localStorage.setItem('refresh_token', response.refresh_token)
+
+      toast.success('Đăng nhập thành công!')
+      router.push('/')
+    } catch (error) {
+      console.error('Error during login:', error)
+      toast.error('Đăng nhập thất bại!')
+    }
   }
 
   return (
-    <form action={login} className="space-y-6">
+    <form action={handleSubmit} className="space-y-6">
       <p className="text-text">
         Đăng ký tài khoản để xem +100 khóa tập, +1000 động tác, +30 thực đơn giúp bạn Độ Dáng tại bất kì đâu!
       </p>
