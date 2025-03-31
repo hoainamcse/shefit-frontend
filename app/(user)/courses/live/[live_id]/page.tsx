@@ -41,7 +41,7 @@ export default async function ZoomDetail({ params }: { params: Promise<{ live_id
               {equipment.data.map((equipment, index) => (
                 <figure key={`equipment-${equipment.id}-${index}`} className="shrink-0">
                   <div className="overflow-hidden rounded-md">
-                    <img src={equipment.image} alt={equipment.name} width={168} height={175} />
+                    <img src={equipment.image} alt={equipment.name} className="w-[168px] h-[175px] object-cover" />
                   </div>
                   <figcaption className="pt-2 font-semibold text-xs text-muted-foreground">{equipment.name}</figcaption>
                 </figure>
@@ -57,7 +57,7 @@ export default async function ZoomDetail({ params }: { params: Promise<{ live_id
               {muscleGroup.data.map((muscleGroup, index) => (
                 <figure key={`muscleGroup-${muscleGroup.id}-${index}`} className="shrink-0">
                   <div className="overflow-hidden rounded-md">
-                    <img src={muscleGroup.image} alt={muscleGroup.name} width={168} height={175} />
+                    <img src={muscleGroup.image} alt={muscleGroup.name} className="w-[168px] h-[175px] object-cover" />
                   </div>
                   <figcaption className="pt-2 font-semibold text-xs text-muted-foreground">{muscleGroup.name}</figcaption>
                 </figure>
