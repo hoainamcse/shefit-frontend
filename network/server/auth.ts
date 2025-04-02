@@ -49,3 +49,27 @@ export const refreshToken = async (refresh_token: string): Promise<TokenResponse
 
     return response.json();
 };
+
+export const getOauth2AuthUrl = async () => {
+    const response = await fetchData(`/v1/auth/oauth2/google/auth-url`, {
+        method: "GET",
+    });
+
+    return response.json();
+};
+
+export const handleGoogleCallback = async () => {
+    const response = await fetchData(`/v1/auth/oauth2/google:handleCallback`, {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to handle Google callback");
+    }
+
+    return response.json();
+};

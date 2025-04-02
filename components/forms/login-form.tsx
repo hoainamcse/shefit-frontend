@@ -110,10 +110,6 @@ export default function LoginForm() {
         <GoogleIcon />
         Đăng nhập bằng Google
       </Button>
-      <Button type="submit" variant="secondary" className="w-full p-3 rounded-3xl gap-2">
-        <FacebookIcon />
-        Đăng nhập bằng Facebook
-      </Button>
     </form>
   )
 }

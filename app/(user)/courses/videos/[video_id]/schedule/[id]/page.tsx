@@ -43,7 +43,13 @@ export default async function Video({ params }: { params: Promise<{ video_id: st
                             <DialogContent className="max-w-[1399px] max-h-[787px]">
                                 <DialogHeader>
                                     <DialogTitle>
-                                        <iframe className="h-[calc(100vw*9/16)] max-h-[720px] w-full rounded-xl p-4" src="https://www.youtube.com/embed/5YWqMqvV4j8" title="Lagu Terbaik Linkin Park|| 5 Best Songs Linkin Park" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+                                        <iframe
+                                            className="h-[calc(100vw*9/16)] max-h-[720px] w-full rounded-xl p-4"
+                                            src="https://www.youtube.com/embed/_4VRmEYFVcg?loop=1&playlist=_4VRmEYFVcg"
+                                            title="Cbum"
+                                            referrerPolicy="strict-origin-when-cross-origin"
+                                            allowFullScreen
+                                        ></iframe>
                                     </DialogTitle>
                                 </DialogHeader>
                             </DialogContent>
