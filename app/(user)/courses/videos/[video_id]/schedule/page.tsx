@@ -41,18 +41,20 @@ export default async function CoursePage({ params }: { params: Promise<{ video_i
                         </AccordionTrigger>
                         <AccordionContent>
                             <ol className="flex flex-col gap-2 text-xl">
-                                {days.data.map((day) => (
-                                    <li key={day.day_number} className="flex justify-between items-center">
-                                        <div className="flex gap-1">
-                                            <span className="font-semibold text-gray-900 dark:text-gray-50">Ngày </span>
-                                            <span className="text-gray-900 dark:text-gray-50">{day.day_number}</span>
-                                            <p>{day.description}</p>
-                                        </div>
-                                        <Link href={`/courses/videos/${video_id}/schedule/${day.day_number}`}>
-                                            <ArrowPinkIcon />
-                                        </Link>
-                                    </li>
-                                ))}
+                                {days.data
+                                    .sort((a, b) => a.id - b.id)
+                                    .map((day, index) => (
+                                        <li key={day.id} className="flex justify-between items-center">
+                                            <div className="flex gap-1">
+                                                <span className="font-semibold text-gray-900 dark:text-gray-50">Ngày </span>
+                                                <span className="text-gray-900 dark:text-gray-50">{index + 1}</span>
+                                                <p>{day.description}</p>
+                                            </div>
+                                            <Link href={`/courses/videos/${video_id}/schedule/${day.id}`}>
+                                                <ArrowPinkIcon />
+                                            </Link>
+                                        </li>
+                                    ))}
                             </ol>
                         </AccordionContent>
                     </AccordionItem>

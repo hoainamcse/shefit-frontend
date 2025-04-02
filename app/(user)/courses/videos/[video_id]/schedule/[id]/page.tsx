@@ -3,11 +3,31 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { CloseIcon } from "@/components/icons/CloseIcon"
 import { Button } from "@/components/ui/button"
 import { getCircuits } from "@/network/server/circuits"
+import { getWeeks } from "@/network/server/weeks"
+import { getDays } from "@/network/server/days"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 export default async function Video({ params }: { params: Promise<{ video_id: string, id: string }> }) {
     const { video_id, id } = await params
-    const courses = await getCircuits(video_id, id, "1")
+    
+    // First get the weeks to find the correct week
+    const weeks = await getWeeks(video_id)
+    const currentWeek = weeks.data.find(week => week.id.toString() === id)
+    
+    if (!currentWeek) {
+        throw new Error("Week not found")
+    }
+    
+    // Get days for the current week
+    const days = await getDays(video_id, currentWeek.id.toString())
+    const currentDay = days.data[0] // Get first day or implement logic to get specific day
+    
+    if (!currentDay) {
+        throw new Error("Day not found")
+    }
+    
+    // Now get circuits with proper week_id and day_id
+    const courses = await getCircuits(video_id, currentWeek.id.toString(), currentDay.id.toString())
 
     return (
         <div className="flex flex-col gap-10 mt-10">
