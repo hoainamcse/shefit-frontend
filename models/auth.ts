@@ -20,4 +20,12 @@ type TokenResponse = {
     token_type: string;
 };
 
-export type { Login, Register, TokenResponse };
+type Account = {
+    id: string;
+    name: string;
+    phone_number: string;
+    username: string;
+    password: string;
+}
+
+export type { Login, Register, TokenResponse, Account };

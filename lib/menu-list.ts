@@ -143,7 +143,7 @@ export function getMenuList(pathname: string): Group[] {
           icon: Users,
         },
         {
-          href: '#',
+          href: '/admin/account',
           label: 'Tài khoản',
           icon: Settings,
         },
