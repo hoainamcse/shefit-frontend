@@ -6,12 +6,14 @@ type MealIngredient = {
     updated_at: string;
 }
 
+type Goal = 'weight_loss' | 'energy' | 'recovery' | 'hormonal_balance' | 'muscle_tone'
+
 type MealPlan = {
     id: string;
     title: string;
     subtitle: string;
     chef_name: string;
-    goal: string;
+    goal: Goal;
     calories: string;
     image: string;
     description: string;
@@ -19,4 +21,4 @@ type MealPlan = {
     meal_ingredients: MealIngredient[];
 }
 
-export type { MealPlan }
+export type { MealPlan, Goal }

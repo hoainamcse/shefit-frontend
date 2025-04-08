@@ -1,45 +1,31 @@
+'use client'
+
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import Layout from "@/components/common/Layout"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ChevronRight } from "lucide-react"
 import Link from "next/link"
-import React from "react"
+import React, { useState, useEffect } from "react"
 import Image from "next/image"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { getCourses } from "@/network/server/courses"
 import { cn } from "@/lib/utils"
+import { DIFFICULTY_LEVEL_OPTIONS, FORM_CATEGORY_OPTIONS } from "@/lib/label"
+import type { Course, FormCategory } from "@/models/course"
 
-function SelectHero({ placeholder }: { placeholder: string }) {
-  const data = [
-    {
-      value: "dress-shirt-striped",
-      label: "Striped Dress Shirt",
-    },
-    {
-      value: "relaxed-button-down",
-      label: "Relaxed Fit Button Down",
-    },
-    {
-      value: "slim-button-down",
-      label: "Slim Fit Button Down",
-    },
-    {
-      value: "dress-shirt-solid",
-      label: "Solid Dress Shirt",
-    },
-    {
-      value: "dress-shirt-check",
-      label: "Check Dress Shirt",
-    },
-  ]
-
+function SelectHero({ placeholder, options, value, onChange }: {
+  placeholder: string
+  options: { value: string; label: string }[]
+  value: string
+  onChange: (value: string) => void
+}) {
   return (
-    <Select>
+    <Select value={value} onValueChange={onChange}>
       <SelectTrigger>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        {data.map((item) => (
+        {options.map((item) => (
           <SelectItem key={item.value} value={item.value}>
             {item.label}
           </SelectItem>
@@ -59,9 +45,34 @@ const NextButton = ({ className }: { className?: string }) => {
 
 export const fetchCache = 'default-no-store'
 
-export default async function TrainingCoursesPage() {
-  const courses = await getCourses("video")
-  const coursesZoom = await getCourses("live")
+export default function TrainingCoursesPage() {
+  const [difficulty, setDifficulty] = useState("")
+  const [formCategory, setFormCategory] = useState("")
+  const [courses, setCourses] = useState<Course[]>([])
+  const [coursesZoom, setCoursesZoom] = useState<Course[]>([])
+  const [activeTab, setActiveTab] = useState("video")
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const videoCourses = await getCourses("video")
+      const zoomCourses = await getCourses("live")
+      setCourses(videoCourses.data)
+      setCoursesZoom(zoomCourses.data)
+    }
+    fetchCourses()
+  }, [])
+
+  const filterCourses = (courseList: Course[]) => {
+    return courseList.filter(course => {
+      const matchesDifficulty = !difficulty || course.difficulty_level === difficulty
+      const matchesFormCategory = !formCategory || course.form_categories.includes(formCategory as FormCategory)
+      return matchesDifficulty && matchesFormCategory
+    })
+  }
+
+  const filteredCourses = filterCourses(courses)
+  const filteredCoursesZoom = filterCourses(coursesZoom)
+
   return (
     <Layout>
       <div className="max-w-screen-2xl mx-auto">
@@ -109,11 +120,21 @@ export default async function TrainingCoursesPage() {
             hôm nay!
           </p>
           <div className="flex gap-4">
-            <SelectHero placeholder="Độ khó" />
-            <SelectHero placeholder="Phom dáng" />
+            <SelectHero
+              placeholder="Độ khó"
+              options={DIFFICULTY_LEVEL_OPTIONS}
+              value={difficulty}
+              onChange={setDifficulty}
+            />
+            <SelectHero
+              placeholder="Phom dáng"
+              options={FORM_CATEGORY_OPTIONS}
+              value={formCategory}
+              onChange={setFormCategory}
+            />
           </div>
           <div className="flex justify-center gap-4 mt-4">
-            <Tabs defaultValue="video">
+            <Tabs defaultValue="video" onValueChange={setActiveTab}>
               <div className="flex justify-center gap-4 mb-10">
                 <TabsList className="bg-white">
                   <TabsTrigger value="video" className={cn("underline text-text bg-white !shadow-none")}>Video</TabsTrigger>
@@ -122,7 +143,7 @@ export default async function TrainingCoursesPage() {
               </div>
               <TabsContent value="video">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  {courses.data.map((course, index) => (
+                  {filteredCourses.map((course) => (
                     <div key={`video-${course.id}`}>
                       <div className="relative group">
                         <Image
@@ -152,7 +173,7 @@ export default async function TrainingCoursesPage() {
 
               <TabsContent value="live">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  {coursesZoom.data.map((course, index) => (
+                  {filteredCoursesZoom.map((course) => (
                     <div key={`zoom-${course.id}`}>
                       <div className="relative group">
                         <Image

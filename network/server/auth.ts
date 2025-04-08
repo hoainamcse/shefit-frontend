@@ -58,8 +58,8 @@ export const getOauth2AuthUrl = async () => {
     return response.json();
 };
 
-export const handleGoogleCallback = async () => {
-    const response = await fetchData(`/v1/auth/oauth2/google:handleCallback`, {
+export const handleGoogleCallback = async (code: string): Promise<TokenResponse> => {
+    const response = await fetchData(`/v1/auth/oauth2/google:handleCallback?code=${encodeURIComponent(code)}`, {
         method: "GET",
         headers: {
             'Content-Type': 'application/json'

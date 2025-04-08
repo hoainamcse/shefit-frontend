@@ -1,3 +1,5 @@
+'use client'
+
 import Layout from "@/components/common/Layout";
 import {
   Select,
@@ -8,42 +10,32 @@ import {
 } from "@/components/ui/select";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { getListMealPlans } from "@/network/server/meal-plans";
+import { GOAL_OPTIONS } from "@/lib/label";
+import type { MealPlan } from "@/models/meal-plans";
 
-export const dynamic = 'force-dynamic';
+const CALORIE_OPTIONS = [
+  { value: "low", label: "< 300 cal" },
+  { value: "medium", label: "300-400 cal" },
+  { value: "high", label: "> 400 cal" }
+];
 
-function SelectHero({ placeholder }: { placeholder: string }) {
-  const data = [
-    {
-      value: "dress-shirt-striped",
-      label: "Striped Dress Shirt",
-    },
-    {
-      value: "relaxed-button-down",
-      label: "Relaxed Fit Button Down",
-    },
-    {
-      value: "slim-button-down",
-      label: "Slim Fit Button Down",
-    },
-    {
-      value: "dress-shirt-solid",
-      label: "Solid Dress Shirt",
-    },
-    {
-      value: "dress-shirt-check",
-      label: "Check Dress Shirt",
-    },
-  ];
+function SelectHero({ placeholder, options, value, onChange }: {
+  placeholder: string;
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (value: string) => void;
+}) {
+
 
   return (
-    <Select>
+    <Select value={value} onValueChange={onChange}>
       <SelectTrigger>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        {data.map((item) => (
+        {options.map((item) => (
           <SelectItem key={item.value} value={item.value}>
             {item.label}
           </SelectItem>
@@ -53,22 +45,34 @@ function SelectHero({ placeholder }: { placeholder: string }) {
   );
 }
 
-const NextButton = ({ className, href }: { className?: string, href: string }) => {
+const NextButton = ({ href, className }: { href: string; className?: string }) => {
   return (
     <Link href={href}>
-      <button
-        type="button"
-        className={`bg-background p-2 rounded-3xl text-text ${className}`}
-      >
+      <button type="button" className={`bg-background p-2 rounded-3xl text-text ${className}`}>
         <ChevronRight className="w-4 h-4" />
       </button>
     </Link>
   );
 };
 
-export default async function MenuPage() {
-  const mealPlansResponse = await getListMealPlans();
-  const mealPlans = mealPlansResponse.data || [];
+export default function MenuPage() {
+  const [goal, setGoal] = useState("");
+  const [calorieCategory, setCalorieCategory] = useState("");
+  const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
+
+  useEffect(() => {
+    const fetchMealPlans = async () => {
+      const response = await getListMealPlans();
+      setMealPlans(response.data || []);
+    };
+    fetchMealPlans();
+  }, []);
+
+  const filteredMealPlans = mealPlans.filter(mealPlan => {
+    const matchesGoal = !goal || mealPlan.goal === goal;
+    const matchesCalorie = !calorieCategory || getCalorieCategory(mealPlan.calories) === calorieCategory;
+    return matchesGoal && matchesCalorie;
+  });
 
   return (
     <Layout>
@@ -82,12 +86,22 @@ export default async function MenuPage() {
           quả!
         </p>
         <div className="flex gap-4">
-          <SelectHero placeholder="Mục tiêu" />
-          <SelectHero placeholder="Lượng calo" />
+          <SelectHero
+            placeholder="Mục tiêu"
+            options={GOAL_OPTIONS}
+            value={goal}
+            onChange={setGoal}
+          />
+          <SelectHero
+            placeholder="Lượng calo"
+            options={CALORIE_OPTIONS}
+            value={calorieCategory}
+            onChange={setCalorieCategory}
+          />
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-screen-xl mx-auto mt-6">
-        {mealPlans.map((mealPlan) => (
+        {filteredMealPlans.map((mealPlan) => (
           <div key={`menu-${mealPlan.id}`}>
             <div className="relative group">
               <img
@@ -106,4 +120,11 @@ export default async function MenuPage() {
       </div>
     </Layout>
   );
+}
+
+function getCalorieCategory(calories: string): string {
+  const cal = parseInt(calories);
+  if (cal < 300) return "low";
+  if (cal > 400) return "high";
+  return "medium";
 }

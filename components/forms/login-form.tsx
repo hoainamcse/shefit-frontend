@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { MainButton } from '@/components/buttons/main-button'
-import { login } from '@/network/server/auth'
+import { login, handleGoogleCallback as handleGoogleOAuth } from '@/network/server/auth'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import React from 'react'
 
 function GoogleIcon() {
   return (
@@ -65,8 +66,13 @@ function FacebookIcon() {
   )
 }
 
-export default function LoginForm() {
+export default function LoginForm(data: { oauth2AuthUrl: string }) {
   const router = useRouter()
+
+  const handleGoogleSignIn = () => {
+    window.location.href = data.oauth2AuthUrl
+  }
+
   async function handleSubmit(formData: FormData) {
     try {
       const data = {
@@ -106,7 +112,7 @@ export default function LoginForm() {
         <Link href="/auth/register">Đăng ký</Link>
       </Button>
       <p className="text-sm text-center text-[#8E8E93]">Hoặc</p>
-      <Button type="submit" variant="secondary" className="w-full p-3 rounded-3xl gap-2">
+      <Button type="button" variant="secondary" className="w-full p-3 rounded-3xl gap-2" onClick={handleGoogleSignIn}>
         <GoogleIcon />
         Đăng nhập bằng Google
       </Button>

@@ -28,4 +28,8 @@ type Account = {
     password: string;
 }
 
-export type { Login, Register, TokenResponse, Account };
+type Oauth2AuthUrlResponse = {
+    url: string;
+};
+
+export type { Login, Register, TokenResponse, Account, Oauth2AuthUrlResponse };
