@@ -128,7 +128,7 @@ export function getMenuList(pathname: string): Group[] {
           icon: CreditCardIcon,
         },
         {
-          href: '#',
+          href: '/admin/blog',
           label: 'Blog',
           icon: RssIcon,
         },
