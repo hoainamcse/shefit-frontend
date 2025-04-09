@@ -3,6 +3,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { getCourse } from "@/network/server/courses"
 import { getEquipments } from "@/network/server/equipments"
 import { getMuscleGroups } from "@/network/server/muscle-group"
+import { getFormCategoryLabel, getDifficultyLevelLabel } from "@/lib/label"
 import Link from "next/link"
 
 export default async function ZoomDetail({ params }: { params: Promise<{ live_id: string }> }) {
@@ -17,10 +18,14 @@ export default async function ZoomDetail({ params }: { params: Promise<{ live_id
         <div className="flex justify-between">
           <div>
             <p className="font-medium">Easy Slim - Video</p>
-            <p className="text-[#737373]">{course.data.difficulty_level}</p>
+            <p className="text-[#737373]">{getDifficultyLevelLabel(course.data.difficulty_level)}</p>
             <p className="text-[#737373]">{course.data.trainer}</p>
           </div>
-          <p className="text-[#737373]">{course.data.form_categories}</p>
+          <div className="text-gray-500">
+            {Array.isArray(course.data.form_categories)
+              ? course.data.form_categories.map(cat => getFormCategoryLabel(cat)).join(', ')
+              : getFormCategoryLabel(course.data.form_categories)}
+          </div>
         </div>
         <div className="bg-primary rounded-xl my-4 p-4">
           <p className="text-white text-center text-2xl">Tóm tắt khoá học</p>

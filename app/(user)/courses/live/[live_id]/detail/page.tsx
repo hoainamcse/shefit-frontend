@@ -3,7 +3,7 @@ import { getCourse } from "@/network/server/courses"
 import { getLives } from "@/network/server/live"
 import { Live } from "@/models/live"
 import Link from "next/link"
-
+import { getFormCategoryLabel, getDifficultyLevelLabel } from "@/lib/label"
 const formatToVNTime = (time: string) => {
     const [hours] = time.split(':');
     const vnHour = (parseInt(hours) + 7) % 24;
@@ -21,10 +21,14 @@ export default async function DetailPage({ params }: { params: Promise<{ live_id
             <div className="flex justify-between">
                 <div>
                     <p className="font-medium">{course.data.course_name}</p>
-                    <p className="text-[#737373]">{course.data.difficulty_level}</p>
+                    <p className="text-[#737373]">{getDifficultyLevelLabel(course.data.difficulty_level)}</p>
                     <p className="text-[#737373]">{course.data.trainer}</p>
                 </div>
-                <p className="text-[#737373]">{course.data.form_categories}</p>
+                <div className="text-gray-500">
+                    {Array.isArray(course.data.form_categories)
+                        ? course.data.form_categories.map(cat => getFormCategoryLabel(cat)).join(', ')
+                        : getFormCategoryLabel(course.data.form_categories)}
+                </div>
             </div>
             <div className="bg-primary rounded-xl my-4 p-4">
                 <p className="text-white text-center text-2xl">Tóm tắt khoá học</p>

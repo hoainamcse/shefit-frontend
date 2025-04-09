@@ -4,6 +4,7 @@ import Link from "next/link"
 import { getCourse } from "@/network/server/courses"
 import { getEquipments } from "@/network/server/equipments"
 import { getMuscleGroups } from "@/network/server/muscle-group"
+import { getFormCategoryLabel, getDifficultyLevelLabel } from "@/lib/label"
 
 export default async function VideoDetail({ params }: { params: Promise<{ video_id: string }> }) {
   const { video_id } = await params
@@ -17,10 +18,14 @@ export default async function VideoDetail({ params }: { params: Promise<{ video_
         <div className="flex justify-between">
           <div>
             <p className="font-medium">{course.data.course_name}</p>
-            <p className="text-[#737373]">{course.data.difficulty_level}</p>
+            <p className="text-[#737373]">{getDifficultyLevelLabel(course.data.difficulty_level)}</p>
             <p className="text-[#737373]">{course.data.trainer}</p>
           </div>
-          <p className="text-[#737373]">{course.data.form_categories}</p>
+          <div className="text-gray-500">
+            {Array.isArray(course.data.form_categories)
+              ? course.data.form_categories.map(cat => getFormCategoryLabel(cat)).join(', ')
+              : getFormCategoryLabel(course.data.form_categories)}
+          </div>
         </div>
         <div className="bg-primary rounded-xl my-4 p-4">
           <p className="text-white text-center text-2xl">Tóm tắt khoá học</p>

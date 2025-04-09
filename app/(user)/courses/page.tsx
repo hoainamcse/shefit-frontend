@@ -10,8 +10,11 @@ import Image from "next/image"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { getCourses } from "@/network/server/courses"
 import { cn } from "@/lib/utils"
-import { DIFFICULTY_LEVEL_OPTIONS, FORM_CATEGORY_OPTIONS } from "@/lib/label"
+import { DIFFICULTY_LEVEL_OPTIONS, FORM_CATEGORY_OPTIONS, getFormCategoryLabel, getDifficultyLevelLabel } from "@/lib/label"
 import type { Course, FormCategory } from "@/models/course"
+import { getSubscriptions } from "@/network/server/subcriptions"
+import type { Subscription } from "@/models/subscriptions"
+import PopularCoursesCarousel from "./_components/PopularCoursesCarousel"
 
 function SelectHero({ placeholder, options, value, onChange }: {
   placeholder: string
@@ -48,9 +51,19 @@ export const fetchCache = 'default-no-store'
 export default function TrainingCoursesPage() {
   const [difficulty, setDifficulty] = useState("")
   const [formCategory, setFormCategory] = useState("")
+  const [subscriptionId, setSubscriptionId] = useState<string | number>("")
   const [courses, setCourses] = useState<Course[]>([])
   const [coursesZoom, setCoursesZoom] = useState<Course[]>([])
   const [activeTab, setActiveTab] = useState("video")
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
+
+  useEffect(() => {
+    const fetchSubscriptions = async () => {
+      const subscriptions = await getSubscriptions()
+      setSubscriptions(subscriptions.data)
+    }
+    fetchSubscriptions()
+  }, [])
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -66,7 +79,8 @@ export default function TrainingCoursesPage() {
     return courseList.filter(course => {
       const matchesDifficulty = !difficulty || course.difficulty_level === difficulty
       const matchesFormCategory = !formCategory || course.form_categories.includes(formCategory as FormCategory)
-      return matchesDifficulty && matchesFormCategory
+      const matchesSubscription = !subscriptionId || course.subscriptions.some(subscription => String(subscription.id) === String(subscriptionId))
+      return matchesDifficulty && matchesFormCategory && matchesSubscription
     })
   }
 
@@ -75,43 +89,7 @@ export default function TrainingCoursesPage() {
 
   return (
     <Layout>
-      <div className="max-w-screen-2xl mx-auto">
-        <p className="text-center font-[family-name:var(--font-coiny)] text-text text-2xl my-4">
-          Khoá tập hot nhất tháng
-        </p>
-        <Carousel
-          opts={{
-            align: "start",
-          }}
-          className="w-full"
-        >
-          <CarouselContent>
-            {Array.from({ length: 12 }).map((_, index) => (
-              <CarouselItem key={`menu-${index}`} className="md:basis-1/2 lg:basis-[22%]">
-                <div className="text-center">
-                  <div className="relative group">
-                    <Image
-                      src="/temp/VideoCard.jpg"
-                      alt="temp/28461621e6ffe301d1ec8b477ebc7c45"
-                      className="aspect-[2/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
-                      width={585}
-                      height={373}
-                    />
-                    <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-                  </div>
-                  <p className="font-medium">Easy Slim - Zoom</p>
-                  <p className="text-[#737373]">
-                    Độ Mông Đào</p>
-                  <p className="text-[#737373]">Miss Vi Salano - 4 Tuần</p>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
-        <div className="flex gap-6"></div>
-      </div>
+      <PopularCoursesCarousel />
       <div className="max-w-screen-2xl mx-auto">
         <div className="max-w-screen-xl mx-auto my-12 flex flex-col gap-4">
           <p className="text-center font-[family-name:var(--font-coiny)] text-text text-2xl">Tất cả khoá tập</p>
@@ -131,6 +109,12 @@ export default function TrainingCoursesPage() {
               options={FORM_CATEGORY_OPTIONS}
               value={formCategory}
               onChange={setFormCategory}
+            />
+            <SelectHero
+              placeholder="Gói tập"
+              options={subscriptions.map(subscription => ({ value: subscription.id.toString(), label: subscription.name }))}
+              value={subscriptionId.toString()}
+              onChange={setSubscriptionId}
             />
           </div>
           <div className="flex justify-center gap-4 mt-4">
@@ -161,10 +145,14 @@ export default function TrainingCoursesPage() {
                       <div className="flex justify-between">
                         <div>
                           <p className="font-medium">{course.course_name}</p>
-                          <p className="text-[#737373]">{course.difficulty_level}</p>
+                          <p className="text-[#737373]">{getDifficultyLevelLabel(course.difficulty_level)}</p>
                           <p className="text-[#737373]">{course.trainer}</p>
                         </div>
-                        <div className="text-gray-500">{course.form_categories}</div>
+                        <div className="text-gray-500">
+                          {Array.isArray(course.form_categories)
+                            ? course.form_categories.map(cat => getFormCategoryLabel(cat)).join(', ')
+                            : getFormCategoryLabel(course.form_categories)}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -191,10 +179,14 @@ export default function TrainingCoursesPage() {
                       <div className="flex justify-between">
                         <div>
                           <p className="font-medium">{course.course_name}</p>
-                          <p className="text-[#737373]">{course.difficulty_level}</p>
+                          <p className="text-[#737373]">{getDifficultyLevelLabel(course.difficulty_level)}</p>
                           <p className="text-[#737373]">{course.trainer}</p>
                         </div>
-                        <div className="text-gray-500">{course.form_categories}</div>
+                        <div className="text-gray-500">
+                          {Array.isArray(course.form_categories)
+                            ? course.form_categories.map(cat => getFormCategoryLabel(cat)).join(', ')
+                            : getFormCategoryLabel(course.form_categories)}
+                        </div>
                       </div>
                     </div>
                   ))}
