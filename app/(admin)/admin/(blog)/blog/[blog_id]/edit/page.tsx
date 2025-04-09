@@ -1,19 +1,17 @@
-'use client'
-
 import * as React from 'react'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { CreateBlogForm } from '@/components/forms/create-blog-form'
-import { useParams } from 'next/navigation';
-import { mockBlogs } from '../../page';
+import { mockBlogs } from '../../mockData'
 
-export default function EditBlogPage() {
-  
+export default async  function EditBlogPage({
+  params,
+}: {
+  params: Promise<{ blog_id: string }>
+}) {
 
-  const params = useParams();
-        const blogId = params.blog_id as string;
-        
-        // Find the blog with the matching ID
-    const blog = mockBlogs.find(blog => blog.id === blogId);
+  const { blog_id } = await params
+  const blog = mockBlogs.find((b) => b.id === blog_id);
+
   return (
     <ContentLayout title="Bài viết">
       <CreateBlogForm data={blog} typeForm="edit" onSuccess={() => {}} />

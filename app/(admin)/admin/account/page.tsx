@@ -165,11 +165,28 @@ function CreateAccountDialog({ children }: { children: React.ReactNode }) {
 
 function CreateAccountForm() {
   const form = useForm()
+  
+  const onSubmit = (data: any) => {
+    console.log('Form data:', data)
+  }
+
   return (
     <Form {...form}>
-      <form className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormInputField form={form} name="name" label="Tên" required placeholder="Nhập tên người dùng" />
-        <FormInputField form={form} name="phone_number" label="Số điện thoại" required placeholder="Nhập số điện thoại" />
+        <FormInputField 
+          form={form} 
+          name="phone_number" 
+          label="Số điện thoại" 
+          required 
+          placeholder="Nhập số điện thoại" 
+          type="tel"
+          pattern="^0[0-9]{9,10}$"
+          onInput={(e) => {
+            const input = e.target as HTMLInputElement;
+            input.value = input.value.replace(/[^0-9]/g, '');
+          }}
+        />
         <FormInputField form={form} name="username" label="Username" required placeholder="Nhập username" />
         <FormInputField form={form} name="password" type="password" label="Mật khẩu" required placeholder="Nhập mật khẩu" />
         <FormInputField form={form} name="confirm_password" type="password" label="Xác nhận mật khẩu" required placeholder="Nhập lại mật khẩu" />

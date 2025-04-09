@@ -123,7 +123,7 @@ export function getMenuList(pathname: string): Group[] {
           ],
         },
         {
-          href: '#',
+          href: '/admin/membership',
           label: 'Membership',
           icon: CreditCardIcon,
         },
