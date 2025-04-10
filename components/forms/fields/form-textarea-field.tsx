@@ -29,7 +29,7 @@ function FormTextareaField<
 }: FormTextareaFieldProps<TFieldValues, TContext, TTransformedValues>) {
   return (
     <FormField
-      control={form.control}
+      control={form.control as any}
       name={name}
       render={({ field }) => (
         <FormItem>

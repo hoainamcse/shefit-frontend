@@ -87,7 +87,7 @@ function CreateCourseForm({ data, format, onSuccess }: CreateCourseFormProps) {
 
   function onSubmit(data: FormData) {
     startTransition(async () => {
-      await createCourse(data as Omit<Course, 'id' | 'created_at' | 'updated_at'>)
+      await createCourse(data)
       toast.success('Tạo khoá học thành công')
       onSuccess?.()
     })
