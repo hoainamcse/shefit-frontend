@@ -10,8 +10,7 @@ import BodyQuiz from "./_components/body-quiz";
 import PurchasePackage from "./_components/purchase-package";
 import AccountInformation from "./_components/account-information";
 import Exercise from "../exercise/page";
-import Cart from "../cart/page";
-
+import Cart from "./_components/cart";
 const TABS = [
   { value: "body-quiz", label: "Body Quiz", icon: <QuizIcon /> },
   {
