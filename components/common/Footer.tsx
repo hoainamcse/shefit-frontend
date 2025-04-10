@@ -11,7 +11,7 @@ export default function Footer() {
   return (
     <div>
       <footer
-        className="w-full overflow-hidden max-sm:hidden"
+        className="w-full overflow-hidden max-sm:hidden h-[840px]"
         style={{
           backgroundImage: `url(${FooterImage.src})`,
           backgroundSize: "cover",
