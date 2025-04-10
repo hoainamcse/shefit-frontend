@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { MainButton } from '@/components/buttons/main-button'
-import { login, handleGoogleCallback as handleGoogleOAuth } from '@/network/server/auth'
+import { login, handleGoogleCallback as handleGoogleOAuth, getOauth2AuthUrl } from '@/network/server/auth'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import React from 'react'
+import React, { useState } from 'react'
 
 function GoogleIcon() {
   return (
@@ -66,11 +66,17 @@ function FacebookIcon() {
   )
 }
 
-export default function LoginForm(data: { oauth2AuthUrl: string }) {
+export default function LoginForm() {
   const router = useRouter()
 
-  const handleGoogleSignIn = () => {
-    window.location.href = data.oauth2AuthUrl
+  const handleGoogleSignIn = async () => {
+    try {
+      const response = await getOauth2AuthUrl(encodeURIComponent(process.env.NEXT_PUBLIC_GOOGLE_OAUTH_REDIRECT_URL!))
+      window.location.href = response.data.url
+    } catch (error) {
+      console.error('Error during login:', error)
+      toast.error('Đăng nhập thất bại!')
+    }
   }
 
   async function handleSubmit(formData: FormData) {

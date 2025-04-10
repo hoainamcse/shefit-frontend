@@ -50,16 +50,16 @@ export const refreshToken = async (refresh_token: string): Promise<TokenResponse
     return response.json();
 };
 
-export const getOauth2AuthUrl = async () => {
-    const response = await fetchData(`/v1/auth/oauth2/google/auth-url`, {
+export const getOauth2AuthUrl = async (redirect_uri: string) => {
+    const response = await fetchData(`/v1/auth/oauth2/google/auth-url?redirect_uri=${redirect_uri}`, {
         method: "GET",
     });
 
     return response.json();
 };
 
-export const handleGoogleCallback = async (code: string): Promise<TokenResponse> => {
-    const response = await fetchData(`/v1/auth/oauth2/google:handleCallback?code=${encodeURIComponent(code)}`, {
+export const handleGoogleCallback = async (params: string): Promise<any> => {
+    const response = await fetchData(`/v1/auth/oauth2/google:handleCallback?provider=google&${params}`, {
         method: "GET",
         headers: {
             'Content-Type': 'application/json'
