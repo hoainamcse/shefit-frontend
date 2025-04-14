@@ -24,7 +24,7 @@ const images = [
 
 export default function Stand() {
   return (
-    <div className="max-lg:mx-5 text-[40px] max-lg:text-[30px] leading-[50px] mt-20 font-bold mx-auto text-center bg-white px-10">
+    <div className="max-lg:mx-5 text-[40px] max-lg:text-[30px] leading-[50px] mt-20 font-bold mx-5 text-center bg-white px-10">
       <span className="text-text">Tiết kiệm 25%</span> với mã <br /> SHEFIT 25
       <div className="text-base max-lg:text-[16px] text-[#737373] xl:w-[856px] max-lg:w-full mx-auto mt-4 mb-5">
         Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the

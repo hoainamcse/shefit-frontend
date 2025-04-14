@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -28,29 +28,26 @@ export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   useEffect(() => {
-    const accessToken = localStorage.getItem('access_token')
-    const refreshToken = localStorage.getItem('refresh_token')
+    const accessToken = localStorage.getItem("access_token")
+    const refreshToken = localStorage.getItem("refresh_token")
     setIsLoggedIn(!!accessToken && !!refreshToken)
   }, [])
 
   const handleLogout = () => {
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('refresh_token')
+    localStorage.removeItem("access_token")
+    localStorage.removeItem("refresh_token")
     setIsLoggedIn(false)
   }
 
   const authButton = isLoggedIn ? (
-    <Button
-      onClick={handleLogout}
-      className="rounded-2xl bg-button hover:bg-[#11c296] px-10"
-    >
-      Đăng xuất
-    </Button>
+    <Link href="/auth/login">
+      <Button onClick={handleLogout} className="rounded-2xl bg-button hover:bg-[#11c296] px-10">
+        Đăng xuất
+      </Button>
+    </Link>
   ) : (
     <Link href="/auth/login">
-      <Button className="rounded-2xl bg-button hover:bg-[#11c296] px-10">
-        Đăng nhập
-      </Button>
+      <Button className="rounded-2xl bg-button hover:bg-[#11c296] px-10">Đăng nhập</Button>
     </Link>
   )
 

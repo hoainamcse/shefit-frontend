@@ -1,12 +1,12 @@
-'use client'
+"use client"
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { MainButton } from '@/components/buttons/main-button'
-import { register } from '@/network/server/auth'
-import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { MainButton } from "@/components/buttons/main-button"
+import { register } from "@/network/server/auth"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 function GoogleIcon() {
   return (
@@ -70,21 +70,21 @@ function RegisterForm() {
   async function handleSubmit(formData: FormData) {
     try {
       const data = {
-        fullname: formData.get('fullname')?.toString() || '',
-        phone_number: formData.get('phone_number')?.toString() || '',
-        username: formData.get('username')?.toString() || '',
-        password: formData.get('password')?.toString() || '',
+        fullname: formData.get("fullname")?.toString() || "",
+        phone_number: formData.get("phone_number")?.toString() || "",
+        username: formData.get("username")?.toString() || "",
+        password: formData.get("password")?.toString() || "",
       }
       const response = await register(data)
 
       if (response.status === 400) {
-        toast.error('Đăng ký thất bại!')
+        toast.error("Đăng ký thất bại!")
       } else {
-        toast.success('Đăng ký thành công!')
-        router.push('/auth/login')
+        toast.success("Đăng ký thành công!")
+        router.push("/auth/login")
       }
     } catch (error) {
-      console.error('Error during registration:', error)
+      console.error("Error during registration:", error)
     }
   }
 
@@ -107,15 +107,15 @@ function RegisterForm() {
         <Input placeholder="Nhập mật khẩu của bạn" id="password" name="password" type="password" />
       </div>
       <MainButton type="submit" className="w-full p-3 rounded-3xl" text="Đăng ký" />
-      <p className="text-sm text-center text-[#8E8E93]">Hoặc</p>
-      <Button type="submit" variant="secondary" className="w-full p-3 rounded-3xl gap-2">
+      {/* <p className="text-sm text-center text-[#8E8E93]">Hoặc</p> */}
+      {/* <Button type="submit" variant="secondary" className="w-full p-3 rounded-3xl gap-2">
         <GoogleIcon />
         Đăng nhập bằng Google
       </Button>
       <Button type="submit" variant="secondary" className="w-full p-3 rounded-3xl gap-2">
         <FacebookIcon />
         Đăng nhập bằng Facebook
-      </Button>
+      </Button> */}
     </form>
   )
 }
