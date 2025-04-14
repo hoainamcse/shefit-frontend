@@ -4,8 +4,9 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 import { handleGoogleCallback } from "@/network/server/auth"
 import { toast } from "sonner"
+import { Suspense } from "react"
 
-export default function GoogleCallbackPage() {
+function GoogleCallback() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -33,5 +34,19 @@ export default function GoogleCallbackPage() {
     <div className="flex justify-center items-center h-screen">
       <p>Đang xác thực...</p>
     </div>
+  )
+}
+
+export default function GoogleCallbackPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center h-screen">
+          <p>Đang tải...</p>
+        </div>
+      }
+    >
+      <GoogleCallback />
+    </Suspense>
   )
 }
