@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Switch } from '@/components/ui/switch'
 import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 type MealPlan = {
   id: string
@@ -69,6 +70,7 @@ const mealPlans: MealPlan[] = [
 ]
 
 export default function MealPlansPage() {
+  const router = useRouter()
   const columns: ColumnDef<MealPlan>[] = [
     {
       accessorKey: 'name',
@@ -109,7 +111,11 @@ export default function MealPlansPage() {
             <DropdownMenuItem>
               <Eye /> Xem
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                router.push(`/admin/meal-plans/${row.id}`)
+              }}
+            >
               <Edit /> Cập nhật
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive focus:text-destructive">
@@ -122,7 +128,7 @@ export default function MealPlansPage() {
   ]
   const headerExtraContent = (
     <>
-      <AddButton text="Thêm thực đơn" />
+      <AddButton text="Thêm thực đơn" onClick={() => router.push('/admin/meal-plans/create')} />
       <MainButton text="Nhập thực đơn" variant="outline" icon={Import} />
     </>
   )
