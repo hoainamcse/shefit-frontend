@@ -97,7 +97,7 @@ export default function DishesPage() {
             <DropdownMenuItem>
               <Eye /> Xem
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push(`/admin/dishes/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive focus:text-destructive">
