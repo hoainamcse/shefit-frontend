@@ -1,15 +1,10 @@
-'use client'
-
-import * as React from 'react'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { CreateMembershipForm } from '@/components/forms/create-membership-form'
 
-export default function DetailsMembershipPage() {
-  
-
+export default function EditMembershipPage() {
   return (
     <ContentLayout title="Tạo gói thành viên">
-      <CreateMembershipForm typeForm="view" onSuccess={() => {}} />
+      <CreateMembershipForm isEdit={true} />
     </ContentLayout>
   )
 }

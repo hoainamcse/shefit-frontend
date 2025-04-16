@@ -6,9 +6,8 @@ export default async function AccountPage({ params }: { params: Promise<{ accoun
   const { account_id } = await params
 
   return (
-    <ContentLayout title="Live Class">
+    <ContentLayout title="Cập nhật tài khoản">
       <CreateAccountForm />
-      {/* <CreateCourseForm format="live" /> */}
     </ContentLayout>
   )
 }

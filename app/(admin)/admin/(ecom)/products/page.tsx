@@ -225,10 +225,10 @@ export default function ProductsPage() {
               <Copy /> Sao chép sản phẩm ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            {/* <DropdownMenuItem>
               <Eye /> Xem
-            </DropdownMenuItem>
-            <DropdownMenuItem>
+            </DropdownMenuItem> */}
+            <DropdownMenuItem onClick={() => router.push(`/admin/products/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive focus:text-destructive">

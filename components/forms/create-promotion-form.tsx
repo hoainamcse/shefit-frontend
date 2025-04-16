@@ -10,27 +10,26 @@ import { MainButton } from '../buttons/main-button'
 
 // Define the form schema
 const formSchema = z.object({
-  name: z.string().min(1, "Tên không được để trống"),
+  name: z.string().min(1, 'Tên không được để trống'),
   type: z.enum(['percentage', 'money']),
-  value: z.number().min(1, "Giá trị không được để trống")
+  value: z.number().min(1, 'Giá trị không được để trống'),
 })
 
 export type Promotion = z.infer<typeof formSchema>
 
-export function CreatePromotionForm({ onSuccess }: { onSuccess?: () => void }) {
+export function CreatePromotionForm() {
   const form = useForm<Promotion>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
       type: 'percentage',
-      value: 0
-    }
+      value: 0,
+    },
   })
 
   function onSubmit(values: Promotion) {
     // TODO: Implement API call to create promotion
     console.log(values)
-    onSuccess?.()
   }
 
   return (
@@ -86,15 +85,13 @@ export function CreatePromotionForm({ onSuccess }: { onSuccess?: () => void }) {
                   onChange={(e) => field.onChange(parseFloat(e.target.value))}
                 />
               </FormControl>
-              <FormDescription>
-                {form.getValues('type') === 'percentage' ? 'Phần trăm (%)' : 'VNĐ'}
-              </FormDescription>
+              <FormDescription>{form.getValues('type') === 'percentage' ? 'Phần trăm (%)' : 'VNĐ'}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <MainButton text="Tạo khuyến mãi" type="submit" className="w-full"/>
+        <MainButton text="Tạo khuyến mãi" type="submit" className="w-full" />
       </form>
     </Form>
   )
