@@ -25,29 +25,23 @@ export default function BlogList() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {blogs.map((blog) => (
-          <Card key={blog.id}>
-            <CardHeader>
-              <CardTitle>{blog.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-            <p className="text-muted-foreground mb-4 line-clamp-3">{blog.content}</p>
-              <div className="relative w-full h-48 mb-4 overflow-hidden rounded-md">
-                <img 
-                  src={blog.image} 
-                  alt={blog.title}
-                  className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
-                />
-              </div>
-              <div className="flex justify-end gap-2">
-                <Link href={`/admin/blog/${blog.id}/edit`}>
-                  <Button variant="outline">Sửa</Button>
-                </Link>
-                <Link href={`/admin/blog/${blog.id}`}>
-                  <Button>Xem</Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
+          <Link href={`/admin/blog/${blog.id}`} key={blog.id} className="block">
+            <Card>
+              <CardHeader>
+                <CardTitle>{blog.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-4 line-clamp-3">{blog.content}</p>
+                <div className="relative w-full h-48 mb-4 overflow-hidden rounded-md">
+                  <img
+                    src={blog.image}
+                    alt={blog.title}
+                    className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
     </ContentLayout>

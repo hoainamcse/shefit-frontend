@@ -71,82 +71,72 @@ const promotions: Promotion[] = [
     id: '1',
     name: 'Khuyến mãi Giáng sinh',
     type: 'percentage',
-    value: 20
+    value: 20,
   },
   {
     id: '2',
     name: 'Khuyến mãi Ngày Quốc tế Phụ nữ',
     type: 'money',
-    value: 50000
+    value: 50000,
   },
   {
     id: '3',
     name: 'Khuyến mãi Hè',
     type: 'percentage',
-    value: 15
+    value: 15,
   },
   {
     id: '4',
     name: 'Khuyến mãi Black Friday',
     type: 'money',
-    value: 100000
+    value: 100000,
   },
   {
     id: '5',
     name: 'Khuyến mãi Tết',
     type: 'percentage',
-    value: 25
-  }
+    value: 25,
+  },
 ]
-
-
-
-
 
 export default function MembershipPage() {
   const router = useRouter()
 
   // Promotion columns
-const promotionColumns: ColumnDef<Promotion>[] = [
-  {
-    accessorKey: 'name',
-    header: 'Tên khuyến mãi',
-  },
-  {
-    accessorKey: 'value',
-    header: 'Giá trị',
-    render: ({ row }) => {
-      return row.type === 'percentage' 
-        ? `${row.value}%` 
-        : `${row.value.toLocaleString()}đ`
+  const promotionColumns: ColumnDef<Promotion>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Tên khuyến mãi',
     },
-  },
-  {
-    accessorKey: 'actions',
-    header: 'Thao tác',
-    render: ({ row }) => (
-      <Button
-        size="icon"
-        variant="ghost"
-        className="text-destructive hover:text-destructive"
-        onClick={() => {
-          // TODO: Implement delete promotion
-          console.log('Delete promotion:', row.id)
-        }}
-      >
-        <Trash2 />
-      </Button>
-    ),
-  },
-]
+    {
+      accessorKey: 'value',
+      header: 'Giá trị',
+      render: ({ row }) => {
+        return row.type === 'percentage' ? `${row.value}%` : `${row.value.toLocaleString()}đ`
+      },
+    },
+    {
+      accessorKey: 'actions',
+      header: 'Thao tác',
+      render: ({ row }) => (
+        <Button
+          size="icon"
+          variant="ghost"
+          className="text-destructive hover:text-destructive"
+          onClick={() => {
+            // TODO: Implement delete promotion
+            console.log('Delete promotion:', row.id)
+          }}
+        >
+          <Trash2 />
+        </Button>
+      ),
+    },
+  ]
 
-const membershipHeaderExtraContent = (
-  <>
-   
-      <AddButton text="Thêm gói thành viên" onClick={() => router.push('/admin/membership/create')} />
-
-  </>
-)
+  const membershipHeaderExtraContent = (
+    <AddButton text="Thêm gói thành viên" onClick={() => router.push('/admin/membership/create')} />
+  )
 
   const columns: ColumnDef<Membership>[] = [
     {
@@ -179,10 +169,8 @@ const membershipHeaderExtraContent = (
               <Copy /> Sao chép ID gói
             </DropdownMenuItem>
             <DropdownMenuSeparator />
+
             <DropdownMenuItem onClick={() => router.push(`/admin/membership/${row.id}`)}>
-              <Eye /> Xem
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => router.push(`/admin/membership/${row.id}/edit`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive focus:text-destructive">
@@ -193,14 +181,11 @@ const membershipHeaderExtraContent = (
       ),
     },
   ]
-  
 
   const promotionHeaderExtraContent = (
-    <>
-     <CreatePromotionDialog>
+    <CreatePromotionDialog>
       <AddButton text="Thêm khuyến mãi" />
     </CreatePromotionDialog>
-    </>
   )
 
   return (
@@ -217,10 +202,8 @@ const membershipHeaderExtraContent = (
         />
       </div>
 
-
-
-       {/* Promotions section */}
-       <div className="mt-8">
+      {/* Promotions section */}
+      <div className="mt-8">
         <h2 className="text-lg font-semibold mb-4">Danh sách khuyến mãi</h2>
         <DataTable
           data={promotions}
@@ -233,7 +216,6 @@ const membershipHeaderExtraContent = (
     </ContentLayout>
   )
 }
-
 
 function CreatePromotionDialog({ children }: { children: React.ReactNode }) {
   return (
