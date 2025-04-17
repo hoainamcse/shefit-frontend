@@ -1,0 +1,65 @@
+include:
+  - local: '/scripts/build.yml'
+  - local: '/scripts/install.yml'
+
+stages:
+  - pre-build
+  - build
+  - deploy
+
+build_and_export-stg:
+  image: node:18
+  tags:
+    - builder
+  stage: pre-build
+  when: manual
+  script:
+    - rm -rf .env
+    - apt install -y curl
+    - 'curl --header "PRIVATE-TOKEN: ${BOT_PRIVATE_TOKEN}" "https://gitlab.rockship.co/api/v4/projects/16/repository/files/frontend%2Fshefit%2Fstg%2F.env/raw?ref=master" > .env'
+    - corepack enable pnpm
+    - pnpm install
+    - pnpm run build
+  artifacts:
+    paths:
+      - ./.next/static
+      - ./.next/standalone
+      - ./build
+    expire_in: 1 hour
+  only:
+    - main
+
+build-stg:
+  stage: build
+  tags:
+    - builder
+  needs:
+    - job: build_and_export-stg
+      artifacts: true
+  image:
+    name: gcr.io/kaniko-project/executor:v1.10.0-debug
+    entrypoint: ['']
+  variables:
+    TAG: 'stg'
+    IMAGE_NAME: '${ECR_URL}/shefit'
+    BUILD_ARG: '--build-arg BOT_PRIVATE_TOKEN=${BOT_PRIVATE_TOKEN} --build-arg TAG=stg'
+  script:
+    - !reference [.build_docker_image, script]
+  only:
+    - main
+
+install-with-ssh-stg:
+  stage: deploy
+  needs:
+    - job: build-stg
+      artifacts: false
+  tags:
+    - builder
+  variables:
+    TAG: 'stg'
+    IMAGE_NAME: '${ECR_URL}/shefit'
+    SERVER: '${STG_SERVER}'
+  script:
+    - !reference [.install-stg, script]
+  only:
+    - main
