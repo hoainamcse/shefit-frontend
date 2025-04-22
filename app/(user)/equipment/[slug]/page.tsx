@@ -1,4 +1,5 @@
 "use client"
+import { use, useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -16,11 +17,10 @@ import { MinusIcon } from "@/components/icons/MinusIcon"
 import { getProduct, getColors, getSizes } from "@/network/server/products"
 import { getMuscleGroups } from "@/network/server/muscle-group"
 import { addCart, getCarts } from "@/network/server/cart"
-import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
-export default function Equipment({ params }: { params: { slug: number } }) {
-  const { slug } = params
+export default function Equipment({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params)
   const [product, setProduct] = useState<any>(null)
   const [colors, setColors] = useState<any[]>([])
   const [sizes, setSizes] = useState<any[]>([])
@@ -28,10 +28,11 @@ export default function Equipment({ params }: { params: { slug: number } }) {
   const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null)
   const [cartId, setCartId] = useState<number | null>(null)
   const [isAdding, setIsAdding] = useState(false)
+  const [quantity, setQuantity] = useState(1)
 
   useEffect(() => {
     async function fetchData() {
-      const productResponse = await getProduct(slug.toString())
+      const productResponse = await getProduct(slug)
       setProduct(productResponse.data)
       const colorsResponse = await getColors()
       setColors(colorsResponse.data)
@@ -121,11 +122,23 @@ export default function Equipment({ params }: { params: { slug: number } }) {
             <div className="flex gap-3 items-center">
               <div className="text-nowrap">Số lượng:</div>
               <div className="flex items-center gap-2">
-                <Button className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-xl font-bold items-center flex border-2">
+                <Button
+                  className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-xl font-bold items-center flex border-2"
+                  onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                >
                   <MinusIcon />
                 </Button>
-                <Input className="w-24 text-center border-2 border-[#737373] text-2xl font-bold pr-0" type="number" />
-                <Button className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-xl font-bold items-center flex border-2">
+                <Input
+                  className="w-24 text-center border-2 border-[#737373] text-2xl font-bold pr-0"
+                  type="number"
+                  min={1}
+                  value={quantity}
+                  onChange={(e) => setQuantity(Number(e.target.value) || 1)}
+                />
+                <Button
+                  className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-xl font-bold items-center flex border-2"
+                  onClick={() => setQuantity((prev) => prev + 1)}
+                >
                   <AddIcon />
                 </Button>
               </div>

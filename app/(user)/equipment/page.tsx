@@ -88,7 +88,7 @@ export default async function ProductPage() {
                 </div>
                 <p className="font-medium">{product.name}</p>
                 <p className="text-[#737373]">{product.description}</p>
-                <p className="text-[#737373]">{product.price.toLocaleString()} vnđ</p>
+                <p className="text-[#737373]">{product.price.toLocaleString()} VNĐ</p>
               </div>
             </Link>
           ))}
