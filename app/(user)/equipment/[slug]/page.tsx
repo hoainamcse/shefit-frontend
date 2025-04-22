@@ -1,6 +1,4 @@
-import Image from "next/image"
-import ShoppingImage from "@/assets/image/Shopping.png"
-import Link from "next/link"
+"use client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -17,16 +15,59 @@ import { AddIcon } from "@/components/icons/AddIcon"
 import { MinusIcon } from "@/components/icons/MinusIcon"
 import { getProduct, getColors, getSizes } from "@/network/server/products"
 import { getMuscleGroups } from "@/network/server/muscle-group"
-export default async function Equipment({ params }: { params: Promise<{ slug: number }> }) {
-  const { slug } = await params
-  const productResponse = await getProduct(slug.toString())
-  const product = productResponse.data
-  const colorsResponse = await getColors()
-  const colors = colorsResponse.data
-  const sizesResponse = await getSizes()
-  const sizes = sizesResponse.data
-  const muscleGroup = await getMuscleGroups()
-  const filteredMuscleGroups = muscleGroup.data.filter((mg) => product.muscle_group_ids)
+import { addCart, getCarts } from "@/network/server/cart"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
+
+export default function Equipment({ params }: { params: { slug: number } }) {
+  const { slug } = params
+  const [product, setProduct] = useState<any>(null)
+  const [colors, setColors] = useState<any[]>([])
+  const [sizes, setSizes] = useState<any[]>([])
+  const [muscleGroups, setMuscleGroups] = useState<any[]>([])
+  const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null)
+  const [cartId, setCartId] = useState<number | null>(null)
+  const [isAdding, setIsAdding] = useState(false)
+
+  useEffect(() => {
+    async function fetchData() {
+      const productResponse = await getProduct(slug.toString())
+      setProduct(productResponse.data)
+      const colorsResponse = await getColors()
+      setColors(colorsResponse.data)
+      const sizesResponse = await getSizes()
+      setSizes(sizesResponse.data)
+      const muscleGroup = await getMuscleGroups()
+      setMuscleGroups(muscleGroup.data.filter((mg: any) => productResponse.data.muscle_group_ids))
+      const carts = await getCarts()
+      if (carts.data && carts.data.length > 0) {
+        setCartId(carts.data[0].id)
+      }
+    }
+    fetchData()
+  }, [slug])
+
+  if (!product) return <div>Loading...</div>
+
+  const handleAddToCart = async () => {
+    if (!cartId || !selectedVariantId) return
+    setIsAdding(true)
+    try {
+      await addCart(cartId, selectedVariantId)
+      toast.success("Đã thêm vào giỏ hàng!")
+    } catch (error: any) {
+      console.error("Add to cart error:", error)
+      let message = "Không thể thêm vào giỏ hàng. Vui lòng thử lại!"
+      if (error?.response?.data?.message) {
+        message = error.response.data.message
+      } else if (error?.message?.includes("422")) {
+        message = "Sản phẩm đã có trong giỏ hàng hoặc dữ liệu không hợp lệ."
+      }
+      toast.error(message)
+    } finally {
+      setIsAdding(false)
+    }
+  }
 
   return (
     <div className="flex flex-col gap-10">
@@ -46,9 +87,13 @@ export default async function Equipment({ params }: { params: Promise<{ slug: nu
                 return (
                   <Button
                     key={variant.id}
-                    style={{ backgroundColor: hex }}
+                    style={{
+                      backgroundColor: hex,
+                      border: selectedVariantId === variant.id ? "2px solid #00C7BE" : undefined,
+                    }}
                     className="rounded-full w-8 h-8"
                     disabled={!variant.in_stock}
+                    onClick={() => setSelectedVariantId(variant.id)}
                   />
                 )
               })}
@@ -61,7 +106,13 @@ export default async function Equipment({ params }: { params: Promise<{ slug: nu
               {product.variants.map((variant: any) => {
                 const sizeName = sizes.find((size: any) => size.id === variant.size_id)?.size || variant.size_id
                 return (
-                  <Button key={variant.id} className="w-8 h-8 d" disabled={!variant.in_stock}>
+                  <Button
+                    key={variant.id}
+                    className="w-8 h-8"
+                    disabled={!variant.in_stock}
+                    onClick={() => setSelectedVariantId(variant.id)}
+                    style={{ border: selectedVariantId === variant.id ? "2px solid #00C7BE" : undefined }}
+                  >
                     {sizeName}
                   </Button>
                 )
@@ -103,8 +154,12 @@ export default async function Equipment({ params }: { params: Promise<{ slug: nu
                   </AlertDialogHeader>
                 </AlertDialogContent>
               </AlertDialog>
-              <Button className="border-button border-2 text-button rounded-full w-full bg-white hover:bg-[#11c29628]">
-                Lưu
+              <Button
+                className="border-button border-2 text-button rounded-full w-full bg-white hover:bg-[#11c29628]"
+                disabled={!selectedVariantId || !cartId || isAdding}
+                onClick={handleAddToCart}
+              >
+                {isAdding ? "Đang thêm..." : "Lưu"}
               </Button>
             </div>
           </div>
@@ -118,7 +173,7 @@ export default async function Equipment({ params }: { params: Promise<{ slug: nu
             Tính năng
           </div>
           <div className="grid xl:grid-cols-12 lg:grid-cols-10 md:grid-cols-6 sm:grid-cols-4 gap-10">
-            {filteredMuscleGroups.map((muscleGroup) => (
+            {muscleGroups.map((muscleGroup) => (
               <div key={muscleGroup.id} className="xl:text-xl max-lg:text-base">
                 <div className="group">
                   <img
