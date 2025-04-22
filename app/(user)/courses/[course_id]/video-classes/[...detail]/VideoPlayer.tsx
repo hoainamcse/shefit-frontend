@@ -1,0 +1,92 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import ReactPlayer from 'react-player'
+import type { Exercise } from './page'
+
+interface VideoPlayerProps {
+  exerciseVideoList: Exercise[]
+  exerciseIndex: number
+  isCircuitMode?: boolean // default false
+  autoReplayListVideoCount?: number
+}
+
+const VideoPlayer = ({
+  exerciseVideoList,
+  exerciseIndex,
+  isCircuitMode = false,
+  autoReplayListVideoCount = 1,
+}: VideoPlayerProps) => {
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(exerciseIndex)
+  const [replayCount, setReplayCount] = useState(1)
+  const [circuitReplayCount, setCircuitReplayCount] = useState(1)
+  const [playing, setPlaying] = useState(true)
+
+  const exercise = exerciseVideoList[currentExerciseIndex]
+  const maxReplay = isCircuitMode ? 1 : exercise?.auto_replay_count || 1
+  const maxCircuitReplay = isCircuitMode ? autoReplayListVideoCount : 1
+
+  const handleVideoEnded = () => {
+    if (isCircuitMode) {
+      // Circuit mode: play each exercise once per circuit, repeat circuit
+      if (currentExerciseIndex < exerciseVideoList.length - 1) {
+        setCurrentExerciseIndex((prev) => prev + 1)
+        setPlaying(false)
+        setTimeout(() => setPlaying(true), 100)
+      } else if (circuitReplayCount < maxCircuitReplay) {
+        setCurrentExerciseIndex(0)
+        setCircuitReplayCount((prev) => prev + 1)
+        setPlaying(false)
+        setTimeout(() => setPlaying(true), 100)
+      } else {
+        setPlaying(false)
+      }
+    } else {
+      // Single exercise mode: replay current exercise, then auto-advance to next exercise if any
+      if (replayCount < maxReplay) {
+        setReplayCount((prev) => prev + 1)
+        setPlaying(false)
+        setTimeout(() => setPlaying(true), 100)
+      } else if (currentExerciseIndex < exerciseVideoList.length - 1) {
+        setCurrentExerciseIndex((prev) => prev + 1)
+        setReplayCount(1)
+        setPlaying(false)
+        setTimeout(() => setPlaying(true), 100)
+      } else {
+        setPlaying(false)
+      }
+    }
+  }
+
+  return (
+    <div className="relative" tabIndex={0} aria-label={`Video player for ${exercise.name}`}>
+      <ReactPlayer
+        url={exercise.url}
+        playing={playing}
+        controls
+        width="100%"
+        height="calc(100vw*9/16)"
+        style={{ maxHeight: 720, borderRadius: '0.75rem', padding: '1rem' }}
+        onEnded={handleVideoEnded}
+        config={{
+          file: {
+            attributes: {
+              tabIndex: 0,
+              title: exercise.name,
+            },
+          },
+        }}
+      />
+
+      <div className="text-center mt-2 text-sm text-gray-500">
+        {isCircuitMode
+          ? `Circuit round ${circuitReplayCount}/${maxCircuitReplay} - Exercise ${currentExerciseIndex + 1}/${
+              exerciseVideoList.length
+            }`
+          : `Replay ${replayCount}/${maxReplay} - Exercise ${currentExerciseIndex + 1}/${exerciseVideoList.length}`}
+      </div>
+    </div>
+  )
+}
+
+export default VideoPlayer

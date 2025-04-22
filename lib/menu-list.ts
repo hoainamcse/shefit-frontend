@@ -37,9 +37,22 @@ export function getMenuList(pathname: string): Group[] {
       menus: [
         {
           href: '#',
-          label: 'Dashboard',
+          label: 'Content Input',
           icon: LayoutGrid,
-          submenus: [],
+          submenus: [
+            {
+              href: '/admin/homepage',
+              label: 'Homepage',
+            },
+            {
+              href: '/admin/about-us',
+              label: 'About Us',
+            },
+            {
+              href: '/admin/trainer',
+              label: 'HLV',
+            }
+          ],
         },
       ],
     },
@@ -137,11 +150,11 @@ export function getMenuList(pathname: string): Group[] {
     {
       groupLabel: 'Settings',
       menus: [
-        {
-          href: '#',
-          label: 'Users',
-          icon: Users,
-        },
+        // {
+        //   href: '#',
+        //   label: 'Users',
+        //   icon: Users,
+        // },
         {
           href: '/admin/account',
           label: 'Tài khoản',
