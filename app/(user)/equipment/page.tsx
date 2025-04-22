@@ -1,38 +1,31 @@
 import Image from "next/image"
-import ShoppingImage from "@/assets/image/Shopping.png"
 import ImagteTitle from "@/assets/image/ImageTitle.png"
 import Link from "next/link"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { getEquipments } from "@/network/server/equipments"
+import { getProducts } from "@/network/server/products"
+import { getColors } from "@/network/server/products"
+import { getCategories } from "@/network/server/products"
+import type { Product } from "@/models/products"
 
-function SelectHero({ placeholder }: { placeholder: string }) {
-  const data = [
-    {
-      value: "ao",
-      label: "Áo",
-    },
-    {
-      value: "quan",
-      label: "Quần",
-    },
-    {
-      value: "ta",
-      label: "Tạ",
-    },
-    {
-      value: "balo",
-      label: "Balo",
-    },
-  ]
-
+function SelectHero({
+  placeholder,
+  options,
+  onChange,
+  value,
+}: {
+  placeholder: string
+  options: { value: string; label: string }[]
+  onChange?: (value: string) => void
+  value: string
+}) {
   return (
-    <Select>
-      <SelectTrigger>
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="w-full">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        {data.map((item) => (
+        {options.map((item) => (
           <SelectItem key={item.value} value={item.value}>
             {item.label}
           </SelectItem>
@@ -42,9 +35,13 @@ function SelectHero({ placeholder }: { placeholder: string }) {
   )
 }
 
-export default async function Equipment() {
-  const equipmentsResponse = await getEquipments();
-  const equipments = equipmentsResponse.data || [];
+export default async function ProductPage() {
+  const productsResponse = await getProducts()
+  const products = productsResponse.data || []
+  const colorsResponse = await getColors()
+  const colors = colorsResponse.data || []
+  const categoriesResponse = await getCategories()
+  const categories = categoriesResponse.data || []
 
   return (
     <div className="flex flex-col gap-10">
@@ -57,24 +54,41 @@ export default async function Equipment() {
             Molestie nascetur justo sit accumsan nunc quam tincidunt blandit.
           </p>
           <div className="flex gap-4 xl:w-1/3">
-            <SelectHero placeholder="Loại" />
+            <SelectHero
+              placeholder="Loại"
+              options={categories.map((category) => ({ value: category.id.toString(), label: category.name }))}
+              value={""}
+            />
           </div>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-10">
-          {equipments.map((equipment) => (
-            <Link href={`/equipment/${equipment.id}`} key={equipment.id}>
-              <div key={`menu-${equipment.id}`} className="text-xl">
+          {products.map((product: Product) => (
+            <Link href={`/equipment/${product.id}`} key={product.id}>
+              <div key={`menu-${product.id}`} className="text-xl">
                 <div className="relative group">
-                  <img src={equipment.image} alt="" className="aspect-1 object-cover rounded-xl mb-4 w-full h-[373px]" />
+                  <img
+                    src={product.image_urls[0] || ""}
+                    alt={product.name}
+                    className="aspect-1 object-cover rounded-xl mb-4 w-full h-[373px]"
+                  />
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
                 <div className="flex gap-2 mb-2">
-                  <Button className="rounded-full w-8 h-8 bg-[#000000]"></Button>
-                  <Button className="rounded-full w-8 h-8 bg-[#AFA69F]"></Button>
+                  {product.variants.map((variant) => {
+                    const hex = colors.find((color) => color.id === variant.color_id)?.hex_code || "#000"
+                    return (
+                      <Button
+                        key={variant.id}
+                        style={{ backgroundColor: hex }}
+                        className="rounded-full w-8 h-8"
+                        disabled={!variant.in_stock}
+                      />
+                    )
+                  })}
                 </div>
-                <p className="font-medium">{equipment.name}</p>
-                <p className="text-[#737373]">Đen</p>
-                <p className="text-[#737373]">350.000 vnđ</p>
+                <p className="font-medium">{product.name}</p>
+                <p className="text-[#737373]">{product.description}</p>
+                <p className="text-[#737373]">{product.price.toLocaleString()} vnđ</p>
               </div>
             </Link>
           ))}

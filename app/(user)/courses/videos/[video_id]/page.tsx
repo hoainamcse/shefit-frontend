@@ -11,10 +11,18 @@ export default async function VideoDetail({ params }: { params: Promise<{ video_
   const course = await getCourse(video_id)
   const equipment = await getEquipments()
   const muscleGroup = await getMuscleGroups()
+
+  const filteredEquipment = equipment.data.filter((e) => course.data.equipment_ids.includes(e.id))
+  const filteredMuscleGroups = muscleGroup.data.filter((mg) => course.data.muscle_group_ids.includes(mg.id))
+
   return (
     <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full">
       <div className="p-6 mb-20 flex flex-col gap-10">
-        <img src={course.data.thumbnail_image} alt={`${video_id}`} className="rounded-xl mb-4 w-full h-[680px] object-cover" />
+        <img
+          src={course.data.thumbnail_image}
+          alt={`${video_id}`}
+          className="rounded-xl mb-4 w-full h-[680px] object-cover"
+        />
         <div className="flex justify-between">
           <div>
             <p className="font-medium">{course.data.course_name}</p>
@@ -23,7 +31,7 @@ export default async function VideoDetail({ params }: { params: Promise<{ video_
           </div>
           <div className="text-gray-500">
             {Array.isArray(course.data.form_categories)
-              ? course.data.form_categories.map(cat => getFormCategoryLabel(cat)).join(', ')
+              ? course.data.form_categories.map((cat) => getFormCategoryLabel(cat)).join(", ")
               : getFormCategoryLabel(course.data.form_categories)}
           </div>
         </div>
@@ -35,20 +43,24 @@ export default async function VideoDetail({ params }: { params: Promise<{ video_
         </div>
         <div>
           <p className=" font-[family-name:var(--font-coiny)] text-text text-2xl xl:text-[40px] mb-4">Thông tin khoá</p>
-          <p>
-            {course.data.description}
-          </p>
+          <p>{course.data.description}</p>
         </div>
         <div>
           <p className=" font-[family-name:var(--font-coiny)] text-text text-2xl xl:text-[40px]">Dụng cụ</p>
           <ScrollArea className="w-screen-max-xl">
             <div className="flex space-x-4 py-4 w-full">
-              {equipment.data.map((equipment, index) => (
+              {filteredEquipment.map((equipment, index) => (
                 <figure key={`equipment-${equipment.id}-${index}`} className="shrink-0 w-[168px]">
                   <div className="overflow-hidden rounded-md">
-                    <img src={equipment.image} alt={equipment.name} className="w-[168px] h-[175px] object-cover rounded-xl" />
+                    <img
+                      src={equipment.image}
+                      alt={equipment.name}
+                      className="w-[168px] h-[175px] object-cover rounded-xl"
+                    />
                   </div>
-                  <figcaption className="pt-2 font-semibold text-lg max-lg:text-base text-muted-foreground w-full">{equipment.name}</figcaption>
+                  <figcaption className="pt-2 font-semibold text-lg max-lg:text-base text-muted-foreground w-full">
+                    {equipment.name}
+                  </figcaption>
                 </figure>
               ))}
             </div>
@@ -59,12 +71,18 @@ export default async function VideoDetail({ params }: { params: Promise<{ video_
           <p className=" font-[family-name:var(--font-coiny)] text-text text-2xl xl:text-[40px]">Nhóm cơ</p>
           <ScrollArea className="w-screen-max-xl">
             <div className="flex w-full space-x-4 py-4">
-              {muscleGroup.data.map((muscleGroup, index) => (
+              {filteredMuscleGroups.map((muscleGroup, index) => (
                 <figure key={`muscleGroup-${muscleGroup.id}-${index}`} className="shrink-0 w-[168px]">
                   <div className="overflow-hidden rounded-md">
-                    <img src={muscleGroup.image} alt={muscleGroup.name} className="w-[168px] h-[175px] object-cover rounded-xl" />
+                    <img
+                      src={muscleGroup.image}
+                      alt={muscleGroup.name}
+                      className="w-[168px] h-[175px] object-cover rounded-xl"
+                    />
                   </div>
-                  <figcaption className="pt-2 font-semibold text-xl max-lg:text-base text-muted-foreground w-full">{muscleGroup.name}</figcaption>
+                  <figcaption className="pt-2 font-semibold text-xl max-lg:text-base text-muted-foreground w-full">
+                    {muscleGroup.name}
+                  </figcaption>
                 </figure>
               ))}
             </div>
@@ -72,7 +90,10 @@ export default async function VideoDetail({ params }: { params: Promise<{ video_
           </ScrollArea>
         </div>
         <div className="flex justify-center gap-4">
-          <Link href={`/courses/videos/${video_id}/schedule`} className="rounded-full w-1/3 bg-button hover:bg-[#11c296]">
+          <Link
+            href={`/courses/videos/${video_id}/schedule`}
+            className="rounded-full w-1/3 bg-button hover:bg-[#11c296]"
+          >
             <Button className="w-full rounded-full bg-button hover:bg-[#11c296] h-14">Bắt đầu</Button>
           </Link>
           <Button variant="secondary" className="text-button rounded-full w-1/3 bg-white h-14 border-2 border-button">

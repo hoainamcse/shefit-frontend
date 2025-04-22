@@ -24,6 +24,8 @@ type Course = {
   cover_image: string
   created_at: string
   updated_at: string
+  equipment_ids: number[]
+  muscle_group_ids: number[]
 }
 
 export type { CourseFormat, FormCategory, DifficultyLevel, Course, Subscription }
