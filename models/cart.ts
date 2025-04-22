@@ -1,6 +1,7 @@
 import { ProductColor, ProductSize } from "./products"
 
 export interface Cart {
+    data: any
     id: number
     user_name: string
     telephone_number: string
