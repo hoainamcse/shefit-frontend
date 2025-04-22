@@ -17,9 +17,9 @@ import { AddIcon } from "@/components/icons/AddIcon"
 import { MinusIcon } from "@/components/icons/MinusIcon"
 import { getProduct, getColors, getSizes } from "@/network/server/products"
 import { getMuscleGroups } from "@/network/server/muscle-group"
-export default async function Equipment({ params }: { params: { slug: string } }) {
-  const { slug } = params
-  const productResponse = await getProduct(slug)
+export default async function Equipment({ params }: { params: Promise<{ slug: number }> }) {
+  const { slug } = await params
+  const productResponse = await getProduct(slug.toString())
   const product = productResponse.data
   const colorsResponse = await getColors()
   const colors = colorsResponse.data

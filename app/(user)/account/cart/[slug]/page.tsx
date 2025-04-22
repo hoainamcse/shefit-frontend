@@ -7,9 +7,9 @@ import FormCartDetail from "@/app/(user)/account/_components/FormCartDetail"
 import { getCart } from "@/network/server/cart"
 import { getProduct } from "@/network/server/products"
 
-export default async function CartDetail({ params }: { params: { slug: string } }) {
-  const { slug } = params
-  const cart = await getCart(Number(slug))
+export default async function CartDetail({ params }: { params: Promise<{ slug: number }> }) {
+  const { slug } = await params
+  const cart = await getCart(slug)
   const productVariants = cart.data.product_variants || []
   const products = await Promise.all(productVariants.map((variant: any) => getProduct(variant.id.toString())))
 
@@ -44,7 +44,7 @@ export default async function CartDetail({ params }: { params: { slug: string } 
             </div>
           </div>
         </div>
-        <FormCartDetail params={{ slug }} />
+        <FormCartDetail params={{ slug: slug.toString() }} />
       </div>
     </div>
   )
