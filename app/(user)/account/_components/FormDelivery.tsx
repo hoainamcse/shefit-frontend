@@ -1,12 +1,16 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Form, FormItem, FormLabel, FormControl, FormMessage, FormField } from "@/components/ui/form"
 import { useForm } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
+import { getCarts } from "@/network/server/cart"
 
 export default function FormDelivery() {
+  const [carts, setCarts] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
   const form = useForm({
     defaultValues: {
       name: "",
@@ -19,6 +23,14 @@ export default function FormDelivery() {
   const onSubmit = (data: any) => {
     console.log("Form Data:", data)
   }
+  useEffect(() => {
+    async function fetchCartData() {
+      const cartsRes = await getCarts()
+      setCarts(cartsRes)
+      setLoading(false)
+    }
+    fetchCartData()
+  }, [])
   return (
     <div className="w-full flex flex-col gap-5">
       <div className="font-[family-name:var(--font-coiny)] text-3xl">Thông tin vận chuyển</div>
@@ -87,7 +99,7 @@ export default function FormDelivery() {
                 <FormLabel className="text-xl">Phí ship</FormLabel>
                 <FormControl>
                   <div className="text-[#8E8E93] text-xl">
-                    15.000 <span>vnđ</span>
+                    {carts?.data?.[0]?.shipping_fee?.toLocaleString()} <span>VNĐ</span>
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -102,7 +114,7 @@ export default function FormDelivery() {
                 <FormLabel className="text-xl font-semibold">Tổng tiền</FormLabel>
                 <FormControl>
                   <div className="text-[#00C7BE] text-2xl font-semibold">
-                    1.165.000 <span>vnđ</span>
+                    {carts?.data?.[0]?.total?.toLocaleString()} <span>VNĐ</span>
                   </div>
                 </FormControl>
                 <FormMessage />

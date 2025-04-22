@@ -13,20 +13,24 @@ export async function getCart(id: number): Promise<Cart> {
 }
 
 export async function addCart(id: number, productVariantId: number): Promise<Cart> {
-    const response = await fetchData(`/v1/carts/${id}:addProductVariant`, {
-        method: "POST",
-        body: JSON.stringify({ product_variant_id: productVariantId }),
-        next: { tags: ["cart"] },
-    })
+    const response = await fetchData(
+        `/v1/carts/${id}:addProductVariant?product_variant_id=${productVariantId}`,
+        {
+            method: "POST",
+            next: { tags: ["cart"] },
+        }
+    )
     return await response.json()
 }
 
 export async function removeCart(id: number, productVariantId: number): Promise<Cart> {
-    const response = await fetchData(`/v1/carts/${id}:removeProductVariant`, {
-        method: "POST",
-        body: JSON.stringify({ product_variant_id: productVariantId }),
-        next: { tags: ["cart"] },
-    })
+    const response = await fetchData(
+        `/v1/carts/${id}:removeProductVariant?product_variant_id=${productVariantId}`,
+        {
+            method: "POST",
+            next: { tags: ["cart"] },
+        }
+    )
     return await response.json()
 }
 
