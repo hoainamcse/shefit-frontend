@@ -18,13 +18,19 @@ const mealTimeMapping: { [key: string]: string } = {
   vegetable: "Rau củ",
   starch: "Tinh bột",
   spices: "Gia vị",
-  others: "Khác"
-};
+  others: "Khác",
+}
 
 export default async function MenuDetailCalendar({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const { data: mealPlanByDay } = await getMealPlanByDay(id)
   const { data: mealPlan } = await getMealPlanDetails(id)
+  console.log(mealPlanByDay)
+
+  const sortedMealPlanByDay = Array.isArray(mealPlanByDay)
+    ? [...mealPlanByDay].sort((a, b) => a.day_number - b.day_number)
+    : []
+
   return (
     <div>
       <div className="xl:block max-lg:hidden">
@@ -40,12 +46,18 @@ export default async function MenuDetailCalendar({ params }: { params: Promise<{
               <BackIcon /> Quay về
             </Button>
           </Link>
-          <img src={mealPlan.image} alt="Menu detail image" className="xl:block max-lg:hidden w-full h-[680px] object-cover rounded-xl" />
+          <img
+            src={mealPlan.image}
+            alt="Menu detail image"
+            className="xl:block max-lg:hidden w-full h-[680px] object-cover rounded-xl"
+          />
         </div>
         <div className="mr-auto text-xl mt-8 max-lg:p-4">
           <p className="font-bold">{mealPlan.goal}</p>
           <p className="text-[#737373]">{mealPlan.title}</p>
-          <p className="text-[#737373]">Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày</p>
+          <p className="text-[#737373]">
+            Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
+          </p>
         </div>
         <div className="w-full max-lg:p-4">
           <div className="bg-primary py-5 w-full rounded-[20px] my-20 max-lg:my-2">
@@ -63,77 +75,87 @@ export default async function MenuDetailCalendar({ params }: { params: Promise<{
           <div className="font-[family-name:var(--font-coiny)] text-text text-[40px] max-lg:text-[30px] mb-5">
             Menu theo lịch
           </div>
-          <div>
-            {mealPlan.description}
-          </div>
+          <div>{mealPlan.description}</div>
         </div>
         <Tabs defaultValue="1" className="w-full h-full">
           <TabsList className="w-full flex-wrap justify-start bg-transparent p-0 h-full">
-            {Array.from({ length: mealPlan.number_of_days }, (_, i) => (
+            {sortedMealPlanByDay.map((day: any) => (
               <TabsTrigger
-                key={i + 1}
-                value={`${i + 1}`}
+                key={day.id}
+                value={`${day.day_number}`}
                 className="rounded-full mx-[10px] my-5 w-[63px] h-[64px] flex flex-col items-center justify-center font-medium text-xl cursor-pointer data-[state=active]:bg-[#91EBD5] data-[state=active]:text-white bg-transparent hover:bg-[#91EBD5]/10 transition-colors duration-200"
               >
-                <div>Ngày <br /> {i + 1}</div>
+                <div>
+                  Ngày <br /> {day.day_number}
+                </div>
               </TabsTrigger>
             ))}
           </TabsList>
-          {Array.from({ length: mealPlan.number_of_days }, async (_, i) => {
-            const dayId = `${i + 1}`
-            const { data: dayDishes } = await getMealPlanDishes(id, dayId)
-
-            return (
-              <TabsContent key={dayId} value={dayId}>
-                {dayDishes.map((dish: any) => (
-                  <div key={dish.id} className="mb-10 flex flex-col xl:w-full xl:text-xl max-lg:text-base gap-8 max-lg:px-4">
-                    <img src={dish.image} alt="Menu detail image" className="w-full h-[680px] object-cover rounded-xl" />
-                    <div>
-                      <div className="font-medium">
-                        <span className="text-[#91EBD5]">{mealTimeMapping[dish.meal_time]}</span>: {dish.name}
+          {await Promise.all(
+            sortedMealPlanByDay.map(async (day: any) => {
+              const dayId = day.id
+              const { data: dayDishes } = await getMealPlanDishes(id, dayId)
+              return (
+                <TabsContent key={day.id} value={`${day.day_number}`}>
+                  {dayDishes.length === 0 ? (
+                    <div>Chưa có món ăn cho ngày này.</div>
+                  ) : (
+                    dayDishes.map((dish: any) => (
+                      <div
+                        key={dish.id}
+                        className="mb-10 flex flex-col xl:w-full xl:text-xl max-lg:text-base gap-8 max-lg:px-4"
+                      >
+                        <img
+                          src={dish.image}
+                          alt="Menu detail image"
+                          className="w-full h-[680px] object-cover rounded-xl"
+                        />
+                        <div>
+                          <div className="font-medium">
+                            <span className="text-[#91EBD5]">{mealTimeMapping[dish.meal_time]}</span>: {dish.name}
+                          </div>
+                          <div className="text-[#737373]">
+                            KCAL {dish.calories} Pro {dish.protein} Fat {dish.fat} Carb {dish.carbs} Fiber {dish.fiber}
+                          </div>
+                        </div>
+                        {/* <Table className="w-[400px] text-center border border-collapse">
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="border text-center">Thành phần</TableHead>
+                              <TableHead className="border text-center">Nguyên liệu</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody className="text-[#737373]">
+                            <TableRow>
+                              <TableCell className="border">Thịt cá</TableCell>
+                              <TableCell className="border">{dish.protein_source}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className="border">Rau củ</TableCell>
+                              <TableCell className="border">{dish.vegetable}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className="border">Tinh bột</TableCell>
+                              <TableCell className="border">{dish.starch}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className="border">Gia vị</TableCell>
+                              <TableCell className="border">{dish.spices}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell className="border">Khác</TableCell>
+                              <TableCell className="border">{dish.others}</TableCell>
+                            </TableRow>
+                          </TableBody>
+                        </Table> */}
+                        <div className="xl:w-full text-[#737373]">{dish.description}</div>
                       </div>
-                      <div className="text-[#737373]">
-                        KCAL {dish.calories} Pro {dish.protein} Fat {dish.fat} Carb {dish.carbs} Fiber {dish.fiber}
-                      </div>
-                    </div>
-                    <Table className="w-[400px] text-center border border-collapse">
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="border text-center">Thành phần</TableHead>
-                          <TableHead className="border text-center">Nguyên liệu</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody className="text-[#737373]">
-                        <TableRow>
-                          <TableCell className="border">Thịt cá</TableCell>
-                          <TableCell className="border">{dish.protein_source}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="border">Rau củ</TableCell>
-                          <TableCell className="border">{dish.vegetable}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="border">Tinh bột</TableCell>
-                          <TableCell className="border">{dish.starch}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="border">Gia vị</TableCell>
-                          <TableCell className="border">{dish.spices}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell className="border">Khác</TableCell>
-                          <TableCell className="border">{dish.others}</TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                    <div className="xl:w-full text-[#737373]">
-                      {dish.description}
-                    </div>
-                  </div>
-                ))}
-              </TabsContent>
-            )
-          })}
+                    ))
+                  )}
+                </TabsContent>
+              )
+            })
+          )}
         </Tabs>
       </div>
     </div>

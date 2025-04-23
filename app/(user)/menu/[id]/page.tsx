@@ -4,12 +4,8 @@ import { Button } from "@/components/ui/button"
 import Header from "@/components/common/Header"
 import { BackIcon } from "@/components/icons/BackIcon"
 import { getMealPlanDetails } from "@/network/server/meal-plans"
-
-export default async function MenuDetail({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
+import { getGoalLabel } from "@/lib/label"
+export default async function MenuDetail({ params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const { data: mealPlan } = await getMealPlanDetails(id)
@@ -25,17 +21,26 @@ export default async function MenuDetail({
         </div>
         <div className="flex flex-col items-center justify-center mt-16 max-lg:mt-0 mx-auto p-10 max-w-screen-3xl mb-20">
           <div className="relative w-full">
-            <Link href="/menu" className="absolute top-0 left-0 mt-8 ml-2 xl:hidden max-lg:block hover:bg-transparent focus:bg-transparent active:bg-transparent">
+            <Link
+              href="/menu"
+              className="absolute top-0 left-0 mt-8 ml-2 xl:hidden max-lg:block hover:bg-transparent focus:bg-transparent active:bg-transparent"
+            >
               <Button className="flex items-center gap-2 text-xl bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent">
                 <BackIcon /> Quay về
               </Button>
             </Link>
-            <img src={mealPlan.image} alt="Menu detail image" className="xl:block max-lg:hidden w-full h-[680px] object-cover rounded-xl" />
+            <img
+              src={mealPlan.image}
+              alt="Menu detail image"
+              className="xl:block max-lg:hidden w-full h-[680px] object-cover rounded-xl"
+            />
           </div>
           <div className="mr-auto text-xl mt-8 max-lg:p-4">
-            <p className="font-bold">{mealPlan.goal}</p>
+            <p className="font-bold">{getGoalLabel(mealPlan.goal)}</p>
             <p className="text-[#737373]">{mealPlan.title}</p>
-            <p className="text-[#737373]">Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày</p>
+            <p className="text-[#737373]">
+              Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
+            </p>
           </div>
           <div className="w-full max-lg:p-4">
             <div className="bg-primary py-12 w-full rounded-[20px] my-20 max-lg:my-2">
@@ -52,9 +57,7 @@ export default async function MenuDetail({
             <div className="font-[family-name:var(--font-coiny)] text-text text-[40px] max-lg:text-[30px] mb-5">
               Thông tin thực đơn
             </div>
-            <div className="max-lg:text-base">
-              {mealPlan.description}
-            </div>
+            <div className="max-lg:text-base">{mealPlan.description}</div>
           </div>
           <div className="mr-auto text-xl mt-10 w-full max-lg:p-4">
             <div className="font-[family-name:var(--font-coiny)] text-text text-[40px] max-lg:text-[30px] mb-5">
@@ -84,15 +87,19 @@ export default async function MenuDetail({
           </div>
           <div className="gap-5 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
             <Link href="/menu/[id]/detail" as={`/menu/${mealPlan.id}/detail`} className="w-full">
-              <Button className="w-full rounded-full text-xl bg-button text-white hover:bg-[#11c296] h-14">Bắt đầu</Button>
+              <Button className="w-full rounded-full text-xl bg-button text-white hover:bg-[#11c296] h-14">
+                Bắt đầu
+              </Button>
             </Link>
-            <Button className="w-full rounded-full text-xl bg-white text-button h-14 border-2 border-button">Lưu</Button>
+            <Button className="w-full rounded-full text-xl bg-white text-button h-14 border-2 border-button">
+              Lưu
+            </Button>
           </div>
         </div>
       </div>
     )
   } catch (error) {
-    console.error('Error fetching meal plan:', error)
+    console.error("Error fetching meal plan:", error)
 
     return (
       <div className="flex h-[50vh] flex-col items-center justify-center gap-4">

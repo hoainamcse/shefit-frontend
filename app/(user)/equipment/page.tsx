@@ -1,47 +1,42 @@
+"use client"
+
 import Image from "next/image"
 import ImagteTitle from "@/assets/image/ImageTitle.png"
 import Link from "next/link"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { getProducts } from "@/network/server/products"
 import { getColors } from "@/network/server/products"
 import { getCategories } from "@/network/server/products"
 import type { Product } from "@/models/products"
+import FilterCategory from "./_components/FilterCategory"
+import { useEffect, useState } from "react"
 
-function SelectHero({
-  placeholder,
-  options,
-  onChange,
-  value,
-}: {
-  placeholder: string
-  options: { value: string; label: string }[]
-  onChange?: (value: string) => void
-  value: string
-}) {
-  return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="w-full">
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map((item) => (
-          <SelectItem key={item.value} value={item.value}>
-            {item.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  )
-}
+export default function ProductPage() {
+  const [products, setProducts] = useState<Product[]>([])
+  const [colors, setColors] = useState<any[]>([])
+  const [categories, setCategories] = useState<any[]>([])
+  const [selectedCategory, setSelectedCategory] = useState("")
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
 
-export default async function ProductPage() {
-  const productsResponse = await getProducts()
-  const products = productsResponse.data || []
-  const colorsResponse = await getColors()
-  const colors = colorsResponse.data || []
-  const categoriesResponse = await getCategories()
-  const categories = categoriesResponse.data || []
+  useEffect(() => {
+    async function fetchData() {
+      const productsResponse = await getProducts()
+      setProducts(productsResponse.data || [])
+      const colorsResponse = await getColors()
+      setColors(colorsResponse.data || [])
+      const categoriesResponse = await getCategories()
+      setCategories(categoriesResponse.data || [])
+    }
+    fetchData()
+  }, [])
+
+  useEffect(() => {
+    if (!selectedCategory) {
+      setFilteredProducts(products)
+    } else {
+      setFilteredProducts(products.filter((product) => product.category_id?.toString() === selectedCategory))
+    }
+  }, [selectedCategory, products])
 
   return (
     <div className="flex flex-col gap-10">
@@ -54,15 +49,16 @@ export default async function ProductPage() {
             Molestie nascetur justo sit accumsan nunc quam tincidunt blandit.
           </p>
           <div className="flex gap-4 xl:w-1/3">
-            <SelectHero
+            <FilterCategory
               placeholder="Loại"
               options={categories.map((category) => ({ value: category.id.toString(), label: category.name }))}
-              value={""}
+              value={selectedCategory}
+              onChange={setSelectedCategory}
             />
           </div>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-10">
-          {products.map((product: Product) => (
+          {filteredProducts.map((product: Product) => (
             <Link href={`/equipment/${product.id}`} key={product.id}>
               <div key={`menu-${product.id}`} className="text-xl">
                 <div className="relative group">
