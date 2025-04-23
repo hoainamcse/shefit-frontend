@@ -1,19 +1,19 @@
-'use client'
+"use client"
 
-import { Button } from '@/components/ui/button'
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { getCourse } from '@/network/server/courses'
-import { getEquipments } from '@/network/server/equipments'
-import { getMuscleGroups } from '@/network/server/muscle-group'
-import { getFormCategoryLabel, getDifficultyLevelLabel } from '@/lib/label'
-import { useState, useEffect, useRef } from 'react'
-import { FormCategory } from '@/models/course'
-import LiveCourseDetail from './LiveCourseDetail'
-import VideoCourseDetail from './VideoCourseDetail'
+import { Button } from "@/components/ui/button"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { getCourse } from "@/network/server/courses"
+import { getEquipments } from "@/network/server/equipments"
+import { getMuscleGroups } from "@/network/server/muscle-group"
+import { getFormCategoryLabel, getDifficultyLevelLabel } from "@/lib/label"
+import { useState, useEffect, useRef } from "react"
+import { FormCategory } from "@/models/course"
+import LiveCourseDetail from "./LiveCourseDetail"
+import VideoCourseDetail from "./VideoCourseDetail"
 
 interface CourseDetailProps {
   courseId: string
-  typeCourse: 'video' | 'live'
+  typeCourse: "video" | "live"
 }
 
 export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps) {
@@ -41,7 +41,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         const muscleGroupData = await getMuscleGroups()
         setMuscleGroup(muscleGroupData)
       } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error("Error fetching data:", error)
       }
     }
 
@@ -55,12 +55,12 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         setIsFooterVisible(entry.isIntersecting)
       },
       {
-        rootMargin: '0px',
+        rootMargin: "0px",
         threshold: 0.1, // When 10% of the footer is visible
       }
     )
 
-    const siteFooter = document.querySelector('footer')
+    const siteFooter = document.querySelector("footer")
 
     if (siteFooter) {
       observer.observe(siteFooter)
@@ -98,7 +98,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
           <div className="text-gray-500">
             {course?.data?.form_categories &&
               (Array.isArray(course.data.form_categories)
-                ? course.data.form_categories.map((cat: FormCategory) => getFormCategoryLabel(cat)).join(', ')
+                ? course.data.form_categories.map((cat: FormCategory) => getFormCategoryLabel(cat)).join(", ")
                 : getFormCategoryLabel(course.data.form_categories))}
           </div>
         </div>
@@ -110,7 +110,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         </div>
 
         {showDetails ? (
-          typeCourse === 'video' ? (
+          typeCourse === "video" ? (
             <VideoCourseDetail courseId={courseId} />
           ) : (
             <LiveCourseDetail courseId={courseId} />
@@ -165,22 +165,14 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         )}
       </div>
 
-      {/* Footer detection element */}
-      <div ref={footerRef} className="h-20 w-full" />
-
-      {/* Sticky buttons - hidden when footer is visible */}
-      {!isFooterVisible && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white py-4 shadow-[0_-4px_10px_rgba(0,0,0,0.1)] z-10">
-          <div className="flex justify-center gap-4 max-w-screen-2xl mx-auto px-6">
-            <Button onClick={handleToggleDetails} className="w-1/3 rounded-full bg-button hover:bg-[#11c296] h-14">
-              {showDetails ? 'Trở về' : 'Bắt đầu'}
-            </Button>
-            <Button variant="secondary" className="text-button rounded-full w-1/3 bg-white h-14 border-2 border-button">
-              Lưu
-            </Button>
-          </div>
-        </div>
-      )}
+      <div className="flex justify-center gap-4">
+        <Button onClick={handleToggleDetails} className="w-1/3 rounded-full bg-button hover:bg-[#11c296] h-14">
+          {showDetails ? "Trở về" : "Bắt đầu"}
+        </Button>
+        <Button variant="secondary" className="text-button rounded-full w-1/3 bg-white h-14 border-2 border-button">
+          Lưu
+        </Button>
+      </div>
     </div>
   )
 }

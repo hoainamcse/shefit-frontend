@@ -24,7 +24,7 @@ export default async function CartDetail({ params }: { params: Promise<{ slug: n
         <div className="w-full text-2xl max-lg:mb-20">
           {productVariants.map((variant: any, index: number) => (
             <div key={`menu-${variant.id}`} className="flex justify-between items-center mb-5">
-              <Image src={ShoppingImage} alt="" className="size-[148px]" />
+              <img src={products[index]?.data?.image_urls[0]} alt="" className="size-[148px] rounded-lg" />
               <div>
                 <div className="font-medium">{products[index]?.data?.name || "Sản phẩm"}</div>
                 <div className="text-[#737373]">Size: {variant.size.size}</div>

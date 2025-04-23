@@ -24,7 +24,7 @@ export default function CurrentCart() {
   const [carts, setCarts] = useState<any>(null)
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-
+  console.log(products)
   useEffect(() => {
     async function fetchCartData() {
       const cartsRes = await getCarts()
@@ -53,11 +53,11 @@ export default function CurrentCart() {
       </div>
     )
   }
-  const totalPrice = (carts.data[0].total - carts.data[0].shipping_fee).toLocaleString()
+  const totalPrice = (carts?.data[0].total - carts?.data[0].shipping_fee).toLocaleString()
 
   const handleRemove = async (variantId: number) => {
     try {
-      await removeCart(carts.data[0].id, variantId)
+      await removeCart(carts?.data[0].id, variantId)
       toast.success("Đã xóa sản phẩm khỏi giỏ hàng!")
       setLoading(true)
       const cartsRes = await getCarts()
@@ -79,11 +79,11 @@ export default function CurrentCart() {
   return (
     <div className="xl:flex mt-10 w-full justify-between gap-20">
       <div className="w-full text-2xl max-lg:mb-20">
-        {carts.data[0].product_variants.map((variant: any, index: number) => (
+        {carts?.data[0].product_variants.map((variant: any, index: number) => (
           <div key={`menu-${index}`} className="flex justify-between items-center mb-5">
-            <Image src={ShoppingImage} alt="" className="size-[148px]" />
+            <img src={products[index]?.data?.image_urls[0]} alt="" className="size-[148px] rounded-lg" />
             <div>
-              <div className="font-medium">{products[index]?.data?.name}</div>
+              <div className="font-medium">{products[index]?.data?.name || "Sản phẩm"}</div>
               <div className="text-[#737373]">Size: {variant.size.size}</div>
             </div>
             <div className="text-[#737373]">
