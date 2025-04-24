@@ -78,7 +78,7 @@ export default function Equipment({ params }: { params: Promise<{ slug: string }
             <img
               src={product.image_urls[0] || ""}
               alt={product.name}
-              className="xl:aspect-[5/3] max-lg:aspect-1 object-cover rounded-xl mb-4"
+              className="xl:aspect-[5/3] max-lg:aspect-1 object-cover rounded-xl mb-4 w-full"
             />
           </div>
           <div className="xl:w-1/5 max-lg:w-full xl:text-xl flex flex-col gap-3">
