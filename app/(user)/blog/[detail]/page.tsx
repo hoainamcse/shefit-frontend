@@ -1,92 +1,14 @@
-import React from "react"
-import Image from "next/image"
-import VideoCard from "@/assets/image/ImageIntro.png"
+import { getBlog } from "@/network/server/blog"
 
-export default function BlogDetail() {
+export default async function BlogDetail({ params }: { params: Promise<{ detail: string }> }) {
+  const { detail } = await params
+  const { data: blog } = await getBlog(Number(detail))
   return (
-    <div className="flex flex-col gap-10 mt-10">
-      <Image src={VideoCard} alt="" className="h-[680px]" />
+    <div className="flex flex-col gap-10 mt-10 p-0">
+      <img src={blog.cover_image} alt={blog.title} className="lg:h-[680px] w-full object-cover h-[300px]" />
       <div>
-        <div className="font-[family-name:var(--font-coiny)] xl:text-[40px] mb-5 max-lg:text-2xl">Title blog 1</div>
-        <div className="text-gray-500 xl:text-xl max-lg:base">
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
-          nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad
-          curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam
-          primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
-          penatibus bibendum ad curae consequat.Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin
-          scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis
-          risus pulvinar penatibus bibendum ad curae consequat.Lorem ipsum odor amet, consectetuer adipiscing elit. Ac
-          tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit.
-          Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat.Lorem ipsum odor amet, consectetuer
-          adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc
-          quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. <br />
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
-          nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad
-          curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam
-          primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
-          penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin
-          scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis
-          risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac
-          tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit.
-          Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer
-          adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc
-          quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor
-          amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo
-          sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat.
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
-          nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad
-          curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam
-          primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
-          penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin
-          scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis
-          risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac
-          tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit.
-          Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer
-          adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc
-          quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor
-          amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo
-          sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat.
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
-          nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad
-          curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam
-          primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
-          penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin
-          scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis
-          risus pulvinar penatibus bibendum ad curae consequat. <br />
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
-          nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad
-          curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam
-          primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
-          penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin
-          scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis
-          risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac
-          tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit.
-          Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer
-          adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc
-          quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor
-          amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo
-          sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat.
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
-          nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad
-          curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam
-          primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
-          penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin
-          scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis
-          risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac
-          tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit.
-          Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer
-          adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc
-          quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor
-          amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo
-          sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat.
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
-          nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad
-          curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam
-          primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
-          penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin
-          scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis
-          risus pulvinar penatibus bibendum ad curae consequat.
-        </div>
+        <div className="font-[family-name:var(--font-coiny)] xl:text-[40px] mb-5 max-lg:text-2xl">{blog.title}</div>
+        <div className="text-gray-500 xl:text-xl max-lg:text-base">{blog.content}</div>
       </div>
     </div>
   )
