@@ -14,79 +14,53 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Switch } from '@/components/ui/switch'
+import { Calorie } from '@/models/calorie'
+import { Diet } from '@/models/diets'
+import { MealPlan } from '@/models/meal-plans'
+import { getCalories } from '@/network/server/calorie'
+import { getDiets } from '@/network/server/diets'
+import { deleteMealPlan, getListMealPlans } from '@/network/server/meal-plans'
 import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-
-type MealPlan = {
-  id: string
-  name: string
-  description: string
-  calory: string
-  diet: string
-  is_public: boolean
-}
-
-const mealPlans: MealPlan[] = [
-  {
-    id: '1',
-    name: 'Meal plan 1',
-    description: 'Description 1',
-    calory: '1000-2000 cal',
-    diet: 'Diet 1',
-    is_public: true,
-  },
-  {
-    id: '2',
-    name: 'Meal plan 2',
-    description: 'Description 2',
-    calory: '< 1000 cal',
-    diet: 'Diet 2',
-    is_public: true,
-  },
-  {
-    id: '3',
-    name: 'Meal plan 3',
-    description: 'Description 3',
-    calory: '< 1000 cal',
-    diet: 'Diet 3',
-    is_public: false,
-  },
-  {
-    id: '4',
-    name: 'Meal plan 4',
-    description: 'Description 4',
-    calory: '> 2000 cal',
-    diet: 'Diet 4',
-    is_public: false,
-  },
-  {
-    id: '5',
-    name: 'Meal plan 5',
-    description: 'Description 5',
-    calory: '1000-2000 cal',
-    diet: 'Diet 5',
-    is_public: true,
-  },
-]
+import { useEffect, useState, useMemo } from 'react'
+import { toast } from 'sonner'
 
 export default function MealPlansPage() {
   const router = useRouter()
+  const [mealPlans, setMealPlans] = useState<MealPlan[]>([])
+  const [dietList, setDietList] = useState<Diet[]>([])
+
+  const dietIdToName = useMemo(() => Object.fromEntries(dietList.map((diet) => [diet.id, diet.name])), [dietList])
+
   const columns: ColumnDef<MealPlan>[] = [
     {
-      accessorKey: 'name',
+      accessorKey: 'title',
       header: 'Tên',
     },
     {
       accessorKey: 'description',
       header: 'Thông tin',
+      render: ({ row }) => (
+        <span className="block max-w-xs truncate overflow-hidden whitespace-nowrap " title={row.description}>
+          {row.description}
+        </span>
+      ),
     },
     {
-      accessorKey: 'calory',
+      accessorKey: 'calories',
       header: 'Mức calo',
+      render: ({ row }) => (
+        <span className="block min-w-[100px] text-gray-900">
+          {row.calories.min_calorie} - {row.calories.max_calorie}
+        </span>
+      ),
     },
     {
-      accessorKey: 'diet',
+      accessorKey: 'diet_id',
       header: 'Chế độ ăn',
+      render: ({ row }) => (
+        <span className="block min-w-[120px] text-gray-900">{dietIdToName[row.diet_id] || '-'}</span>
+      ),
     },
     {
       accessorKey: 'is_public',
@@ -108,9 +82,7 @@ export default function MealPlansPage() {
               <Copy /> Sao chép thực đơn ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Eye /> Xem
-            </DropdownMenuItem>
+
             <DropdownMenuItem
               onClick={() => {
                 router.push(`/admin/meal-plans/${row.id}`)
@@ -118,7 +90,7 @@ export default function MealPlansPage() {
             >
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
+            <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(row.id)}>
               <Trash2 /> Xoá
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -126,6 +98,30 @@ export default function MealPlansPage() {
       ),
     },
   ]
+
+  const handleDelete = async (mealPlanId: string) => {
+    if (window.confirm('Bạn có chắc muốn xoá thực đơn này?')) {
+      try {
+        const res = await deleteMealPlan(mealPlanId)
+        if (res.status === 'success') {
+          toast.success('Xoá thực đơn thành công')
+          setMealPlans((mealPlans) => mealPlans.filter((mealPlan) => mealPlan.id !== mealPlanId))
+        }
+      } catch (e) {
+        toast.error('Có lỗi khi xoá thực đơn')
+      }
+    }
+  }
+
+  useEffect(() => {
+    const fetchMealPlans = async () => {
+      const response = await getListMealPlans()
+      const dietResponse = await getDiets()
+      setDietList(dietResponse.data || [])
+      setMealPlans(response.data || [])
+    }
+    fetchMealPlans()
+  }, [])
   const headerExtraContent = (
     <>
       <AddButton text="Thêm thực đơn" onClick={() => router.push('/admin/meal-plans/create')} />

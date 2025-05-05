@@ -1,15 +1,15 @@
 import * as React from 'react'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { CreateBlogForm } from '@/components/forms/create-blog-form'
-import { mockBlogs } from '../mockData'
+import { getDetailBlog } from '@/network/server/blog'
 
 export default async function EditBlogPage({ params }: { params: Promise<{ blog_id: string }> }) {
   const { blog_id } = await params
-  const blog = mockBlogs.find((b) => b.id === blog_id)
+  const blog = await getDetailBlog(blog_id)
 
   return (
     <ContentLayout title="Bài viết">
-      <CreateBlogForm data={blog} isEdit={true} />
+      <CreateBlogForm data={blog.data} isEdit={true} />
     </ContentLayout>
   )
 }

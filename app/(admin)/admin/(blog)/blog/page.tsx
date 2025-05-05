@@ -5,11 +5,22 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
-import { Blog, mockBlogs } from './mockData'
+
+import { getListBlogs } from '@/network/server/blog'
+import { Blog } from '@/models/blog'
 
 export default function BlogList() {
-  const [blogs, setBlogs] = useState<Blog[]>(mockBlogs)
-  const [loading, setLoading] = useState(false)
+  const [blogs, setBlogs] = useState<Blog[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      const response = await getListBlogs()
+      setBlogs(response.data || [])
+      setLoading(false)
+    }
+    fetchBlogs()
+  }, [])
 
   if (loading) {
     return <div>Loading...</div>
@@ -34,7 +45,7 @@ export default function BlogList() {
                 <p className="text-muted-foreground mb-4 line-clamp-3">{blog.content}</p>
                 <div className="relative w-full h-48 mb-4 overflow-hidden rounded-md">
                   <img
-                    src={blog.image}
+                    src={blog.cover_image}
                     alt={blog.title}
                     className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
                   />

@@ -13,157 +13,102 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { getProducts, getCategories, getColors, getSizes, deleteProduct } from '@/network/server/products'
 import { Copy, Edit, Ellipsis, Eye, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
 
-type Color = {
-  id: string
+interface Color {
+  id: number
   name: string
-  code: string
+  hex_code: string
 }
 
-type Product = {
-  id: string
+interface Size {
+  id: number
+  size: string
+}
+
+interface ProductRow {
+  id: number
   name: string
   price: number
-  sizes: string[]
+  sizes: Size[]
   colors: Color[]
-  category: string
-  images: string[]
+  category_name: string
+  image_url: string
 }
 
-const products: Product[] = [
-  {
-    id: '1',
-    name: 'Product 1',
-    price: 10000,
-    sizes: ['S', 'M', 'L'],
-    colors: [
-      {
-        id: '1',
-        name: 'Red',
-        code: '#ff8787',
-      },
-      {
-        id: '2',
-        name: 'Green',
-        code: '#38d9a9',
-      },
-      {
-        id: '3',
-        name: 'Blue',
-        code: '#4dabf7',
-      },
-    ],
-    category: 'Clothing',
-    images: ['https://m.media-amazon.com/images/I/81RE9EBCagL._AC_UF1000,1000_QL80_.jpg'],
-  },
-  {
-    id: '2',
-    name: 'Product 2',
-    price: 20000,
-    sizes: ['S', 'M', 'L'],
-    colors: [
-      {
-        id: '1',
-        name: 'Red',
-        code: '#ff8787',
-      },
-      {
-        id: '2',
-        name: 'Green',
-        code: '#38d9a9',
-      },
-      {
-        id: '3',
-        name: 'Blue',
-        code: '#4dabf7',
-      },
-    ],
-    category: 'Clothing',
-    images: ['https://m.media-amazon.com/images/I/81RE9EBCagL._AC_UF1000,1000_QL80_.jpg'],
-  },
-  {
-    id: '3',
-    name: 'Product 3',
-    price: 30000,
-    sizes: ['S', 'M', 'L'],
-    colors: [
-      {
-        id: '1',
-        name: 'Red',
-        code: '#ff8787',
-      },
-      {
-        id: '2',
-        name: 'Green',
-        code: '#38d9a9',
-      },
-      {
-        id: '3',
-        name: 'Blue',
-        code: '#4dabf7',
-      },
-    ],
-    category: 'Clothing',
-    images: ['https://m.media-amazon.com/images/I/81RE9EBCagL._AC_UF1000,1000_QL80_.jpg'],
-  },
-  {
-    id: '4',
-    name: 'Product 4',
-    price: 40000,
-    sizes: ['S', 'M', 'L'],
-    colors: [
-      {
-        id: '1',
-        name: 'Red',
-        code: '#ff8787',
-      },
-      {
-        id: '2',
-        name: 'Green',
-        code: '#38d9a9',
-      },
-      {
-        id: '3',
-        name: 'Blue',
-        code: '#4dabf7',
-      },
-    ],
-    category: 'Clothing',
-    images: ['https://m.media-amazon.com/images/I/81RE9EBCagL._AC_UF1000,1000_QL80_.jpg'],
-  },
-  {
-    id: '5',
-    name: 'Product 5',
-    price: 50000,
-    sizes: ['S', 'M', 'L'],
-    colors: [
-      {
-        id: '1',
-        name: 'Red',
-        code: '#ff8787',
-      },
-      {
-        id: '2',
-        name: 'Green',
-        code: '#38d9a9',
-      },
-      {
-        id: '3',
-        name: 'Blue',
-        code: '#4dabf7',
-      },
-    ],
-    category: 'Clothing',
-    images: ['https://m.media-amazon.com/images/I/81RE9EBCagL._AC_UF1000,1000_QL80_.jpg'],
-  },
-]
-
 export default function ProductsPage() {
+  const [productTable, setProductTable] = useState<ProductRow[]>([])
   const router = useRouter()
 
-  const columns: ColumnDef<Product>[] = [
+  const fetchData = async () => {
+    try {
+      const [productsRes, categoriesRes, colorsRes, sizesRes] = await Promise.all([
+        getProducts(),
+        getCategories(),
+        getColors(),
+        getSizes(),
+      ])
+
+      const products = productsRes.data
+      const categories = categoriesRes.data
+      const colors = colorsRes.data
+      const sizes = sizesRes.data
+
+      const tableData = products.map((product) => {
+        const sizesArr: Size[] = []
+        const colorsArr: Color[] = []
+
+        product.variants.forEach((variant) => {
+          const sizeObj = sizes.find((s) => s.id === variant.size_id)
+          if (sizeObj && !sizesArr.some((s) => s.id === sizeObj.id)) {
+            sizesArr.push(sizeObj)
+          }
+          const colorObj = colors.find((c) => c.id === variant.color_id)
+          if (colorObj && !colorsArr.some((c) => c.id === colorObj.id)) {
+            colorsArr.push(colorObj)
+          }
+        })
+
+        const categoryObj = categories.find((cat) => cat.id === product.category_id)
+        return {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          sizes: sizesArr,
+          colors: colorsArr,
+          category_name: categoryObj ? categoryObj.name : '',
+          image_url: product.image_urls[0] || '',
+        }
+      })
+      setProductTable(tableData)
+    } catch (e) {
+      setProductTable([])
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const handleDelete = async (id: number) => {
+    if (window.confirm('Bạn có chắc muốn xoá sản phẩm này?')) {
+      try {
+        const res = await deleteProduct(id.toString())
+        if (res.status === 'success') {
+          toast.success('Xoá sản phẩm thành công')
+          fetchData()
+        }
+      } catch (e) {
+        toast.error('Có lỗi khi xoá sản phẩm')
+      }
+    }
+  }
+
+  const columns: ColumnDef<ProductRow>[] = [
     {
       accessorKey: 'name',
       header: 'Tên',
@@ -171,7 +116,7 @@ export default function ProductsPage() {
     {
       accessorKey: 'price',
       header: 'Giá',
-      render: ({ row }) => <span>đ{row.price.toLocaleString('vi-VN')}</span>,
+      render: ({ row }) => <span>{row.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>,
     },
     {
       accessorKey: 'sizes',
@@ -179,8 +124,8 @@ export default function ProductsPage() {
       render: ({ row }) => (
         <div className="flex flex-wrap gap-2">
           {row.sizes.map((size) => (
-            <Badge key={size} variant="secondary">
-              {size}
+            <Badge key={size.id} variant="secondary">
+              {size.size}
             </Badge>
           ))}
         </div>
@@ -192,7 +137,7 @@ export default function ProductsPage() {
       render: ({ row }) => (
         <div className="flex flex-wrap gap-2">
           {row.colors.map((color) => (
-            <Badge key={color.id} style={{ backgroundColor: color.code }}>
+            <Badge key={color.id} style={{ backgroundColor: color.hex_code }}>
               {color.name}
             </Badge>
           ))}
@@ -200,14 +145,14 @@ export default function ProductsPage() {
       ),
     },
     {
-      accessorKey: 'category',
+      accessorKey: 'category_name',
       header: 'Phân loại',
     },
     {
-      accessorKey: 'images',
+      accessorKey: 'image_url',
       header: 'Hình ảnh',
       render: ({ row }) => {
-        return <img src={row.images[0]} alt={`${row.name} thumbnail`} className="h-12 rounded" />
+        return <img src={row.image_url} alt={`${row.name} thumbnail`} className="h-24 w-24 rounded-lg object-cover" />
       },
     },
     {
@@ -231,7 +176,7 @@ export default function ProductsPage() {
             <DropdownMenuItem onClick={() => router.push(`/admin/products/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
+            <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(row.id)}>
               <Trash2 /> Xoá
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -247,7 +192,7 @@ export default function ProductsPage() {
       <DataTable
         headerExtraContent={headerExtraContent}
         searchPlaceholder="Tìm kiếm theo tên, ..."
-        data={products}
+        data={productTable}
         columns={columns}
         onSelectChange={() => {}}
       />

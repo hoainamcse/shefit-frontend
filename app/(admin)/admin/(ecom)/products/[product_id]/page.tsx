@@ -1,4 +1,5 @@
 import CreateProductForm from '@/components/forms/create-product-form'
+import { getProduct } from '@/network/server/cart'
 
 // Mock data for testing update form
 const mockProductData = {
@@ -33,5 +34,7 @@ const mockProductData = {
 
 export default async function EditProductPage({ params }: { params: Promise<{ product_id: string }> }) {
   const { product_id } = await params
-  return <CreateProductForm isEdit={true} data={mockProductData} />
+  const productRes = await getProduct(product_id)
+
+  return <CreateProductForm isEdit={true} data={productRes.data} />
 }

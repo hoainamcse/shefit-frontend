@@ -16,47 +16,67 @@ import { toast } from 'sonner'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { MainButton } from '@/components/buttons/main-button'
 import { Trash2 } from 'lucide-react'
+import { FormSelectField } from './fields'
+import { useEffect, useMemo, useState, useTransition } from 'react'
+import { Diet } from '@/models/diets'
+import { getDiets } from '@/network/server/diets'
+import { FormImageInputField } from './fields/form-image-input-field'
+import { useRouter } from 'next/navigation'
+import { createDish, updateDish } from '@/network/server/dish'
 
 export const formSchema = z.object({
+  id: z.coerce.number().optional(),
   name: z.string().min(2, {
     message: 'Dish name must be at least 2 characters.',
   }),
-  preparation: z.string().min(10, {
+  description: z.string().min(10, {
     message: 'Preparation instructions must be at least 10 characters.',
   }),
-  diet: z.string({
-    required_error: 'Please select a diet type.',
+  diet_id: z.coerce.number({
+    message: 'Please select a diet type.',
   }),
-  image: z.array(z.instanceof(File)).optional(),
-  ingredients: z
-    .array(
-      z.object({
-        name: z.string().min(1, 'Ingredient name is required'),
-        quantity: z.string().min(1, 'Quantity is required'),
-        unit: z.string().min(1, 'Unit is required'),
-      })
-    )
-    .min(1, 'At least one ingredient is required'),
-  nutrition: z.object({
-    calories: z.string().min(1, 'Calories value is required'),
-    protein: z.string().min(1, 'Protein value is required'),
-    carbs: z.string().min(1, 'Carbs value is required'),
-    fat: z.string().min(1, 'Fat value is required'),
-    fiber: z.string().min(1, 'Fiber value is required'),
-  }),
+  image: z.string().optional(),
+  // ingredients: z
+  //   .array(
+  //     z.object({
+  //       name: z.string().min(1, 'Ingredient name is required'),
+  //       quantity: z.string().min(1, 'Quantity is required'),
+  //       unit: z.string().min(1, 'Unit is required'),
+  //     })
+  //   )
+  //   .min(1, 'At least one ingredient is required'),
+  calories: z.coerce.number().min(0, 'Calories value is required'),
+  protein: z.coerce.number().min(0, 'Protein value is required'),
+  carb: z.coerce.number().min(0, 'Carbs value is required'),
+  fat: z.coerce.number().min(0, 'Fat value is required'),
+  fiber: z.coerce.number().min(0, 'Fiber value is required'),
+  protein_source: z.array(z.string()).optional(),
+  vegetable: z.array(z.string()).optional(),
+  starch: z.array(z.string()).optional(),
+  spices: z.array(z.string()).optional(),
+  others: z.array(z.string()).optional(),
+  meal_time: z.string().optional(),
 })
 
 export type FormDishValues = z.infer<typeof formSchema>
 
 const defaultValues: Partial<FormDishValues> = {
-  ingredients: [{ name: '', quantity: '', unit: '' }],
-  nutrition: {
-    calories: '',
-    protein: '',
-    carbs: '',
-    fat: '',
-    fiber: '',
-  },
+  name: '',
+  description: '',
+  diet_id: 1,
+  image:
+    'https://images.unsplash.com/photo-1523218345414-cd47aea19ba6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fG1lYWx8ZW58MHx8MHx8fDA%3D',
+  calories: 0,
+  protein: 0,
+  carb: 0,
+  fat: 0,
+  fiber: 0,
+  protein_source: [],
+  vegetable: [],
+  starch: [],
+  spices: [],
+  others: [],
+  meal_time: 'breakfast',
 }
 
 type CreateDishFormProps = {
@@ -66,26 +86,43 @@ type CreateDishFormProps = {
 }
 
 export default function CreateDishForm({ isEdit, data, namePrefix = '' }: CreateDishFormProps) {
+  const [isPending, startTransition] = useTransition()
+  const router = useRouter()
+
   const form = useForm<FormDishValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: isEdit && data ? { ...data } : defaultValues,
+    defaultValues: data || defaultValues,
   })
 
   async function onSubmit(values: FormDishValues) {
-    try {
-      // TODO: Implement your API call here
-      console.log(values)
-      toast.success('Dish created successfully!')
-    } catch (error) {
-      toast.error('Failed to create dish')
-    }
+    startTransition(async () => {
+      try {
+        if (!isEdit) {
+          const dishResult = await createDish([values])
+          if (dishResult.status === 'success') {
+            toast.success('Tạo món ăn thành công')
+            router.push('/admin/dishes')
+          }
+        } else {
+          if (data?.id) {
+            const dishResult = await updateDish(data.id.toString(), values)
+            if (dishResult.status === 'success') {
+              toast.success('Cập nhật món ăn thành công')
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error)
+        toast.error(isEdit ? 'Cập nhật món ăn thất bại' : 'Tạo món ăn thất bại')
+      }
+    })
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <DishFormFields form={form} namePrefix={namePrefix} />
-        <MainButton text={isEdit ? 'Cập nhật món ăn' : 'Tạo món ăn'} type="submit" />
+        <MainButton text={isEdit ? 'Cập nhật món ăn' : 'Tạo món ăn'} type="submit" loading={isPending} />
       </form>
     </Form>
   )
@@ -95,20 +132,36 @@ export default function CreateDishForm({ isEdit, data, namePrefix = '' }: Create
 type DishFormFieldsProps = {
   form: any
   namePrefix?: string
+  isShowImage?: boolean
 }
 
-export const DishFormFields = ({ form, namePrefix = '' }: DishFormFieldsProps) => {
+export const DishFormFields = ({ form, namePrefix = '', isShowImage = true }: DishFormFieldsProps) => {
   const prefixedName = (name: string) => (namePrefix ? `${namePrefix}.${name}` : name)
 
-  // Get field array for ingredients
-  const { fields, append, remove } = useFieldArray({
-    name: prefixedName('ingredients'),
-    control: form.control,
-  })
+  // // Get field array for ingredients
+  // const { fields, append, remove } = useFieldArray({
+  //   name: prefixedName('ingredients'),
+  //   control: form.control,
+  // })
 
-  const addIngredient = React.useCallback(() => {
-    append({ name: '', quantity: '', unit: '' })
-  }, [append])
+  // const addIngredient = React.useCallback(() => {
+  //   append({ name: '', quantity: '', unit: '' })
+  // }, [append])
+
+  const [dietList, setDietList] = useState<Diet[]>([])
+
+  const AVAILABLE_DIETS = useMemo(
+    () => dietList.map((diet) => ({ value: diet.id.toString(), label: diet.name })),
+    [dietList]
+  )
+
+  useEffect(() => {
+    const fetchMealPlans = async () => {
+      const dietResponse = await getDiets()
+      setDietList(dietResponse.data || [])
+    }
+    fetchMealPlans()
+  }, [])
 
   return (
     <>
@@ -128,7 +181,7 @@ export const DishFormFields = ({ form, namePrefix = '' }: DishFormFieldsProps) =
 
       <FormField
         control={form.control}
-        name={prefixedName('preparation')}
+        name={prefixedName('description')}
         render={({ field }) => (
           <FormItem>
             <FormLabel>Hướng dẫn chế biến</FormLabel>
@@ -140,32 +193,15 @@ export const DishFormFields = ({ form, namePrefix = '' }: DishFormFieldsProps) =
         )}
       />
 
-      <FormField
-        control={form.control}
-        name={prefixedName('diet')}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Loại chế độ</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Chọn một chế độ ăn" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value="vegetarian">Vegetarian</SelectItem>
-                <SelectItem value="vegan">Vegan</SelectItem>
-                <SelectItem value="keto">Keto</SelectItem>
-                <SelectItem value="paleo">Paleo</SelectItem>
-                <SelectItem value="regular">Regular</SelectItem>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
+      <FormSelectField
+        form={form}
+        name={prefixedName('diet_id')}
+        label="Chế độ ăn"
+        data={AVAILABLE_DIETS}
+        placeholder="Chọn chế độ ăn"
       />
 
-      <FormField
+      {/* <FormField
         control={form.control}
         name={prefixedName('image')}
         render={({ field }) => (
@@ -173,7 +209,7 @@ export const DishFormFields = ({ form, namePrefix = '' }: DishFormFieldsProps) =
             <FormLabel>Hình ảnh món ăn</FormLabel>
             <FormControl>
               <FileUploader
-                value={field.value || []}
+                value={field.value || undefined}
                 onChange={field.onChange}
                 accept={{ 'image/*': [] }}
                 maxFileCount={1}
@@ -182,9 +218,18 @@ export const DishFormFields = ({ form, namePrefix = '' }: DishFormFieldsProps) =
             <FormMessage />
           </FormItem>
         )}
-      />
+      /> */}
 
-      <div className="space-y-4">
+      {isShowImage && (
+        <FormImageInputField
+          form={form}
+          name={prefixedName('image')}
+          label="Hình đại diện"
+          placeholder="Nhập hình đại diện"
+        />
+      )}
+
+      {/* <div className="space-y-4">
         <div className="flex items-center justify-between">
           <FormLabel>Nguyên liệu</FormLabel>
           <Button type="button" variant="outline" size="sm" onClick={addIngredient}>
@@ -261,7 +306,7 @@ export const DishFormFields = ({ form, namePrefix = '' }: DishFormFieldsProps) =
             ))}
           </TableBody>
         </Table>
-      </div>
+      </div> */}
 
       <div>
         <FormLabel className="block mb-4">Thông tin dinh dưỡng (cho 1 phần)</FormLabel>
@@ -280,7 +325,7 @@ export const DishFormFields = ({ form, namePrefix = '' }: DishFormFieldsProps) =
               <TableCell>
                 <FormField
                   control={form.control}
-                  name={`${prefixedName('nutrition')}.calories`}
+                  name={prefixedName('calories')}
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
@@ -294,7 +339,7 @@ export const DishFormFields = ({ form, namePrefix = '' }: DishFormFieldsProps) =
               <TableCell>
                 <FormField
                   control={form.control}
-                  name={`${prefixedName('nutrition')}.protein`}
+                  name={prefixedName('protein')}
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
@@ -308,7 +353,7 @@ export const DishFormFields = ({ form, namePrefix = '' }: DishFormFieldsProps) =
               <TableCell>
                 <FormField
                   control={form.control}
-                  name={`${prefixedName('nutrition')}.carbs`}
+                  name={prefixedName('carb')}
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
@@ -322,7 +367,7 @@ export const DishFormFields = ({ form, namePrefix = '' }: DishFormFieldsProps) =
               <TableCell>
                 <FormField
                   control={form.control}
-                  name={`${prefixedName('nutrition')}.fat`}
+                  name={prefixedName('fat')}
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
@@ -336,7 +381,7 @@ export const DishFormFields = ({ form, namePrefix = '' }: DishFormFieldsProps) =
               <TableCell>
                 <FormField
                   control={form.control}
-                  name={`${prefixedName('nutrition')}.fiber`}
+                  name={prefixedName('fiber')}
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
