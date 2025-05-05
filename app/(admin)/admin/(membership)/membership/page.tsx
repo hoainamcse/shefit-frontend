@@ -16,7 +16,11 @@ import {
 import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { CreatePromotionForm } from '@/components/forms/create-promotion-form'
+import { CreateCouponForm } from '@/components/forms/create-coupon-form'
+import { Coupon } from '@/models/coupon'
+import { useEffect, useState } from 'react'
+import { deleteCoupon, getListCoupons } from '@/network/server/coupon'
+import { toast } from 'sonner'
 
 type Membership = {
   id: string
@@ -58,61 +62,40 @@ const memberships: Membership[] = [
   },
 ]
 
-type Promotion = {
-  id: string
-  name: string
-  type: 'percentage' | 'money'
-  value: number
-}
-
-// Separate promotions data
-const promotions: Promotion[] = [
-  {
-    id: '1',
-    name: 'Khuyến mãi Giáng sinh',
-    type: 'percentage',
-    value: 20,
-  },
-  {
-    id: '2',
-    name: 'Khuyến mãi Ngày Quốc tế Phụ nữ',
-    type: 'money',
-    value: 50000,
-  },
-  {
-    id: '3',
-    name: 'Khuyến mãi Hè',
-    type: 'percentage',
-    value: 15,
-  },
-  {
-    id: '4',
-    name: 'Khuyến mãi Black Friday',
-    type: 'money',
-    value: 100000,
-  },
-  {
-    id: '5',
-    name: 'Khuyến mãi Tết',
-    type: 'percentage',
-    value: 25,
-  },
-]
-
 export default function MembershipPage() {
   const router = useRouter()
+  const [coupons, setCoupons] = useState<Coupon[]>([])
 
-  // Promotion columns
-  const promotionColumns: ColumnDef<Promotion>[] = [
+  const fetchCoupons = async () => {
+    const response = await getListCoupons()
+    setCoupons(response.data || [])
+  }
+
+  const handleDeleteCoupon = async (couponId: number) => {
+    if (window.confirm('Bạn có chắc muốn xoá khuyến mãi này?')) {
+      try {
+        const res = await deleteCoupon(couponId.toString())
+        if (res.status === 'success') {
+          toast.success('Xoá khuyến mãi thành công')
+          setCoupons((coupons) => coupons.filter((c) => c.id !== couponId))
+        }
+      } catch (e) {
+        toast.error('Có lỗi khi xoá khuyến mãi')
+      }
+    }
+  }
+
+  // Coupon columns
+  const couponColumns: ColumnDef<Coupon>[] = [
     {
-      accessorKey: 'name',
-      header: 'Tên khuyến mãi',
+      accessorKey: 'code',
+      header: 'Mã khuyến mãi',
     },
     {
-      accessorKey: 'value',
+      accessorKey: 'discount_value',
       header: 'Giá trị',
       render: ({ row }) => {
-        return row.type === 'percentage' ? `${row.value}%` : `${row.value.toLocaleString()}đ`
+        return row.discount_type === 'percentage' ? `${row.discount_value}%` : `${row.discount_value.toLocaleString()}đ`
       },
     },
     {
@@ -123,16 +106,19 @@ export default function MembershipPage() {
           size="icon"
           variant="ghost"
           className="text-destructive hover:text-destructive"
-          onClick={() => {
-            // TODO: Implement delete promotion
-            console.log('Delete promotion:', row.id)
-          }}
+          onClick={() => handleDeleteCoupon(row.id)}
         >
           <Trash2 />
         </Button>
       ),
     },
   ]
+
+  const couponHeaderExtraContent = (
+    <CreateCouponDialog updateData={fetchCoupons}>
+      <AddButton text="Thêm khuyến mãi" />
+    </CreateCouponDialog>
+  )
 
   const membershipHeaderExtraContent = (
     <AddButton text="Thêm gói thành viên" onClick={() => router.push('/admin/membership/create')} />
@@ -182,11 +168,9 @@ export default function MembershipPage() {
     },
   ]
 
-  const promotionHeaderExtraContent = (
-    <CreatePromotionDialog>
-      <AddButton text="Thêm khuyến mãi" />
-    </CreatePromotionDialog>
-  )
+  useEffect(() => {
+    fetchCoupons()
+  }, [])
 
   return (
     <ContentLayout title="Quản lý gói thành viên">
@@ -206,26 +190,33 @@ export default function MembershipPage() {
       <div className="mt-8">
         <h2 className="text-lg font-semibold mb-4">Danh sách khuyến mãi</h2>
         <DataTable
-          data={promotions}
-          columns={promotionColumns}
+          data={coupons}
+          columns={couponColumns}
           onSelectChange={() => {}}
-          headerExtraContent={promotionHeaderExtraContent}
-          searchPlaceholder="Tìm kiếm theo tên, ..."
+          headerExtraContent={couponHeaderExtraContent}
+          searchPlaceholder="Tìm kiếm theo mã, ..."
         />
       </div>
     </ContentLayout>
   )
 }
 
-function CreatePromotionDialog({ children }: { children: React.ReactNode }) {
+function CreateCouponDialog({ children, updateData }: { children: React.ReactNode; updateData?: () => void }) {
+  const [open, setOpen] = useState(false)
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Thêm khuyến mãi</DialogTitle>
         </DialogHeader>
-        <CreatePromotionForm />
+        <CreateCouponForm
+          onSuccess={() => {
+            setOpen(false)
+            updateData?.() // Call onSuccess after closing
+          }}
+        />
       </DialogContent>
     </Dialog>
   )

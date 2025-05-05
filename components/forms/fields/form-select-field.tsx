@@ -38,7 +38,7 @@ function FormSelectField({
               {label} {withAsterisk && <span className="text-destructive">*</span>}
             </FormLabel>
           )}
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
             <FormControl>
               <SelectTrigger className="h-10">
                 <SelectValue placeholder={placeholder} />

@@ -1,3 +1,5 @@
+import { Calorie } from "./calorie";
+
 type MealIngredient = {
     id: string;
     name: string;
@@ -14,11 +16,15 @@ type MealPlan = {
     subtitle: string;
     chef_name: string;
     goal: Goal;
-    calories: string;
+    calories: Calorie;
     image: string;
     description: string;
     number_of_days: number;
     meal_ingredients: MealIngredient[];
+    is_public: boolean;
+    is_free: boolean;
+    free_days: number;
+    diet_id: number;
 }
 
 export type { MealPlan, Goal }
