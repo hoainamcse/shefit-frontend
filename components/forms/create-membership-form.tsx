@@ -17,87 +17,80 @@ import { Button } from '@/components/ui/button'
 import { Trash2, Plus } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent } from '../ui/card'
-
-// Define the Gift interface
-export interface Gift {
-  id: string
-  name: string
-  image?: string | File[]
-}
-
-// Define the Price interface
-export interface Price {
-  id: string
-  months: number
-  amount: number
-}
-
-// Define the Membership interface
-export interface Membership {
-  id?: string
-  name: string
-  type: 'Video' | 'Zoom' | 'Video & Zoom'
-  firstDescription: string
-  secondDescription: string
-  image?: string | File[]
-  gifts: Gift[]
-  prices: Price[]
-  createdAt?: Date
-  updatedAt?: Date
-}
+import { Subscription } from '@/models/subscription-admin'
+import { string } from 'zod'
+import { FormImageInputField } from './fields/form-image-input-field'
+import { FormSelectField } from './fields'
+import { useRouter } from 'next/navigation'
+import { createSubscription, updateSubscription } from '@/network/server/subcriptions-admin'
+import { createGift } from '@/network/server/gifts'
+import { updateGift } from '@/network/server/gifts'
 
 // Define the form schema
 const formSchema = z.object({
   name: z.string().min(3, {
     message: 'Tên gói phải có ít nhất 3 ký tự.',
   }),
-  type: z.enum(['Video', 'Zoom', 'Video & Zoom'], {
+  course_format: z.enum(['video', 'live', 'both'], {
     required_error: 'Vui lòng chọn loại hình.',
   }),
-  firstDescription: z.string().min(10, {
+  description_1: z.string().min(10, {
     message: 'Mô tả phải có ít nhất 10 ký tự.',
   }),
-  secondDescription: z.string().min(10, {
+  description_2: z.string().min(10, {
     message: 'Mô tả phải có ít nhất 10 ký tự.',
   }),
-  image: z.array(z.instanceof(File)).optional(),
-  gifts: z.array(
-    z.object({
-      id: z.string(),
-      name: z.string().min(1, { message: 'Tên quà tặng không được để trống' }),
-      image: z.union([z.string(), z.array(z.instanceof(File))]).optional(),
-    })
-  ),
-  prices: z.array(
-    z.object({
-      id: z.string(),
-      months: z.number().min(1, { message: 'Số tháng phải lớn hơn 0' }),
-      amount: z.number().min(0, { message: 'Giá tiền không được âm' }),
-    })
-  ),
+  cover_image: z.string().optional(),
+  thumbnail_image: z.string().optional(),
+  gifts: z
+    .array(
+      z.object({
+        id: z.number().optional(),
+        name: z.string().min(1, { message: 'Tên quà tặng không được để trống' }),
+        image: z.string().optional(),
+      })
+    )
+    .optional(),
+  prices: z
+    .array(
+      z.object({
+        id: z.number().optional(),
+        price: z.number().min(0, { message: 'Giá tiền không được âm' }),
+        duration: z.number().min(1, { message: 'Thời gian phải lớn hơn 0' }),
+      })
+    )
+    .optional(),
 })
 
 type FormValues = z.infer<typeof formSchema>
 
 type MembershipFormProps = {
   isEdit: boolean
-  data?: Membership
+  data?: Subscription
 }
+
+const AVAILABLE_COURSE_FORMATS = [
+  { value: 'video', label: 'Video' },
+  { value: 'live', label: 'Zoom' },
+  { value: 'both', label: 'Video & Zoom' },
+]
 
 export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
   const [isPending, startTransition] = useTransition()
+  const router = useRouter()
 
   // Initialize the form with default values
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: data?.name || '',
-      type: data?.type || 'Video',
-      firstDescription: data?.firstDescription || '',
-      secondDescription: data?.secondDescription || '',
-      image: Array.isArray(data?.image) ? data.image : [],
-      gifts: data?.gifts || [],
-      prices: data?.prices || [],
+    defaultValues: data || {
+      name: '',
+      course_format: 'video',
+      prices: [],
+      gifts: [],
+      cover_image: '',
+      thumbnail_image: '',
+      description_1: '',
+      description_2: '',
     },
   })
 
@@ -123,34 +116,77 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
   // Add a new gift
   const addGift = () => {
     appendGift({
-      id: Date.now().toString(),
       name: '',
-      image: [],
+      image: '',
     })
   }
 
   // Add a new price
   const addPrice = () => {
     appendPrice({
-      id: Date.now().toString(),
-      months: 1,
-      amount: 0,
+      price: 0,
+      duration: 1,
     })
   }
 
   async function onSubmit(values: FormValues) {
     startTransition(async () => {
       try {
-        // For demonstration purposes, just log the values
-        console.log(values)
-
-        // Display success message
-        toast.success(isEdit ? 'Gói thành viên đã được cập nhật' : 'Gói thành viên đã được tạo')
+        if (isEdit) {
+          await handleEditMembership(values, data)
+        } else {
+          await handleCreateMembership(values)
+          router.push('/admin/membership')
+        }
       } catch (error) {
-        console.error('Error submitting form:', error)
-        toast.error('Đã xảy ra lỗi. Vui lòng thử lại sau.')
+        console.error('Error:', error)
+        toast.error(isEdit ? 'Cập nhật gói thành viên thất bại' : 'Tạo gói thành viên thất bại')
       }
     })
+  }
+
+  const handleCreateMembership = async (values: FormValues) => {
+    let giftIds: number[] = []
+    if (values.gifts && values.gifts.length > 0) {
+      const createdGifts = await Promise.all(values.gifts.map((gift) => createGift(gift)))
+      giftIds = createdGifts.filter((gift) => gift.status === 'success' && gift.data).map((gift) => gift.data.id)
+    }
+    const { gifts, ...rest } = values
+    const subscriptionData = {
+      ...rest,
+      gift_ids: giftIds,
+    }
+
+    await createSubscription(subscriptionData)
+    toast.success('Tạo gói thành viên thành công')
+  }
+
+  const handleEditMembership = async (values: FormValues, data?: Subscription) => {
+    const giftsWithId = (values.gifts ?? []).filter((gift) => gift.id)
+    const giftsWithoutId = (values.gifts ?? []).filter((gift) => !gift.id)
+
+    const updatePromises = giftsWithId.map((gift) => updateGift(String(gift.id), gift))
+    const createPromises = giftsWithoutId.map((gift) => createGift(gift))
+
+    const updatedGifts = await Promise.all(updatePromises)
+    const createdGifts = await Promise.all(createPromises)
+
+    const updatedGiftIds = giftsWithId.map((gift) => gift.id)
+    const createdGiftIds = createdGifts
+      .filter((gift) => gift.status === 'success' && gift.data)
+      .map((gift) => gift.data.id)
+    const giftIds = [...updatedGiftIds, ...createdGiftIds]
+
+    const { gifts, ...rest } = values
+    const subscriptionData = {
+      ...rest,
+      gift_ids: giftIds,
+    }
+
+    console.log('subscriptionData', subscriptionData)
+
+    await updateSubscription(data!.id!, subscriptionData)
+    toast.success('Cập nhật gói thành viên thành công')
   }
 
   return (
@@ -166,49 +202,30 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                   <FormItem>
                     <FormLabel>Tên gói</FormLabel>
                     <FormControl>
-                      <Input placeholder="Nhập tên gói thành viên" {...field} disabled={isPending} />
+                      <Input placeholder="Nhập tên gói thành viên" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Loại hình</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Chọn loại hình" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Video">Video</SelectItem>
-                        <SelectItem value="Zoom">Zoom</SelectItem>
-                        <SelectItem value="Video & Zoom">Video & Zoom</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <FormSelectField
+                form={form}
+                name="course_format"
+                label="Loại hình"
+                data={AVAILABLE_COURSE_FORMATS}
+                placeholder="Chọn loại hình"
+                withAsterisk
               />
 
               <FormField
                 control={form.control}
-                name="firstDescription"
+                name="description_1"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Mô tả 1</FormLabel>
                     <FormControl>
-                      <Textarea
-                        placeholder="Nhập mô tả đầu tiên"
-                        className="min-h-[100px]"
-                        {...field}
-                        disabled={isPending}
-                      />
+                      <Textarea placeholder="Nhập mô tả đầu tiên" className="min-h-[100px]" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -217,34 +234,29 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
 
               <FormField
                 control={form.control}
-                name="secondDescription"
+                name="description_2"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Mô tả 2</FormLabel>
                     <FormControl>
-                      <Textarea
-                        placeholder="Nhập mô tả thứ hai"
-                        className="min-h-[100px]"
-                        {...field}
-                        disabled={isPending}
-                      />
+                      <Textarea placeholder="Nhập mô tả thứ hai" className="min-h-[100px]" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {data?.image && (
+              {/* {data?.cover_image && (
                 <FormField
                   control={form.control}
-                  name="image"
+                  name="cover_image"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Hình ảnh</FormLabel>
                       <FormControl>
-                        {typeof data?.image === 'string' ? (
+                        {typeof data?.cover_image === 'string' ? (
                           <div className="relative w-full h-48 overflow-hidden rounded-md">
-                            <img src={data.image} alt={data.name} className="object-cover w-full h-full" />
+                            <img src={data.cover_image} alt={data.name} className="object-cover w-full h-full" />
                           </div>
                         ) : (
                           <FileUploader
@@ -254,7 +266,6 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                             accept={{
                               'image/*': [],
                             }}
-                            disabled={isPending}
                           />
                         )}
                       </FormControl>
@@ -263,13 +274,20 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                     </FormItem>
                   )}
                 />
-              )}
+              )} */}
+
+              <FormImageInputField
+                form={form}
+                name="cover_image"
+                label="Hình ảnh minh họa"
+                placeholder="Nhập hình ảnh minh họa cho gói thành viên"
+              />
 
               {/* Gifts section */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-medium">Quà tặng</h3>
-                  <Button type="button" onClick={addGift} disabled={isPending}>
+                  <Button type="button" onClick={addGift}>
                     <Plus className="h-4 w-4 mr-2" /> Tạo quà tặng
                   </Button>
                 </div>
@@ -307,14 +325,21 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                                     <FormItem>
                                       <FormLabel>Tên quà tặng</FormLabel>
                                       <FormControl>
-                                        <Input {...nameField} disabled={isPending} />
+                                        <Input {...nameField} />
                                       </FormControl>
                                       <FormMessage />
                                     </FormItem>
                                   )}
                                 />
 
-                                <div>
+                                <FormImageInputField
+                                  form={form}
+                                  name={`gifts.${index}.image`}
+                                  label="Hình ảnh quà tặng"
+                                  placeholder="Nhập hình ảnh quà tặng"
+                                />
+
+                                {/* <div>
                                   {field.value.image &&
                                   Array.isArray(field.value.image) &&
                                   field.value.image.length > 0 ? (
@@ -333,7 +358,6 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                                             newGifts[index].image = []
                                             form.setValue('gifts', newGifts, { shouldValidate: true })
                                           }}
-                                          disabled={isPending}
                                         >
                                           <Trash2 className="h-4 w-4" />
                                         </Button>
@@ -354,14 +378,13 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                                             accept={{
                                               'image/*': [],
                                             }}
-                                            disabled={isPending}
                                           />
                                         </FormControl>
                                         <FormMessage />
                                       </FormItem>
                                     )}
                                   />
-                                </div>
+                                </div> */}
                               </div>
                             </FormItem>
                           )}
@@ -376,7 +399,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-medium">Bảng giá</h3>
-                  <Button type="button" onClick={addPrice} disabled={isPending}>
+                  <Button type="button" onClick={addPrice}>
                     <Plus className="h-4 w-4 mr-2" /> Tạo giá tiền gói
                   </Button>
                 </div>
@@ -409,7 +432,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <FormField
                                   control={form.control}
-                                  name={`prices.${index}.months`}
+                                  name={`prices.${index}.duration`}
                                   render={({ field: monthsField }) => (
                                     <FormItem>
                                       <FormLabel>Số tháng</FormLabel>
@@ -422,7 +445,6 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                                             monthsField.onChange(parseInt(e.target.value) || 1)
                                           }}
                                           placeholder="Nhập số tháng"
-                                          disabled={isPending}
                                           className="mt-1"
                                         />
                                       </FormControl>
@@ -433,7 +455,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
 
                                 <FormField
                                   control={form.control}
-                                  name={`prices.${index}.amount`}
+                                  name={`prices.${index}.price`}
                                   render={({ field: amountField }) => (
                                     <FormItem>
                                       <FormLabel>Giá tiền (VNĐ)</FormLabel>
@@ -454,7 +476,6 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                                             amountField.onChange(parseInt(value) || 0)
                                           }}
                                           placeholder="Nhập giá tiền"
-                                          disabled={isPending}
                                           className="mt-1"
                                         />
                                       </FormControl>
@@ -475,7 +496,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
               <MainButton
                 text={isEdit ? 'Cập nhật gói thành viên' : 'Tạo gói thành viên'}
                 type="submit"
-                disabled={isPending}
+                loading={isPending}
               />
             </form>
           </Form>
