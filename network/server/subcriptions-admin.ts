@@ -1,8 +1,8 @@
 'use server'
 
+import type { Subscription } from "@/models/subscription-admin"
 import { fetchData } from "../helpers/fetch-data"
 import { ApiResponse, ListResponse } from "@/models/response"
-import { Subscription } from "@/models/subscriptions"
 import { revalidateTag } from "next/cache"
 
 export async function getSubscriptions(): Promise<ListResponse<Subscription>> {

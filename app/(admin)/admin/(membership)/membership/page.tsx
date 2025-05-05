@@ -21,54 +21,43 @@ import { Coupon } from '@/models/coupon'
 import { useEffect, useState } from 'react'
 import { deleteCoupon, getListCoupons } from '@/network/server/coupon'
 import { toast } from 'sonner'
+import { deleteSubscription, getSubscriptions } from '@/network/server/subcriptions-admin'
+import { Subscription } from '@/models/subscription-admin'
 
-type Membership = {
-  id: string
-  name: string
-  type: string
-  image: string
+// Helper to map course_format to label
+const getCourseFormatLabel = (format: string): string => {
+  if (format === 'live') return 'Zoom'
+  if (format === 'video') return 'Video'
+  if (format === 'both') return 'Zoom & Video'
+  return format
 }
 
-const memberships: Membership[] = [
-  {
-    id: '1',
-    name: 'Gói Cơ Bản',
-    type: 'Video',
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070&auto=format&fit=crop',
-  },
-  {
-    id: '2',
-    name: 'Gói Nâng Cao',
-    type: 'Zoom',
-    image: 'https://images.unsplash.com/photo-1545389336-cf090694435e?q=80&w=2064&auto=format&fit=crop',
-  },
-  {
-    id: '3',
-    name: 'Gói Premium',
-    type: 'Video & Zoom',
-    image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=2070&auto=format&fit=crop',
-  },
-  {
-    id: '4',
-    name: 'Gói Tập',
-    type: 'Zoom',
-    image: 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?q=80&w=2070&auto=format&fit=crop',
-  },
-  {
-    id: '5',
-    name: 'Gói Toàn Diện',
-    type: 'Video & Zoom',
-    image: 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?q=80&w=2070&auto=format&fit=crop',
-  },
-]
+interface MembershipRow {
+  id: number
+  name: string
+  course_format: string
+  cover_image: string
+}
 
 export default function MembershipPage() {
   const router = useRouter()
   const [coupons, setCoupons] = useState<Coupon[]>([])
+  const [membershipTable, setMembershipTable] = useState<MembershipRow[]>([])
 
   const fetchCoupons = async () => {
     const response = await getListCoupons()
     setCoupons(response.data || [])
+  }
+
+  const fetchMemberships = async () => {
+    const response = await getSubscriptions()
+    const mapped = (response.data || []).map((item: any) => ({
+      id: item.id,
+      name: item.name,
+      course_format: getCourseFormatLabel(item.course_format),
+      cover_image: item.cover_image,
+    }))
+    setMembershipTable(mapped)
   }
 
   const handleDeleteCoupon = async (couponId: number) => {
@@ -81,6 +70,20 @@ export default function MembershipPage() {
         }
       } catch (e) {
         toast.error('Có lỗi khi xoá khuyến mãi')
+      }
+    }
+  }
+
+  const handleDeleteMembership = async (membershipId: number) => {
+    if (window.confirm('Bạn có chắc muốn xoá gói thành viên này?')) {
+      try {
+        const res = await deleteSubscription(membershipId)
+        if (res.status === 'success') {
+          toast.success('Xoá gói thành viên thành công')
+          fetchMemberships()
+        }
+      } catch (e) {
+        toast.error('Có lỗi khi xoá gói thành viên')
       }
     }
   }
@@ -124,20 +127,22 @@ export default function MembershipPage() {
     <AddButton text="Thêm gói thành viên" onClick={() => router.push('/admin/membership/create')} />
   )
 
-  const columns: ColumnDef<Membership>[] = [
+  const columns: ColumnDef<MembershipRow>[] = [
     {
       accessorKey: 'name',
       header: 'Tên gói',
     },
     {
-      accessorKey: 'type',
+      accessorKey: 'course_format',
       header: 'Loại hình',
     },
     {
-      accessorKey: 'image',
+      accessorKey: 'cover_image',
       header: 'Hình ảnh',
       render: ({ row }) => {
-        return <img src={row.image} alt={`${row.name} thumbnail`} className=" h-12 rounded" />
+        return (
+          <img src={row.cover_image} alt={`${row.name} cover image`} className="h-16 w-16 rounded-lg object-cover " />
+        )
       },
     },
     {
@@ -159,7 +164,10 @@ export default function MembershipPage() {
             <DropdownMenuItem onClick={() => router.push(`/admin/membership/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onClick={() => handleDeleteMembership(row.id)}
+            >
               <Trash2 /> Xoá
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -170,6 +178,7 @@ export default function MembershipPage() {
 
   useEffect(() => {
     fetchCoupons()
+    fetchMemberships()
   }, [])
 
   return (
@@ -180,7 +189,7 @@ export default function MembershipPage() {
         <DataTable
           headerExtraContent={membershipHeaderExtraContent}
           searchPlaceholder="Tìm kiếm theo tên, ..."
-          data={memberships}
+          data={membershipTable}
           columns={columns}
           onSelectChange={() => {}}
         />
