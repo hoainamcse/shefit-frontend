@@ -4,8 +4,9 @@ import Link from "next/link"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getMuscleGroupExercises, getMuscleGroups } from "@/network/server/muscle-group"
 
-export default async function Muscle({ params }: { params: { muscle_id: string } }) {
-  const { muscle_id } = params
+export default async function Muscle({ params }: { params: Promise<{ muscle_id: string }> }) {
+  const resolvedParams = await params
+  const { muscle_id } = resolvedParams
   const muscleGroups = await getMuscleGroups()
   const muscleGroupExercises = await getMuscleGroupExercises(muscle_id)
 

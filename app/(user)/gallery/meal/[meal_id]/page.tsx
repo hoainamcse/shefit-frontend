@@ -3,8 +3,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { getListDishes } from "@/network/server/dish"
 import { getDiets } from "@/network/server/diets"
-export default async function Food({ params }: { params: { meal_id: string } }) {
-  const { meal_id } = params
+export default async function Food({ params }: { params: Promise<{ meal_id: string }> }) {
+  const { meal_id } = await params
   const dish = await getListDishes()
   const diet = await getDiets()
 
