@@ -28,10 +28,11 @@ export default function CurrentCart() {
   useEffect(() => {
     async function fetchCartData() {
       const cartsRes = await getCarts()
+      console.log("cartsRes", cartsRes)
       setCarts(cartsRes)
       if (cartsRes.data && cartsRes.data.length > 0) {
         const productList = await Promise.all(
-          cartsRes.data[0].product_variants.map((variant: any) => getProduct(variant.id.toString()))
+          cartsRes.data[0].product_variants.map((variant: any) => getProduct(variant.product_id.toString()))
         )
         setProducts(productList)
       }
