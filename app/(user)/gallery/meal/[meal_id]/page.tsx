@@ -23,23 +23,25 @@ export default async function Food({ params }: { params: { meal_id: string } }) 
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
-          {dish.data?.map((item, index) => (
-            <Link href={`/gallery/meal/${meal_id}/${item.id}`} key={index}>
-              <div key={`menu-${index}`} className="text-xl">
-                <div className="relative group">
-                  <Image
-                    src={item.image}
-                    alt=""
-                    className="aspect-[5/3] object-cover rounded-xl mb-4"
-                    width={585}
-                    height={373}
-                  />
-                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+          {dish.data
+            ?.filter((item) => item.diet_id === Number(meal_id))
+            .map((item, index) => (
+              <Link href={`/gallery/meal/${meal_id}/${item.id}`} key={index}>
+                <div key={`menu-${index}`} className="text-xl">
+                  <div className="relative group">
+                    <Image
+                      src={item.image}
+                      alt=""
+                      className="aspect-[5/3] object-cover rounded-xl mb-4"
+                      width={585}
+                      height={373}
+                    />
+                    <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                  </div>
+                  <p className="font-bold">{item.name}</p>
                 </div>
-                <p className="font-bold">{item.name}</p>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ))}
         </div>
       </div>
     </div>
