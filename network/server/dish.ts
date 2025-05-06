@@ -6,16 +6,15 @@ import { ApiResponse, ListResponse } from "@/models/response"
 import { revalidateTag } from "next/cache"
 
 
-export async function getListDishes() : Promise<ListResponse<Dish>> {
+export async function getListDishes(): Promise<ListResponse<Dish>> {
     const response = await fetchDataServer('/v1/dishes', {
         method: 'GET',
         credentials: 'include',
     })
-    revalidateTag(`dishes`)
     return await response.json()
 }
 
-export async function createDish(data: any[] ): Promise<ListResponse<Dish>> {
+export async function createDish(data: any[]): Promise<ListResponse<Dish>> {
     const response = await fetchDataServer('/v1/dishes:bulkCreate', {
         method: 'POST',
         body: JSON.stringify(data),
