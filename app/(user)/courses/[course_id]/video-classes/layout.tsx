@@ -4,7 +4,7 @@ export default async function CourseLayout({ children }: { children: React.React
   //TODO: Use this slug later on for fetching data
   return (
     <Layout>
-      <div className="p-6 max-w-screen-3xl mx-auto mb-20">{children}</div>
+      <div className="p-6 max-lg:p-0 max-w-screen-3xl mx-auto mb-20">{children}</div>
     </Layout>
   )
 }

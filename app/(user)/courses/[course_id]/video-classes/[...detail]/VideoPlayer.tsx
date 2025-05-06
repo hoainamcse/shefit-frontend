@@ -1,13 +1,14 @@
-'use client'
+"use client"
 
-import { useEffect, useState } from 'react'
-import ReactPlayer from 'react-player'
-import type { Exercise } from './page'
+import { useEffect, useState } from "react"
+import ReactPlayer from "react-player"
+import type { Exercise } from "./page"
+import { Button } from "@/components/ui/button"
 
 interface VideoPlayerProps {
   exerciseVideoList: Exercise[]
   exerciseIndex: number
-  isCircuitMode?: boolean // default false
+  isCircuitMode?: boolean
   autoReplayListVideoCount?: number
 }
 
@@ -28,7 +29,6 @@ const VideoPlayer = ({
 
   const handleVideoEnded = () => {
     if (isCircuitMode) {
-      // Circuit mode: play each exercise once per circuit, repeat circuit
       if (currentExerciseIndex < exerciseVideoList.length - 1) {
         setCurrentExerciseIndex((prev) => prev + 1)
         setPlaying(false)
@@ -42,7 +42,6 @@ const VideoPlayer = ({
         setPlaying(false)
       }
     } else {
-      // Single exercise mode: replay current exercise, then auto-advance to next exercise if any
       if (replayCount < maxReplay) {
         setReplayCount((prev) => prev + 1)
         setPlaying(false)
@@ -59,14 +58,19 @@ const VideoPlayer = ({
   }
 
   return (
-    <div className="relative" tabIndex={0} aria-label={`Video player for ${exercise.name}`}>
+    <div className="relative rounded-xl" tabIndex={0} aria-label={`Video player for ${exercise.name}`}>
+      <Button
+        className="absolute top-4 left-0 w-full h-[100px] max-lg:h-[45px] z-10 shadow-none"
+        style={{ cursor: "auto", background: "transparent" }}
+        onClick={(e) => e.stopPropagation()}
+      ></Button>
       <ReactPlayer
         url={exercise.url}
         playing={playing}
         controls
         width="100%"
         height="calc(100vw*9/16)"
-        style={{ maxHeight: 720, borderRadius: '0.75rem', padding: '1rem' }}
+        style={{ maxHeight: 720 }}
         onEnded={handleVideoEnded}
         config={{
           file: {
@@ -77,7 +81,11 @@ const VideoPlayer = ({
           },
         }}
       />
-
+      <Button
+        className="absolute bottom-8 right-16 w-[80px] h-[50px] max-lg:w-[50px] max-lg:h-[50px] z-10 shadow-none"
+        style={{ cursor: "auto", background: "transparent" }}
+        onClick={(e) => e.stopPropagation()}
+      ></Button>
       <div className="text-center mt-2 text-sm text-gray-500">
         {isCircuitMode
           ? `Circuit round ${circuitReplayCount}/${maxCircuitReplay} - Exercise ${currentExerciseIndex + 1}/${
