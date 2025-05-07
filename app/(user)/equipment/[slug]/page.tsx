@@ -26,23 +26,44 @@ export default function Equipment({ params }: { params: Promise<{ slug: string }
   const [sizes, setSizes] = useState<any[]>([])
   const [muscleGroups, setMuscleGroups] = useState<any[]>([])
   const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null)
+  const [selectedColorId, setSelectedColorId] = useState<number | null>(null)
+  const [colorOptions, setColorOptions] = useState<number[]>([])
   const [cartId, setCartId] = useState<number | null>(null)
   const [isAdding, setIsAdding] = useState(false)
   const [quantity, setQuantity] = useState(1)
 
   useEffect(() => {
+    if (product && product.variants && product.variants.length > 0) {
+      const uniqueColorIds = Array.from<number>(new Set(product.variants.map((variant: any) => variant.color_id)))
+      setColorOptions(uniqueColorIds)
+
+      if (uniqueColorIds.length > 0 && selectedColorId === null) {
+        setSelectedColorId(uniqueColorIds[0])
+      }
+    }
+  }, [product, selectedColorId])
+
+  useEffect(() => {
     async function fetchData() {
-      const productResponse = await getProduct(slug)
-      setProduct(productResponse.data)
-      const colorsResponse = await getColors()
-      setColors(colorsResponse.data)
-      const sizesResponse = await getSizes()
-      setSizes(sizesResponse.data)
-      const muscleGroup = await getMuscleGroups()
-      setMuscleGroups(muscleGroup.data.filter((mg: any) => productResponse.data.muscle_group_ids))
-      const carts = await getCarts()
-      if (carts.data && carts.data.length > 0) {
-        setCartId(carts.data[0].id)
+      try {
+        const productResponse = await getProduct(slug)
+        setProduct(productResponse.data)
+
+        const colorsResponse = await getColors()
+        setColors(colorsResponse.data)
+
+        const sizesResponse = await getSizes()
+        setSizes(sizesResponse.data)
+
+        const muscleGroup = await getMuscleGroups()
+        setMuscleGroups(muscleGroup.data.filter((mg: any) => productResponse.data.muscle_group_ids))
+
+        const carts = await getCarts()
+        if (carts.data && carts.data.length > 0) {
+          setCartId(carts.data[0].id)
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error)
       }
     }
     fetchData()
@@ -82,42 +103,87 @@ export default function Equipment({ params }: { params: Promise<{ slug: string }
             />
           </div>
           <div className="xl:w-1/5 max-lg:w-full xl:text-xl flex flex-col gap-3">
-            <div className="flex gap-2 mb-2">
-              {product.variants.map((variant: any) => {
-                const hex = colors.find((color) => color.id === variant.color_id)?.hex_code || "#000"
-                return (
-                  <Button
-                    key={variant.id}
-                    style={{
-                      backgroundColor: hex,
-                      border: selectedVariantId === variant.id ? "2px solid #00C7BE" : undefined,
-                    }}
-                    className="rounded-full w-8 h-8"
-                    disabled={!variant.in_stock}
-                    onClick={() => setSelectedVariantId(variant.id)}
-                  />
-                )
-              })}
+            <div className="flex flex-col gap-2 mb-4">
+              <div className="flex gap-2">
+                {Array.from(new Set(product.variants.map((variant: any) => variant.color_id))).map((colorId: any) => {
+                  const color = colors.find((c: any) => c.id === colorId)
+                  const hex = color?.hex_code || "#fff"
+                  const isSelected = selectedColorId === colorId
+                  const hasInStockVariants = product.variants.some(
+                    (variant: any) => variant.color_id === colorId && variant.in_stock
+                  )
+
+                  return (
+                    <Button
+                      key={colorId}
+                      style={{
+                        backgroundColor: hex,
+                        border: isSelected ? "2px solid #00C7BE" : "1px solid #ddd",
+                      }}
+                      className="rounded-full w-10 h-10 relative"
+                      disabled={!hasInStockVariants}
+                      onClick={() => {
+                        setSelectedColorId(colorId)
+                        setSelectedVariantId(null)
+                      }}
+                    >
+                      {isSelected && (
+                        <div className="absolute inset-0 rounded-full flex items-center justify-center">
+                          <div className="w-3 h-3 rounded-full bg-white opacity-80"></div>
+                        </div>
+                      )}
+                    </Button>
+                  )
+                })}
+              </div>
             </div>
+
             <p className="font-medium xl:text-[30px] max-lg:text-xl">{product.name}</p>
-            <p className="text-[#737373]">{colors.find((color) => color.id === product.variants[0].color_id)?.name}</p>
+            <p className="text-[#737373] text-xl mt-1">
+              {selectedColorId ? colors.find((color) => color.id === selectedColorId)?.name : ""}
+            </p>
             <p className="text-[#00C7BE] text-2xl font-semibold">{product.price.toLocaleString()} vnđ</p>
-            <div className="flex gap-3 items-center">
+
+            <div className="flex gap-2 my-4 items-center">
               <div className="text-xl">Size:</div>
-              {product.variants.map((variant: any) => {
-                const sizeName = sizes.find((size: any) => size.id === variant.size_id)?.size || variant.size_id
-                return (
-                  <Button
-                    key={variant.id}
-                    className="w-8 h-8"
-                    disabled={!variant.in_stock}
-                    onClick={() => setSelectedVariantId(variant.id)}
-                    style={{ border: selectedVariantId === variant.id ? "2px solid #00C7BE" : undefined }}
-                  >
-                    {sizeName}
-                  </Button>
-                )
-              })}
+              <div className="flex flex-wrap gap-2">
+                {Array.from(
+                  new Set(
+                    product.variants
+                      .filter((variant: any) => !selectedColorId || variant.color_id === selectedColorId)
+                      .map((variant: any) => variant.size_id)
+                  )
+                ).map((sizeId: any) => {
+                  const size = sizes.find((s: any) => s.id === sizeId)?.size || sizeId
+                  const variantsWithSize = product.variants.filter(
+                    (variant: any) =>
+                      variant.size_id === sizeId && (!selectedColorId || variant.color_id === selectedColorId)
+                  )
+                  const hasInStockVariant = variantsWithSize.some((v: any) => v.in_stock)
+                  const variant = selectedColorId
+                    ? product.variants.find((v: any) => v.color_id === selectedColorId && v.size_id === sizeId)
+                    : variantsWithSize[0]
+
+                  return (
+                    <Button
+                      key={sizeId}
+                      className="w-10 h-10 text-xl font-semibold"
+                      disabled={!hasInStockVariant || !selectedColorId}
+                      onClick={() => {
+                        if (variant) {
+                          setSelectedVariantId(variant.id)
+                        }
+                      }}
+                      style={{
+                        border: selectedVariantId === variant?.id ? "2px solid #00C7BE" : "1px solid #ddd",
+                        color: selectedVariantId === variant?.id ? "#fff" : "#fff",
+                      }}
+                    >
+                      {size}
+                    </Button>
+                  )
+                })}
+              </div>
             </div>
             <div className="flex gap-3 items-center">
               <div className="text-nowrap">Số lượng:</div>

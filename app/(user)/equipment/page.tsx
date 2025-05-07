@@ -70,17 +70,23 @@ export default function ProductPage() {
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
                 <div className="flex gap-2 mb-2">
-                  {product.variants.map((variant) => {
-                    const hex = colors.find((color) => color.id === variant.color_id)?.hex_code || "#000"
-                    return (
-                      <Button
-                        key={variant.id}
-                        style={{ backgroundColor: hex }}
-                        className="rounded-full w-8 h-8"
-                        disabled={!variant.in_stock}
-                      />
-                    )
-                  })}
+                  {(() => {
+                    const uniqueColorIds = new Set(product.variants.map((variant) => variant.color_id))
+                    return Array.from(uniqueColorIds)
+                      .filter(Boolean)
+                      .map((colorId) => {
+                        const hex = colors.find((color) => color.id === colorId)?.hex_code || "#fff"
+                        const inStock = product.variants.some((v) => v.color_id === colorId && v.in_stock)
+                        return (
+                          <Button
+                            key={`color-${colorId}`}
+                            style={{ backgroundColor: hex }}
+                            className="rounded-full w-8 h-8"
+                            disabled={!inStock}
+                          />
+                        )
+                      })
+                  })()}
                 </div>
                 <p className="font-medium">{product.name}</p>
                 <p className="text-[#737373]">{product.description}</p>
