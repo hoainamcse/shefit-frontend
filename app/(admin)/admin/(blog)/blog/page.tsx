@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
+import { HtmlContent } from '@/components/ui/html-content'
 
 import { getListBlogs } from '@/network/server/blog'
 import { Blog } from '@/models/blog'
@@ -42,7 +43,10 @@ export default function BlogList() {
                 <CardTitle>{blog.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground mb-4 line-clamp-3">{blog.content}</p>
+                <HtmlContent 
+                  content={blog.content} 
+                  className="text-muted-foreground mb-4 line-clamp-3" 
+                />
                 <div className="relative w-full h-48 mb-4 overflow-hidden rounded-md">
                   <img
                     src={blog.cover_image}

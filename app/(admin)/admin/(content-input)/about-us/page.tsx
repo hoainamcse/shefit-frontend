@@ -3,7 +3,8 @@
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { MainButton } from '@/components/buttons/main-button'
 import { FileUploader } from '@/components/file-uploader'
-import { FormTextareaField } from '@/components/forms/fields'
+import { RichTextEditor } from '@/components/forms/fields/rich-text-editor'
+
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -40,14 +41,7 @@ export default function AboutUsPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FileUploader />
-          <FormTextareaField
-            form={form}
-            name="content"
-            label="Về Shefit"
-            withAsterisk
-            required
-            placeholder="Nhập nội dung"
-          />
+          <RichTextEditor form={form} name="content" label="Về Shefit" withAsterisk placeholder="Nhập nội dung" />
           <MainButton text="Lưu" type="submit" />
         </form>
       </Form>

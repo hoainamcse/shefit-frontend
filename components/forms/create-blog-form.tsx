@@ -16,6 +16,7 @@ import { FormImageInputField } from './fields/form-image-input-field'
 import { Blog } from '@/models/blog'
 import { createBlog, updateBlog } from '@/network/server/blog'
 import { useRouter } from 'next/navigation'
+import { RichTextEditor } from './fields/rich-text-editor'
 
 // // Define the Blog interface
 // export interface Blog {
@@ -103,7 +104,7 @@ export function CreateBlogForm({ isEdit, data }: BlogFormProps) {
           )}
         />
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name="content"
           render={({ field }) => (
@@ -120,7 +121,9 @@ export function CreateBlogForm({ isEdit, data }: BlogFormProps) {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
+
+        <RichTextEditor form={form} name="content" label="Nội dung" withAsterisk placeholder="Nhập nội dung" />
 
         {/* <FormField
           control={form.control}
