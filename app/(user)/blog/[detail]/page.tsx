@@ -1,4 +1,6 @@
-import { getBlog } from "@/network/server/blog"
+import * as React from 'react'
+import { getBlog } from '@/network/server/blog'
+import { HtmlContent } from '@/components/ui/html-content'
 
 export default async function BlogDetail({ params }: { params: Promise<{ detail: string }> }) {
   const { detail } = await params
@@ -8,7 +10,7 @@ export default async function BlogDetail({ params }: { params: Promise<{ detail:
       <img src={blog.cover_image} alt={blog.title} className="lg:h-[680px] w-full object-cover h-[300px]" />
       <div>
         <div className="font-[family-name:var(--font-coiny)] xl:text-[40px] mb-5 max-lg:text-2xl">{blog.title}</div>
-        <div className="text-gray-500 xl:text-xl max-lg:text-base">{blog.content}</div>
+        <HtmlContent content={blog.content} className="text-gray-500 xl:text-xl max-lg:text-base" />
       </div>
     </div>
   )

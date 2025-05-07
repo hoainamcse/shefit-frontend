@@ -1,7 +1,8 @@
-import { Card } from "@/components/ui/card"
-import Link from "next/link"
-import { getBlogs } from "@/network/server/blog"
-import type { Blog } from "@/models/blog"
+import { Card } from '@/components/ui/card'
+import Link from 'next/link'
+import { getBlogs } from '@/network/server/blog'
+import type { Blog } from '@/models/blog'
+import { HtmlContent } from '@/components/ui/html-content'
 export default async function BlogPage() {
   const blogs = await getBlogs()
   return (
@@ -28,7 +29,7 @@ export default async function BlogPage() {
               </div>
               <div className="w-1/2 flex flex-col h-full justify-center">
                 <p className="font-medium xl:text-xl max-lg:text-base">{blog.title}</p>
-                <p className="text-gray-500 max-lg:text-sm line-clamp-5">{blog.content}</p>
+                <HtmlContent content={blog.content} className="text-gray-500 max-lg:text-sm line-clamp-5" />
               </div>
             </Card>
           </Link>
