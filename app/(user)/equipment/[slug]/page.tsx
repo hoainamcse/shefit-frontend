@@ -38,7 +38,15 @@ export default function Equipment({ params }: { params: Promise<{ slug: string }
       setColorOptions(uniqueColorIds)
 
       if (uniqueColorIds.length > 0 && selectedColorId === null) {
-        setSelectedColorId(uniqueColorIds[0])
+        const inStockColorIds = uniqueColorIds.filter((colorId) =>
+          product.variants.some((variant: any) => variant.color_id === colorId && variant.in_stock)
+        )
+
+        if (inStockColorIds.length > 0) {
+          setSelectedColorId(inStockColorIds[0])
+        } else {
+          setSelectedColorId(uniqueColorIds[0])
+        }
       }
     }
   }, [product, selectedColorId])
