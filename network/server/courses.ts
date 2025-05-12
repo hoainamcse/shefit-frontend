@@ -38,3 +38,15 @@ export async function createCourse(
   revalidateTag(`courses:${data.course_format}`)
   return await response.json()
 }
+
+export async function getCoursesBySubscriptionId(subscription_id: string): Promise<ListResponse<Course>> {
+  const response = await fetchDataServer(`/v1/courses/?subscription_id=${subscription_id}`, {
+    cache: 'force-cache',
+    next: {
+      revalidate: false,
+      tags: [`courses:subscription_id=${subscription_id}`],
+    },
+  })
+  return await response.json()
+}
+  

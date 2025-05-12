@@ -1,7 +1,11 @@
+'use server'
+
 import type { Cart } from "@/models/cart"
 import { fetchData } from "../helpers/fetch-data"
-import { ListResponse } from "@/models/response"
+import { ApiResponse, ListResponse } from "@/models/response"
 import { Product, ProductColor, ProductSize } from "@/models/products"
+import { revalidateTag } from "next/cache"
+import { fetchDataServer } from "../helpers/fetch-data-server"
 
 export async function getCarts(): Promise<ListResponse<Cart>> {
     const response = await fetchData("/v1/carts", { next: { tags: ["cart"] } })
@@ -64,3 +68,17 @@ export async function getSizes(): Promise<ListResponse<ProductSize>> {
     })
     return await response.json()
 }
+
+export async function editCart(id: number, data: any): Promise<ApiResponse<Cart>> {
+    const response = await fetchDataServer(
+        `/v1/carts/${id}`,
+        {
+            method: "PUT",
+            body: JSON.stringify(data),
+            credentials: 'include',
+        }
+    )
+    revalidateTag("cart")
+    return await response.json()
+}
+    

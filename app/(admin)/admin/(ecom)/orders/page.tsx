@@ -109,9 +109,6 @@ export default function OrdersPage() {
             <DropdownMenuItem onClick={() => router.push(`/admin/orders/${row.id}`)}>
               <Eye /> Xem
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Edit /> Cập nhật
-            </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive focus:text-destructive">
               <Trash2 /> Xoá
             </DropdownMenuItem>

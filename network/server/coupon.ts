@@ -33,3 +33,14 @@ export async function deleteCoupon(coupon_id: string): Promise<ApiResponse<any>>
     revalidateTag(`coupons`)
     return await response.json()
 }
+
+export async function updateCoupon(data: any, coupon_id: string): Promise<ApiResponse<Coupon>> {
+    const response = await fetchDataServer(`/v1/coupons/${coupon_id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+        credentials: 'include',
+    })
+    revalidateTag(`coupons`)
+    return await response.json()
+}
+    

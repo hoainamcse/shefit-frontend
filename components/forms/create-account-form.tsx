@@ -15,68 +15,37 @@ import { z } from 'zod'
 import { Account } from '@/models/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { useState, useEffect, useCallback } from 'react'
-import { memberships } from '@/data'
+import { useState, useEffect, useCallback, useMemo } from 'react'
+// import { memberships } from '@/data'
+import { User } from '@/models/user'
+import { calculateMonthsFromDates, generatePassword } from '@/helper/user'
+import { getUsers, updatePassword } from '@/network/server/user'
+import { getSubscriptions } from '@/network/server/subcriptions-admin'
+import { Subscription } from '@/models/subscription-admin'
+import { UserSubscription } from '@/models/user-subscriptions'
+import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { Course } from '@/models/course'
+import { getCoursesBySubscriptionId } from '@/network/server/courses'
+import { getListMealPlans } from '@/network/server/meal-plans'
+import { getListDishes } from '@/network/server/dish'
+import { MealPlan } from '@/models/meal-plans'
+import { Dish } from '@/models/dish'
 
 const accountSchema = z.object({
-  id: z.string().optional(),
-  name: z.string().min(1, { message: 'Account name is required' }),
+  id: z.coerce.number().optional(),
+  fullname: z.string().min(1, { message: 'Account name is required' }),
   phone_number: z
     .string()
     .min(1, { message: 'Phone number is required' })
     .regex(/^0[0-9]{9,10}$/, { message: 'Invalid phone number format' }),
-  username: z
-    .string()
-    .min(1, { message: 'Username is required' })
-    .regex(/^[a-zA-Z0-9_]{3,30}$/, {
-      message: 'Username must be 3-30 characters and contain only letters, numbers, and underscores',
-    }),
-  password: z
-    .string()
-    .min(8, { message: 'Password must be at least 8 characters' })
-    .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {
-      message:
-        'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
-    }),
+  username: z.string().min(1, { message: 'Username is required' }),
+  new_password: z.string().min(8, { message: 'New password must be at least 8 characters' }).optional(),
 })
 
 type AccountFormData = z.infer<typeof accountSchema>
 interface CreateAccountFormProps {
-  data?: Account
+  data?: User
 }
-
-type AccountMembershipPackage = {
-  id: string
-  membership_id: string
-  start_date: string
-  end_date: string
-  plan_id: string
-  gift_id: string
-}
-
-// Courses
-export const courses = [
-  {
-    value: '1',
-    label: 'Dumbbell',
-  },
-  {
-    value: '2',
-    label: 'Barbell',
-  },
-]
-
-// Menu Items
-export const menuItems = [
-  {
-    value: '1',
-    label: 'Breakfast',
-  },
-  {
-    value: '2',
-    label: 'Lunch',
-  },
-]
 
 // Exercises
 export const exercises = [
@@ -90,317 +59,324 @@ export const exercises = [
   },
 ]
 
-// Dishes
-export const dishes = [
-  {
-    value: '1',
-    label: 'Grilled Chicken Breast',
-  },
-  {
-    value: '2',
-    label: 'Quinoa Salad',
-  },
-  {
-    value: '3',
-    label: 'Salmon with Asparagus',
-  },
-]
+type selectOption = {
+  value: string
+  label: string
+}
 
 export default function CreateAccountForm({ data }: CreateAccountFormProps) {
   const [isPending, startTransition] = useTransition()
+  const [membershipList, setMembershipList] = useState<Subscription[]>([])
+  const [userSubscriptions, setUserSubscriptions] = useState<UserSubscription[]>([])
+  const [courses, setCourses] = useState<selectOption[]>([])
+  const [mealPlans, setMealPlans] = useState<selectOption[]>([])
+  const [dishes, setDishes] = useState<selectOption[]>([])
+  // const [exercises, setExercises] = useState<selectOption[]>([])
+
   const form = useForm<AccountFormData>({
     resolver: zodResolver(accountSchema),
     defaultValues: data || {
-      name: '',
+      fullname: '',
       phone_number: '',
       username: '',
-      password: '',
     },
   })
 
+  const fetchMembershipList = async () => {
+    const response = await getSubscriptions()
+    setMembershipList(response.data)
+  }
+
+  const fetchAllCourses = async () => {
+    const responses = await Promise.all(membershipList.map((m) => getCoursesBySubscriptionId(m.id.toString())))
+
+    let allCourses: any[] = []
+    for (const res of responses) {
+      if (res && Array.isArray(res.data)) {
+        for (const course of res.data) {
+          allCourses.push(course)
+        }
+      }
+    }
+
+    const seen = new Set()
+    const unique: { value: string; label: string }[] = []
+    for (const course of allCourses) {
+      if (!seen.has(course.id)) {
+        seen.add(course.id)
+        unique.push({ value: String(course.id), label: course.course_name })
+      }
+    }
+
+    setCourses(unique)
+  }
+
+  const fetchMealPlans = async () => {
+    const response = await getListMealPlans()
+    const mealPlans = response.data.map((mealPlan: MealPlan) => ({
+      value: String(mealPlan.id),
+      label: mealPlan.title,
+    }))
+    setMealPlans(mealPlans)
+  }
+
+  const fetchDishes = async () => {
+    const response = await getListDishes()
+    const dishes = response.data.map((dish: Dish) => ({
+      value: String(dish.id),
+      label: dish.name,
+    }))
+    setDishes(dishes)
+  }
+
+  const fetchUserSubscriptions = async (userId: string) => {
+    const response = await getUserSubscriptions(userId)
+    const subscriptionsWithPlanId = response.data.map((sub: UserSubscription) => {
+      // Format API dates
+      const formattedSub = {
+        ...sub,
+        subscription_start_at: sub.subscription_start_at ? formatDate(sub.subscription_start_at) : '',
+        subscription_end_at: sub.subscription_end_at ? formatDate(sub.subscription_end_at) : '',
+      }
+
+      if (formattedSub.subscription_start_at && formattedSub.subscription_end_at) {
+        const duration = calculateMonthsFromDays(formattedSub.subscription_start_at, formattedSub.subscription_end_at)
+        const membership = membershipList.find((m) => m.id === sub.subscription_id)
+        const plan = membership?.prices.find((p) => p.duration === duration)
+        if (!plan) return { ...formattedSub }
+        return { ...formattedSub, plan_id: plan.id }
+      }
+      return { ...formattedSub }
+    })
+    setUserSubscriptions(subscriptionsWithPlanId)
+  }
+
+  useEffect(() => {
+    fetchMembershipList()
+
+    fetchMealPlans()
+    fetchDishes()
+  }, [])
+
+  useEffect(() => {
+    if (data?.id) {
+      fetchUserSubscriptions(data.id.toString())
+    }
+    fetchAllCourses()
+  }, [membershipList])
+
   function onSubmit(data: AccountFormData) {
-    // startTransition(async () => {
-    //   toast.success('Cập nhật tài khoản thành công')
-    // })
+    startTransition(async () => {
+      toast.success('Cập nhật tài khoản thành công')
+    })
   }
 
-  const [membershipPackages, setMembershipPackages] = useState<AccountMembershipPackage[]>([
-    {
-      id: '1',
-      membership_id: '1', // Basic
-      start_date: '2025-01-15',
-      end_date: '2025-02-15', // 1 month duration
-      plan_id: '1',
-      gift_id: '1', // Mũ tập gym
+  const updateSub = useCallback(
+    (id: number, field: string, value: any) => {
+      setUserSubscriptions((prev) =>
+        prev.map((sub) => {
+          if (sub.id !== id) return sub
+          const updated: any = { ...sub, [field]: value }
+          return updated
+        })
+      )
     },
-    {
-      id: '2',
-      membership_id: '2', // Premium
-      start_date: '2025-03-01',
-      end_date: '2025-06-01', // 3 months duration
-      plan_id: '1',
-      gift_id: '1', // Mũ tập gym
-    },
-    {
-      id: '3',
-      membership_id: '3', // VIP
-      start_date: '2024-11-01',
-      end_date: '2025-05-01', // 6 months duration
-      plan_id: '1',
-      gift_id: '4', // Giày tập gym
-    },
-  ])
+    [membershipList]
+  )
 
-  const format = (date: Date): string => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
+  const accountMembershipColumns: ColumnDef<UserSubscription>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'subscription_id',
+        header: 'Tên gói membership',
+        render: ({ row }) => (
+          <Select
+            value={row.subscription_id?.toString() || ''}
+            onValueChange={(value: string) => {
+              updateSub(row.id, 'subscription_end_at', '')
+              updateSub(row.id, 'subscription_id', Number(value))
+              updateSub(row.id, 'plan_id', null)
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Chọn gói membership" />
+            </SelectTrigger>
+            <SelectContent>
+              {membershipList.map((m) => (
+                <SelectItem key={m.id} value={m.id.toString()}>
+                  {m.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ),
+      },
+      {
+        accessorKey: 'plan_id',
+        header: 'Thời gian (tháng)',
+        render: ({ row }) => {
+          const membership = membershipList.find((m) => m.id === row.subscription_id)
+          const plans = membership?.prices || []
+
+          return (
+            <Select
+              value={row.plan_id?.toString() || ''}
+              disabled={!row.subscription_id || !row.subscription_start_at}
+              onValueChange={(value: string) => {
+                const planId = value ? Number(value) : 0
+                const selectedPlan = plans.find((p) => p.id === planId)
+
+                if (selectedPlan && row.subscription_start_at) {
+                  const endDate = addDaysForMonths(new Date(row.subscription_start_at), selectedPlan.duration)
+                  setUserSubscriptions((prev) =>
+                    prev.map((sub) => {
+                      if (sub.id === row.id) {
+                        return {
+                          ...sub,
+                          plan_id: planId,
+                          subscription_end_at: formatDate(endDate),
+                        }
+                      }
+
+                      return sub
+                    })
+                  )
+                }
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Chọn thời gian gói" />
+              </SelectTrigger>
+              <SelectContent>
+                {plans.map((plan) => (
+                  <SelectItem key={plan.id} value={plan.id.toString()}>
+                    {plan.duration} tháng - {plan.price.toLocaleString('vi-VN')}đ
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )
+        },
+      },
+      {
+        accessorKey: 'subscription_start_at',
+        header: 'Ngày bắt đầu',
+        render: ({ row }) => {
+          const startDate = row.subscription_start_at ? formatDate(row.subscription_start_at) : ''
+
+          return (
+            <input
+              type="date"
+              value={startDate}
+              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors"
+              onChange={(e) => {
+                const newStartDate = e.target.value
+                setUserSubscriptions((prev) =>
+                  prev.map((sub) => {
+                    if (sub.id === row.id) {
+                      const updatedSub = { ...sub, subscription_start_at: newStartDate }
+
+                      // Recalculate end date if we have a plan selected
+                      if (sub.plan_id) {
+                        const membership = membershipList.find((m) => m.id === sub.subscription_id)
+                        const selectedPlan = membership?.prices.find((p) => p.id === sub.plan_id)
+                        if (selectedPlan) {
+                          const endDate = addDaysForMonths(new Date(newStartDate), selectedPlan.duration)
+                          updatedSub.subscription_end_at = formatDate(endDate)
+                        }
+                      }
+
+                      return updatedSub
+                    }
+                    return sub
+                  })
+                )
+              }}
+            />
+          )
+        },
+      },
+      {
+        accessorKey: 'subscription_end_at',
+        header: 'Ngày kết thúc',
+        render: ({ row }) => (
+          <input
+            type="date"
+            value={row.subscription_end_at || ''}
+            readOnly
+            disabled
+            className="flex h-9 w-full rounded-md border border-input bg-muted px-3 py-1 text-sm shadow-sm transition-colors cursor-not-allowed"
+          />
+        ),
+      },
+      {
+        accessorKey: 'gift_id',
+        header: 'Quà tặng',
+        render: ({ row }) => {
+          const gifts = membershipList.find((m) => m.id === row.subscription_id)?.gifts || []
+          return (
+            <Select
+              value={row.gift_id?.toString() || ''}
+              disabled={!row.subscription_id}
+              onValueChange={(value: string) => updateSub(row.id, 'gift_id', value ? Number(value) : 0)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Chọn quà tặng" />
+              </SelectTrigger>
+              <SelectContent>
+                {gifts.map((g) => (
+                  <SelectItem key={g.id} value={g.id.toString()}>
+                    {g.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )
+        },
+      },
+      {
+        accessorKey: 'actions',
+        header: '',
+        render: ({ row }) => (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => setUserSubscriptions((prev) => prev.filter((s) => s.id !== row.id))}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        ),
+      },
+    ],
+    [membershipList, updateSub]
+  )
+
+  const formatDate = (date: Date | string): string => {
+    if (!date) return ''
+    const d = date instanceof Date ? date : new Date(date)
+    return d.toISOString().split('T')[0]
   }
 
-  const addMonths = (date: Date, months: number): Date => {
+  const addDaysForMonths = (date: Date, months: number): Date => {
     const newDate = new Date(date)
-    newDate.setMonth(newDate.getMonth() + months)
+    newDate.setDate(newDate.getDate() - 1 + months * 35) // 35 days per month
     return newDate
   }
 
-  // Create cell components that can safely use hooks
-  const MembershipCell = ({
-    row,
-    setMembershipPackages,
-  }: {
-    row: AccountMembershipPackage
-    setMembershipPackages: React.Dispatch<React.SetStateAction<AccountMembershipPackage[]>>
-  }) => {
-    const currentMembershipName = memberships.find((m) => m.id === row.membership_id)?.name || ''
-
-    const handleMembershipChange = useCallback(
-      (value: string) => {
-        setMembershipPackages((prev) => prev.map((pkg) => (pkg.id === row.id ? { ...pkg, membership_id: value } : pkg)))
-      },
-      [row.id, setMembershipPackages]
-    )
-
-    return (
-      <Select defaultValue={row.membership_id} onValueChange={handleMembershipChange}>
-        <SelectTrigger>
-          <SelectValue placeholder="Chọn gói membership">{currentMembershipName}</SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          {memberships.map((membership) => (
-            <SelectItem key={membership.id} value={membership.id}>
-              {membership.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    )
+  const calculateMonthsFromDays = (startDateStr: string, endDateStr: string): number => {
+    if (!startDateStr || !endDateStr) return 0
+    const start = new Date(startDateStr)
+    const end = new Date(endDateStr)
+    const diffTime = Math.abs(end.getTime() - start.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return Math.round((diffDays + 1) / 35) // 35 days per month
   }
 
-  const PlanCell = ({
-    row,
-    setMembershipPackages,
-  }: {
-    row: AccountMembershipPackage
-    setMembershipPackages: React.Dispatch<React.SetStateAction<AccountMembershipPackage[]>>
-  }) => {
-    // Get available plans directly from current membership_id in row
-    const availablePlans = memberships.find((m) => m.id === row.membership_id)?.plans || []
-
-    const currentDuration = availablePlans.find((p) => p.id === row.plan_id)?.duration || ''
-
-    // Handler to update plan selection and recalculate end date
-    const handlePlanChange = useCallback(
-      (value: string) => {
-        setMembershipPackages((prev) =>
-          prev.map((pkg) => {
-            if (pkg.id === row.id) {
-              // Find selected plan to get duration
-              const selectedPlan = availablePlans.find((p) => p.id === value)
-              const duration = selectedPlan?.duration || 0
-
-              // Calculate new end date
-              const endDate = pkg.start_date ? format(addMonths(new Date(pkg.start_date), duration)) : ''
-
-              return { ...pkg, plan_id: value, end_date: endDate }
-            }
-            return pkg
-          })
-        )
-      },
-      [availablePlans, row.id, setMembershipPackages]
-    )
-
-    return (
-      <Select defaultValue={row.plan_id} onValueChange={handlePlanChange}>
-        <SelectTrigger>
-          <SelectValue placeholder="Chọn thời gian">{currentDuration ? `${currentDuration} tháng` : ''}</SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          {availablePlans.map((plan) => (
-            <SelectItem key={plan.id} value={plan.id}>
-              {plan.duration} tháng
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    )
-  }
-
-  const StartDateCell = ({
-    row,
-    setMembershipPackages,
-  }: {
-    row: AccountMembershipPackage
-    setMembershipPackages: React.Dispatch<React.SetStateAction<AccountMembershipPackage[]>>
-  }) => {
-    const today = format(new Date())
-    // We still need this state because we need to track user input before submitting
-    const [startDate, setStartDate] = useState(row.start_date || today)
-
-    // Compute duration from current row data
-    const getDuration = () => {
-      const selectedMembership = memberships.find((m) => m.id === row.membership_id)
-      const selectedPlan = selectedMembership?.plans.find((p) => p.id === row.plan_id)
-      return selectedPlan?.duration || 0
-    }
-
-    // Initialize end date when component mounts with default date
-    useEffect(() => {
-      if (!row.start_date) {
-        const duration = getDuration()
-        const endDate = format(addMonths(new Date(today), duration))
-
-        setMembershipPackages((prev) =>
-          prev.map((pkg) => (pkg.id === row.id ? { ...pkg, start_date: today, end_date: endDate } : pkg))
-        )
-      }
-    }, []) // Empty dependency array ensures it only runs once
-
-    // Handle date change
-    const handleDateChange = useCallback(
-      (newStartDate: string) => {
-        setStartDate(newStartDate)
-
-        const duration = getDuration()
-        const endDate = newStartDate ? format(addMonths(new Date(newStartDate), duration)) : ''
-
-        setMembershipPackages((prev) =>
-          prev.map((pkg) => (pkg.id === row.id ? { ...pkg, start_date: newStartDate, end_date: endDate } : pkg))
-        )
-      },
-      [getDuration, row.id, setMembershipPackages]
-    )
-
-    return (
-      <input
-        type="date"
-        className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors"
-        value={startDate}
-        min={today}
-        onChange={(e) => handleDateChange(e.target.value)}
-      />
-    )
-  }
-
-  const EndDateCell = ({ row }: { row: AccountMembershipPackage }) => {
-    return (
-      <input
-        type="date"
-        className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors read-only:bg-gray-100 read-only:cursor-not-allowed"
-        value={row.end_date}
-        readOnly
-      />
-    )
-  }
-
-  const GiftCell = ({
-    row,
-    setMembershipPackages,
-  }: {
-    row: AccountMembershipPackage
-    setMembershipPackages: React.Dispatch<React.SetStateAction<AccountMembershipPackage[]>>
-  }) => {
-    const [selectedGiftId, setSelectedGiftId] = useState(row.gift_id)
-
-    // Get available gifts for the selected membership
-    const availableGifts = memberships.find((m) => m.id === row.membership_id)?.gifts || []
-
-    const currentGiftName = availableGifts.find((g) => g.id === row.gift_id)?.name || ''
-
-    const handleGiftChange = useCallback(
-      (value: string) => {
-        setMembershipPackages((prev) => prev.map((pkg) => (pkg.id === row.id ? { ...pkg, gift_id: value } : pkg)))
-      },
-      [row.id, setMembershipPackages]
-    )
-
-    return (
-      <Select defaultValue={row.gift_id} onValueChange={handleGiftChange}>
-        <SelectTrigger>
-          <SelectValue placeholder="Chọn quà tặng">{currentGiftName}</SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          {availableGifts.map((gift) => (
-            <SelectItem key={gift.id} value={gift.id}>
-              {gift.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    )
-  }
-
-  const accountMembershipColumns: ColumnDef<AccountMembershipPackage>[] = [
-    {
-      accessorKey: 'membership_id',
-      header: 'Tên gói membership',
-      render: ({ row }) => <MembershipCell row={row} setMembershipPackages={setMembershipPackages} />,
-    },
-    {
-      accessorKey: 'plan_id',
-      header: 'Thời gian gói (tháng)',
-      render: ({ row }) => <PlanCell row={row} setMembershipPackages={setMembershipPackages} />,
-    },
-    {
-      accessorKey: 'start_date',
-      header: 'Ngày bắt đầu',
-      render: ({ row }) => <StartDateCell row={row} setMembershipPackages={setMembershipPackages} />,
-    },
-    {
-      accessorKey: 'end_date',
-      header: 'Ngày kết thúc',
-      render: ({ row }) => <EndDateCell row={row} />,
-    },
-    {
-      accessorKey: 'gift_id',
-      header: 'Quà tặng',
-      render: ({ row }) => <GiftCell row={row} setMembershipPackages={setMembershipPackages} />,
-    },
-    {
-      accessorKey: 'actions',
-      header: '',
-      render: ({ row }) => {
-        // Function to handle deleting this row
-        const handleDelete = () => {
-          // Filter out the row with this ID
-          setMembershipPackages(membershipPackages.filter((pkg) => pkg.id !== row.id))
-        }
-
-        return (
-          <Button type="button" variant="ghost" size="icon" onClick={handleDelete}>
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        )
-      },
-    },
-  ]
-
-  // Function to add a new empty membership package
   const handleAddMembershipPackage = () => {
     // Find the highest existing ID and increment by 1
-    const highestId = membershipPackages.reduce((max, pkg) => {
-      const id = parseInt(pkg.id)
+    const highestId = userSubscriptions.reduce((max, pkg) => {
+      const id = pkg.id
       return id > max ? id : max
     }, 0)
 
@@ -408,22 +384,49 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     const newId = (highestId + 1).toString()
 
     // Create new package with empty values
-    const newPackage: AccountMembershipPackage = {
-      id: newId,
-      membership_id: '',
-      start_date: '',
-      end_date: '',
-      plan_id: '',
-      gift_id: '',
+    const newPackage: UserSubscription = {
+      id: Number(newId),
+      user_id: data?.id || 0,
+      // subscription_id: 0,
+      // plan_id: 0,
+      course_format: 'video',
+      coupon_code: '',
+      status: 'active',
+      subscription_start_at: formatDate(new Date()),
+      subscription_end_at: '',
+      // gift_id: 0,
+      order_number: '',
+      total_price: 0,
     }
 
     // Add to state
-    setMembershipPackages([...membershipPackages, newPackage])
+    setUserSubscriptions([...userSubscriptions, newPackage])
   }
 
   const membershipHeaderExtraContent = (
     <AddButton type="button" text="Thêm gói membership" onClick={handleAddMembershipPackage} />
   )
+
+  const [isApplyingPassword, setIsApplyingPassword] = useState(false)
+
+  const handleApplyPassword = async () => {
+    setIsApplyingPassword(true)
+    try {
+      const formData = form.getValues()
+      const updateData = {
+        role: 'admin',
+        username: formData.username,
+        new_password: formData.new_password,
+      }
+
+      await updatePassword(updateData)
+      toast.success('Mật khẩu đã được cập nhật thành công')
+    } catch (error) {
+      toast.error('Có lỗi xảy ra khi cập nhật mật khẩu')
+    } finally {
+      setIsApplyingPassword(false)
+    }
+  }
 
   return (
     <Form {...form}>
@@ -431,8 +434,8 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
         {/* Account Information */}
         <div className="space-y-4">
           <h2 className="text-lg font-semibold">Account - STT</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <FormInputField form={form} name="name" label="Tên" required placeholder="Nhập tên" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormInputField form={form} name="fullname" label="Tên" required placeholder="Nhập tên" />
             <FormInputField
               form={form}
               name="phone_number"
@@ -441,14 +444,32 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
               placeholder="Nhập số điện thoại"
             />
             <FormInputField form={form} name="username" label="Username" required placeholder="Nhập username" />
-            <FormInputField
-              form={form}
-              name="password"
-              type="password"
-              label="Mật khẩu"
-              required
-              placeholder="Nhập mật khẩu"
-            />
+            <div className="flex flex-col sm:flex-row w-full gap-2">
+              <div className="flex-1 w-full">
+                <FormInputField form={form} name="new_password" label="Mật khẩu" placeholder="Nhập mật khẩu" />
+              </div>
+              <div className="flex items-end w-full sm:w-auto">
+                <Button
+                  type="button"
+                  className="w-full sm:w-auto flex-1"
+                  onClick={() => {
+                    const pwd = generatePassword()
+                    form.setValue('new_password', pwd)
+                  }}
+                >
+                  Tạo mật khẩu
+                </Button>
+              </div>
+              <div className="flex items-end w-full sm:w-auto">
+                <MainButton
+                  type="button"
+                  className="w-full sm:w-auto flex-1"
+                  onClick={handleApplyPassword}
+                  text="Apply"
+                  loading={isApplyingPassword}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -456,7 +477,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
         <div className="space-y-4">
           <h2 className="text-lg font-semibold">Gói membership</h2>
           <DataTable
-            data={membershipPackages}
+            data={userSubscriptions}
             columns={accountMembershipColumns}
             searchPlaceholder="Tìm kiếm gói membership"
             headerExtraContent={membershipHeaderExtraContent}
@@ -479,7 +500,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
               form={form}
               name="menu_ids"
               label="Thực đơn"
-              data={menuItems}
+              data={mealPlans}
               placeholder="Chọn thực đơn"
             />
 

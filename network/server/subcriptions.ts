@@ -1,5 +1,6 @@
 'use server'
 
+
 import { fetchData } from "../helpers/fetch-data"
 import { ApiResponse, ListResponse } from "@/models/response"
 import { Subscription } from "@/models/subscriptions"
@@ -14,6 +15,7 @@ export async function getSubscription(id: number): Promise<ApiResponse<Subscript
     const response = await fetchData(`/v1/subscriptions/${id}`, { next: { tags: ["subscriptions"] } })
     return await response.json()
 }
+
 
 export async function createSubscription(data: any): Promise<Subscription> {
     const response = await fetchData("/v1/subscriptions", {
