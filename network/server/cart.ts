@@ -81,4 +81,17 @@ export async function editCart(id: number, data: any): Promise<ApiResponse<Cart>
     revalidateTag("cart")
     return await response.json()
 }
+
+export async function deleteCart(id: number): Promise<ApiResponse<any>> {
+    const response = await fetchDataServer(
+        `/v1/carts/${id}`,
+        {
+            method: "DELETE",
+            credentials: 'include',
+        }
+    )
+    revalidateTag("cart")
+    return await response.json()
+}
+    
     

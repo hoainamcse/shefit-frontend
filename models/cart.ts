@@ -14,8 +14,17 @@ export interface Cart {
     notes: string
     product_variants: {
         id: number
+        product_id: number
+        product_name: string
+        image_urls: string[]
         color: ProductColor
         size: ProductSize
+        price: number
+        quantity: number
         in_stock: boolean
     }[]
+    username: string
+    is_signed_up: boolean
+    created_at: string
+    updated_at: string
 }
