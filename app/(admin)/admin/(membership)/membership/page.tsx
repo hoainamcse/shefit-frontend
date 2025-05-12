@@ -43,10 +43,13 @@ export default function MembershipPage() {
   const router = useRouter()
   const [coupons, setCoupons] = useState<Coupon[]>([])
   const [membershipTable, setMembershipTable] = useState<MembershipRow[]>([])
+  const [openCouponModal, setOpenCouponModal] = useState(false)
+  const [editingCoupon, setEditingCoupon] = useState<Coupon>()
 
   const fetchCoupons = async () => {
     const response = await getListCoupons()
-    setCoupons(response.data || [])
+    const subscriptionCoupons = (response.data || []).filter((coupon) => coupon.coupon_type === 'subscription')
+    setCoupons(subscriptionCoupons)
   }
 
   const fetchMemberships = async () => {
@@ -89,6 +92,11 @@ export default function MembershipPage() {
   }
 
   // Coupon columns
+  const handleOpenEditCoupon = (coupon: Coupon) => {
+    setEditingCoupon(coupon)
+    setOpenCouponModal(true)
+  }
+
   const couponColumns: ColumnDef<Coupon>[] = [
     {
       accessorKey: 'code',
@@ -105,21 +113,47 @@ export default function MembershipPage() {
       accessorKey: 'actions',
       header: 'Thao tác',
       render: ({ row }) => (
-        <Button
-          size="icon"
-          variant="ghost"
-          className="text-destructive hover:text-destructive"
-          onClick={() => handleDeleteCoupon(row.id)}
-        >
-          <Trash2 />
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            size="icon"
+            variant="ghost"
+            className="text-green-600 hover:text-green-800"
+            onClick={() => handleOpenEditCoupon(row)}
+          >
+            <Edit />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="text-destructive hover:text-destructive"
+            onClick={() => handleDeleteCoupon(row.id)}
+          >
+            <Trash2 />
+          </Button>
+        </div>
       ),
     },
   ]
 
   const couponHeaderExtraContent = (
-    <CreateCouponDialog updateData={fetchCoupons}>
-      <AddButton text="Thêm khuyến mãi" />
+    <CreateCouponDialog
+      open={openCouponModal}
+      setOpen={setOpenCouponModal}
+      updateData={fetchCoupons}
+      isEdit={!!editingCoupon}
+      data={editingCoupon}
+      onClose={() => {
+        setEditingCoupon(undefined)
+        setOpenCouponModal(false)
+      }}
+    >
+      <AddButton
+        text="Thêm khuyến mãi"
+        onClick={() => {
+          setEditingCoupon(undefined)
+          setOpenCouponModal(true)
+        }}
+      />
     </CreateCouponDialog>
   )
 
@@ -210,21 +244,33 @@ export default function MembershipPage() {
   )
 }
 
-function CreateCouponDialog({ children, updateData }: { children: React.ReactNode; updateData?: () => void }) {
-  const [open, setOpen] = useState(false)
+interface CreateCouponDialogProps {
+  children: React.ReactNode
+  updateData?: () => void
+  open: boolean
+  setOpen: (open: boolean) => void
+  isEdit: boolean
+  data?: Coupon
+  onClose: () => void
+}
 
+function CreateCouponDialog({ children, updateData, open, setOpen, isEdit, data, onClose }: CreateCouponDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Thêm khuyến mãi</DialogTitle>
+          <DialogTitle>{isEdit ? 'Cập nhật khuyến mãi' : 'Thêm khuyến mãi'}</DialogTitle>
         </DialogHeader>
         <CreateCouponForm
+          isEdit={isEdit}
+          data={data}
           onSuccess={() => {
             setOpen(false)
-            updateData?.() // Call onSuccess after closing
+            updateData?.()
+            onClose()
           }}
+          type="subscription"
         />
       </DialogContent>
     </Dialog>

@@ -10,7 +10,8 @@ import { MainButton } from '../buttons/main-button'
 import { FormInputField, FormSelectField } from './fields'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
-import { createCoupon } from '@/network/server/coupon'
+import { createCoupon, updateCoupon } from '@/network/server/coupon'
+import { Coupon } from '@/models/coupon'
 
 const AVAILABLE_DISCOUNT_TYPE = [
   { value: 'percentage', label: 'Phần trăm' },
@@ -22,33 +23,55 @@ const formSchema = z.object({
   code: z.string().min(1, 'Mã không được để trống'),
   discount_type: z.enum(['percentage', 'fixed_amount']),
   discount_value: z.coerce.number().min(1, 'Giá trị không được để trống'),
+  coupon_type: z.enum(['subscription', 'ecommerce']),
 })
 
 type CouponFormValue = z.infer<typeof formSchema>
 
 interface CreateCouponFormProps {
+  type: 'subscription' | 'ecommerce'
   onSuccess?: () => void
+  isEdit?: boolean
+  data?: Coupon
 }
 
-export function CreateCouponForm({ onSuccess }: CreateCouponFormProps) {
+export function CreateCouponForm({ type, onSuccess, isEdit = false, data }: CreateCouponFormProps) {
   const [isPending, startTransition] = useTransition()
 
   const form = useForm<CouponFormValue>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      code: '',
-      discount_type: 'percentage',
-      discount_value: 0,
-    },
+    defaultValues: data
+      ? {
+          code: data.code || '',
+          discount_type: (data.discount_type as 'percentage' | 'fixed_amount') || 'percentage',
+          discount_value: data.discount_value ?? 0,
+          coupon_type: (data.coupon_type as 'subscription' | 'ecommerce') || type,
+        }
+      : {
+          code: '',
+          discount_type: 'percentage',
+          discount_value: 0,
+          coupon_type: type,
+        },
   })
 
   function onSubmit(values: CouponFormValue) {
     startTransition(async () => {
       try {
-        const couponResult = await createCoupon(values)
-        if (couponResult.status === 'success') {
-          toast.success('Tạo khuyến mãi thành công')
-          onSuccess?.()
+        if (!isEdit) {
+          const couponResult = await createCoupon(values)
+          if (couponResult.status === 'success') {
+            toast.success('Tạo khuyến mãi thành công')
+            onSuccess?.()
+          }
+        } else {
+          if (data?.id) {
+            const couponResult = await updateCoupon(values, data.id.toString())
+            if (couponResult.status === 'success') {
+              toast.success('Cập nhật khuyến mãi thành công')
+              onSuccess?.()
+            }
+          }
         }
       } catch (error) {
         toast.error('Tạo khuyến mãi thất bại')
@@ -79,7 +102,12 @@ export function CreateCouponForm({ onSuccess }: CreateCouponFormProps) {
           description={form.getValues('discount_type') === 'percentage' ? 'Phần trăm (%)' : 'VNĐ'}
         />
 
-        <MainButton text="Tạo khuyến mãi" type="submit" className="w-full" loading={isPending} />
+        <MainButton
+          text={isEdit ? 'Cập nhật khuyến mãi' : 'Tạo khuyến mãi'}
+          type="submit"
+          className="w-full"
+          loading={isPending}
+        />
       </form>
     </Form>
   )

@@ -43,4 +43,3 @@ export async function updateCoupon(data: any, coupon_id: string): Promise<ApiRes
     revalidateTag(`coupons`)
     return await response.json()
 }
-    
