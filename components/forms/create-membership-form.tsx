@@ -25,6 +25,7 @@ import { useRouter } from 'next/navigation'
 import { createSubscription, updateSubscription } from '@/network/server/subcriptions-admin'
 import { createGift } from '@/network/server/gifts'
 import { updateGift } from '@/network/server/gifts'
+import { updateSubscriptionPrice } from '@/network/server/subcriptions'
 
 // Define the form schema
 const formSchema = z.object({
@@ -177,13 +178,13 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
       .map((gift) => gift.data.id)
     const giftIds = [...updatedGiftIds, ...createdGiftIds]
 
-    const { gifts, ...rest } = values
+    await updateSubscriptionPrice(data!.id!, values.prices)
+
+    const { gifts, prices, ...rest } = values
     const subscriptionData = {
       ...rest,
       gift_ids: giftIds,
     }
-
-    console.log('subscriptionData', subscriptionData)
 
     await updateSubscription(data!.id!, subscriptionData)
     toast.success('Cập nhật gói thành viên thành công')

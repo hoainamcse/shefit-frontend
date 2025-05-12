@@ -46,3 +46,13 @@ export async function deleteSubscription(id: number): Promise<ApiResponse<Subscr
     return await response.json()
 }
 
+export async function updateSubscriptionPrice(id: number, data: any): Promise<ApiResponse<any>> {
+    const response = await fetchData(`/v1/subscriptions/${id}/prices`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+        credentials: 'include',
+    })
+    revalidateTag(`subscriptions`)
+    return await response.json()
+}
+

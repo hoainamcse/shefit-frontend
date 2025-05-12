@@ -7,7 +7,7 @@ import { ColumnDef, DataTable } from '@/components/data-table'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { CreateCouponForm } from '@/components/forms/create-coupon-form'
-import { Pencil, Save, Trash2, X } from 'lucide-react'
+import { Edit, Pencil, Save, Trash2, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Category, Color, Size } from '@/models/category'
 import {
@@ -42,6 +42,8 @@ export default function CategoriesPage() {
 
   // Coupon state
   const [coupons, setCoupons] = useState<Coupon[]>([])
+  const [openCouponModal, setOpenCouponModal] = useState(false)
+  const [editingCoupon, setEditingCoupon] = useState<Coupon>()
 
   // Loading state
   const [loading, setLoading] = useState(false)
@@ -63,7 +65,8 @@ export default function CategoriesPage() {
 
   const fetchCoupons = async () => {
     const response = await getListCoupons()
-    setCoupons(response.data || [])
+    const subscriptionCoupons = (response.data || []).filter((coupon) => coupon.coupon_type === 'ecommerce')
+    setCoupons(subscriptionCoupons)
   }
 
   useEffect(() => {
@@ -488,6 +491,33 @@ export default function CategoriesPage() {
     },
   ]
 
+  // Coupon columns
+  const handleOpenEditCoupon = (coupon: Coupon) => {
+    setEditingCoupon(coupon)
+    setOpenCouponModal(true)
+  }
+  const couponHeaderExtraContent = (
+    <CreateCouponDialog
+      open={openCouponModal}
+      setOpen={setOpenCouponModal}
+      updateData={fetchCoupons}
+      isEdit={!!editingCoupon}
+      data={editingCoupon}
+      onClose={() => {
+        setEditingCoupon(undefined)
+        setOpenCouponModal(false)
+      }}
+    >
+      <AddButton
+        text="Thêm khuyến mãi"
+        onClick={() => {
+          setEditingCoupon(undefined)
+          setOpenCouponModal(true)
+        }}
+      />
+    </CreateCouponDialog>
+  )
+
   // Coupon table columns
   const couponColumns: ColumnDef<Coupon>[] = [
     { accessorKey: 'code', header: 'Mã khuyến mãi' },
@@ -502,39 +532,27 @@ export default function CategoriesPage() {
       accessorKey: 'actions',
       header: 'Thao tác',
       render: ({ row }) => (
-        <Button
-          size="icon"
-          variant="ghost"
-          className="text-destructive hover:text-destructive"
-          onClick={() => handleDeleteCoupon(row.id)}
-        >
-          <Trash2 />
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            size="icon"
+            variant="ghost"
+            className="text-green-600 hover:text-green-800"
+            onClick={() => handleOpenEditCoupon(row)}
+          >
+            <Edit />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="text-destructive hover:text-destructive"
+            onClick={() => handleDeleteCoupon(row.id)}
+          >
+            <Trash2 />
+          </Button>
+        </div>
       ),
     },
   ]
-
-  // Add coupon dialog
-  function CreateCouponDialog({ children, updateData }: { children: React.ReactNode; updateData?: () => void }) {
-    const [open, setOpen] = useState(false)
-
-    return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>{children}</DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Thêm khuyến mãi</DialogTitle>
-          </DialogHeader>
-          <CreateCouponForm
-            onSuccess={() => {
-              setOpen(false)
-              updateData?.()
-            }}
-          />
-        </DialogContent>
-      </Dialog>
-    )
-  }
 
   return (
     <ContentLayout title="Quản lý thuộc tính sản phẩm">
@@ -594,15 +612,44 @@ export default function CategoriesPage() {
         <DataTable
           data={coupons}
           columns={couponColumns}
-          headerExtraContent={
-            <CreateCouponDialog updateData={fetchCoupons}>
-              <AddButton text="Thêm khuyến mãi" />
-            </CreateCouponDialog>
-          }
+          headerExtraContent={couponHeaderExtraContent}
           searchPlaceholder="Tìm kiếm khuyến mãi..."
           onSelectChange={() => {}}
         />
       </div>
     </ContentLayout>
+  )
+}
+
+interface CreateCouponDialogProps {
+  children: React.ReactNode
+  updateData?: () => void
+  open: boolean
+  setOpen: (open: boolean) => void
+  isEdit: boolean
+  data?: Coupon
+  onClose: () => void
+}
+
+function CreateCouponDialog({ children, updateData, open, setOpen, isEdit, data, onClose }: CreateCouponDialogProps) {
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{isEdit ? 'Cập nhật khuyến mãi' : 'Thêm khuyến mãi'}</DialogTitle>
+        </DialogHeader>
+        <CreateCouponForm
+          isEdit={isEdit}
+          data={data}
+          onSuccess={() => {
+            setOpen(false)
+            updateData?.()
+            onClose()
+          }}
+          type="ecommerce"
+        />
+      </DialogContent>
+    </Dialog>
   )
 }
