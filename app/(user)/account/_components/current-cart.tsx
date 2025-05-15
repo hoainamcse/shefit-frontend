@@ -1,12 +1,10 @@
 "use client"
-import Image from "next/image"
-import ShoppingImage from "@/assets/image/Shopping.png"
 import { BinIcon } from "@/components/icons/BinIcon"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import FormDelivery from "./FormDelivery"
-import { getCarts, removeCart } from "@/network/server/cart"
-import { getProduct } from "@/network/server/products"
+import { removeCart } from "@/network/server/cart"
+import { getUserCart } from "@/network/server/user-cart"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
 import {
@@ -22,27 +20,19 @@ import {
 
 export default function CurrentCart() {
   const [carts, setCarts] = useState<any>(null)
-  const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  console.log(products)
   useEffect(() => {
     async function fetchCartData() {
-      const cartsRes = await getCarts()
+      const cartsRes = await getUserCart(1)
       console.log("cartsRes", cartsRes)
       setCarts(cartsRes)
-      if (cartsRes.data && cartsRes.data.length > 0) {
-        const productList = await Promise.all(
-          cartsRes.data[0].product_variants.map((variant: any) => getProduct(variant.product_id.toString()))
-        )
-        setProducts(productList)
-      }
       setLoading(false)
     }
     fetchCartData()
   }, [])
 
   if (loading) return <div>Loading...</div>
-  if (!products?.length) {
+  if (!carts?.data?.length || !carts?.data[0]?.cart?.product_variants?.length) {
     return (
       <div className="flex flex-col items-center justify-center mt-20 w-full">
         <p className="text-2xl mb-6 text-center">Bạn chưa có sản phẩm nào, xem sản phẩm của chúng tôi</p>
@@ -54,44 +44,49 @@ export default function CurrentCart() {
       </div>
     )
   }
-  const totalPrice = (carts?.data[0].total - carts?.data[0].shipping_fee).toLocaleString()
+
+  const cartData = carts?.data[0]?.cart
+  const totalPrice = (cartData?.total - cartData?.shipping_fee).toLocaleString()
 
   const handleRemove = async (variantId: number) => {
     try {
-      await removeCart(carts?.data[0].id, variantId)
-      toast.success("Đã xóa sản phẩm khỏi giỏ hàng!")
       setLoading(true)
-      const cartsRes = await getCarts()
+      console.log(`Removing product variant ${variantId} from cart ${cartData?.id}`)
+      await removeCart(cartData?.id, variantId)
+      toast.success("Đã xóa sản phẩm khỏi giỏ hàng!")
+
+      const cartsRes = await getUserCart(1)
       setCarts(cartsRes)
-      if (cartsRes.data && cartsRes.data.length > 0) {
-        const productList = await Promise.all(
-          cartsRes.data[0].product_variants.map((variant: any) => getProduct(variant.id.toString()))
-        )
-        setProducts(productList)
-      } else {
-        setProducts([])
-      }
       setLoading(false)
     } catch (error: any) {
+      console.error("Error removing item from cart:", error)
       toast.error("Không thể xóa sản phẩm khỏi giỏ hàng. Vui lòng thử lại!")
+      setLoading(false)
     }
   }
 
   return (
     <div className="xl:flex mt-10 w-full justify-between gap-20">
       <div className="w-full text-2xl max-lg:mb-20">
-        {carts?.data[0].product_variants.map((variant: any, index: number) => (
+        {cartData?.product_variants.map((variant: any, index: number) => (
           <div key={`menu-${index}`} className="flex justify-between items-center mb-5">
-            <img src={products[index]?.data?.image_urls[0]} alt="" className="size-[148px] rounded-lg" />
-            <div>
-              <div className="font-medium">{products[index]?.data?.name || "Sản phẩm"}</div>
-              <div className="text-[#737373]">Size: {variant.size.size}</div>
+            <img
+              src={variant.image_urls?.[0]}
+              alt={variant.name || ""}
+              className="size-[148px] rounded-lg max-lg:w-[100px] mr-5"
+            />
+            <div className="w-full text-xl lg:text-md">
+              <div className="font-medium">{variant.name || "Sản phẩm"}</div>
+              <div className="text-[#737373]">Size: {variant.size?.size}</div>
+              <div className="text-[#737373]">Số lượng: {variant.quantity}</div>
             </div>
-            <div className="text-[#737373]">
+            <div className="text-[#737373] w-full text-xl lg:text-md">
               <div>
-                <span>{products[index]?.data?.price?.toLocaleString()}</span> VNĐ
+                <span>{variant.price?.toLocaleString()}</span> VNĐ
               </div>
-              <div>Color: {variant.color.name}</div>
+              <div>
+                Color: <span>{variant.color?.name}</span>
+              </div>
             </div>
             <Dialog>
               <DialogTrigger asChild>

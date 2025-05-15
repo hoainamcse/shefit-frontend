@@ -26,6 +26,7 @@ export default function ProductPage() {
       setColors(colorsResponse.data || [])
       const categoriesResponse = await getCategories()
       setCategories(categoriesResponse.data || [])
+      console.log(productsResponse.data)
     }
     fetchData()
   }, [])
@@ -89,7 +90,12 @@ export default function ProductPage() {
                   })()}
                 </div>
                 <p className="font-medium">{product.name}</p>
-                <p className="text-[#737373]">{product.description}</p>
+                <p className="text-[#737373]">
+                  {Array.from(new Set(product.variants.map((variant) => variant.color_id)))
+                    .map((colorId) => colors.find((color) => color.id === colorId)?.name)
+                    .filter(Boolean)
+                    .join(", ")}
+                </p>
                 <p className="text-[#737373]">{product.price.toLocaleString()} VNĐ</p>
               </div>
             </Link>

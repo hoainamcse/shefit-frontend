@@ -18,6 +18,7 @@ import { getProduct, getColors, getSizes } from "@/network/server/products"
 import { getMuscleGroups } from "@/network/server/muscle-group"
 import { addCart, getCarts } from "@/network/server/cart"
 import { toast } from "sonner"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 
 export default function Equipment({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
@@ -81,10 +82,22 @@ export default function Equipment({ params }: { params: Promise<{ slug: string }
 
   const handleAddToCart = async () => {
     if (!cartId || !selectedVariantId) return
+
+    const currentQuantity = Math.max(1, Number(quantity))
+    console.log("Current state values:", {
+      cartId,
+      selectedVariantId,
+      quantity,
+      currentQuantity,
+      typeOfQuantity: typeof quantity,
+    })
+
     setIsAdding(true)
     try {
-      await addCart(cartId, selectedVariantId)
-      toast.success("Đã thêm vào giỏ hàng!")
+      console.log(`Adding product variant ${selectedVariantId} to cart ${cartId} with quantity ${currentQuantity}`)
+      const result = await addCart(cartId, selectedVariantId, currentQuantity)
+      console.log("Add to cart result:", result)
+      toast.success(`Đã thêm ${currentQuantity} sản phẩm vào giỏ hàng!`)
     } catch (error: any) {
       console.error("Add to cart error:", error)
       let message = "Không thể thêm vào giỏ hàng. Vui lòng thử lại!"
@@ -101,14 +114,28 @@ export default function Equipment({ params }: { params: Promise<{ slug: string }
 
   return (
     <div className="flex flex-col gap-10">
-      <div className="mb-20 p-6 mt-20">
+      <div className="mb-20 p-10 mt-20">
         <div className="xl:w-[80%] max-lg:w-full xl:flex justify-between mb-20 max-lg:block">
-          <div className="xl:w-3/4 max-lg:w-full">
-            <img
-              src={product.image_urls[0] || ""}
-              alt={product.name}
-              className="xl:aspect-[5/3] max-lg:aspect-1 object-cover rounded-xl mb-4 w-full"
-            />
+          <div className="xl:w-3/4 max-lg:w-full px-8">
+            <Carousel
+              opts={{
+                align: "center",
+              }}
+            >
+              <CarouselContent>
+                {Array.from({ length: product.image_urls.length }).map((_, index) => (
+                  <CarouselItem key={index}>
+                    <img
+                      src={product.image_urls[index]}
+                      alt={product.name}
+                      className="xl:aspect-[5/3] max-lg:aspect-1 object-cover rounded-xl mb-4 w-full"
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
           </div>
           <div className="xl:w-1/5 max-lg:w-full xl:text-xl flex flex-col gap-3">
             <div className="flex flex-col gap-2 mb-4">
