@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import Image from "next/image"
@@ -12,13 +12,10 @@ export default function PopularCoursesCarousel() {
 
   useEffect(() => {
     const fetchPopularCourses = async () => {
-      const [videoCourses, liveCourses] = await Promise.all([
-        getCourses("video"),
-        getCourses("live")
-      ])
+      const [videoCourses, liveCourses] = await Promise.all([getCourses("video"), getCourses("live")])
 
       const allCourses = [...videoCourses.data, ...liveCourses.data]
-      const popular = allCourses.filter(course => course.is_popular)
+      const popular = allCourses.filter((course) => course.is_popular)
       setPopularCourses(popular)
     }
     fetchPopularCourses()
@@ -42,7 +39,7 @@ export default function PopularCoursesCarousel() {
         <CarouselContent>
           {popularCourses.map((course) => (
             <CarouselItem key={`popular-course-${course.id}`} className="md:basis-1/2 lg:basis-[22%]">
-              <Link href={`/courses/${course.course_format}/${course.id}`}>
+              <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                 <div className="text-center">
                   <div className="relative group">
                     <Image
@@ -55,7 +52,9 @@ export default function PopularCoursesCarousel() {
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>
                   <p className="font-medium">{course.course_name}</p>
-                  <p className="text-[#737373]">{course.form_categories.map(cat => getFormCategoryLabel(cat)).join(", ")}</p>
+                  <p className="text-[#737373]">
+                    {course.form_categories.map((cat) => getFormCategoryLabel(cat)).join(", ")}
+                  </p>
                   <p className="text-[#737373]">{course.trainer}</p>
                 </div>
               </Link>
@@ -67,4 +66,4 @@ export default function PopularCoursesCarousel() {
       </Carousel>
     </div>
   )
-} 
+}

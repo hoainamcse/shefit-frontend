@@ -82,7 +82,7 @@ const VideoPlayer = ({
         }}
       />
       <Button
-        className="absolute bottom-8 right-16 w-[80px] h-[50px] max-lg:w-[50px] max-lg:h-[50px] z-10 shadow-none"
+        className="absolute bottom-6 right-12 w-[70px] h-[34px] max-lg:w-[70px] max-lg:h-[40px] z-10 shadow-none"
         style={{ cursor: "auto", background: "transparent" }}
         onClick={(e) => e.stopPropagation()}
       ></Button>

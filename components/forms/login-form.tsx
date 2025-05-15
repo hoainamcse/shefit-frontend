@@ -1,14 +1,14 @@
-'use client'
+"use client"
 
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { MainButton } from '@/components/buttons/main-button'
-import { login, handleGoogleCallback as handleGoogleOAuth, getOauth2AuthUrl } from '@/network/server/auth'
-import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
-import React, { useState } from 'react'
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { MainButton } from "@/components/buttons/main-button"
+import { login, handleGoogleCallback as handleGoogleOAuth, getOauth2AuthUrl } from "@/network/server/auth"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import React, { useState } from "react"
 
 function GoogleIcon() {
   return (
@@ -74,29 +74,35 @@ export default function LoginForm() {
       const response = await getOauth2AuthUrl(encodeURIComponent(process.env.NEXT_PUBLIC_GOOGLE_OAUTH_REDIRECT_URL!))
       window.location.href = response.data.url
     } catch (error) {
-      console.error('Error during login:', error)
-      toast.error('Đăng nhập thất bại!')
+      console.error("Error during login:", error)
+      toast.error("Đăng nhập thất bại!")
     }
   }
 
   async function handleSubmit(formData: FormData) {
     try {
       const data = {
-        username: formData.get('username')?.toString() || '',
-        password: formData.get('password')?.toString() || '',
-        grant_type: 'password' as const,
+        username: formData.get("username")?.toString() || "",
+        password: formData.get("password")?.toString() || "",
+        grant_type: "password" as const,
       }
 
       const response = await login(data)
 
-      localStorage.setItem('access_token', response.access_token)
-      localStorage.setItem('refresh_token', response.refresh_token)
+      localStorage.setItem("access_token", response.access_token)
+      localStorage.setItem("refresh_token", response.refresh_token)
 
-      toast.success('Đăng nhập thành công!')
-      router.push('/')
+      const tokenParts = response.access_token.split(".")
+      if (tokenParts.length === 3) {
+        const payload = JSON.parse(atob(tokenParts[1]))
+        console.log("user_id:", payload.sub)
+        localStorage.setItem("user_id", payload.sub)
+      }
+      toast.success("Đăng nhập thành công!")
+      router.push("/")
     } catch (error) {
-      console.error('Error during login:', error)
-      toast.error('Đăng nhập thất bại!')
+      console.error("Error during login:", error)
+      toast.error("Đăng nhập thất bại!")
     }
   }
 

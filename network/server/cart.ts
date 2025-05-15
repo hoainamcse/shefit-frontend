@@ -16,22 +16,54 @@ export async function getCart(id: number): Promise<Cart> {
     return await response.json()
 }
 
-export async function addCart(id: number, productVariantId: number): Promise<Cart> {
+export async function addCart(cartId: number, productVariantId: number, quantity: number = 1): Promise<Cart> {
+    // Ensure quantity is a number and at least 1
+    const validQuantity = Math.max(1, Number(quantity) || 1);
+    
+    // Log the request details
+    console.log('addCart request:', { 
+        cartId, 
+        productVariantId,
+        originalQuantity: quantity,
+        validQuantity
+    });
+    
+    const requestBody = {
+        product_variant_id: productVariantId,
+        quantity: validQuantity
+    };
+    
+    console.log('Request body:', JSON.stringify(requestBody));
+    
     const response = await fetchData(
-        `/v1/carts/${id}:addProductVariant?product_variant_id=${productVariantId}`,
+        `/v1/carts/${cartId}:addProductVariant`,
         {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody),
             next: { tags: ["cart"] },
         }
     )
-    return await response.json()
+    
+    const result = await response.json();
+    console.log('addCart response:', result);
+    return result;
 }
 
-export async function removeCart(id: number, productVariantId: number): Promise<Cart> {
+export async function removeCart(cartId: number, productVariantId: number): Promise<Cart> {
     const response = await fetchData(
-        `/v1/carts/${id}:removeProductVariant?product_variant_id=${productVariantId}`,
+        `/v1/carts/${cartId}:removeProductVariant`,
         {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                product_variant_id: productVariantId,
+                quantity: 0
+            }),
             next: { tags: ["cart"] },
         }
     )
