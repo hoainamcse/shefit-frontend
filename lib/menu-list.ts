@@ -99,6 +99,10 @@ export function getMenuList(pathname: string): Group[] {
               href: '/admin/dishes',
               label: 'Thư viện món ăn',
             },
+            {
+              href: '/admin/diets-calories',
+              label: 'Chế độ ăn & calories',
+            },
           ],
         },
         {
