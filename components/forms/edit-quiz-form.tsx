@@ -2,7 +2,6 @@
 
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { v4 as uuidv4 } from 'uuid'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 
@@ -33,7 +32,7 @@ const defaultValues: QuizFormData = {
 
 const questionTypes = [
   { value: 'short_answer', label: 'Short Answer' },
-  { value: 'multi_choice', label: 'Multiple Choice' },
+  { value: 'multiple_choice', label: 'Multiple Choice' },
   { value: 'single_choice', label: 'Single Choice' },
 ]
 
@@ -63,7 +62,7 @@ export function EditQuizForm({ data }: EditQuizFormProps) {
       if (isEditMode) {
         const { questions, ...quizData } = data
         const createdQuestions = await Promise.all(
-          questions.map((question) => updateQuestion(question.id as number, question))
+          questions.map((question) => (question.id ? updateQuestion(question.id, question) : createQuestion(question)))
         )
 
         const questionIds = createdQuestions.map((question) => question.data.id)
@@ -188,7 +187,7 @@ export function EditQuizForm({ data }: EditQuizFormProps) {
                     <FormImageInputField form={form} name={`questions.${index}.image`} label="Hình ảnh câu hỏi" />
 
                     {(form.watch(`questions.${index}.question_type`) === 'single_choice' ||
-                      form.watch(`questions.${index}.question_type`) === 'multi_choice') && (
+                      form.watch(`questions.${index}.question_type`) === 'multiple_choice') && (
                       <div className="space-y-4">
                         <div className="flex justify-between items-center">
                           <Label>Câu trả lời</Label>
