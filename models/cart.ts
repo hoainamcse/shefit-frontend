@@ -15,7 +15,7 @@ export interface Cart {
     product_variants: {
         id: number
         product_id: number
-        product_name: string
+        name: string
         image_urls: string[]
         color: ProductColor
         size: ProductSize

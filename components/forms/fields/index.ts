@@ -1,4 +1,5 @@
 export * from './form-input-field'
+export * from './form-input-price-field'
 export * from './form-textarea-field'
 export * from './form-multi-select-field'
 export * from './form-checkbox-field'

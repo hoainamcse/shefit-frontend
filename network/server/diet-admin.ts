@@ -16,10 +16,10 @@ export async function getDietById(id: number): Promise<ApiResponse<Diet>> {
     return await response.json();
 }
 
-export async function createDiet(diet: any[]): Promise<ListResponse<Diet>> {
+export async function createDiet(diets: any[]): Promise<ListResponse<Diet>> {
     const response = await fetchDataServer(`/v1/diets:bulkCreate`, {
         method: "POST",
-        body: JSON.stringify(diet),
+        body: JSON.stringify({ diets }),
         credentials: 'include',
     });
     revalidateTag("diets")

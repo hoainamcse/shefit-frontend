@@ -33,9 +33,9 @@ export function getValuable<T extends {}, V = Valuable<T>>(obj: T): V {
   ) as V
 }
 
-export function formatCurrency(amount: number): string {
+export function formatCurrency(amount: number, currency: string = 'VND'): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
+    currency: currency,
   }).format(amount);
 }

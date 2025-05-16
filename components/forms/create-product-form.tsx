@@ -25,7 +25,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Check, X } from 'lucide-react'
-import { FormInputField, FormMultiSelectField, FormSelectField, FormTextareaField } from './fields'
+import { FormInputField, FormInputPriceField, FormMultiSelectField, FormSelectField, FormTextareaField } from './fields'
 import { FormImageInputField } from './fields/form-image-input-field'
 import { Product, ProductCategory, ProductColor, ProductSize } from '@/models/products'
 import { createProduct, getCategories, getColors, getSizes, updateProduct } from '@/network/server/products'
@@ -255,6 +255,7 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
             category_id: values.category_id,
             image_urls: values.image_urls,
             variants: values.variants,
+            features: values.features,
             muscle_group_ids: values.muscle_group_ids || [],
           }
 
@@ -306,7 +307,7 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
                 required
                 placeholder="Nhập mô tả sản phẩm"
               />
-              <FormInputField form={form} name="price" label="Giá" required type="number" placeholder="Nhập giá" />
+              <FormInputPriceField form={form} name="price" label="Giá" required placeholder="Nhập giá" />
 
               <FormSelectField
                 form={form}

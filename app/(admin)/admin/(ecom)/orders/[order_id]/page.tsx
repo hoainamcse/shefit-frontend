@@ -27,23 +27,18 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ or
                 className="flex items-center space-x-4 border-b pb-4 hover:bg-indigo-50 p-2 rounded transition-colors"
               >
                 <div className="relative w-20 h-20">
-                  <Image
-                    src={item.image_urls[0]}
-                    alt={item.product_name}
-                    fill
-                    className="object-cover rounded-md shadow-sm"
-                  />
+                  <Image src={item.image_urls[0]} alt={item.name} fill className="object-cover rounded-md shadow-sm" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-medium text-indigo-900">{item.product_name}</h3>
-                  <p className="text-sm text-gray-600">
+                  <h3 className="font-medium text-indigo-900">{item.name}</h3>
+                  <p className="text-sm text-gray-600 gap-2 flex">
                     <span className="text-indigo-600">Kích cỡ:</span> {item?.size?.size}
                     <span className="text-indigo-600">Màu sắc:</span> {item?.color?.name}
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 gap-2 flex">
                     <span className="text-indigo-600">Số lượng:</span> {item.quantity}
                   </p>
-                  <p className="font-medium mt-1 text-green-600">{formatCurrency(item.price * item.quantity)}</p>
+                  <p className="font-medium mt-1 text-green-600">{formatCurrency(item.price * item.quantity, 'VND')}</p>
                 </div>
               </div>
             ))}
@@ -53,7 +48,8 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ or
               <span className="font-medium text-indigo-800">Tổng tiền</span>
               <span className="text-green-600 font-bold">
                 {formatCurrency(
-                  orderDetail?.product_variants?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0
+                  orderDetail?.product_variants?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0,
+                  'VND'
                 )}
               </span>
             </div>
@@ -93,11 +89,13 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ or
             <div className="mt-6 pt-4 border-t border-rose-100 space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-rose-600">Phí giao hàng</span>
-                <span className="text-green-600">{formatCurrency(orderDetail?.shipping_fee || 0)}</span>
+                <span className="text-green-600">{formatCurrency(orderDetail?.shipping_fee || 0, 'VND')}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="font-medium text-rose-800">Tổng tiền</span>
-                <span className="font-medium text-lg text-green-600">{formatCurrency(orderDetail?.total || 0)}</span>
+                <span className="font-medium text-lg text-green-600">
+                  {formatCurrency(orderDetail?.total || 0, 'VND')}
+                </span>
               </div>
             </div>
           </div>
