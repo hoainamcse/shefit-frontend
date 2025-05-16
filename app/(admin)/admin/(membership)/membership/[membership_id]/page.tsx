@@ -7,7 +7,7 @@ export default async function EditMembershipPage({ params }: { params: Promise<{
   const subscriptionRes = await getSubscription(Number(membership_id))
   return (
     <ContentLayout title="Tạo gói thành viên">
-      <CreateMembershipForm isEdit={true} data={subscriptionRes.data} />
+      <CreateMembershipForm isEdit={true} data={subscriptionRes.data || {}} />
     </ContentLayout>
   )
 }

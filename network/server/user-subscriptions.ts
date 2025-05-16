@@ -14,7 +14,7 @@ export async function getUserSubscriptions(user_id: string): Promise<ListRespons
 }
 
 export async function createUserSubscription(data: any, user_id: string): Promise<ApiResponse<any>> {
-    const response = await fetchDataServer(`/v1/users/${user_id}/subscriptions`, {
+    const response = await fetchDataServer(`/v1/users/{user_id}/subscriptions?id=${user_id}`, {
         method: 'POST',
         body: JSON.stringify(data),
         credentials: 'include',
