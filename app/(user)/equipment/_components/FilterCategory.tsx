@@ -1,8 +1,8 @@
 "use client"
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-function SelectHero({
+function FilterCategory({
   placeholder,
   options,
   onChange,
@@ -14,19 +14,20 @@ function SelectHero({
   value: string
 }) {
   return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="w-full">
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
-      <SelectContent>
+    <Tabs value={value} onValueChange={onChange} className="w-full">
+      <TabsList className="w-full justify-start gap-2 bg-white shadow-none">
         {options.map((item) => (
-          <SelectItem key={item.value} value={item.value}>
+          <TabsTrigger
+            key={item.value}
+            value={item.value}
+            className="flex-1 bg-white h-[36px] text-lg shadow-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none"
+          >
             {item.label}
-          </SelectItem>
+          </TabsTrigger>
         ))}
-      </SelectContent>
-    </Select>
+      </TabsList>
+    </Tabs>
   )
 }
 
-export default SelectHero
+export default FilterCategory

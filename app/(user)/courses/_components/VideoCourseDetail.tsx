@@ -1,10 +1,10 @@
-'use client'
-import { ArrowPinkIcon } from '@/components/icons/ArrowPinkIcon'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { getWeeks } from '@/network/server/weeks'
-import { getDays } from '@/network/server/days'
-import Link from 'next/link'
-import { useState, useEffect } from 'react'
+"use client"
+import { ArrowPinkIcon } from "@/components/icons/ArrowPinkIcon"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { getWeeks } from "@/network/server/weeks"
+import { getDays } from "@/network/server/days"
+import Link from "next/link"
+import { useState, useEffect } from "react"
 
 type CourseDay = {
   day: number
@@ -45,7 +45,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: string }) {
           setCourseData(mapCourseData(totalWeeks))
         }
       } catch (error) {
-        console.error('Error fetching video detail data:', error)
+        console.error("Error fetching video detail data:", error)
       }
     }
 

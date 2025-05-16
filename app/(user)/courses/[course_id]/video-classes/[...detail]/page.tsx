@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { notFound } from "next/navigation"
 import VideoPlayer from "./VideoPlayer"
 import { MainButton } from "@/components/buttons/main-button"
-import { Pause, Play, ChevronDown, ChevronUp } from "lucide-react"
+import { Pause, Play, ChevronDown, ChevronUp, PlayCircle } from "lucide-react"
 import { useState } from "react"
 
 // Exercise type
@@ -303,14 +303,11 @@ function CircuitItem({ circuit, cIdx }: { circuit: Circuit; cIdx: number }) {
                   <div className="text-xl cursor-pointer" tabIndex={0} aria-label={`Open exercise ${exercise.name}`}>
                     <div className="hidden md:block">
                       <div className="relative group cursor-pointer">
-                        <Image
-                          src="/temp/VideoCard.jpg"
-                          alt=""
-                          className="aspect-[5/3] object-cover rounded-xl mb-4"
-                          width={585}
-                          height={373}
-                        />
+                        <img src="/temp/VideoCard.jpg" alt="" className="aspect-[5/3] object-cover rounded-xl mb-4" />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <PlayCircle className="w-16 h-16 text-white opacity-70 group-hover:opacity-100 transition-opacity" />
+                        </div>
                       </div>
 
                       <div className="flex justify-between">
@@ -325,7 +322,7 @@ function CircuitItem({ circuit, cIdx }: { circuit: Circuit; cIdx: number }) {
                     <div className="block md:hidden">
                       <div className="flex relative">
                         <div className="relative group cursor-pointer w-1/3 flex-shrink-0">
-                          <Image
+                          <img
                             src="/temp/VideoCard.jpg"
                             alt=""
                             className="aspect-square object-cover rounded-xl"

@@ -16,6 +16,7 @@ import { ZaloIcon } from "@/components/icons/ZaloIcon"
 import { FacebookIcon } from "@/components/icons/FacebookIcon"
 import { YoutubeIcon } from "@/components/icons/YoutubeIcon"
 import Footer from "@/components/common/Footer"
+import Link from "next/link"
 
 export default function Home() {
   return (
@@ -32,14 +33,16 @@ export default function Home() {
               chưa?
             </div>
             <div className="xl:text-2xl max-lg:text-xs">Ăn đúng, tập chuẩn sớm, đẹp sớm!</div>
-            <Button className="bg-button hover:bg-[#11c296] flex p-4 mt-6 text-xl mx-auto justify-center rounded-full xl:w-[696px] max-lg:w-full max-lg:h-8 max-lg:text-[14px] h-[81px]">
-              Bắt đầu
-            </Button>
+            <Link href="/courses">
+              <Button className="bg-button hover:bg-[#11c296] flex p-4 mt-6 text-xl mx-auto justify-center rounded-full xl:w-[696px] max-lg:w-full max-lg:h-8 max-lg:text-[14px] h-[81px]">
+                Bắt đầu
+              </Button>
+            </Link>
           </div>
         </Card>
       </div>
       <Body />
-      <div className="xl:px-14 max-lg:px-2 max-lg:w-full bg-white">
+      {/* <div className="xl:px-14 max-lg:px-2 max-lg:w-full bg-white">
         <Card className="bg-primary rounded-[20px] text-white xl:my-36 flex flex-col xl:py-16">
           <div className="mx-auto text-center w-full">
             <div className="items-center text-[40px] max-lg:text-[22px] leading-[45px] text-center font-bold text-wrap xl:mb-8 xl:mt-4">
@@ -50,7 +53,7 @@ export default function Home() {
             </Button>
           </div>
         </Card>
-      </div>
+      </div> */}
       <Menu />
       <Stand />
       <Educator />
@@ -92,9 +95,9 @@ export default function Home() {
           Tham gia facebook của SHEFIT để cập nhật bài tập, thực đơn và hành trình truyền cảm hứng từ hàng ngàn học viên
         </div>
         <div className="flex mt-8 gap-5">
-          <ZaloIcon />
+          {/* <ZaloIcon /> */}
           <FacebookIcon />
-          <YoutubeIcon />
+          {/* <YoutubeIcon /> */}
         </div>
         <Button className="bg-button hover:bg-[#11c296] w-[444px] max-lg:w-[139px] h-[68px] max-lg:h-[40px] rounded-[98px] text-xl max-lg:text-base mt-8 mb-8">
           Tham gia ngay!

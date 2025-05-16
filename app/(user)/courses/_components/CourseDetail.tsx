@@ -10,6 +10,8 @@ import { useState, useEffect, useRef } from "react"
 import { FormCategory } from "@/models/course"
 import LiveCourseDetail from "./LiveCourseDetail"
 import VideoCourseDetail from "./VideoCourseDetail"
+import { BackIcon } from "@/components/icons/BackIcon"
+import { useRouter } from "next/navigation"
 
 interface CourseDetailProps {
   courseId: string
@@ -17,6 +19,7 @@ interface CourseDetailProps {
 }
 
 export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps) {
+  const router = useRouter()
   const [showDetails, setShowDetails] = useState(false)
   const [course, setCourse] = useState<any>(null)
   const [equipment, setEquipment] = useState<any>(null)
@@ -83,6 +86,10 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
   return (
     <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full pb-24 relative">
       <div className="p-6 mb-20 flex flex-col gap-10">
+        <div className="flex items-center gap-[10px] cursor-pointer" onClick={() => router.back()}>
+          <BackIcon color="#000000" style={{ marginBottom: "4px" }} />
+          <div className="text-xl text-[#000000] font-semibold">Quay về</div>
+        </div>
         <img
           src={course?.data?.thumbnail_image}
           alt={`${courseId}`}

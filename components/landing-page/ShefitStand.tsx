@@ -6,6 +6,7 @@ import StandImage from "@/assets/image/Stand.png"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Button } from "@/components/ui/button"
 import Ratings from "./Rating"
+import Link from "next/link"
 
 const images = [
   StandImage,
@@ -62,9 +63,11 @@ export default function Stand() {
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
-      <Button className="bg-button hover:bg-[#11c296] flex p-4 mt-6 text-xl mx-auto justify-center rounded-full w-[296px] h-14">
-        Xem giỏ hàng
-      </Button>
+      <Link href="/equipment">
+        <Button className="bg-button hover:bg-[#11c296] flex p-4 mt-6 text-xl mx-auto justify-center rounded-full w-[296px] h-14">
+          Xem giỏ hàng
+        </Button>
+      </Link>
     </div>
   )
 }
