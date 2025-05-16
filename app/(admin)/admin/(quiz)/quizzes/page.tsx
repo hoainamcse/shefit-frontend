@@ -1,91 +1,73 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
+
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
+import { useQuery } from '@/hooks/use-query'
+import { deleteQuestion, deleteQuiz, getQuizzes } from '@/network/server/body-quiz'
+import { Edit2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { AddButton } from '@/components/buttons/add-button'
+import { EditButton } from '@/components/buttons/edit-button'
+import { DeleteButton } from '@/components/buttons/delete-button'
+import { QuizFormData } from '@/components/forms/types'
+import { toast } from 'sonner'
 
-interface Quiz {
-  id: string
-  title: string
-  description: string
-  createdAt: Date
-  updatedAt: Date
-}
+export default function QuizzesPage() {
+  const router = useRouter()
 
-export default function QuizList() {
-  const [quizzes, setQuizzes] = useState<Quiz[]>([
-    {
-      id: '1',
-      title: 'Nutrition Basics',
-      description: 'Test your knowledge of essential nutrients, balanced diet principles, and healthy eating habits.',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: '2',
-      title: 'Physical Activity & Exercise',
-      description: 'Challenge yourself with questions about different types of exercise, fitness principles, and workout planning.',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: '3',
-      title: 'Mental Wellness',
-      description: 'Evaluate your understanding of stress management, mindfulness techniques, and emotional well-being.',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: '4',
-      title: 'Sleep & Recovery',
-      description: 'Test your knowledge about healthy sleep habits, sleep cycles, and the importance of rest for overall health.',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: '5',
-      title: 'Preventive Health Care',
-      description: 'Learn about regular health screenings, vaccination schedules, and maintaining good personal hygiene.',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  ])
-  const [loading, setLoading] = useState(false)
+  const { data, isLoading, error, refetch } = useQuery(getQuizzes)
 
-  if (loading) {
-    return <div>Loading...</div>
+  if (isLoading) {
+    return <div>Đang tải...</div>
+  }
+
+  if (error) {
+    return <div>Lỗi khi tải quizzes: {error.message}</div>
+  }
+
+  const handleDelete = async (data: QuizFormData) => {
+    try {
+      const { questions, ...quizData } = data
+      await Promise.all(questions.map((question) => deleteQuestion(question.id as number)))
+      await deleteQuiz(quizData.id as number)
+
+      refetch()
+      toast.success('Quiz created successfully')
+    } catch (error) {
+      toast.error('Failed to create quiz')
+    }
   }
 
   return (
     <ContentLayout title="Quizzes">
-      <div className="flex justify-between items-center mb-6">
-        <Link href="/admin/quizzes/create">
-          <Button>Tạo quiz mới</Button>
-        </Link>
+      <div className="flex justify-end items-center mb-6">
+        <AddButton text="Tạo quiz" onClick={() => router.push('/admin/quizzes/create')} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {quizzes.map((quiz) => (
+        {data?.data.map((quiz) => (
           <Card key={quiz.id}>
             <CardHeader>
               <CardTitle>{quiz.title}</CardTitle>
+              <CardDescription>{quiz.description}</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground mb-4">{quiz.description}</p>
+              <div className="flex items-center gap-2 mb-4">
+                Tổng số câu hỏi:
+                <span className="text-blue-500">{quiz.questions.length} câu hỏi</span>
+              </div>
               <div className="flex justify-end gap-2">
-                <Link href={`/admin/quizzes/${quiz.id}/edit`}>
-                  <Button variant="outline">Sửa</Button>
-                </Link>
-                <Link href={`/admin/quizzes/${quiz.id}`}>
-                  <Button>Xem</Button>
-                </Link>
+                <EditButton onClick={() => router.push(`/admin/quizzes/${quiz.id}`)} variant="outline" />
+                <DeleteButton onConfirm={() => handleDelete(quiz)} variant="outline" size="icon" />
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+      {data?.data.length === 0 && <div className="text-center">Chưa có quiz nào</div>}
     </ContentLayout>
   )
 }

@@ -71,7 +71,7 @@ export default function LoginForm() {
 
   const handleGoogleSignIn = async () => {
     try {
-      const response = await getOauth2AuthUrl(encodeURIComponent(process.env.NEXT_PUBLIC_GOOGLE_OAUTH_REDIRECT_URL!))
+      const response = await getOauth2AuthUrl(encodeURIComponent(process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!))
       window.location.href = response.data.url
     } catch (error) {
       console.error("Error during login:", error)

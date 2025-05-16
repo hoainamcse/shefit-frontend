@@ -7,7 +7,7 @@ export interface EditButtonProps extends Omit<ButtonProps, 'asChild'> {
   text?: string
 }
 
-const EditButton = React.forwardRef<HTMLButtonElement, EditButtonProps>(({ text, ...props }, ref) => {
+const EditButton = React.forwardRef<HTMLButtonElement, EditButtonProps>(({ text = 'Cập nhật', ...props }, ref) => {
   return <MainButton ref={ref} icon={Pen} text={text} {...props} />
 })
 

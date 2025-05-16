@@ -1,6 +1,6 @@
 import { statusCodeErrorMap } from '../errors/httpErrors'
 
-const public_url = process.env.NEXT_PUBLIC_BASE_URL
+const public_url = process.env.NEXT_PUBLIC_SERVER_URL
 
 /**
  * Fetches data from the server.
@@ -11,7 +11,7 @@ const public_url = process.env.NEXT_PUBLIC_BASE_URL
  * @throws Error if the base URL is not set, if fetching data fails, or if an HTTP error occurs.
  */
 export async function fetchData(input: RequestInfo, init: RequestInit = {}, json = true) {
-  const baseURL = process.env.SERVER_BASE_URL || public_url
+  const baseURL = process.env.SERVER_URL || public_url
 
   console.log('Fetching data from: ', (baseURL || 'undefined') + input)
 

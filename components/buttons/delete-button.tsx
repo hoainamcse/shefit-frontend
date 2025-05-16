@@ -28,11 +28,18 @@ const DeleteButton = React.forwardRef<HTMLButtonElement, DeleteButtonProps>(
     return (
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogTrigger asChild>
-          <MainButton ref={ref} icon={Trash2} text={text} {...props} variant="destructive" />
+          <MainButton
+            ref={ref}
+            icon={Trash2}
+            text={text}
+            {...props}
+            variant="outline"
+            className="text-destructive border-destructive hover:text-destructive"
+          />
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>Bạn có chắc chắn hoàn toàn không?</AlertDialogTitle>
             {description && <AlertDialogDescription>{description}</AlertDialogDescription>}
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -43,7 +50,7 @@ const DeleteButton = React.forwardRef<HTMLButtonElement, DeleteButtonProps>(
                 event.preventDefault()
               }}
               disabled={loading}
-              className="bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90"
+              className="bg-destructive shadow-sm hover:bg-destructive/90"
             >
               {loading && <Loader2 className="animate-spin" />} Continue
             </AlertDialogAction>

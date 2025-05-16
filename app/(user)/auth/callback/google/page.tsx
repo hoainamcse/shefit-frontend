@@ -14,7 +14,7 @@ function GoogleCallback() {
     try {
       const res = await handleGoogleCallback(
         searchParams.toString() +
-          `&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_GOOGLE_OAUTH_REDIRECT_URL || "")}`
+          `&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI || "")}`
       )
       localStorage.setItem("access_token", res.access_token)
       localStorage.setItem("refresh_token", res.refresh_token)
