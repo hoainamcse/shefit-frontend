@@ -1,12 +1,21 @@
 import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
-import { RightArrowIcon } from "@/components/icons/right-arrow-icon"
 import Link from "next/link"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { ArrowIcon } from "@/components/icons/ArrowIcon"
+import { getUserBodyQuizzesByUserId } from "@/network/server/user-body-quizz"
 
-export default function BodyQuiz() {
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  return new Intl.DateTimeFormat("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date)
+}
+
+export default async function BodyQuiz() {
+  const userBodyQuizzes = await getUserBodyQuizzesByUserId("1")
+
   return (
     <div>
       <div className="bg-[#FFAEB01A] py-[33px] px-5 sm:px-9 lg:px-[87px]">
@@ -32,19 +41,15 @@ export default function BodyQuiz() {
       <div className="py-12 sm:py-16 lg:py-20 px-5 sm:px-9 lg:px-[60px]">
         <div className="text-[#FF7873] text-[30px] leading-[33px] font-[Coiny] mb-10">Kết quả</div>
         <div className="flex flex-col gap-[18px]">
-          <Link
-            href={"/account/quiz/1"}
-            className="text-[#000000] text-[20px] leading-[30px] font-normal border border-[#E2E2E2] p-4 rounded-[10px]"
-          >
-            Kết quả ngày 7/3/2025
-          </Link>
-
-          <Link
-            href="/account/quiz/1"
-            className="text-[#000000] text-[20px] leading-[30px] font-normal border border-[#E2E2E2] p-4 rounded-[10px]"
-          >
-            Kết quả ngày 7/3/2025
-          </Link>
+          {userBodyQuizzes.data.map((quiz) => (
+            <Link
+              key={quiz.id}
+              href={`/account/quiz/${quiz.id}`}
+              className="text-[#000000] text-[20px] leading-[30px] font-normal border border-[#E2E2E2] p-4 rounded-[10px]"
+            >
+              Kết quả ngày {formatDate(quiz.quiz_date)}
+            </Link>
+          ))}
         </div>
       </div>
     </div>

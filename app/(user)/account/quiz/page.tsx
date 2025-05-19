@@ -5,19 +5,101 @@ import Image from "next/image"
 import { useForm } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { Form, FormItem, FormLabel, FormControl, FormMessage, FormField } from "@/components/ui/form"
-import Link from "next/link"
-import { Card } from "@/components/ui/card"
-import ImageTitle from "@/assets/image/ImageTitle.png"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import Body from "@/assets/image/Body.png"
-import MenuDetail from "@/assets/image/MenuDetail.png"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { getBodyQuiz } from "@/network/server/body-quizz"
+import { useEffect, useState } from "react"
+import type BodyQuiz from "@/models/body-quiz"
+import type { ListResponse } from "@/models/response"
 export default function BodyQuiz() {
+  const [bodyQuiz, setBodyQuiz] = useState<ListResponse<BodyQuiz> | null>(null)
   const form = useForm({})
 
   const onSubmit = (data: any) => {
     console.log("Form Data:", data)
   }
+
+  useEffect(() => {
+    const fetchBodyQuiz = async () => {
+      const response = await getBodyQuiz()
+      setBodyQuiz(response)
+    }
+    fetchBodyQuiz()
+  }, [])
+
+  const renderQuestionField = (question: BodyQuiz["questions"][number]) => {
+    return (
+      <FormField
+        key={question.id}
+        control={form.control}
+        name={`question_${question.id}`}
+        render={({ field }) => (
+          <FormItem className="space-y-4">
+            <FormLabel className="text-lg font-medium">
+              {question.title}
+              {question.is_required && <span className="text-red-500 ml-1">*</span>}
+            </FormLabel>
+            <FormControl>
+              <div>
+                {question.question_type === "single_choice" && (
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger className="w-full h-[50px] bg-white text-black">
+                      <SelectValue placeholder="Chọn câu trả lời" className="text-black" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {question.choices?.map((choice, index) => (
+                        <SelectItem key={index} value={choice}>
+                          {choice}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+                {question.question_type === "multiple_choice" && (
+                  <div className="grid gap-4">
+                    {question.choices?.map((choice, index) => (
+                      <div key={index} className="flex items-center space-x-3">
+                        <Checkbox
+                          id={`${question.id}-${index}`}
+                          checked={field.value?.includes(choice)}
+                          onCheckedChange={(checked) => {
+                            const currentValues = new Set(field.value || [])
+                            if (checked) {
+                              currentValues.add(choice)
+                            } else {
+                              currentValues.delete(choice)
+                            }
+                            field.onChange(Array.from(currentValues))
+                          }}
+                          className="h-5 w-5"
+                        />
+                        <label
+                          htmlFor={`${question.id}-${index}`}
+                          className="text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {choice}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {question.question_type === "short_answer" && (
+                  <Input
+                    {...field}
+                    type={question.input_type === "integer" ? "number" : "text"}
+                    placeholder="Nhập câu trả lời"
+                    className="w-full h-[50px] bg-white text-black"
+                  />
+                )}
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    )
+  }
+
   return (
     <div className="p-14 max-w-screen-3xl mx-auto mb-20">
       <div className="bg-[#FFF7F8] p-8 rounded-[10px] pb-28">
@@ -34,376 +116,9 @@ export default function BodyQuiz() {
           </div>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-7">
-              <FormField
-                name="name"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-                        <AccordionItem value="item-1" className="border-b-0">
-                          <AccordionTrigger>
-                            <FormLabel className="text-xl font-normal">1. Tên của bạn?</FormLabel>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <Input
-                              {...field}
-                              placeholder="Câu trả lời"
-                              className="text-lg text-gray-500 bg-white h-12"
-                            />
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                name="phone"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-                        <AccordionItem value="item-1" className="border-b-0">
-                          <AccordionTrigger>
-                            <FormLabel className="text-xl font-normal">2. Số điện thoại</FormLabel>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <Input
-                              {...field}
-                              placeholder="Câu trả lời"
-                              className="text-lg text-gray-500 bg-white h-12"
-                            />
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                name="city"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-                        <AccordionItem value="item-1" className="border-b-0">
-                          <AccordionTrigger>
-                            <FormLabel className="text-xl font-normal">
-                              3. Chị vui lòng trả lời về tính trạng thai sản? 
-                            </FormLabel>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <Input
-                              {...field}
-                              placeholder="Câu trả lời"
-                              className="text-lg text-gray-500 bg-white h-12"
-                            />
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                name="address"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-                        <AccordionItem value="item-1" className="border-b-0">
-                          <AccordionTrigger>
-                            <FormLabel className="text-xl font-normal">4. Chiều Cao Của Chị (cm) ?</FormLabel>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <Input
-                              {...field}
-                              placeholder="Câu trả lời"
-                              className="text-lg text-gray-500 bg-white h-12"
-                            />
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name="address"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-                        <AccordionItem value="item-1" className="border-b-0">
-                          <AccordionTrigger>
-                            <FormLabel className="text-xl font-normal">5. Tuổi của chị ?</FormLabel>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <Input
-                              {...field}
-                              placeholder="Câu trả lời"
-                              className="text-lg text-gray-500 bg-white h-12"
-                            />
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name="address"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-                        <AccordionItem value="item-1" className="border-b-0">
-                          <AccordionTrigger>
-                            <FormLabel className="text-xl font-normal">6. Cân Nặng Hiện Tại Của Chị (kg)</FormLabel>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <Input
-                              {...field}
-                              placeholder="Câu trả lời"
-                              className="text-lg text-gray-500 bg-white h-12"
-                            />
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name="address"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-                        <AccordionItem value="item-1" className="border-b-0">
-                          <AccordionTrigger>
-                            <FormLabel className="text-xl font-normal">7. Mục Tiêu Của Chị Về Cân Nặng</FormLabel>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <Input
-                              {...field}
-                              placeholder="Câu trả lời"
-                              className="text-lg text-gray-500 bg-white h-12"
-                            />
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name="address"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-                        <AccordionItem value="item-1" className="border-b-0">
-                          <AccordionTrigger>
-                            <FormLabel className="text-xl font-normal">8. Vóc Dáng Hiện Tại Của Chị?</FormLabel>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-14 mx-auto mt-6">
-                              {Array.from({ length: 12 }).map((_, index) => (
-                                <div key={`image-${index}`} className="flex items-center flex-col">
-                                  <Image src={ImageTitle} alt="" className="aspect-[3/3] object-cover rounded-xl" />
-                                  <Checkbox className="mt-2 size-8" />
-                                </div>
-                              ))}
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name="address"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-                        <AccordionItem value="item-1" className="border-b-0">
-                          <AccordionTrigger>
-                            <FormLabel className="text-xl font-normal">9. Vóc Dáng Mong Muốn Của Chị?</FormLabel>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-14 mx-auto mt-6">
-                              {Array.from({ length: 12 }).map((_, index) => (
-                                <div key={`image-${index}`} className="flex items-center flex-col">
-                                  <Image src={ImageTitle} alt="" className="aspect-[3/3] object-cover rounded-xl" />
-                                  <Checkbox className="mt-2 size-8" />
-                                </div>
-                              ))}
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="w-full mb-10">
-                <div className="font-[family-name:var(--font-coiny)] text-3xl text-text">Số đo các vòng</div>
-                <FormControl>
-                  <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-                    <AccordionItem value="item-1" className="border-b-0">
-                      <AccordionTrigger>
-                        <FormLabel className="text-xl font-normal">
-                          Hãy chuẩn bị 1 thước dây để đo chính xác nhất các vòng, điều này sẽ giúp HLV Shefit xác định
-                          phom dáng của chị
-                        </FormLabel>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <Image
-                          src={Body}
-                          alt=""
-                          className="mt-5 aspect-[3/3] object-cover rounded-xl xl:size-[875px] mx-auto"
-                        />
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                </FormControl>
+              <div className="space-y-6">
+                {bodyQuiz?.data.flatMap((quiz) => quiz.questions).map((question) => renderQuestionField(question))}
               </div>
-              <div>
-                <div className="font-[family-name:var(--font-coiny)] text-3xl text-text">Câu hỏi phần thực đơn</div>
-                <Image src={MenuDetail} alt="" className="mt-5 aspect-[8/2] object-cover rounded-3xl" />
-              </div>
-              <FormField
-                name="address"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-                        <AccordionItem value="item-1" className="border-b-0">
-                          <AccordionTrigger>
-                            <FormLabel className="text-xl font-normal">
-                              11. Chị Có Bị Dị Ứng Với Thức Ăn Nào Không?
-                            </FormLabel>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <Input
-                              {...field}
-                              placeholder="Câu trả lời"
-                              className="text-lg text-gray-500 bg-white h-12"
-                            />
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name="address"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-                        <AccordionItem value="item-1" className="border-b-0">
-                          <AccordionTrigger>
-                            <FormLabel className="text-xl font-normal">
-                              12. Chị Thường Ăn Nhiều Thành Phần Gì?
-                            </FormLabel>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <Input
-                              {...field}
-                              placeholder="Câu trả lời"
-                              className="text-lg text-gray-500 bg-white h-12"
-                            />
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name="address"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-                        <AccordionItem value="item-1" className="border-b-0">
-                          <AccordionTrigger>
-                            <FormLabel className="text-xl font-normal">
-                              13. Trong quá khứ chị đã từng thử ăn kiêng theo chế độ nào?
-                            </FormLabel>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <Input
-                              {...field}
-                              placeholder="Câu trả lời"
-                              className="text-lg text-gray-500 bg-white h-12"
-                            />
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name="address"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-                        <AccordionItem value="item-1" className="border-b-0">
-                          <AccordionTrigger>
-                            <FormLabel className="text-xl font-normal">
-                              14. Chị Có Hay Ăn Vặt Không?  (Bánh Tráng Trộn, Trà Sữa, Bánh Ngọt...)
-                            </FormLabel>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <Input
-                              {...field}
-                              placeholder="Câu trả lời"
-                              className="text-lg text-gray-500 bg-white h-12"
-                            />
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <Button type="submit" className="bg-button text-white py-2 px-4 rounded-full w-full xl:h-20 text-xl">
                 Gửi
               </Button>

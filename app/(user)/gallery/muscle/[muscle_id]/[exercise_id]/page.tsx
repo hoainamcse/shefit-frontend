@@ -4,6 +4,7 @@ import VideoCard from "@/assets/image/ImageIntro.png"
 import { Button } from "@/components/ui/button"
 import { getMuscleGroupExercises } from "@/network/server/muscle-group"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import ActionButtons from "./ActionButtons"
 
 export default async function MuscleDetail() {
   const exerciseId = await getMuscleGroupExercises("1")
@@ -72,7 +73,7 @@ export default async function MuscleDetail() {
         </div>
       )}
 
-      <Button className="bg-button hover:bg-[#11c296] p-4 mt-6 text-xl rounded-full h-14">Lưu</Button>
+      <ActionButtons exerciseId={exerciseId.data?.[0].id.toString()} />
     </div>
   )
 }

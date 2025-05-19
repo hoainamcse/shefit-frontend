@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button"
 import Header from "@/components/common/Header"
 import { BackIcon } from "@/components/icons/BackIcon"
 import { getMealPlanDetails } from "@/network/server/meal-plans"
+import { createUserMealPlan } from "@/network/server/user-meal-plans"
 import { getGoalLabel } from "@/lib/label"
+import ActionButtons from "./ActionButtons"
 export default async function MenuDetail({ params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
@@ -85,16 +87,7 @@ export default async function MenuDetail({ params }: { params: Promise<{ id: str
               </CarouselContent>
             </Carousel>
           </div>
-          <div className="gap-5 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
-            <Link href="/menu/[id]/detail" as={`/menu/${mealPlan.id}/detail`} className="w-full">
-              <Button className="w-full rounded-full text-xl bg-button text-white hover:bg-[#11c296] h-14">
-                Bắt đầu
-              </Button>
-            </Link>
-            <Button className="w-full rounded-full text-xl bg-white text-button h-14 border-2 border-button">
-              Lưu
-            </Button>
-          </div>
+          <ActionButtons mealPlanId={mealPlan.id} />
         </div>
       </div>
     )

@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import Link from "next/link"
+import ListMealPlans from "./_components/ListMealPlans"
+import ListExercises from "./_components/ListExercises"
 export default function Exercise() {
   return (
     <div className="space-y-10 px-14">
@@ -23,10 +25,7 @@ export default function Exercise() {
             Thực đơn của bạn
           </AccordionTrigger>
           <AccordionContent>
-            <div className="text-gray-500 text-xl">Bạn chưa có thực đơn nào</div>
-            <Link href="/exercise/detail">
-              <Button className="bg-button text-white text-xl w-full rounded-full h-14">Thêm thực đơn</Button>
-            </Link>
+            <ListMealPlans />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
@@ -36,10 +35,7 @@ export default function Exercise() {
             Động tác
           </AccordionTrigger>
           <AccordionContent>
-            <div className="text-gray-500 text-xl">Bạn chưa có động tác nào</div>
-            <Link href="/exercise/detail">
-              <Button className="bg-button text-white text-xl w-full rounded-full h-14">Thêm động tác</Button>
-            </Link>
+            <ListExercises />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
