@@ -11,7 +11,7 @@ const formatDate = (dateString: string) => {
     year: "numeric",
   }).format(date)
 }
-export default async function About({ params }: { params: { slug: string } }) {
+export default async function About() {
   const userBodyQuizzes = await getUserBodyQuizzesByUserId("1")
   console.log(userBodyQuizzes)
   return (
