@@ -5,7 +5,9 @@ import { AddButton } from '@/components/buttons/add-button'
 import { MainButton } from '@/components/buttons/main-button'
 import { ColumnDef, DataTable } from '@/components/data-table'
 import { FileUploader } from '@/components/file-uploader'
+import { CreateMuscleEquipForm } from '@/components/forms/create-muscle-equip-form'
 import { FormInputField } from '@/components/forms/fields'
+import { FormImageInputField } from '@/components/forms/fields/form-image-input-field'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import {
@@ -19,62 +21,68 @@ import {
 import { Form } from '@/components/ui/form'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
+import { Equipment } from '@/models/equipments'
+import { MuscleGroup } from '@/models/muscle-group'
+import { createEquipment, deleteEquipment, getEquipments, updateEquipment } from '@/network/server/equipments'
+import { createMuscleGroup, deleteMuscleGroup, getMuscleGroups, updateMuscleGroup } from '@/network/server/muscle-group'
 import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 export default function MuscleGroupsAndEquipmentsPage() {
-  return (
-    <ContentLayout title="Nhóm cơ & dụng cụ">
-      <div className="flex items-center space-x-4">
-        <MuscleGroups />
-        <Separator orientation="vertical" />
-        <Equipments />
-      </div>
-    </ContentLayout>
-  )
-}
+  const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>([])
+  const [equipments, setEquipments] = useState<Equipment[]>([])
+  const [openMuscleGroupModal, setOpenMuscleGroupModal] = useState(false)
+  const [openEquipmentModal, setOpenEquipmentModal] = useState(false)
+  const [editingMuscleGroup, setEditingMuscleGroup] = useState<MuscleGroup>()
+  const [editingEquipment, setEditingEquipment] = useState<Equipment>()
 
-type MuscleGroup = {
-  id: string
-  name: string
-  image: string
-}
+  const fetchMuscleGroups = async () => {
+    const response = await getMuscleGroups()
+    console.log(response)
+    setMuscleGroups(response.data || [])
+  }
 
-const muscleGroups: MuscleGroup[] = [
-  {
-    id: '1',
-    name: 'Deltoid',
-    image:
-      'https://stgaccinwbsdevlrs01.blob.core.windows.net/newcorporatewbsite/blogs/october2023/detail-main-Deltoid-muscle-1.jpeg',
-  },
-  {
-    id: '2',
-    name: 'Deltoid',
-    image:
-      'https://stgaccinwbsdevlrs01.blob.core.windows.net/newcorporatewbsite/blogs/october2023/detail-main-Deltoid-muscle-1.jpeg',
-  },
-  {
-    id: '3',
-    name: 'Deltoid',
-    image:
-      'https://stgaccinwbsdevlrs01.blob.core.windows.net/newcorporatewbsite/blogs/october2023/detail-main-Deltoid-muscle-1.jpeg',
-  },
-  {
-    id: '4',
-    name: 'Deltoid',
-    image:
-      'https://stgaccinwbsdevlrs01.blob.core.windows.net/newcorporatewbsite/blogs/october2023/detail-main-Deltoid-muscle-1.jpeg',
-  },
-  {
-    id: '5',
-    name: 'Deltoid',
-    image:
-      'https://stgaccinwbsdevlrs01.blob.core.windows.net/newcorporatewbsite/blogs/october2023/detail-main-Deltoid-muscle-1.jpeg',
-  },
-]
+  const fetchEquipments = async () => {
+    const response = await getEquipments()
+    setEquipments(response.data || [])
+  }
 
-function MuscleGroups() {
-  const columns: ColumnDef<MuscleGroup>[] = [
+  useEffect(() => {
+    fetchMuscleGroups()
+    fetchEquipments()
+  }, [])
+
+  const handleDeleteMuscleGroup = async (id: string) => {
+    if (window.confirm('Bạn có chắc muốn xoá nhóm cơ này?')) {
+      try {
+        const res = await deleteMuscleGroup(id)
+        if (res.status === 'success') {
+          toast.success('Xoá nhóm cơ thành công')
+          fetchMuscleGroups()
+        }
+      } catch (e) {
+        toast.error('Có lỗi khi xoá nhóm cơ')
+      }
+    }
+  }
+
+  const handleDeleteEquipment = async (id: string) => {
+    if (window.confirm('Bạn có chắc muốn xoá dụng cụ này?')) {
+      try {
+        const res = await deleteEquipment(id)
+        if (res.status === 'success') {
+          toast.success('Xoá dụng cụ thành công')
+          fetchEquipments()
+        }
+      } catch (e) {
+        toast.error('Có lỗi khi xoá dụng cụ')
+      }
+    }
+  }
+
+  const columnsMuscleGroups: ColumnDef<MuscleGroup>[] = [
     {
       accessorKey: 'name',
       header: 'Tên',
@@ -83,7 +91,7 @@ function MuscleGroups() {
       accessorKey: 'image',
       header: 'Hình ảnh',
       render: ({ row }) => {
-        return <img src={row.image} alt={`${row.name} thumbnail`} className="h-12 rounded" />
+        return <img src={row.image} alt={`${row.name} thumbnail`} className="h-16 w-16 rounded-lg object-cover " />
       },
     },
     {
@@ -101,13 +109,18 @@ function MuscleGroups() {
               <Copy /> Sao chép nhóm cơ ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Eye /> Xem
-            </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setEditingMuscleGroup(row)
+                setOpenMuscleGroupModal(true)
+              }}
+            >
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onClick={() => handleDeleteMuscleGroup(row.id.toString())}
+            >
               <Trash2 /> Xoá
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -116,59 +129,26 @@ function MuscleGroups() {
     },
   ]
 
-  const headerExtraContent = (
-    <CreateExerciseDialog>
+  const headerExtraContentMuscleGroups = (
+    <CreateMuscleEquipDialog
+      open={openMuscleGroupModal}
+      setOpen={setOpenMuscleGroupModal}
+      isEdit={!!editingMuscleGroup}
+      updateData={fetchMuscleGroups}
+      data={editingMuscleGroup}
+      onClose={() => {
+        setEditingMuscleGroup(undefined)
+        setOpenMuscleGroupModal(false)
+      }}
+      type="muscle-groups"
+      create={createMuscleGroup}
+      update={updateMuscleGroup}
+    >
       <AddButton text="Thêm nhóm cơ" />
-    </CreateExerciseDialog>
+    </CreateMuscleEquipDialog>
   )
 
-  return (
-    <DataTable
-      headerExtraContent={headerExtraContent}
-      searchPlaceholder="Tìm kiếm theo tên, ..."
-      data={muscleGroups}
-      columns={columns}
-      onSelectChange={() => {}}
-    />
-  )
-}
-
-type Equipment = {
-  id: string
-  name: string
-  image: string
-}
-
-const equipment: Equipment[] = [
-  {
-    id: '1',
-    name: 'Wheel Roller',
-    image: 'https://cdn.shopify.com/s/files/1/0574/1215/7598/t/16/assets/acf.Main-Ab-Roller.png?v=1636587473',
-  },
-  {
-    id: '2',
-    name: 'Wheel Roller',
-    image: 'https://cdn.shopify.com/s/files/1/0574/1215/7598/t/16/assets/acf.Main-Ab-Roller.png?v=1636587473',
-  },
-  {
-    id: '3',
-    name: 'Wheel Roller',
-    image: 'https://cdn.shopify.com/s/files/1/0574/1215/7598/t/16/assets/acf.Main-Ab-Roller.png?v=1636587473',
-  },
-  {
-    id: '4',
-    name: 'Wheel Roller',
-    image: 'https://cdn.shopify.com/s/files/1/0574/1215/7598/t/16/assets/acf.Main-Ab-Roller.png?v=1636587473',
-  },
-  {
-    id: '5',
-    name: 'Wheel Roller',
-    image: 'https://cdn.shopify.com/s/files/1/0574/1215/7598/t/16/assets/acf.Main-Ab-Roller.png?v=1636587473',
-  },
-]
-
-function Equipments() {
-  const columns: ColumnDef<Equipment>[] = [
+  const columnsEquipments: ColumnDef<Equipment>[] = [
     {
       accessorKey: 'name',
       header: 'Tên',
@@ -177,7 +157,7 @@ function Equipments() {
       accessorKey: 'image',
       header: 'Hình ảnh',
       render: ({ row }) => {
-        return <img src={row.image} alt={`${row.name} thumbnail`} className="h-12 rounded" />
+        return <img src={row.image} alt={`${row.name} thumbnail`} className="h-16 w-16 rounded-lg object-cover " />
       },
     },
     {
@@ -195,13 +175,18 @@ function Equipments() {
               <Copy /> Sao chép dụng cụ ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Eye /> Xem
-            </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setEditingEquipment(row)
+                setOpenEquipmentModal(true)
+              }}
+            >
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onClick={() => handleDeleteEquipment(row.id.toString())}
+            >
               <Trash2 /> Xoá
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -210,49 +195,101 @@ function Equipments() {
     },
   ]
 
-  const headerExtraContent = (
-    <CreateExerciseDialog>
+  const headerExtraContentEquipments = (
+    <CreateMuscleEquipDialog
+      open={openEquipmentModal}
+      setOpen={setOpenEquipmentModal}
+      updateData={fetchEquipments}
+      isEdit={!!editingEquipment}
+      data={editingEquipment}
+      onClose={() => {
+        setEditingEquipment(undefined)
+        setOpenEquipmentModal(false)
+      }}
+      type="equipments"
+      create={createEquipment}
+      update={updateEquipment}
+    >
       <AddButton text="Thêm dụng cụ" />
-    </CreateExerciseDialog>
+    </CreateMuscleEquipDialog>
   )
 
   return (
-    <DataTable
-      headerExtraContent={headerExtraContent}
-      searchPlaceholder="Tìm kiếm theo tên, ..."
-      data={equipment}
-      columns={columns}
-      onSelectChange={() => {}}
-    />
+    <ContentLayout title="Nhóm cơ & dụng cụ">
+      <div className="flex items-start space-x-4">
+        <DataTable
+          headerExtraContent={headerExtraContentMuscleGroups}
+          searchPlaceholder="Tìm kiếm theo tên, ..."
+          data={muscleGroups}
+          columns={columnsMuscleGroups}
+          onSelectChange={() => {}}
+        />
+        <Separator orientation="vertical" />
+        <DataTable
+          headerExtraContent={headerExtraContentEquipments}
+          searchPlaceholder="Tìm kiếm theo tên, ..."
+          data={equipments}
+          columns={columnsEquipments}
+          onSelectChange={() => {}}
+        />
+      </div>
+    </ContentLayout>
   )
 }
 
-function CreateExerciseDialog({ children }: { children: React.ReactNode }) {
+interface CreateMuscleEquipDialogProps {
+  children: React.ReactNode
+  updateData?: () => void
+  open: boolean
+  setOpen: (open: boolean) => void
+  isEdit: boolean
+  data?: MuscleGroup | Equipment
+  onClose: () => void
+  type: 'muscle-groups' | 'equipments'
+  create: (data: any) => Promise<{ status: string }>
+  update: (id: string, data: any) => Promise<{ status: string }>
+}
+
+function CreateMuscleEquipDialog({
+  children,
+  updateData,
+  open,
+  setOpen,
+  isEdit,
+  data,
+  onClose,
+  type,
+  create,
+  update,
+}: CreateMuscleEquipDialogProps) {
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Thêm nhóm cơ</DialogTitle>
+          <DialogTitle>
+            {type === 'muscle-groups'
+              ? isEdit
+                ? 'Cập nhật nhóm cơ'
+                : 'Thêm nhóm cơ'
+              : isEdit
+              ? 'Cập nhật dụng cụ'
+              : 'Thêm dụng cụ'}
+          </DialogTitle>
         </DialogHeader>
-        <CreateExerciseForm />
+        <CreateMuscleEquipForm
+          isEdit={isEdit}
+          data={data}
+          onSuccess={() => {
+            setOpen(false)
+            updateData?.()
+            onClose()
+          }}
+          type={type}
+          create={create}
+          update={update}
+        />
       </DialogContent>
     </Dialog>
-  )
-}
-
-function CreateExerciseForm() {
-  const form = useForm()
-  return (
-    <Form {...form}>
-      <form className="space-y-6">
-        <FormInputField form={form} name="name" label="Tên" required placeholder="Nhập tên bài tập" />
-        <div className="space-y-4">
-          <Label>Hình</Label>
-          <FileUploader />
-        </div>
-        <MainButton text="Tạo" className="w-full" />
-      </form>
-    </Form>
   )
 }
