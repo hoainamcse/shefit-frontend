@@ -37,6 +37,12 @@ import { MealPlan } from '@/models/meal-plans'
 import { Dish } from '@/models/dish'
 import { Exercise } from '@/models/exercies'
 import { getExercises } from '@/network/server/exercise'
+import { getUserExercises, createUserExercise, deleteUserExercise } from '@/network/server/user-exercises'
+import { UserExercise } from '@/models/user-exercises'
+import { createUserMealPlan, deleteUserMealPlan, getUserMealPlans } from '@/network/server/user-meal-plans'
+import { UserMealPlan } from '@/models/user-meal-plans'
+import { createUserDish, deleteUserDish, getUserDishes } from '@/network/server/user-dishes'
+import { UserDish } from '@/models/user-dishes'
 
 const accountSchema = z.object({
   id: z.coerce.number().optional(),
@@ -65,10 +71,10 @@ const accountSchema = z.object({
       })
     )
     .optional(),
-  course_ids: z.array(z.coerce.number()).optional(),
-  meal_plan_ids: z.array(z.coerce.number()).optional(),
-  dish_ids: z.array(z.coerce.number()).optional(),
-  exercise_ids: z.array(z.coerce.number()).optional(),
+  course_ids: z.array(z.coerce.string()).optional(),
+  meal_plan_ids: z.array(z.coerce.string()).optional(),
+  dish_ids: z.array(z.coerce.string()).optional(),
+  exercise_ids: z.array(z.coerce.string()).optional(),
 })
 
 type AccountFormData = z.infer<typeof accountSchema>
@@ -92,12 +98,27 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
 
   const form = useForm<AccountFormData>({
     resolver: zodResolver(accountSchema),
-    defaultValues: data || {
-      fullname: '',
-      phone_number: '',
-      username: '',
-      subscriptions: [],
-    },
+    defaultValues: data
+      ? {
+          fullname: data.fullname,
+          phone_number: data.phone_number,
+          username: data.username,
+          subscriptions: [],
+          course_ids: [],
+          meal_plan_ids: [],
+          dish_ids: [],
+          exercise_ids: [],
+        }
+      : {
+          fullname: '',
+          phone_number: '',
+          username: '',
+          subscriptions: [],
+          course_ids: [],
+          meal_plan_ids: [],
+          dish_ids: [],
+          exercise_ids: [],
+        },
   })
 
   const {
@@ -191,6 +212,45 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     setValue('subscriptions', subscriptionsWithPlanId)
   }
 
+  const fetchUserExercises = async (userId: string) => {
+    try {
+      const response = await getUserExercises(userId)
+
+      if (response?.data?.length > 0) {
+        const exercise_ids = response.data.map((exercise: UserExercise) => exercise.exercise_id.toString())
+        form.setValue('exercise_ids', exercise_ids)
+      }
+    } catch (error) {
+      console.error('Error fetching user exercises:', error)
+    }
+  }
+
+  const fetchUserDishes = async (userId: string) => {
+    try {
+      const response = await getUserDishes(userId)
+
+      if (response?.data?.length > 0) {
+        const dish_ids = response.data.map((dish: UserDish) => dish.dish_id.toString())
+        form.setValue('dish_ids', dish_ids)
+      }
+    } catch (error) {
+      console.error('Error fetching user dishes:', error)
+    }
+  }
+
+  const fetchUserMealPlans = async (userId: string) => {
+    try {
+      const response = await getUserMealPlans(userId)
+
+      if (response?.data?.length > 0) {
+        const meal_plan_ids = response.data.map((mealPlan: UserMealPlan) => mealPlan.meal_plan_id.toString())
+        form.setValue('meal_plan_ids', meal_plan_ids)
+      }
+    } catch (error) {
+      console.error('Error fetching user meal plans:', error)
+    }
+  }
+
   useEffect(() => {
     fetchMembershipList()
     fetchMealPlans()
@@ -204,6 +264,14 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     }
     fetchAllCourses()
   }, [membershipList])
+
+  useEffect(() => {
+    if (data?.id) {
+      fetchUserExercises(data.id.toString())
+      fetchUserDishes(data.id.toString())
+      fetchUserMealPlans(data.id.toString())
+    }
+  }, [data?.id])
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
@@ -262,6 +330,21 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
           }
         }
 
+        // 3. Handle exercises
+        if (values.exercise_ids && values.exercise_ids.length > 0) {
+          await handleAssignUserExercise(values.exercise_ids, userId)
+        }
+
+        // 4. Handle dishes
+        if (values.dish_ids && values.dish_ids.length > 0) {
+          await handleAssignUserDish(values.dish_ids, userId)
+        }
+
+        // 5. Handle meal plans
+        if (values.meal_plan_ids && values.meal_plan_ids.length > 0) {
+          await handleAssignUserMealPlan(values.meal_plan_ids, userId)
+        }
+
         toast.success('Cập nhật tài khoản thành công')
       } catch (error) {
         toast.error('Có lỗi xảy ra khi cập nhật tài khoản')
@@ -277,6 +360,108 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
         await updateUserSubscription(userId, subscription.subscription_id?.toString(), subscriptionData)
       } else {
         await createUserSubscription(subscriptionData, userId)
+      }
+    }
+  }
+
+  const handleAssignUserExercise = async (
+    exerciseIds: string[],
+    userId: string
+  ): Promise<{
+    success: boolean
+    error?: string
+  }> => {
+    try {
+      const currentExercises = await getUserExercises(userId)
+      const currentExerciseIds = currentExercises.data.map((ex: UserExercise) => ex.exercise_id.toString())
+      //Exercise to add
+      const exercisesToAdd = exerciseIds.filter((id) => !currentExerciseIds.includes(id))
+
+      //Exercise to remove
+      const exercisesToRemove = currentExerciseIds.filter((id) => !exerciseIds.includes(id))
+
+      if (exercisesToAdd.length > 0) {
+        await Promise.all(exercisesToAdd.map((exercise_id) => createUserExercise({ exercise_id }, userId)))
+      }
+
+      if (exercisesToRemove.length > 0) {
+        await Promise.all(exercisesToRemove.map((exercise_id) => deleteUserExercise(userId, exercise_id)))
+      }
+
+      return { success: true }
+    } catch (error) {
+      console.error('Error assigning exercises:', error)
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to assign exercises',
+      }
+    }
+  }
+
+  const handleAssignUserMealPlan = async (
+    mealPlanIds: string[],
+    userId: string
+  ): Promise<{
+    success: boolean
+    error?: string
+  }> => {
+    try {
+      const currentMealPlans = await getUserMealPlans(userId)
+      const currentMealPlanIds = currentMealPlans.data.map((mp: UserMealPlan) => mp.meal_plan_id.toString())
+      //Meal plan to add
+      const mealPlansToAdd = mealPlanIds.filter((id) => !currentMealPlanIds.includes(id))
+
+      //Meal plan to remove
+      const mealPlansToRemove = currentMealPlanIds.filter((id) => !mealPlanIds.includes(id))
+
+      if (mealPlansToAdd.length > 0) {
+        await Promise.all(mealPlansToAdd.map((meal_plan_id) => createUserMealPlan({ meal_plan_id }, userId)))
+      }
+
+      if (mealPlansToRemove.length > 0) {
+        await Promise.all(mealPlansToRemove.map((meal_plan_id) => deleteUserMealPlan(userId, meal_plan_id)))
+      }
+
+      return { success: true }
+    } catch (error) {
+      console.error('Error assigning meal plans:', error)
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to assign meal plans',
+      }
+    }
+  }
+
+  const handleAssignUserDish = async (
+    dishIds: string[],
+    userId: string
+  ): Promise<{
+    success: boolean
+    error?: string
+  }> => {
+    try {
+      const currentDishes = await getUserDishes(userId)
+      const currentDishIds = currentDishes.data.map((dish: UserDish) => dish.dish_id.toString())
+      //Dish to add
+      const dishesToAdd = dishIds.filter((id) => !currentDishIds.includes(id))
+
+      //Dish to remove
+      const dishesToRemove = currentDishIds.filter((id) => !dishIds.includes(id))
+
+      if (dishesToAdd.length > 0) {
+        await Promise.all(dishesToAdd.map((dish_id) => createUserDish({ dish_id }, userId)))
+      }
+
+      if (dishesToRemove.length > 0) {
+        await Promise.all(dishesToRemove.map((dish_id) => deleteUserDish(userId, dish_id)))
+      }
+
+      return { success: true }
+    } catch (error) {
+      console.error('Error assigning dishes:', error)
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to assign dishes',
       }
     }
   }
@@ -618,6 +803,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
               label="Thực đơn"
               data={mealPlans}
               placeholder="Chọn thực đơn"
+              key={`meal-plan-select-${form.watch('meal_plan_ids')?.length || 0}`}
             />
 
             <FormMultiSelectField
@@ -626,9 +812,17 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
               label="Bài tập"
               data={exercises}
               placeholder="Chọn bài tập"
+              key={`exercise-select-${form.watch('exercise_ids')?.length || 0}`}
             />
 
-            <FormMultiSelectField form={form} name="dish_ids" label="Món ăn" data={dishes} placeholder="Chọn món ăn" />
+            <FormMultiSelectField
+              form={form}
+              name="dish_ids"
+              label="Món ăn"
+              data={dishes}
+              placeholder="Chọn món ăn"
+              key={`dish-select-${form.watch('dish_ids')?.length || 0}`}
+            />
           </div>
         </div>
 

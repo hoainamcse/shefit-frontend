@@ -1,0 +1,19 @@
+type UserExercise = {
+    id?: number,
+    user_id: number,
+    exercise_id: number,
+    created_at: string,
+    updated_at: string,
+    exercise: {
+        id: number,
+        name: string,
+        description: string,
+        youtube_url: string,
+        cover_image: string,
+        thumbnail_image: string,
+        created_at: string,
+        updated_at: string
+      }
+    }
+
+export type { UserExercise }
