@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { getUserExercises } from "@/network/server/user-exercises"
+import { DeleteIcon } from "@/components/icons/DeleteIcon"
 export default async function ListExercises() {
   const exercises = await getUserExercises("1")
   console.log(exercises)
@@ -14,9 +15,12 @@ export default async function ListExercises() {
         <div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
             {exercises.data.map((exercise) => (
-              <Link href={`/gallery/muscle/${exercise.exercise.muscle_group_id}/${exercise.id}`} key={exercise.id}>
+              <Link href={`/gallery/muscle/${exercise.muscle_group_ids[0]}/${exercise.id}`} key={exercise.id}>
                 <div key={exercise.id}>
                   <div className="relative group">
+                    <div className="absolute top-4 right-4 z-10">
+                      <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
+                    </div>
                     <img
                       src={exercise.exercise.cover_image}
                       alt={exercise.exercise.name}

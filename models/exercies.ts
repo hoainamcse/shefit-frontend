@@ -13,6 +13,7 @@ type Exercise = {
     muscle_groups: MuscleGroup[]
     created_at: string
     updated_at: string
+    equipment_ids: number[]
 }
 
 export type { Exercise }

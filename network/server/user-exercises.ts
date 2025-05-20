@@ -6,7 +6,7 @@ import { UserExercise } from "@/models/user-exercises";
 import { revalidateTag } from "next/cache";
 
 export async function getUserExercises(userId: string): Promise<ListResponse<UserExercise>> {
-    const response = await fetchDataServer(`/v1/users/${userId}/exercises`,  {
+    const response = await fetchDataServer(`/v1/users/${userId}/exercises`, {
         method: 'GET',
         credentials: 'include',
     })

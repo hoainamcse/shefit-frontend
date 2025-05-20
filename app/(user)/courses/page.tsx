@@ -149,12 +149,12 @@ export default function TrainingCoursesPage() {
                   {filteredCourses.map((course) => (
                     <div key={`video-${course.id}`}>
                       <div className="relative group">
-                        <Image
+                        <img
                           src={course.cover_image}
                           alt={course.course_name}
                           className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
-                          width={585}
-                          height={373}
+                          // width={585}
+                          // height={373}
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                         {/* <Link href={`/courses/videos/${course.id}`}>

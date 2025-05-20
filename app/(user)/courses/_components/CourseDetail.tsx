@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { getCourse } from "@/network/server/courses"
 import { getEquipments } from "@/network/server/equipments"
@@ -12,6 +11,7 @@ import LiveCourseDetail from "./LiveCourseDetail"
 import VideoCourseDetail from "./VideoCourseDetail"
 import { BackIcon } from "@/components/icons/BackIcon"
 import { useRouter } from "next/navigation"
+import ActionButtons from "./ActionButtons"
 
 interface CourseDetailProps {
   courseId: string
@@ -39,10 +39,18 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         setCourse(courseData)
 
         const equipmentData = await getEquipments()
-        setEquipment(equipmentData)
+        const filteredEquipment = {
+          ...equipmentData,
+          data: equipmentData.data.filter((eq: any) => courseData.data?.equipment_ids?.includes(eq.id)),
+        }
+        setEquipment(filteredEquipment)
 
         const muscleGroupData = await getMuscleGroups()
-        setMuscleGroup(muscleGroupData)
+        const filteredMuscleGroups = {
+          ...muscleGroupData,
+          data: muscleGroupData.data.filter((mg: any) => courseData.data?.muscle_group_ids?.includes(mg.id)),
+        }
+        setMuscleGroup(filteredMuscleGroups)
       } catch (error) {
         console.error("Error fetching data:", error)
       }
@@ -172,14 +180,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         )}
       </div>
 
-      <div className="flex justify-center gap-4">
-        <Button onClick={handleToggleDetails} className="w-1/3 rounded-full bg-button hover:bg-[#11c296] h-14">
-          {showDetails ? "Trở về" : "Bắt đầu"}
-        </Button>
-        <Button variant="secondary" className="text-button rounded-full w-1/3 bg-white h-14 border-2 border-button">
-          Lưu
-        </Button>
-      </div>
+      <ActionButtons courseId={courseId} />
     </div>
   )
 }

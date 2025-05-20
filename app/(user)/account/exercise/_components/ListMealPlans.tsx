@@ -1,8 +1,19 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { getUserMealPlans } from "@/network/server/user-meal-plans"
+import { DeleteIcon } from "@/components/icons/DeleteIcon"
+import { deleteUserMealPlan } from "@/network/server/user-meal-plans"
+import { toast } from "sonner"
 export default async function ListMealPlans() {
   const mealPlans = await getUserMealPlans("1")
+  const handleDeleteMealPlan = async (mealPlanId: string) => {
+    try {
+      await deleteUserMealPlan("1", mealPlanId)
+      toast("Xóa thực đơn thành công")
+    } catch (error) {
+      toast("Xóa thực đơn thất bại")
+    }
+  }
   console.log(mealPlans)
   return (
     <>
@@ -17,6 +28,12 @@ export default async function ListMealPlans() {
               <Link href={`/menu/${mealPlan.meal_plan.id}`} key={mealPlan.id}>
                 <div key={mealPlan.id}>
                   <div className="relative group">
+                    <div className="absolute top-4 right-4 z-10">
+                      <DeleteIcon
+                        className="text-white hover:text-red-500 transition-colors duration-300"
+                        onClick={() => handleDeleteMealPlan(mealPlan.id?.toString() || "")}
+                      />
+                    </div>
                     <img
                       src={mealPlan.meal_plan.image}
                       alt={mealPlan.meal_plan.title}

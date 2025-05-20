@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import Link from "next/link"
 import ListMealPlans from "./_components/ListMealPlans"
 import ListExercises from "./_components/ListExercises"
+import ListCourses from "./_components/ListCourses"
+
 export default function Exercise() {
   return (
     <div className="space-y-10 px-14">
@@ -12,10 +12,7 @@ export default function Exercise() {
             Khóa tập của bạn
           </AccordionTrigger>
           <AccordionContent>
-            <div className="text-gray-500 text-xl">Bạn chưa có khóa tập nào</div>
-            <Link href="/exercise/detail">
-              <Button className="bg-button text-white text-xl w-full rounded-full h-14">Thêm khóa tập</Button>
-            </Link>
+            <ListCourses />
           </AccordionContent>
         </AccordionItem>
       </Accordion>

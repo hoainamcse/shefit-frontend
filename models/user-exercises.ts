@@ -15,6 +15,7 @@ type UserExercise = {
     created_at: string,
     updated_at: string
   }
+  muscle_group_ids: number[]
 }
 
 export type { UserExercise }

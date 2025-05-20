@@ -51,5 +51,5 @@ export async function deleteMuscleGroup(id: string): Promise<ApiResponse<string>
   })
   return await response.json()
 }
-  
+
 

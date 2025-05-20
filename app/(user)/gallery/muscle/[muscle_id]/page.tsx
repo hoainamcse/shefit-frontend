@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 import React from "react"
 import Link from "next/link"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getMuscleGroupExercises, getMuscleGroups } from "@/network/server/muscle-group"
 
 export default async function Muscle({ params }: { params: Promise<{ muscle_id: string }> }) {
@@ -21,36 +21,65 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
           </div>
           {/* <p className="text-[#737373] text-xl">{selectedMuscleGroup?.description}</p> */}
         </div>
-        <div className="flex justify-center mb-20">
-          <Tabs defaultValue="video">
-            <TabsList className="bg-white">
-              <TabsTrigger value="video" className={cn("underline text-text bg-white !shadow-none")}>
-                Có dụng cụ
-              </TabsTrigger>
-              <TabsTrigger value="zoom" className={cn("underline text-text bg-white !shadow-none")}>
-                Không có dụng cụ
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
-          {muscleGroupExercises.data?.map((exercise) => (
-            <Link href={`/gallery/muscle/${muscle_id}/${exercise.id}`} key={exercise.id}>
-              <div key={`menu-${exercise.id}`} className="text-xl">
-                <div className="relative group">
-                  <img
-                    src={exercise.image}
-                    alt={exercise.name}
-                    className="aspect-[5/3] object-cover rounded-xl mb-4"
-                    width={585}
-                    height={373}
-                  />
-                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-                </div>
-                <p className="font-bold">{exercise.name}</p>
+        <div className="mb-20">
+          <Tabs defaultValue="with-equipment" className="w-full">
+            <div className="flex justify-center mb-10">
+              <TabsList className="bg-white mx-auto">
+                <TabsTrigger value="with-equipment" className={cn("underline text-text bg-white !shadow-none")}>
+                  Có dụng cụ
+                </TabsTrigger>
+                <TabsTrigger value="no-equipment" className={cn("underline text-text bg-white !shadow-none")}>
+                  Không có dụng cụ
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            <TabsContent value="with-equipment">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
+                {muscleGroupExercises.data
+                  ?.filter((exercise) => exercise.equipments && exercise.equipments.length > 0)
+                  .map((exercise) => (
+                    <Link href={`/gallery/muscle/${muscle_id}/${exercise.id}`} key={exercise.id}>
+                      <div key={`menu-${exercise.id}`} className="text-xl">
+                        <div className="relative group">
+                          <img
+                            src={exercise.image}
+                            alt={exercise.name}
+                            className="aspect-[5/3] object-cover rounded-xl mb-4"
+                            width={585}
+                            height={373}
+                          />
+                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                        </div>
+                        <p className="font-bold">{exercise.name}</p>
+                      </div>
+                    </Link>
+                  ))}
               </div>
-            </Link>
-          ))}
+            </TabsContent>
+            <TabsContent value="no-equipment">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
+                {muscleGroupExercises.data
+                  ?.filter((exercise) => !exercise.equipments || exercise.equipments.length === 0)
+                  .map((exercise) => (
+                    <Link href={`/gallery/muscle/${muscle_id}/${exercise.id}`} key={exercise.id}>
+                      <div key={`menu-${exercise.id}`} className="text-xl">
+                        <div className="relative group">
+                          <img
+                            src={exercise.image}
+                            alt={exercise.name}
+                            className="aspect-[5/3] object-cover rounded-xl mb-4"
+                            width={585}
+                            height={373}
+                          />
+                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                        </div>
+                        <p className="font-bold">{exercise.name}</p>
+                      </div>
+                    </Link>
+                  ))}
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
