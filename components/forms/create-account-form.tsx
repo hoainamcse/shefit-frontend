@@ -4,7 +4,7 @@ import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { ColumnDef, DataTable } from '@/components/data-table'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
-import { FormInputField, FormMultiSelectField } from '@/components/forms/fields'
+import { FormInputField, FormMultiSelectField, FormSelectField } from '@/components/forms/fields'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Trash2 } from 'lucide-react'
 import { useForm, useFieldArray } from 'react-hook-form'
@@ -43,15 +43,22 @@ import { createUserMealPlan, deleteUserMealPlan, getUserMealPlans } from '@/netw
 import { UserMealPlan } from '@/models/user-meal-plans'
 import { createUserDish, deleteUserDish, getUserDishes } from '@/network/server/user-dishes'
 import { UserDish } from '@/models/user-dishes'
+import PROVINCES from '@/app/(admin)/admin/account/provinceData'
 
 const accountSchema = z.object({
   id: z.coerce.number().optional(),
-  fullname: z.string().min(1, { message: 'Account name is required' }),
+  fullname: z.string().min(3, { message: 'Họ và tên phải có ít nhất 3 ký tự.' }),
   phone_number: z
     .string()
-    .min(1, { message: 'Phone number is required' })
-    .regex(/^0[0-9]{9,10}$/, { message: 'Invalid phone number format' }),
-  username: z.string().min(1, { message: 'Username is required' }),
+    .min(10, { message: 'Số điện thoại phải có ít nhất 10 ký tự.' })
+    .regex(/^0[0-9]{9,10}$/, { message: 'Số điện thoại không hợp lệ.' }),
+  username: z.string().min(3, { message: 'Username phải có ít nhất 3 ký tự.' }),
+  province: z.enum([...PROVINCES.map((province) => province.value)] as [string, ...string[]], {
+    message: 'Bạn phải chọn tỉnh/thành phố',
+  }),
+  address: z.string().min(6, {
+    message: 'Địa chỉ phải có ít nhất 6 ký tự.',
+  }),
   new_password: z.string().min(8, { message: 'New password must be at least 8 characters' }).optional(),
   subscriptions: z
     .array(
@@ -103,6 +110,8 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
           fullname: data.fullname,
           phone_number: data.phone_number,
           username: data.username,
+          province: data.province,
+          address: data.address,
           subscriptions: [],
           course_ids: [],
           meal_plan_ids: [],
@@ -113,6 +122,8 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
           fullname: '',
           phone_number: '',
           username: '',
+          province: '',
+          address: '',
           subscriptions: [],
           course_ids: [],
           meal_plan_ids: [],
@@ -308,6 +319,8 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
           fullname: values.fullname,
           username: values.username,
           phone_number: values.phone_number,
+          province: values.province,
+          address: values.address,
         }
 
         await updateUser(userId, userUpdateData)
@@ -736,9 +749,19 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
               form={form}
               name="phone_number"
               label="Số điện thoại"
+              type="tel"
+              pattern="^0[0-9]{9,10}$"
               required
               placeholder="Nhập số điện thoại"
             />
+            <FormSelectField
+              form={form}
+              name="province"
+              label="Tỉnh / thành phố"
+              placeholder="Chọn tỉnh/thành phố của bạn đang sống"
+              data={PROVINCES}
+            />
+            <FormInputField form={form} name="address" label="Địa chỉ chi tiết" placeholder="Nhập địa chỉ của bạn" />
             <FormInputField form={form} name="username" label="Username" required placeholder="Nhập username" />
             <div className="flex flex-col sm:flex-row w-full gap-2">
               <div className="flex-1 w-full">

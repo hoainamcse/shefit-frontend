@@ -49,11 +49,7 @@ export default function MealPlansPage() {
     {
       accessorKey: 'calories',
       header: 'Mức calo',
-      render: ({ row }) => (
-        <span className="block min-w-[100px] text-gray-900">
-          {row.calories.min_calorie} - {row.calories.max_calorie}
-        </span>
-      ),
+      render: ({ row }) => <span className="block min-w-[100px] text-gray-900">{row.calories.name}</span>,
     },
     {
       accessorKey: 'diet_id',

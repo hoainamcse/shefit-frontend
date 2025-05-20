@@ -118,7 +118,7 @@ export default function CreateMealPlanForm({ isEdit = false, data }: { isEdit: b
     () =>
       calorieList.map((calorie) => ({
         value: calorie.id.toString(),
-        label: `${calorie.name} (${calorie.min_calorie}-${calorie.max_calorie})`,
+        label: `${calorie.name}`,
       })),
     [calorieList]
   )

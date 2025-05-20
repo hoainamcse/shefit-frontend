@@ -49,8 +49,6 @@ export default function DietsCaloriesPage() {
       id: 0,
       name: '',
       description: '',
-      min_calorie: 0,
-      max_calorie: 0,
       created_at: '',
       updated_at: '',
     })
@@ -64,15 +62,6 @@ export default function DietsCaloriesPage() {
     if (!editCalorie) return
     if (!editCalorie.name.trim()) {
       toast.error('Tên lượng calo không được để trống')
-      return
-    }
-
-    if (
-      typeof editCalorie.min_calorie === 'number' &&
-      typeof editCalorie.max_calorie === 'number' &&
-      editCalorie.max_calorie <= editCalorie.min_calorie
-    ) {
-      toast.error('Lượng calorie tối đa phải lớn hơn lượng calorie tối thiểu')
       return
     }
 
@@ -209,44 +198,6 @@ export default function DietsCaloriesPage() {
           />
         ) : (
           <span className="block py-1.5 px-2">{row.name}</span>
-        )
-      },
-    },
-    {
-      accessorKey: 'min_calorie',
-      header: 'Min Calo',
-      render: ({ row }) => {
-        const isEditing = editCalorie?.id === row.id
-        return isEditing ? (
-          <input
-            type="number"
-            value={editCalorie.min_calorie}
-            onChange={(e) => setEditCalorie({ ...editCalorie, min_calorie: Number(e.target.value) })}
-            className="w-full px-2 py-1.5 border border-input rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-            aria-label="Min calo"
-            tabIndex={0}
-          />
-        ) : (
-          <span className="block py-1.5 px-2">{row.min_calorie}</span>
-        )
-      },
-    },
-    {
-      accessorKey: 'max_calorie',
-      header: 'Max Calo',
-      render: ({ row }) => {
-        const isEditing = editCalorie?.id === row.id
-        return isEditing ? (
-          <input
-            type="number"
-            value={editCalorie.max_calorie}
-            onChange={(e) => setEditCalorie({ ...editCalorie, max_calorie: Number(e.target.value) })}
-            className="w-full px-2 py-1.5 border border-input rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-            aria-label="Max calo"
-            tabIndex={0}
-          />
-        ) : (
-          <span className="block py-1.5 px-2">{row.max_calorie}</span>
         )
       },
     },
