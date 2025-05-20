@@ -5,8 +5,12 @@ import { getExerciseById } from "@/network/server/exercise"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import ActionButtons from "./ActionButtons"
 
-export default async function MuscleDetail({ params }: { params: { muscle_id: string; exercise_id: string } }) {
-  const exerciseId = await getExerciseById(params.exercise_id)
+export default async function MuscleDetail({
+  params,
+}: {
+  params: Promise<{ muscle_id: string; exercise_id: string }>
+}) {
+  const exerciseId = await getExerciseById((await params).exercise_id)
   return (
     <div className="flex flex-col gap-10 mt-10">
       <Image src={VideoCard} alt="" className="h-[680px]" />

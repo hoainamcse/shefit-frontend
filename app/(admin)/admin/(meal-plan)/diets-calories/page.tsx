@@ -51,6 +51,7 @@ export default function DietsCaloriesPage() {
       description: '',
       created_at: '',
       updated_at: '',
+      max_calorie: 0,
     })
   }
 
