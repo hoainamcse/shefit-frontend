@@ -11,19 +11,25 @@ const formatDate = (dateString: string) => {
     year: "numeric",
   }).format(date)
 }
-export default async function About() {
+export default async function About({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
   const userBodyQuizzes = await getUserBodyQuizzesByUserId("1")
-  console.log(userBodyQuizzes)
+  const quizData = userBodyQuizzes.data.find((quiz: any) => quiz.id === Number(slug))
+
+  if (!quizData) {
+    return <div>Không tìm thấy kết quả</div>
+  }
+
   return (
     <div className="flex flex-col gap-10 mt-10 p-10">
       <Image src={VideoCard} alt="" className="h-[680px]" />
       <div className="xl:text-3xl max-lg:text-xl flex flex-col gap-5">
-        <p>Kết quả ngày {formatDate(userBodyQuizzes.data[0].quiz_date)}</p>
+        <p>Kết quả ngày {formatDate(quizData.quiz_date)}</p>
         <p className="text-gray-500">
           Chỉ số <span className="text-text underline">HLV Đánh Giá Phom Dáng</span>
         </p>
         <div className="text-gray-500 xl:text-xl max-lg:base">
-          {userBodyQuizzes.data[0].responses.map((response: string) => (
+          {quizData.responses.map((response: string) => (
             <p key={response}>{response}</p>
           ))}
         </div>
