@@ -57,7 +57,7 @@ export default function Header() {
     {
       label: "Gói Member",
       icon: MemberShipIcon,
-      url: "/membership",
+      url: "/account?tab=buy-package",
     },
     {
       label: "Khoá tập",
