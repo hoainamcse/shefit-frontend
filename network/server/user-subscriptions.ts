@@ -6,7 +6,7 @@ import { revalidateTag } from "next/cache"
 import { UserSubscription } from "@/models/user-subscriptions"
 
 export async function getUserSubscriptions(user_id: string): Promise<ListResponse<UserSubscription>> {
-    const response = await fetchDataServer(`/v1/users/{user_id}/subscriptions?id=${user_id}`, {
+    const response = await fetchDataServer(`/v1/users/${user_id}/subscriptions`, {
         method: 'GET',
         credentials: 'include',
     })
@@ -14,7 +14,7 @@ export async function getUserSubscriptions(user_id: string): Promise<ListRespons
 }
 
 export async function createUserSubscription(data: any, user_id: string): Promise<ApiResponse<any>> {
-    const response = await fetchDataServer(`/v1/users/{user_id}/subscriptions?id=${user_id}`, {
+    const response = await fetchDataServer(`/v1/users/${user_id}/subscriptions`, {
         method: 'POST',
         body: JSON.stringify(data),
         credentials: 'include',

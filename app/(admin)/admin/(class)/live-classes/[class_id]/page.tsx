@@ -1,12 +1,14 @@
 import { ContentLayout } from '@/components/admin-panel/content-layout'
-import { CreateCourseForm } from '@/components/forms/create-course-form'
+import { getCourse } from '@/network/server/courses-admin'
+import LiveClassPageClient from './page-client'
 
 export default async function LiveClassPage({ params }: { params: Promise<{ class_id: string }> }) {
   const { class_id } = await params
+  const data = await getCourse(class_id)
 
   return (
-    <ContentLayout title="Live Class">
-      <CreateCourseForm format="live" />
+    <ContentLayout title="Khoá học Zoom">
+      <LiveClassPageClient data={data} />
     </ContentLayout>
   )
 }

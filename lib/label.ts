@@ -42,6 +42,17 @@ function getDifficultyLevelLabel(level: DifficultyLevel) {
   }
 }
 
+function getVisibleInLabel(visible_in: string) {
+  switch (visible_in) {
+    case 'homepage_section_1':
+      return 'Trang homepage 1'
+    case 'homepage_section_2':
+      return 'Trang homepage 2'
+    case 'main_page':
+      return 'Trang chủ'
+  }
+}
+
 const DIFFICULTY_LEVEL_OPTIONS: { value: DifficultyLevel; label: string }[] = [
   {
     value: 'beginner',
@@ -109,14 +120,33 @@ const FORM_CATEGORIES = ['pear', 'apple', 'rectangle', 'hourglass', 'inverted_tr
 
 const COURSE_FORMATS = ['video', 'live']
 
+const VISIBLE_IN_OPTIONS: { value: string; label: string }[] = [
+  {
+    value: 'homepage_section_1',
+    label: 'Trang homepage 1',
+  },
+  {
+    value: 'homepage_section_2',
+    label: 'Trang homepage 2',
+  },
+  {
+    value: 'main_page',
+    label: 'Trang chủ',
+  },
+]
+
+
+
 export {
   getGoalLabel,
   getFormCategoryLabel,
   getDifficultyLevelLabel,
+  getVisibleInLabel,
   DIFFICULTY_LEVEL_OPTIONS,
   FORM_CATEGORY_OPTIONS,
   DIFFICULTY_LEVELS,
   FORM_CATEGORIES,
   COURSE_FORMATS,
   GOAL_OPTIONS,
+  VISIBLE_IN_OPTIONS,
 }

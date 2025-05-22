@@ -4,8 +4,17 @@ import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { AddButton } from '@/components/buttons/add-button'
 import { MainButton } from '@/components/buttons/main-button'
 import { ColumnDef, DataTable } from '@/components/data-table'
+import { CreateCourseForm } from '@/components/forms/create-course-form'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,185 +23,152 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { Switch } from '@/components/ui/switch'
+import { getFormCategoryLabel } from '@/lib/label'
+import { ListCourse } from '@/models/course-admin'
+import { deleteCourse, getCourses } from '@/network/server/courses-admin'
 import { Copy, Edit, Ellipsis, Eye, Import, Radio, Trash2, Video } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
-type Membership = {
-  id: string
-  name: string
+function CreateCourseDialog({
+  courseFormat,
+  open,
+  setOpen,
+  onSuccess,
+}: {
+  courseFormat: 'video' | 'live'
+  open?: boolean
+  setOpen?: (open: boolean) => void
+  onSuccess?: () => void
+}) {
+  const handleSuccess = () => {
+    if (onSuccess) {
+      onSuccess()
+    }
+    if (setOpen) {
+      setOpen(false)
+    }
+  }
+
+  return (
+    <DialogContent className="max-w-4xl" onInteractOutside={(e) => e.preventDefault()}>
+      <DialogHeader>
+        <DialogTitle>Thêm khoá học</DialogTitle>
+        <DialogDescription>Tạo khoá học {courseFormat === 'video' ? 'Video' : 'Zoom'}</DialogDescription>
+        <ScrollArea className="h-[600px]" type="always">
+          <CreateCourseForm format={courseFormat} isOneOnOne onSuccess={handleSuccess} />
+        </ScrollArea>
+      </DialogHeader>
+    </DialogContent>
+  )
 }
-
-type Trainer = {
-  id: string
-  name: string
-}
-
-type OneOnOneClass = {
-  id: string
-  name: string
-  description: string
-  equipments: string[]
-  muscles: string[]
-  trainer: Trainer
-  level: 'beginner' | 'intermediate' | 'advanced'
-  membership?: Membership
-  type: 'video' | 'live'
-  is_public: boolean
-}
-
-const oneOnOneClasses: OneOnOneClass[] = [
-  {
-    id: '1',
-    name: 'Fitness Trainer',
-    description: 'This is a dumbbell row exercise.',
-    equipments: ['Belt Squat', 'Power Rack'],
-    muscles: ['Trapezius', 'Soleus'],
-    level: 'beginner',
-    trainer: {
-      id: '1',
-      name: 'John Doe',
-    },
-    membership: {
-      id: '1',
-      name: 'Độ mông 4 tuần',
-    },
-    type: 'video',
-    is_public: true,
-  },
-  {
-    id: '2',
-    name: 'Fitness Trainer',
-    description: 'This is a dumbbell row exercise.',
-    equipments: ['Belt Squat', 'Power Rack'],
-    muscles: ['Trapezius', 'Soleus'],
-    level: 'intermediate',
-    trainer: {
-      id: '1',
-      name: 'John Doe',
-    },
-    membership: {
-      id: '1',
-      name: 'Độ mông 4 tuần',
-    },
-    type: 'video',
-    is_public: true,
-  },
-  {
-    id: '3',
-    name: 'Fitness Trainer',
-    description: 'This is a dumbbell row exercise.',
-    equipments: ['Belt Squat', 'Power Rack'],
-    muscles: ['Trapezius', 'Soleus'],
-    level: 'advanced',
-    trainer: {
-      id: '1',
-      name: 'John Doe',
-    },
-    membership: {
-      id: '1',
-      name: 'Độ mông 4 tuần',
-    },
-    type: 'live',
-    is_public: false,
-  },
-  {
-    id: '4',
-    name: 'Fitness Trainer',
-    description: 'This is a dumbbell row exercise.',
-    equipments: ['Belt Squat', 'Power Rack'],
-    muscles: ['Trapezius', 'Soleus'],
-    level: 'beginner',
-    trainer: {
-      id: '1',
-      name: 'John Doe',
-    },
-    membership: {
-      id: '1',
-      name: 'Độ mông 4 tuần',
-    },
-    type: 'video',
-    is_public: true,
-  },
-  {
-    id: '5',
-    name: 'Fitness Trainer',
-    description: 'This is a dumbbell row exercise.',
-    equipments: ['Belt Squat', 'Power Rack'],
-    muscles: ['Trapezius', 'Soleus'],
-    level: 'intermediate',
-    trainer: {
-      id: '1',
-      name: 'John Doe',
-    },
-    membership: {
-      id: '1',
-      name: 'Độ mông 4 tuần',
-    },
-    type: 'live',
-    is_public: true,
-  },
-]
 
 export default function OneOnOneClassesPage() {
   const router = useRouter()
+  const [videoDialogOpen, setVideoDialogOpen] = useState(false)
+  const [liveDialogOpen, setLiveDialogOpen] = useState(false)
 
-  const columns: ColumnDef<OneOnOneClass>[] = [
+  const [oneOnOneClasses, setOneOnOneClasses] = useState<ListCourse[]>([])
+
+  const fetchOneOnOneClasses = async () => {
+    const oneOnOneResponse = await getCourses('', true)
+    setOneOnOneClasses(oneOnOneResponse.data)
+  }
+
+  useEffect(() => {
+    fetchOneOnOneClasses()
+  }, [])
+
+  const handleDelete = async (id: string) => {
+    const response = await deleteCourse(id)
+    if (response.status === 'success') {
+      toast.success('Xoá khoá học thành công')
+      fetchOneOnOneClasses()
+    } else {
+      toast.error('Xoá khoá học thất bại')
+    }
+    //router.refresh()
+  }
+
+  const columns: ColumnDef<ListCourse>[] = [
     {
-      accessorKey: 'name',
+      accessorKey: 'course_name',
       header: 'Tên',
     },
     {
       accessorKey: 'trainer',
       header: 'HLV',
-      render: ({ row }) => row.trainer.name,
     },
+    // {
+    //   accessorKey: 'equipments',
+    //   header: 'Dụng cụ',
+    //   render: ({ row }) => (
+    //     <div className="flex flex-wrap gap-2">
+    //       {row.equipments.map((equipment) => (
+    //         <Badge key={equipment} variant="secondary" className="text-foreground">
+    //           {equipment}
+    //         </Badge>
+    //       ))}
+    //     </div>
+    //   ),
+    // },
+    // {
+    //   accessorKey: 'muscles',
+    //   header: 'Nhóm cơ',
+    //   render: ({ row }) => (
+    //     <div className="flex flex-wrap gap-2">
+    //       {row.muscles.map((muscle) => (
+    //         <Badge key={muscle} variant="secondary" className="text-foreground">
+    //           {muscle}
+    //         </Badge>
+    //       ))}
+    //     </div>
+    //   ),
+    // },
     {
-      accessorKey: 'equipments',
-      header: 'Dụng cụ',
+      accessorKey: 'form_categories',
+      header: 'Dáng',
       render: ({ row }) => (
         <div className="flex flex-wrap gap-2">
-          {row.equipments.map((equipment) => (
-            <Badge key={equipment} variant="secondary" className="text-foreground">
-              {equipment}
+          {row.form_categories.map((category) => (
+            <Badge key={category} variant="secondary" className="text-foreground">
+              {getFormCategoryLabel(category)}
             </Badge>
           ))}
         </div>
       ),
     },
     {
-      accessorKey: 'muscles',
-      header: 'Nhóm cơ',
-      render: ({ row }) => (
-        <div className="flex flex-wrap gap-2">
-          {row.muscles.map((muscle) => (
-            <Badge key={muscle} variant="secondary" className="text-foreground">
-              {muscle}
-            </Badge>
-          ))}
-        </div>
-      ),
-    },
-    {
-      accessorKey: 'level',
-      header: 'Level',
+      accessorKey: 'difficulty_level',
+      header: 'Độ khó',
       render: ({ row }) => (
         <Badge variant="outline" className="capitalize">
-          {row.level}
+          {row.difficulty_level}
         </Badge>
       ),
     },
     {
-      accessorKey: 'membership',
+      accessorKey: 'subscriptions',
       header: 'Membership',
-      render: ({ row }) => row.membership?.name ?? '-',
+      render: ({ row }) => (
+        <div className="flex flex-wrap gap-2">
+          {row.subscriptions.map((subscription) => (
+            <Badge key={subscription.id} variant="secondary" className="text-foreground">
+              {subscription.name}
+            </Badge>
+          ))}
+        </div>
+      ),
     },
     {
-      accessorKey: 'type',
+      accessorKey: 'course_format',
       header: 'Loại',
       render: ({ row }) => (
         <Badge variant="outline" className="capitalize">
-          {row.type}
+          {row.course_format}
         </Badge>
       ),
     },
@@ -216,10 +192,13 @@ export default function OneOnOneClassesPage() {
               <Copy /> Sao chép khoá học ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.push(`/admin/${row.type}-classes/${row.id}`)}>
+            <DropdownMenuItem onClick={() => router.push(`/admin/${row.course_format}-classes/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onClick={() => handleDelete(row.id.toString())}
+            >
               <Trash2 /> Xoá
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -234,11 +213,22 @@ export default function OneOnOneClassesPage() {
           <AddButton text="Thêm khoá học" />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => router.push('/admin/video-classes/new')}>
-            <Video /> Khoá học Video
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault()
+              setVideoDialogOpen(true)
+            }}
+          >
+            <Video className="mr-2 h-4 w-4" /> Khoá học Video
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push('/admin/live-classes/new')}>
-            <Radio /> Khoá học Zoom
+
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault()
+              setLiveDialogOpen(true)
+            }}
+          >
+            <Radio className="mr-2 h-4 w-4" /> Khoá học Zoom
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -264,6 +254,30 @@ export default function OneOnOneClassesPage() {
         columns={columns}
         onSelectChange={() => {}}
       />
+
+      <Dialog open={videoDialogOpen} onOpenChange={setVideoDialogOpen}>
+        <CreateCourseDialog
+          courseFormat="video"
+          open={videoDialogOpen}
+          setOpen={setVideoDialogOpen}
+          onSuccess={() => {
+            setVideoDialogOpen(false)
+            fetchOneOnOneClasses()
+          }}
+        />
+      </Dialog>
+
+      <Dialog open={liveDialogOpen} onOpenChange={setLiveDialogOpen}>
+        <CreateCourseDialog
+          courseFormat="live"
+          open={liveDialogOpen}
+          setOpen={setLiveDialogOpen}
+          onSuccess={() => {
+            setLiveDialogOpen(false)
+            fetchOneOnOneClasses()
+          }}
+        />
+      </Dialog>
     </ContentLayout>
   )
 }

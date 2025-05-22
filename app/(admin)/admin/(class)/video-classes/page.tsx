@@ -1,9 +1,9 @@
 import { Metadata } from 'next'
 
-import { getCourses } from '@/network/server/courses'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 
 import VideoClassesPageClient from './page-client'
+import { getCourses } from '@/network/server/courses-admin'
 
 export const dynamic = 'force-static'
 
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 }
 
 export default async function VideoClassesPage() {
-  const data = await getCourses('video')
+  const data = await getCourses('video', false)
 
   return (
     <ContentLayout title="Khoá học Video">

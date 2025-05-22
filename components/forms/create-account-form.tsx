@@ -44,6 +44,8 @@ import { UserMealPlan } from '@/models/user-meal-plans'
 import { createUserDish, deleteUserDish, getUserDishes } from '@/network/server/user-dishes'
 import { UserDish } from '@/models/user-dishes'
 import PROVINCES from '@/app/(admin)/admin/account/provinceData'
+import { createUserCourse, deleteUserCourse, getUserCourses } from '@/network/server/user-courses'
+import { UserCourse } from '@/models/user-courses'
 
 const accountSchema = z.object({
   id: z.coerce.number().optional(),
@@ -203,6 +205,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
 
   const fetchUserSubscriptions = async (userId: string) => {
     const response = await getUserSubscriptions(userId)
+    console.log('user-subscription', response)
     const subscriptionsWithPlanId = response.data.map((sub: UserSubscription) => {
       // Format API dates
       const formattedSub = {
@@ -262,6 +265,19 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     }
   }
 
+  const fetchUserCourses = async (userId: string) => {
+    try {
+      const response = await getUserCourses(userId)
+
+      if (response?.data?.length > 0) {
+        const course_ids = response.data.map((course: UserCourse) => course.course_id.toString())
+        form.setValue('course_ids', course_ids)
+      }
+    } catch (error) {
+      console.error('Error fetching user courses:', error)
+    }
+  }
+
   useEffect(() => {
     fetchMembershipList()
     fetchMealPlans()
@@ -278,9 +294,10 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
 
   useEffect(() => {
     if (data?.id) {
+      fetchUserCourses(data.id.toString())
+      fetchUserMealPlans(data.id.toString())
       fetchUserExercises(data.id.toString())
       fetchUserDishes(data.id.toString())
-      fetchUserMealPlans(data.id.toString())
     }
   }, [data?.id])
 
@@ -356,6 +373,11 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
         // 5. Handle meal plans
         if (values.meal_plan_ids && values.meal_plan_ids.length > 0) {
           await handleAssignUserMealPlan(values.meal_plan_ids, userId)
+        }
+
+        // 6. Handle courses
+        if (values.course_ids && values.course_ids.length > 0) {
+          await handleAssignUserCourse(values.course_ids, userId)
         }
 
         toast.success('Cập nhật tài khoản thành công')
@@ -475,6 +497,40 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to assign dishes',
+      }
+    }
+  }
+
+  const handleAssignUserCourse = async (
+    courseIds: string[],
+    userId: string
+  ): Promise<{
+    success: boolean
+    error?: string
+  }> => {
+    try {
+      const currentCourses = await getUserCourses(userId)
+      const currentCourseIds = currentCourses.data.map((course: UserCourse) => course.course_id.toString())
+      //Course to add
+      const coursesToAdd = courseIds.filter((id) => !currentCourseIds.includes(id))
+
+      //Course to remove
+      const coursesToRemove = currentCourseIds.filter((id) => !courseIds.includes(id))
+
+      if (coursesToAdd.length > 0) {
+        await Promise.all(coursesToAdd.map((course_id) => createUserCourse({ course_id }, userId)))
+      }
+
+      if (coursesToRemove.length > 0) {
+        await Promise.all(coursesToRemove.map((course_id) => deleteUserCourse(userId, course_id)))
+      }
+
+      return { success: true }
+    } catch (error) {
+      console.error('Error assigning courses:', error)
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to assign courses',
       }
     }
   }
@@ -818,6 +874,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
               label="Khóa học"
               data={courses}
               placeholder="Chọn khóa học"
+              key={`course-select-${form.watch('course_ids')?.length || 0}`}
             />
 
             <FormMultiSelectField

@@ -19,7 +19,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Switch } from '@/components/ui/switch'
 import { ListResponse } from '@/models/response'
-import { Course } from '@/models/course'
 import { getDifficultyLevelLabel, getFormCategoryLabel } from '@/lib/label'
 import {
   Dialog,
@@ -31,11 +30,24 @@ import {
 } from '@/components/ui/dialog'
 import { CreateCourseForm } from '@/components/forms/create-course-form'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { deleteCourse } from '@/network/server/courses-admin'
+import { toast } from 'sonner'
+import { ListCourse } from '@/models/course-admin'
 
-export default function LiveClassesPageClient({ data }: { data: ListResponse<Course> }) {
+export default function LiveClassesPageClient({ data }: { data: ListResponse<ListCourse> }) {
   const router = useRouter()
 
-  const columns: ColumnDef<Course>[] = [
+  const handleDelete = async (id: string) => {
+    const response = await deleteCourse(id)
+    if (response.status === 'success') {
+      toast.success('Xoá khoá học thành công')
+    } else {
+      toast.error('Xoá khoá học thất bại')
+    }
+    //router.refresh()
+  }
+
+  const columns: ColumnDef<ListCourse>[] = [
     {
       accessorKey: 'course_name',
       header: 'Tên',
@@ -68,6 +80,19 @@ export default function LiveClassesPageClient({ data }: { data: ListResponse<Cou
       ),
     },
     {
+      accessorKey: 'subscriptions',
+      header: 'Membership',
+      render: ({ row }) => (
+        <div className="flex flex-wrap gap-2">
+          {row.subscriptions.map((subscription) => (
+            <Badge key={subscription.id} variant="secondary" className="text-foreground">
+              {subscription.name}
+            </Badge>
+          ))}
+        </div>
+      ),
+    },
+    {
       accessorKey: 'is_public',
       header: 'Hiển thị',
       render: ({ row }) => <Switch defaultChecked={row.is_public} />,
@@ -90,7 +115,10 @@ export default function LiveClassesPageClient({ data }: { data: ListResponse<Cou
             <DropdownMenuItem onClick={() => router.push(`/admin/live-classes/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onClick={() => handleDelete(row.id.toString())}
+            >
               <Trash2 /> Xoá
             </DropdownMenuItem>
           </DropdownMenuContent>
