@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Coiny, Encode_Sans_Expanded } from 'next/font/google'
+import { Coiny, Encode_Sans_Semi_Expanded, Signika_Negative } from 'next/font/google'
 import localFont from 'next/font/local'
 
 import './globals.css'
@@ -49,6 +49,12 @@ const bdLifelessGrotesk = localFont({
   weight: '100 900',
 })
 
+const yes = Signika_Negative({
+  display: 'swap',
+  variable: '--font-yes',
+  subsets: ['latin', 'vietnamese'],
+})
+
 const coiny = Coiny({
   weight: '400',
   display: 'swap',
@@ -56,7 +62,7 @@ const coiny = Coiny({
   subsets: ['latin', 'vietnamese'],
 })
 
-const encode = Encode_Sans_Expanded({
+const encode = Encode_Sans_Semi_Expanded({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
   display: 'swap',
   variable: '--font-encode',
@@ -75,7 +81,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${bdLifelessGrotesk.className} ${coiny.variable} ${encode.variable} antialiased`}>
+      <body className={`${yes.className} ${coiny.variable} ${encode.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
           <Toaster richColors position="top-right" />

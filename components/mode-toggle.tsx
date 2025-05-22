@@ -14,7 +14,7 @@ export function ModeToggle() {
     <Tooltip disableHoverableContent>
       <TooltipTrigger asChild>
         <Button
-          className="rounded-full w-8 h-8 bg-background mr-2"
+          className="rounded-full w-8 h-8 bg-background"
           variant="outline"
           size="icon"
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}

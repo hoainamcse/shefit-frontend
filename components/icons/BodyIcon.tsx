@@ -2,7 +2,7 @@ interface BodyIconProps extends React.ComponentPropsWithoutRef<"svg"> {
   size?: number | string;
 }
 
-export function BodyIcon({ size = 40 }: BodyIconProps) {
+export function BodyIcon({ size = 24 }: BodyIconProps) {
   return (
     <svg
       width={size}

@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
+import { MainButton } from "../buttons/main-button"
 import Link from "next/link"
 import { ExerciseYogaIcon } from "@/components/icons/ExerciseYogaIcon"
 import { FoodGrainsIcon } from "@/components/icons/FoodGrainsIcon"
@@ -42,14 +42,10 @@ export default function Header() {
   }
 
   const authButton = isLoggedIn ? (
-    <Link href="/auth/login">
-      <Button onClick={handleLogout} className="rounded-2xl bg-button hover:bg-[#11c296] px-10">
-        Đăng xuất
-      </Button>
-    </Link>
+    <MainButton onClick={handleLogout} className="rounded-full w-44" text="Đăng xuất" variant="secondary" />
   ) : (
     <Link href="/auth/login">
-      <Button className="rounded-2xl bg-button hover:bg-[#11c296] px-10">Đăng nhập</Button>
+      <MainButton className="rounded-full w-44" text="Đăng nhập" />
     </Link>
   )
 
@@ -107,8 +103,8 @@ export default function Header() {
   ]
 
   return (
-    <header className="bg-primary sticky top-0 z-50">
-      <div className="max-w-screen-2xl mx-auto flex justify-between items-center p-3">
+    <header className="bg-primary sticky top-0 inset-x-0 z-50">
+      <div className="container mx-auto flex justify-between items-center p-3">
         <Link href="/">
           <Image src="/logo-light.png" alt="logo-light" width={136} height={40} />
         </Link>
