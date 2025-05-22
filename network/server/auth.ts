@@ -73,3 +73,16 @@ export const handleGoogleCallback = async (params: string): Promise<any> => {
 
     return response.json();
 };
+
+export const changePassword = async (data: any): Promise<any> => {
+    const response = await fetchData("/v1/auth:changePassword", {
+        method: "POST",
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to change password");
+    }
+
+    return response.json();
+};
