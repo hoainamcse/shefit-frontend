@@ -23,6 +23,8 @@ import {
 import { GalleryIcon } from "../icons/GalleryIcon"
 import { StarIcon } from "../icons/StarIcon"
 import { useState, useEffect } from "react"
+import { MemberShipIcon } from "../icons/MemberShipIcon"
+import { FacebookIcon } from "../icons/FacebookIcon"
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -52,6 +54,11 @@ export default function Header() {
   )
 
   const navItems = [
+    {
+      label: "Gói Member",
+      icon: MemberShipIcon,
+      url: "/membership",
+    },
     {
       label: "Khoá tập",
       icon: ExerciseYogaIcon,
@@ -133,7 +140,10 @@ export default function Header() {
                 </Link>
               ))}
             </div>
-            <SheetFooter className="mt-6">{authButton}</SheetFooter>
+            <div className="flex flex-col items-center gap-8 absolute bottom-10 left-1/2 -translate-x-1/2">
+              <SheetFooter className="mt-6">{authButton}</SheetFooter>
+              <FacebookIcon />
+            </div>
           </SheetContent>
         </Sheet>
       </div>
