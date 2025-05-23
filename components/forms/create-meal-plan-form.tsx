@@ -71,7 +71,7 @@ const formSchema = z.object({
         dishes: z.array(dishFormSchema).optional().default([]),
       })
     )
-    .min(1, 'At least one day is required'),
+    .optional(),
   is_public: z.boolean().default(false),
   is_free: z.boolean().default(false),
   free_days: z.coerce.number().optional(),
@@ -380,7 +380,7 @@ export default function CreateMealPlanForm({ isEdit = false, data }: { isEdit: b
       throw new Error('Failed to get meal plan ID')
     }
 
-    if (days.length) {
+    if (days?.length) {
       const daysPayload = days.map(({ image }, index) => ({ day: index + 1, image }))
       const daysResult = await createMealPlanDays(Number(mealPlanId), daysPayload)
       const createdDays = daysResult?.data

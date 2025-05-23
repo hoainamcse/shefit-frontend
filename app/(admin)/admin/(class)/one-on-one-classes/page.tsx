@@ -25,9 +25,10 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Switch } from '@/components/ui/switch'
+import { useDebounced } from '@/hooks/useDebounced'
 import { getFormCategoryLabel } from '@/lib/label'
 import { ListCourse } from '@/models/course-admin'
-import { deleteCourse, getCourses } from '@/network/server/courses-admin'
+import { deleteCourse, getCourses, updateCourse } from '@/network/server/courses-admin'
 import { Copy, Edit, Ellipsis, Eye, Import, Radio, Trash2, Video } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -64,6 +65,20 @@ function CreateCourseDialog({
       </DialogHeader>
     </DialogContent>
   )
+}
+
+const PublicSwitchCell = ({ row }: { row: ListCourse }) => {
+  const [checked, setChecked] = useState(row.is_public)
+  const debouncedUpdate = useDebounced(async (newVal: boolean) => {
+    const res = await updateCourse(row.id.toString(), { ...row, is_public: newVal })
+    if (res.status === 'success') toast.success('Cập nhật hiển thị thành công')
+    else toast.error('Cập nhật hiển thị thất bại')
+  }, 700)
+  const handleChange = (val: boolean) => {
+    setChecked(val)
+    debouncedUpdate(val)
+  }
+  return <Switch checked={checked} onCheckedChange={handleChange} />
 }
 
 export default function OneOnOneClassesPage() {
@@ -175,7 +190,7 @@ export default function OneOnOneClassesPage() {
     {
       accessorKey: 'is_public',
       header: 'Hiển thị',
-      render: ({ row }) => <Switch defaultChecked={row.is_public} />,
+      render: ({ row }) => <PublicSwitchCell row={row} />,
     },
     {
       accessorKey: 'actions',

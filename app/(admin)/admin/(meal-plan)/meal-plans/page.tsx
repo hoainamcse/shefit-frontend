@@ -14,16 +14,34 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Switch } from '@/components/ui/switch'
+import { useDebounced } from '@/hooks/useDebounced'
 import { Calorie } from '@/models/calorie'
 import { Diet } from '@/models/diets'
 import { MealPlan } from '@/models/meal-plans'
 import { getCalories } from '@/network/server/calorie'
 import { getDiets } from '@/network/server/diets'
-import { deleteMealPlan, getListMealPlans } from '@/network/server/meal-plans'
+import { deleteMealPlan, getListMealPlans, getMealPlanDetails, updateMealPlan } from '@/network/server/meal-plans'
 import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useMemo } from 'react'
 import { toast } from 'sonner'
+
+const PublicSwitchCell = ({ mealPlanData }: { mealPlanData: MealPlan }) => {
+  const [checked, setChecked] = useState(mealPlanData.is_public)
+  const debouncedUpdate = useDebounced(async (newVal: boolean) => {
+    const detailMealPlan = await getMealPlanDetails(mealPlanData.id)
+    if (!detailMealPlan.data) return
+    const { calories, ...mealPlan } = detailMealPlan.data
+    const res = await updateMealPlan(mealPlanData.id, { ...mealPlan, calorie_id: calories.id, is_public: newVal })
+    if (res.status === 'success') toast.success('Cập nhật hiển thị thành công')
+    else toast.error('Cập nhật hiển thị thất bại')
+  }, 700)
+  const handleChange = (val: boolean) => {
+    setChecked(val)
+    debouncedUpdate(val)
+  }
+  return <Switch checked={checked} onCheckedChange={handleChange} />
+}
 
 export default function MealPlansPage() {
   const router = useRouter()
@@ -61,7 +79,7 @@ export default function MealPlansPage() {
     {
       accessorKey: 'is_public',
       header: 'Hiển thị',
-      render: ({ row }) => <Switch defaultChecked={row.is_public} />,
+      render: ({ row }) => <PublicSwitchCell mealPlanData={row} />,
     },
     {
       accessorKey: 'actions',

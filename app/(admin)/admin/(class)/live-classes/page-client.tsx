@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Copy, Edit, Ellipsis, Import, Trash2 } from 'lucide-react'
+import { useDebounced } from '@/hooks/useDebounced'
 
 import { AddButton } from '@/components/buttons/add-button'
 import { MainButton } from '@/components/buttons/main-button'
@@ -30,9 +31,23 @@ import {
 } from '@/components/ui/dialog'
 import { CreateCourseForm } from '@/components/forms/create-course-form'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { deleteCourse } from '@/network/server/courses-admin'
+import { deleteCourse, updateCourse } from '@/network/server/courses-admin'
 import { toast } from 'sonner'
 import { ListCourse } from '@/models/course-admin'
+
+const PublicSwitchCell = ({ row }: { row: ListCourse }) => {
+  const [checked, setChecked] = useState(row.is_public)
+  const debouncedUpdate = useDebounced(async (newVal: boolean) => {
+    const res = await updateCourse(row.id.toString(), { ...row, is_public: newVal })
+    if (res.status === 'success') toast.success('Cập nhật hiển thị thành công')
+    else toast.error('Cập nhật hiển thị thất bại')
+  }, 700)
+  const handleChange = (val: boolean) => {
+    setChecked(val)
+    debouncedUpdate(val)
+  }
+  return <Switch checked={checked} onCheckedChange={handleChange} />
+}
 
 export default function LiveClassesPageClient({ data }: { data: ListResponse<ListCourse> }) {
   const router = useRouter()
@@ -95,7 +110,7 @@ export default function LiveClassesPageClient({ data }: { data: ListResponse<Lis
     {
       accessorKey: 'is_public',
       header: 'Hiển thị',
-      render: ({ row }) => <Switch defaultChecked={row.is_public} />,
+      render: ({ row }) => <PublicSwitchCell row={row} />,
     },
     {
       accessorKey: 'actions',
