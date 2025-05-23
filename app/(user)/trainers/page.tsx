@@ -20,7 +20,7 @@ export default async function TrainersPage() {
           <div key={`menu-${index}`} className="flex items-center justify-between">
             {index % 2 === 1 ? (
               <div className="flex max-sm:flex-col items-center gap-20">
-                <div className="bg-primary max-sm:bg-white xl:text-[40px] lg:text-2xl text-gray-500 rounded-[55px] xl:p-10 lg:p-10 md:p-8 sm:p-6 max-sm:text-base">
+                <div className="bg-primary max-sm:bg-white xl:text-4xl lg:text-2xl text-gray-500 rounded-[55px] xl:p-10 lg:p-10 md:p-8 sm:p-6 max-sm:text-base">
                   {coach.description}
                 </div>
                 <div className="text-center">
@@ -44,7 +44,7 @@ export default async function TrainersPage() {
                     <p className="text-gray-500 max-lg:text-sm w-2/3 text-center mx-auto">{coach.detail}</p>
                   </div>
                 </div>
-                <div className="bg-primary max-sm:bg-white xl:text-[40px] lg:text-2xl text-gray-500 rounded-[55px] xl:p-10 lg:p-10 md:p-8 sm:p-6 max-sm:text-base">
+                <div className="bg-primary max-sm:bg-white xl:text-4xl lg:text-2xl text-gray-500 rounded-[55px] xl:p-10 lg:p-10 md:p-8 sm:p-6 max-sm:text-base">
                   {coach.description}
                 </div>
               </div>
