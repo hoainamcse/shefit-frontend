@@ -1,92 +1,28 @@
 import React from "react"
-import Image from "next/image"
-import VideoCard from "@/assets/image/ImageIntro.png"
+import { getConfigurations } from "@/network/server/configuarations"
 
-export default function About() {
+export default async function About() {
+  const response = await getConfigurations("about_us")
+  const aboutUsData = response.data[0]?.data as
+    | {
+        description: string
+        "thumbnail image": string
+      }
+    | undefined
+
+  if (!aboutUsData) {
+    return <div>No data available</div>
+  }
+
   return (
     <div className="flex flex-col gap-10 mt-10 xl:p-10 max-lg:p-0">
-      <Image src={VideoCard} alt="" className="h-[680px]" />
+      <img src={aboutUsData["thumbnail image"]} alt="About Us" className="h-[680px] object-cover w-full" />
       <div>
         <div className="font-[family-name:var(--font-coiny)] xl:text-[40px] text-3xl">Về Shefit</div>
-        <div className="text-gray-500 xl:text-xl max-lg:base font-normal">
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
-          nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad
-          curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam
-          primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
-          penatibus bibendum ad curae consequat.Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin
-          scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis
-          risus pulvinar penatibus bibendum ad curae consequat.Lorem ipsum odor amet, consectetuer adipiscing elit. Ac
-          tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit.
-          Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat.Lorem ipsum odor amet, consectetuer
-          adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc
-          quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. <br />
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
-          nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad
-          curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam
-          primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
-          penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin
-          scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis
-          risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac
-          tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit.
-          Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer
-          adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc
-          quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor
-          amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo
-          sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat.
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
-          nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad
-          curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam
-          primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
-          penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin
-          scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis
-          risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac
-          tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit.
-          Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer
-          adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc
-          quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor
-          amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo
-          sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat.
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
-          nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad
-          curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam
-          primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
-          penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin
-          scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis
-          risus pulvinar penatibus bibendum ad curae consequat. <br />
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
-          nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad
-          curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam
-          primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
-          penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin
-          scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis
-          risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac
-          tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit.
-          Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer
-          adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc
-          quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor
-          amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo
-          sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat.
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
-          nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad
-          curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam
-          primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
-          penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin
-          scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis
-          risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac
-          tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit.
-          Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer
-          adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc
-          quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat. Lorem ipsum odor
-          amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie nascetur justo
-          sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad curae consequat.
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
-          nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus bibendum ad
-          curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam
-          primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
-          penatibus bibendum ad curae consequat. Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin
-          scelerisque proin etiam primis. Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis
-          risus pulvinar penatibus bibendum ad curae consequat.
-        </div>
+        <div
+          className="text-gray-500 xl:text-xl max-lg:base font-normal whitespace-pre-line"
+          dangerouslySetInnerHTML={{ __html: aboutUsData.description.replace(/\n/g, "<br />") }}
+        />
       </div>
     </div>
   )
