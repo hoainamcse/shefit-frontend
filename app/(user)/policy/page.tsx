@@ -1,5 +1,7 @@
 import { getConfigurations } from "@/network/server/configuarations"
 
+export const dynamic = "force-dynamic"
+
 export default async function Policy() {
   const response = await getConfigurations("policy")
   const policyData = response.data[0]?.data as

@@ -1,6 +1,8 @@
 import React from "react"
 import { getConfigurations } from "@/network/server/configuarations"
 
+export const dynamic = "force-dynamic"
+
 export default async function About() {
   const response = await getConfigurations("about_us")
   const aboutUsData = response.data[0]?.data as
