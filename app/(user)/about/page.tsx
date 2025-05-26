@@ -1,5 +1,5 @@
 import React from "react"
-import { getConfigurations } from "@/network/server/configuarations"
+import { getConfigurations } from "@/network/server/configurations"
 
 export const dynamic = "force-dynamic"
 

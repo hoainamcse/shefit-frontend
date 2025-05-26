@@ -10,6 +10,7 @@ type Subscription = {
     id: number
     name: string
     course_format: string
+    course_ids: number[]
     duration: number
     price: number
     gifts: Gift[]

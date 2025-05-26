@@ -17,7 +17,7 @@ export default async function ListCourses() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
             {courses.data.map((course) => (
               <div key={course.id}>
-                <Link href={`/menu/${course.course.id}`}>
+                <Link href={`/courses/${course.course.id}`}>
                   <div>
                     <div className="relative group">
                       <div className="absolute top-4 right-4 z-10">

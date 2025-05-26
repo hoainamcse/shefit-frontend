@@ -2,12 +2,9 @@ import type { Coach } from "@/models/coaches"
 import type { ApiResponse, ListResponse } from "@/models/response"
 import { fetchData } from '../helpers/fetch-data';
 
-export async function getListCoaches(): Promise<ListResponse<Coach>> {
-    const response = await fetchData('/v1/coaches', {
-        next: {
-            revalidate: 0,
-        },
-    })
+export async function getCoaches(query?: any): Promise<ListResponse<Coach>> {
+    const searchParams = new URLSearchParams(query).toString();
+    const response = await fetchData('/v1/coaches?' + searchParams)
     return await response.json()
 }
 

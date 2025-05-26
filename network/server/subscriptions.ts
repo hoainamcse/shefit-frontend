@@ -6,8 +6,9 @@ import { ApiResponse, ListResponse } from "@/models/response"
 import { Subscription } from "@/models/subscriptions"
 import { revalidateTag } from "next/cache"
 
-export async function getSubscriptions(): Promise<ListResponse<Subscription>> {
-    const response = await fetchData("/v1/subscriptions", { next: { tags: ["subscriptions"] } })
+export async function getSubscriptions(query?: any): Promise<ListResponse<Subscription>> {
+    const searchParams = new URLSearchParams(query).toString()
+    const response = await fetchData("/v1/subscriptions/?" + searchParams, { next: { tags: ["subscriptions"] } })
     return await response.json()
 }
 

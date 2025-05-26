@@ -11,7 +11,7 @@ import type { Product } from "@/models/products"
 import FilterCategory from "./_components/FilterCategory"
 import { useEffect, useState } from "react"
 
-export default function ProductPage() {
+export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [colors, setColors] = useState<any[]>([])
   const [categories, setCategories] = useState<any[]>([])
@@ -60,7 +60,7 @@ export default function ProductPage() {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-10">
           {filteredProducts.map((product: Product) => (
-            <Link href={`/equipment/${product.id}`} key={product.id}>
+            <Link href={`/products/${product.id}`} key={product.id}>
               <div key={`menu-${product.id}`} className="text-xl">
                 <div className="relative group">
                   <img

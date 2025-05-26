@@ -19,7 +19,7 @@ import { FormImageInputField } from './fields/form-image-input-field'
 import { createCoach, updateCoach } from '@/network/server/coaches'
 import { useRouter } from 'next/navigation'
 
-const trainerSchema = z.object({
+const coachSchema = z.object({
   name: z.string().min(2, {
     message: 'Name must be at least 2 characters.',
   }),
@@ -32,14 +32,14 @@ const trainerSchema = z.object({
   }),
 })
 
-type FormValues = z.infer<typeof trainerSchema>
+type FormValues = z.infer<typeof coachSchema>
 
-type TrainerFormProps = {
+type CoachFormProps = {
   isEdit: boolean
   data?: Coach
 }
 
-export function CreateTrainerForm({ isEdit, data }: TrainerFormProps) {
+export function CreateCoachForm({ isEdit, data }: CoachFormProps) {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
@@ -52,7 +52,7 @@ export function CreateTrainerForm({ isEdit, data }: TrainerFormProps) {
   }
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(trainerSchema),
+    resolver: zodResolver(coachSchema),
     defaultValues: initialValues,
   })
 

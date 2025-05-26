@@ -22,10 +22,10 @@ import { string } from 'zod'
 import { FormImageInputField } from './fields/form-image-input-field'
 import { FormSelectField } from './fields'
 import { useRouter } from 'next/navigation'
-import { createSubscription, updateSubscription } from '@/network/server/subcriptions-admin'
+import { createSubscription, updateSubscription } from '@/network/server/subscriptions-admin'
 import { createGift } from '@/network/server/gifts'
 import { updateGift } from '@/network/server/gifts'
-import { updateSubscriptionPrice } from '@/network/server/subcriptions'
+import { updateSubscriptionPrice } from '@/network/server/subscriptions'
 
 // Define the form schema
 const formSchema = z.object({

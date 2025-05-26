@@ -6,8 +6,8 @@ import { FormImageInputField } from '@/components/forms/fields/form-image-input-
 import { RichTextEditor } from '@/components/forms/fields/rich-text-editor'
 
 import { Form } from '@/components/ui/form'
-import { ConfigurationItem, ConfigurationsResponse } from '@/models/configurations'
-import { getConfigurations, updateConfigurations } from '@/network/server/configuarations'
+import { Configuration } from '@/models/configuration'
+import { getConfiguration, updateConfiguration } from '@/network/server/configurations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -21,8 +21,10 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
+const aboutUsID = 1
+
 export default function AboutUsPage() {
-  const [aboutUsData, setAboutUsData] = useState<ConfigurationItem>()
+  const [aboutUsData, setAboutUsData] = useState<Configuration>()
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -35,12 +37,12 @@ export default function AboutUsPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await getConfigurations('about_us')
-        if (!result?.data[0]) {
+        const result = await getConfiguration(aboutUsID)
+        if (!result?.data) {
           throw new Error('About Us data not found')
         }
-        setAboutUsData(result.data[0])
-        form.reset(result.data[0].data)
+        setAboutUsData(result.data)
+        form.reset(result.data.data)
       } catch (error) {
         console.error('Error fetching about us data:', error)
         // Optionally handle the error state here
@@ -50,15 +52,15 @@ export default function AboutUsPage() {
     fetchData()
   }, [])
 
-  async function updateAboutUs(id: string, values: FormValues) {
+  async function updateAboutUs(id: number, values: FormValues) {
     if (!aboutUsData?.data) {
       throw new Error('About Us data not found')
     }
-    const updateData: ConfigurationItem = {
+    const updateData: Configuration = {
       ...aboutUsData,
       data: values,
     }
-    const res = await updateConfigurations(id, updateData)
+    const res = await updateConfiguration(id, updateData)
     return res
   }
 
@@ -67,7 +69,7 @@ export default function AboutUsPage() {
       if (!aboutUsData?.id) {
         throw new Error('About Us ID not found')
       }
-      await updateAboutUs(aboutUsData?.id.toString(), values)
+      await updateAboutUs(aboutUsData?.id, values)
       toast.success('Đã cập nhật thành công!')
     } catch (error) {
       toast.error('Failed to create dish')

@@ -1,5 +1,5 @@
 import { ContentLayout } from '@/components/admin-panel/content-layout'
-import { CreateTrainerForm } from '@/components/forms/create-trainer-form'
+import { CreateCoachForm } from '@/components/forms/create-coach-form'
 import { getCoach } from '@/network/server/coaches'
 
 export default async function CreateTrainerPage({ params }: { params: Promise<{ coach_id: string }> }) {
@@ -7,7 +7,7 @@ export default async function CreateTrainerPage({ params }: { params: Promise<{ 
   const coach = await getCoach(coach_id)
   return (
     <ContentLayout title="Cập nhật thông tin huấn luyện viên">
-      <CreateTrainerForm isEdit={true} data={coach.data} />
+      <CreateCoachForm isEdit={true} data={coach.data} />
     </ContentLayout>
   )
 }

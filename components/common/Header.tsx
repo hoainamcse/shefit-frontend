@@ -63,17 +63,17 @@ export default function Header() {
     {
       label: "Thực đơn",
       icon: FoodGrainsIcon,
-      url: "/menu",
+      url: "/meal-plans",
     },
     {
-      label: "Dụng cụ",
+      label: "Sản phẩm",
       icon: GymIcon,
-      url: "/equipment",
+      url: "/products",
     },
     {
       label: "Team HLV",
       icon: FitnessLineIcon,
-      url: "/trainers",
+      url: "/coaches",
     },
     {
       label: "Về Shefit",

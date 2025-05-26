@@ -27,7 +27,7 @@ import { MuscleGroup } from '@/models/muscle-group'
 import { getEquipments } from '@/network/server/equipments'
 import { getMuscleGroups } from '@/network/server/muscle-group'
 import { Subscription } from '@/models/subscription-admin'
-import { getSubscriptions } from '@/network/server/subcriptions-admin'
+import { getSubscriptions } from '@/network/server/subscriptions-admin'
 import { CourseFormat, DetailCourse } from '@/models/course-admin'
 import { createCourse, updateCourse } from '@/network/server/courses-admin'
 

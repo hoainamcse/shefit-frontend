@@ -21,19 +21,23 @@ import {
   SectionTwo,
   SectionThree,
   SectionFour,
-  SectionFive,
   SectionSeven,
   SectionEight,
   SectionNine,
   SectionTen,
   SectionEleven,
-} from "@/app/(user)/home/section";
-import { FormInputField, FormTextareaField } from "@/components/forms/fields";
+} from "@/app/(user)/home/page.server";
+import { SectionFive } from "@/app/(user)/home/page.client";
+import {
+  FormInputField,
+  FormMultiSelectField,
+  FormTextareaField,
+} from "@/components/forms/fields";
 import { useMutation } from "@/hooks/use-mutation";
 import {
   getConfiguration,
   updateConfiguration,
-} from "@/network/server/configuarations";
+} from "@/network/server/configurations";
 import { toast } from "sonner";
 import { formSchema } from "./schema";
 import { useQuery } from "@/hooks/use-query";
@@ -61,7 +65,7 @@ export default function HomepagePage() {
   return <HomepageForm defaultData={data.data.data} />;
 }
 
-function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
+function HomepageForm({ defaultData }: { defaultData: Configuration["data"] }) {
   console.log("Default Data:", defaultData);
   const [activeTab, setActiveTab] = useState("section_1");
 
@@ -193,7 +197,7 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                       <FormTextareaField
                         form={form}
                         name="section_1.description"
-                        label="Description"
+                        label="Mô tả"
                         rows={4}
                       />
                       <FormInputField
@@ -238,7 +242,7 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                       <FormTextareaField
                         form={form}
                         name="section_2.description"
-                        label="Description"
+                        label="Mô tả"
                         rows={4}
                       />
                       {form.watch("section_2.features")?.map((_, index) => (
@@ -280,33 +284,29 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                 <TabsContent value="section_3">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Programs Section</CardTitle>
+                      <CardTitle>Phần: Membership</CardTitle>
                       <CardDescription>
-                        Edit the programs section content.
+                        Chỉnh sửa nội dung phần Membership
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <FormInputField
                         form={form}
                         name="section_3.title"
-                        label="Title"
+                        label="Tiêu đề"
                       />
                       <FormTextareaField
                         form={form}
                         name="section_3.description"
-                        label="Description"
+                        label="Mô tả"
                         rows={4}
                       />
-                      {form
-                        .watch("section_3.membership_ids")
-                        ?.map((_, index) => (
-                          <FormInputField
-                            key={index}
-                            form={form}
-                            name={`section_3.membership_ids.${index}`}
-                            label={`Membership ID ${index + 1}`}
-                          />
-                        ))}
+                      <FormMultiSelectField
+                        form={form}
+                        data={[]}
+                        name={`section_3.membership_ids`}
+                        label={`Membership IDs`}
+                      />
                     </CardContent>
                   </Card>
                 </TabsContent>
@@ -315,21 +315,21 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                 <TabsContent value="section_4">
                   <Card>
                     <CardHeader>
-                      <CardTitle>CTA Section</CardTitle>
+                      <CardTitle>Phần CTA</CardTitle>
                       <CardDescription>
-                        Edit the call-to-action section content.
+                        Chỉnh sửa nội dung phần CTA
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <FormInputField
                         form={form}
                         name="section_4.title"
-                        label="Title"
+                        label="Tiêu đề"
                       />
                       <FormTextareaField
                         form={form}
                         name="section_4.description"
-                        label="Description"
+                        label="Mô tả"
                         rows={4}
                       />
                       <FormInputField
@@ -350,21 +350,21 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                 <TabsContent value="section_5">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Body Types Section</CardTitle>
+                      <CardTitle>Phần: Dáng</CardTitle>
                       <CardDescription>
-                        Edit the body types section content.
+                        Chỉnh sửa nội dung phần Dáng
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <FormInputField
                         form={form}
                         name="section_5.title"
-                        label="Title"
+                        label="Tiêu đề"
                       />
                       <FormTextareaField
                         form={form}
                         name="section_5.description"
-                        label="Description"
+                        label="Mô tả"
                         rows={4}
                       />
 
@@ -385,27 +385,21 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                         <TabsContent value="pear">
                           <Card>
                             <CardHeader>
-                              <CardTitle>Quả đào Body Type</CardTitle>
+                              <CardTitle>Dáng: Quả đào</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                               <FormTextareaField
                                 form={form}
                                 name="section_5.form_category.pear.description"
-                                label="Description"
+                                label="Mô tả"
                                 rows={4}
                               />
-                              {form
-                                .watch(
-                                  "section_5.form_category.pear.course_ids"
-                                )
-                                ?.map((_, index) => (
-                                  <FormInputField
-                                    key={index}
-                                    form={form}
-                                    name={`section_5.form_category.pear.course_ids.${index}`}
-                                    label={`Course ID ${index + 1}`}
-                                  />
-                                ))}
+                              <FormMultiSelectField
+                                form={form}
+                                data={[]}
+                                name={`section_5.form_category.pear.course_ids`}
+                                label={`Khoá tập IDs`}
+                              />
                             </CardContent>
                           </Card>
                         </TabsContent>
@@ -414,27 +408,21 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                         <TabsContent value="apple">
                           <Card>
                             <CardHeader>
-                              <CardTitle>Quả táo Body Type</CardTitle>
+                              <CardTitle>Dáng: Quả táo</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                               <FormTextareaField
                                 form={form}
                                 name="section_5.form_category.apple.description"
-                                label="Description"
+                                label="Mô tả"
                                 rows={4}
                               />
-                              {form
-                                .watch(
-                                  "section_5.form_category.apple.course_ids"
-                                )
-                                ?.map((_, index) => (
-                                  <FormInputField
-                                    key={index}
-                                    form={form}
-                                    name={`section_5.form_category.apple.course_ids.${index}`}
-                                    label={`Course ID ${index + 1}`}
-                                  />
-                                ))}
+                              <FormMultiSelectField
+                                form={form}
+                                data={[]}
+                                name={`section_5.form_category.apple.course_ids`}
+                                label={`Khoá tập IDs`}
+                              />
                             </CardContent>
                           </Card>
                         </TabsContent>
@@ -443,27 +431,21 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                         <TabsContent value="rectangle">
                           <Card>
                             <CardHeader>
-                              <CardTitle>Chữ nhật Body Type</CardTitle>
+                              <CardTitle>Dáng: Chữ nhật</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                               <FormTextareaField
                                 form={form}
                                 name="section_5.form_category.rectangle.description"
-                                label="Description"
+                                label="Mô tả"
                                 rows={4}
                               />
-                              {form
-                                .watch(
-                                  "section_5.form_category.rectangle.course_ids"
-                                )
-                                ?.map((_, index) => (
-                                  <FormInputField
-                                    key={index}
-                                    form={form}
-                                    name={`section_5.form_category.rectangle.course_ids.${index}`}
-                                    label={`Course ID ${index + 1}`}
-                                  />
-                                ))}
+                              <FormMultiSelectField
+                                form={form}
+                                data={[]}
+                                name={`section_5.form_category.rectangle.course_ids`}
+                                label={`Khoá tập IDs`}
+                              />
                             </CardContent>
                           </Card>
                         </TabsContent>
@@ -472,27 +454,21 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                         <TabsContent value="hourglass">
                           <Card>
                             <CardHeader>
-                              <CardTitle>Đồng hồ cát Body Type</CardTitle>
+                              <CardTitle>Dáng: Đồng hồ cát</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                               <FormTextareaField
                                 form={form}
                                 name="section_5.form_category.hourglass.description"
-                                label="Description"
+                                label="Mô tả"
                                 rows={4}
                               />
-                              {form
-                                .watch(
-                                  "section_5.form_category.hourglass.course_ids"
-                                )
-                                ?.map((_, index) => (
-                                  <FormInputField
-                                    key={index}
-                                    form={form}
-                                    name={`section_5.form_category.hourglass.course_ids.${index}`}
-                                    label={`Course ID ${index + 1}`}
-                                  />
-                                ))}
+                              <FormMultiSelectField
+                                form={form}
+                                data={[]}
+                                name={`section_5.form_category.hourglass.course_ids`}
+                                label={`Khoá tập IDs`}
+                              />
                             </CardContent>
                           </Card>
                         </TabsContent>
@@ -501,27 +477,21 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                         <TabsContent value="inverted_triangle">
                           <Card>
                             <CardHeader>
-                              <CardTitle>Tam giác ngược Body Type</CardTitle>
+                              <CardTitle>Dáng: Tam giác ngược</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                               <FormTextareaField
                                 form={form}
                                 name="section_5.form_category.inverted_triangle.description"
-                                label="Description"
+                                label="Mô tả"
                                 rows={4}
                               />
-                              {form
-                                .watch(
-                                  "section_5.form_category.inverted_triangle.course_ids"
-                                )
-                                ?.map((_, index) => (
-                                  <FormInputField
-                                    key={index}
-                                    form={form}
-                                    name={`section_5.form_category.inverted_triangle.course_ids.${index}`}
-                                    label={`Course ID ${index + 1}`}
-                                  />
-                                ))}
+                              <FormMultiSelectField
+                                form={form}
+                                data={[]}
+                                name={`section_5.form_category.inverted_triangle.course_ids`}
+                                label={`Khoá tập IDs`}
+                              />
                             </CardContent>
                           </Card>
                         </TabsContent>
@@ -534,30 +504,28 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                 <TabsContent value="section_7">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Diet Section</CardTitle>
+                      <CardTitle>Phần: Thực đơn</CardTitle>
                       <CardDescription>
-                        Edit the diet section content.
+                        Chỉnh sửa nội dung phần Thực đơn
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <FormInputField
                         form={form}
                         name="section_7.title"
-                        label="Title"
+                        label="Tiêu đề"
                       />
                       <FormInputField
                         form={form}
                         name="section_7.subtitle"
-                        label="Subtitle"
+                        label="Phụ đề"
                       />
-                      {form.watch("section_7.diet_ids")?.map((_, index) => (
-                        <FormInputField
-                          key={index}
-                          form={form}
-                          name={`section_7.diet_ids.${index}`}
-                          label={`Diet ID ${index + 1}`}
-                        />
-                      ))}
+                      <FormMultiSelectField
+                        form={form}
+                        data={[]}
+                        name={`section_7.meal_plan_ids`}
+                        label={`Thực đơn IDs`}
+                      />
                     </CardContent>
                   </Card>
                 </TabsContent>
@@ -566,31 +534,29 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                 <TabsContent value="section_8">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Products Section</CardTitle>
+                      <CardTitle>Phần: Sản phẩm</CardTitle>
                       <CardDescription>
-                        Edit the products section content.
+                        Chỉnh sửa nội dung phần Sản phẩm
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <FormInputField
                         form={form}
                         name="section_8.title"
-                        label="Title"
+                        label="Tiêu đề"
                       />
                       <FormTextareaField
                         form={form}
                         name="section_8.description"
-                        label="Description"
+                        label="Mô tả"
                         rows={4}
                       />
-                      {form.watch("section_8.product_ids")?.map((_, index) => (
-                        <FormInputField
-                          key={index}
-                          form={form}
-                          name={`section_8.product_ids.${index}`}
-                          label={`Product ID ${index + 1}`}
-                        />
-                      ))}
+                      <FormMultiSelectField
+                        form={form}
+                        data={[]}
+                        name={`section_8.product_ids`}
+                        label={`Sản phẩm IDs`}
+                      />
                     </CardContent>
                   </Card>
                 </TabsContent>
@@ -599,20 +565,18 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                 <TabsContent value="section_9">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Coaches Section</CardTitle>
+                      <CardTitle>Phần: HLV</CardTitle>
                       <CardDescription>
-                        Edit the coaches section content.
+                        Chỉnh sửa nội dung phần HLV
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      {form.watch("section_9.coacher_ids")?.map((_, index) => (
-                        <FormInputField
-                          key={index}
-                          form={form}
-                          name={`section_9.coacher_ids.${index}`}
-                          label={`Coach ID ${index + 1}`}
-                        />
-                      ))}
+                      <FormMultiSelectField
+                        form={form}
+                        data={[]}
+                        name={`section_9.coach_ids`}
+                        label={`HLV IDs`}
+                      />
                     </CardContent>
                   </Card>
                 </TabsContent>
@@ -621,9 +585,9 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                 <TabsContent value="section_10">
                   <Card>
                     <CardHeader>
-                      <CardTitle>FAQ Section</CardTitle>
+                      <CardTitle>Phần: FAQ</CardTitle>
                       <CardDescription>
-                        Edit the FAQ section content.
+                        Chỉnh sửa nội dung phần FAQ
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -632,12 +596,12 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                         <FormInputField
                           form={form}
                           name="section_10.top.title"
-                          label="Title"
+                          label="Tiêu đề"
                         />
                         <FormTextareaField
                           form={form}
                           name="section_10.top.description"
-                          label="Description"
+                          label="Mô tả"
                           rows={4}
                         />
                         <FormInputField
@@ -646,17 +610,17 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                           label="Image URL"
                         />
                       </Card>
-                      <Card className="p-4">
+                      <Card className="p-4 space-y-4">
                         <CardTitle className="mb-4">Bottom FAQ</CardTitle>
                         <FormInputField
                           form={form}
                           name="section_10.bottom.title"
-                          label="Title"
+                          label="Tiêu đề"
                         />
                         <FormTextareaField
                           form={form}
                           name="section_10.bottom.description"
-                          label="Description"
+                          label="Mô tả"
                           rows={4}
                         />
                         <FormInputField
@@ -673,9 +637,9 @@ function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
                 <TabsContent value="section_11">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Footer Image Section</CardTitle>
+                      <CardTitle>Phần: Footer Image</CardTitle>
                       <CardDescription>
-                        Edit the footer image section content.
+                        Chỉnh sửa nội dung phần Footer Image
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">

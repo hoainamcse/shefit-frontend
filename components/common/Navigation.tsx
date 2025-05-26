@@ -14,16 +14,16 @@ export default function Navigation() {
           <p className="text-[#8E8E93]">Khóa tập</p>
         </div>
       </Link>
-      <Link href="/menu">
+      <Link href="/meal-plans">
         <div className="flex flex-col items-center gap-1">
           <FoodGrainsIconGray />
           <p className="text-[#8E8E93]">Thực đơn</p>
         </div>
       </Link>
-      <Link href="/equipment">
+      <Link href="/products">
         <div className="flex flex-col items-center gap-1">
           <GymIconGray />
-          <p className="text-[#8E8E93]">Dụng cụ</p>
+          <p className="text-[#8E8E93]">Sản phẩm</p>
         </div>
       </Link>
       <Link href="#">

@@ -1,15 +1,15 @@
-"use client";
-
 import Link from "next/link";
-import { Fragment, useState } from "react";
+import { z } from "zod";
+import { Fragment } from "react";
+import { ArrowRight } from "lucide-react";
 
-import { MainButton } from "@/components/buttons/main-button";
-import { BodyIcon } from "@/components/icons/BodyIcon";
-import { DumbbellIcon } from "@/components/icons/DumbbellIcon";
-import { CupIcon } from "@/components/icons/CupIcon";
 import { cn } from "@/lib/utils";
-import { PersonIcon } from "@/components/icons/PersonIcon";
+import { CupIcon } from "@/components/icons/CupIcon";
+import { BodyIcon } from "@/components/icons/BodyIcon";
 import { ArrowIcon } from "@/components/icons/ArrowIcon";
+import { PersonIcon } from "@/components/icons/PersonIcon";
+import { MainButton } from "@/components/buttons/main-button";
+import { DumbbellIcon } from "@/components/icons/DumbbellIcon";
 import {
   Carousel,
   CarouselContent,
@@ -17,36 +17,15 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { PearIcon } from "@/components/icons/PearIcon";
-import { AppleIcon } from "@/components/icons/AppleIcon";
-import { RectangleIcon } from "@/components/icons/RectangleIcon";
-import { ClockIcon } from "@/components/icons/ClockIcon";
-import { TriangleIcon } from "@/components/icons/TriangleIcon";
-import { ArrowRight } from "lucide-react";
 import { formSchema } from "@/app/(admin)/admin/(content-input)/homepage/schema";
-import { z } from "zod";
+import { getProducts } from "@/network/server/products";
+import { getMealPlans } from "@/network/server/meal-plans";
+import { getSubscriptions } from "@/network/server/subscriptions";
+import { getCourses } from "@/network/server/courses";
+import { getCoaches } from "@/network/server/coaches";
 
 type DataType = z.infer<typeof formSchema>;
 
-export function HomeSection({ data }: { data: any }) {
-  return (
-    <>
-      <SectionOne data={data.section_1} />
-      <SectionTwo data={data.section_2} />
-      <SectionThree data={data.section_3} />
-      <SectionFour data={data.section_4} />
-      <SectionFive data={data.section_5} />
-      <SectionSix />
-      <SectionSeven data={data.section_7} />
-      <SectionEight data={data.section_8} />
-      <SectionNine data={data.section_9} />
-      <SectionTen data={data.section_10} />
-      <SectionEleven data={data.section_11} />
-    </>
-  );
-}
-
-// Done: responsive
 export function SectionOne({ data }: { data: DataType["section_1"] }) {
   return (
     <div className="lg:relative flex flex-col-reverse">
@@ -80,7 +59,6 @@ export function SectionOne({ data }: { data: DataType["section_1"] }) {
   );
 }
 
-// Done: responsive
 export function SectionTwo({ data }: { data: DataType["section_2"] }) {
   return (
     <div className="py-8 lg:py-12">
@@ -130,9 +108,14 @@ export function SectionTwo({ data }: { data: DataType["section_2"] }) {
 }
 
 // Todo: carousel indicator on mobile
-// Done: responsive
-export function SectionThree({ data }: { data: DataType["section_3"] }) {
-  // Todo: Need to get membership data from API with membership_ids
+export async function SectionThree({ data }: { data: DataType["section_3"] }) {
+  const res = await getSubscriptions({
+    ids: data.membership_ids.join(","),
+  });
+
+  const courses = await Promise.all(
+    res.data.map((dt) => getCourses({ ids: dt.course_ids }))
+  );
 
   return (
     <div className="py-8 lg:py-12">
@@ -142,7 +125,7 @@ export function SectionThree({ data }: { data: DataType["section_3"] }) {
           <p className="text-primary">{data.description}</p>
         </div>
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {data.membership_ids.map((membership, mIndex) => (
+          {res.data.map((membership, mIndex) => (
             <div key={mIndex} className="space-y-4">
               <Link href={"#"}>
                 <div
@@ -154,29 +137,27 @@ export function SectionThree({ data }: { data: DataType["section_3"] }) {
                   )}
                 >
                   <PersonIcon />
-                  <span>{membership}</span>
+                  <span>{membership.name}</span>
                   <span className="ml-auto transform transition-transform duration-300 group-hover:translate-x-1">
                     <ArrowIcon size={20} />
                   </span>
                 </div>
               </Link>
               <p className="text-center text-neutral-500">
-                {
-                  "Cho người mới bắt đầu giảm 2-4kg mỡ/ tháng. Tập luyện nhẹ nhàng, kết hợp chế độ dinh dưỡng khoa học, giúp giảm mỡ không mệt mỏi, cắt nét săn chắc"
-                }
+                {membership.description_1}
               </p>
               <Carousel className="mx-4">
                 <CarouselContent>
-                  {Array.from({ length: 3 }).map((_, cIndex) => (
+                  {courses[mIndex].data.map((course, cIndex) => (
                     <CarouselItem
-                      key={cIndex}
+                      key={course.id}
                       className="basis-2/3 lg:basis-full"
                     >
                       <div className="flex flex-col items-center gap-4">
                         <div className="relative w-full overflow-hidden">
                           <img
-                            src={"/temp/homepage-3.jpg"}
-                            alt={"/temp/homepage-3.jpg"}
+                            src={course.cover_image || "/temp/homepage-3.jpg"}
+                            alt={course.course_name}
                             className="rounded-md w-full object-cover aspect-[5/7]"
                           />
                           <div
@@ -188,17 +169,15 @@ export function SectionThree({ data }: { data: DataType["section_3"] }) {
                             )}
                           >
                             <p className="uppercase text-sm lg:text-base font-semibold">
-                              Khởi đầu nhẹ nhàng
+                              {course.course_name}
                             </p>
-                            <p className="text-sm lg:text-base">
-                              Rút 2-4 kg mỡ / tháng
+                            <p className="capitalize text-sm lg:text-base">
+                              {course.difficulty_level}
                             </p>
                           </div>
                         </div>
                         <p className="text-center text-neutral-500">
-                          {
-                            "Lorem Ipsum is simply dummy text of the printing and typesetting industry"
-                          }
+                          {course.description}
                         </p>
                       </div>
                     </CarouselItem>
@@ -215,7 +194,6 @@ export function SectionThree({ data }: { data: DataType["section_3"] }) {
   );
 }
 
-// Done: responsive
 export function SectionFour({ data }: { data: DataType["section_4"] }) {
   return (
     <div className="py-8 lg:py-12">
@@ -237,93 +215,7 @@ export function SectionFour({ data }: { data: DataType["section_4"] }) {
   );
 }
 
-// Todo: responsive
-export function SectionFive({ data }: { data: DataType["section_5"] }) {
-  const formCategories = [
-    {
-      label: "Quả lê",
-      value: "pear",
-      icon: PearIcon,
-    },
-    {
-      label: "Quả táo",
-      value: "apple",
-      icon: AppleIcon,
-    },
-    {
-      label: "Chữ nhật",
-      value: "rectangle",
-      icon: RectangleIcon,
-    },
-    {
-      label: "Đồng hồ cát",
-      value: "hourglass",
-      icon: ClockIcon,
-    },
-    {
-      label: "Tam giác ngược",
-      value: "inverted_triangle",
-      icon: TriangleIcon,
-    },
-  ];
-  const [activeTab, setActiveTab] = useState(formCategories[0].value);
-
-  // Todo: Need to get course data from API with course_ids
-
-  return (
-    <div className="py-8 lg:py-12">
-      <div className="bg-[#FFF3F3]">
-        <div className="container mx-auto py-8 lg:py-12 space-y-8 lg:space-y-10">
-          <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
-            <h2 className="text-2xl lg:text-3xl font-bold">{data.title}</h2>
-            <p className="text-primary">{data.description}</p>
-          </div>
-          <div className="max-w-2xl mx-auto space-y-6">
-            <div className="flex flex-wrap justify-center gap-4">
-              {formCategories.map((category) => {
-                const Icon = category.icon;
-                return (
-                  <button
-                    key={category.value}
-                    className={cn(
-                      "flex items-center gap-2 font-medium rounded-md p-2 text-neutral-500 capitalize",
-                      activeTab === category.value &&
-                        "bg-background text-primary"
-                    )}
-                    onClick={() => setActiveTab(category.value)}
-                  >
-                    <Icon size={32} />
-                    {category.label}
-                  </button>
-                );
-              })}
-            </div>
-            <p className="text-center">
-              {(data.form_category as any)[activeTab].description}
-            </p>
-          </div>
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-              {(data.form_category as any)[activeTab].course_ids.map(
-                (courseId: string) => (
-                  <div
-                    key={courseId}
-                    className="flex bg-neutral-200 p-4 rounded-md"
-                  >
-                    {courseId}
-                  </div>
-                )
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Done: responsive
-function SectionSix() {
+export function SectionSix() {
   return (
     <div className="py-8 lg:py-12">
       <div className="container mx-auto">
@@ -346,9 +238,10 @@ function SectionSix() {
 }
 
 // Todo: carousel indicator
-// Done: responsive
-export function SectionSeven({ data }: { data: DataType["section_7"] }) {
-  // Todo: Need to get diet data from API with diet_ids
+export async function SectionSeven({ data }: { data: DataType["section_7"] }) {
+  const res = await getMealPlans({
+    ids: data.meal_plan_ids.join(","),
+  });
 
   return (
     <div className="py-8 lg:py-12">
@@ -364,17 +257,17 @@ export function SectionSeven({ data }: { data: DataType["section_7"] }) {
         <div className="max-w-6xl mx-auto flex flex-col items-center justify-center gap-4">
           <Carousel>
             <CarouselContent>
-              {data.diet_ids.map((item) => (
-                <CarouselItem key={item} className="basis-2/3 lg:basis-1/3">
+              {res.data.map((item) => (
+                <CarouselItem key={item.id} className="basis-2/3 lg:basis-1/3">
                   <div className="flex flex-col items-center gap-4">
                     <div className="relative w-full overflow-hidden">
                       <img
-                        src="/temp/homepage-4.jpg"
-                        alt={item}
+                        src={item.image || "/temp/homepage-4.jpg"}
+                        alt={item.title}
                         className="rounded-lg w-full object-cover aspect-[4/3]"
                       />
                       <div className="absolute bottom-0 inset-x-0 h-16 bg-[#28282894] flex items-center justify-between text-background rounded-b-lg px-3">
-                        <p className="font-medium">{item}</p>
+                        <p className="font-medium">{item.title}</p>
                         <MainButton
                           size="icon"
                           icon={ArrowRight}
@@ -395,7 +288,7 @@ export function SectionSeven({ data }: { data: DataType["section_7"] }) {
             text="Xem menu"
             className="rounded-full mt-4 w-44"
             size="lg"
-            href="/menu"
+            href="/meal-plans"
           />
         </div>
       </div>
@@ -404,9 +297,15 @@ export function SectionSeven({ data }: { data: DataType["section_7"] }) {
 }
 
 // Todo: carousel indicator
-// Done: responsive
-export function SectionEight({ data }: { data: DataType["section_8"] }) {
-  // Todo: Need to get product data from API with product_ids
+export async function SectionEight({ data }: { data: DataType["section_8"] }) {
+  const res = await getProducts({
+    ids: data.product_ids.join(","),
+  });
+
+  let VND = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
 
   return (
     <div className="py-8 lg:py-12">
@@ -420,19 +319,23 @@ export function SectionEight({ data }: { data: DataType["section_8"] }) {
         <div className="space-y-4">
           <Carousel>
             <CarouselContent>
-              {data.product_ids.map((item, index) => (
-                <CarouselItem key={item} className="basis-2/5 lg:basis-1/6">
-                  <div className="flex flex-col gap-2">
-                    <img
-                      src="/temp/homepage-5.jpg"
-                      alt={item}
-                      className="rounded-2xl w-full object-cover aspect-square"
-                    />
-                    <div>
-                      <p className="text-lg font-medium">{item}</p>
-                      <p className="text-[#00C7BE] font-medium">price_{item}</p>
+              {res.data.map((item, index) => (
+                <CarouselItem key={item.id} className="basis-2/5 lg:basis-1/6">
+                  <Link href={`/products/${item.id}`}>
+                    <div className="flex flex-col gap-2">
+                      <img
+                        src={item.image_urls[0] || "/temp/homepage-5.jpg"}
+                        alt={item.name}
+                        className="rounded-2xl w-full object-cover aspect-square"
+                      />
+                      <div>
+                        <p className="text-lg font-medium">{item.name}</p>
+                        <p className="text-[#00C7BE] font-medium">
+                          {VND.format(item.price)}
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 </CarouselItem>
               ))}
             </CarouselContent>
@@ -444,7 +347,7 @@ export function SectionEight({ data }: { data: DataType["section_8"] }) {
               text="Xem gian hàng"
               className="rounded-full mx-auto w-44"
               size="lg"
-              href="/equipment"
+              href="/products"
             />
           </div>
         </div>
@@ -453,9 +356,10 @@ export function SectionEight({ data }: { data: DataType["section_8"] }) {
   );
 }
 
-// Done: responsive
-export function SectionNine({ data }: { data: DataType["section_9"] }) {
-  // Todo: Need to get coacher data from API with coacher_ids
+export async function SectionNine({ data }: { data: DataType["section_9"] }) {
+  const res = await getCoaches({
+    ids: data.coach_ids.join(","),
+  })
 
   return (
     <div className="py-8 lg:py-12">
@@ -466,7 +370,7 @@ export function SectionNine({ data }: { data: DataType["section_9"] }) {
           </h2>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          {data.coacher_ids.map((coacher, index) => (
+          {res.data.map((coach, index) => (
             <div
               key={index}
               className="flex flex-col items-center justify-center gap-4"
@@ -474,15 +378,15 @@ export function SectionNine({ data }: { data: DataType["section_9"] }) {
               <div className="relative w-40 lg:w-44">
                 <div className="absolute bottom-0 left-0 size-40 lg:size-44 bg-primary rounded-full -z-10" />
                 <img
-                  src="/temp/homepage-6.png"
-                  alt="/temp/homepage-6.png"
+                  src={coach.image || "/temp/homepage-6.png"}
+                  alt={coach.name}
                   className="w-40 lg:w-44 object-cover"
                 />
               </div>
 
               <div className="text-center space-y-2">
-                <p className="text-lg font-medium">{coacher}</p>
-                <p className="text-neutral-500">description_{coacher}</p>
+                <p className="text-lg font-medium">{coach.name}</p>
+                <p className="text-neutral-500">{coach.detail}</p>
                 <MainButton
                   text="Liên hệ"
                   className="rounded-full w-full"
@@ -497,7 +401,6 @@ export function SectionNine({ data }: { data: DataType["section_9"] }) {
   );
 }
 
-// Done: responsive
 export function SectionTen({ data }: { data: DataType["section_10"] }) {
   return (
     <div className="py-8 lg:py-12">
@@ -541,7 +444,6 @@ export function SectionTen({ data }: { data: DataType["section_10"] }) {
   );
 }
 
-// Done: responsive
 export function SectionEleven({ data }: { data: DataType["section_11"] }) {
   return (
     <div className="py-8 lg:py-12">

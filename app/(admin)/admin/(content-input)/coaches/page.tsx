@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { getListCoaches, deleteCoach } from '@/network/server/coaches'
+import { getCoaches, deleteCoach } from '@/network/server/coaches'
 import { Coach } from '@/models/coaches'
 import { DeleteButton } from '@/components/buttons/delete-button'
 import { toast } from 'sonner'
@@ -17,7 +17,7 @@ export default function CoachPage() {
   const [coaches, setCoaches] = useState<Coach[]>([])
 
   const fetchCoaches = async () => {
-    const response = await getListCoaches()
+    const response = await getCoaches()
     setCoaches(response.data || [])
     setLoading(false)
   }

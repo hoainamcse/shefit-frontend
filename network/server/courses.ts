@@ -6,7 +6,13 @@ import type { Course } from '@/models/course'
 import type { ApiResponse, ListResponse } from '@/models/response'
 import { fetchDataServer } from '@/network/helpers/fetch-data-server'
 
-export async function getCourses(format: 'video' | 'live'): Promise<ListResponse<Course>> {
+export async function getCourses(query?: any): Promise<ListResponse<Course>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchDataServer('/v1/courses/?' + searchParams)
+  return await response.json()
+}
+
+export async function getCoursesByType(format: 'video' | 'live'): Promise<ListResponse<Course>> {
   const response = await fetchDataServer(`/v1/courses/?course_format=${format}`, {
     cache: 'force-cache',
     next: {
@@ -49,4 +55,4 @@ export async function getCoursesBySubscriptionId(subscription_id: string): Promi
   })
   return await response.json()
 }
-  
+

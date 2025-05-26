@@ -7,12 +7,9 @@ import { fetchDataServer } from "../helpers/fetch-data-server"
 import { revalidateTag } from "next/cache"
 import type { Dish } from '../../models/dish'
 
-export async function getListMealPlans(): Promise<ListResponse<MealPlan>> {
-    const response = await fetchData('/v1/meal-plans/', {
-        next: {
-            revalidate: 0,
-        },
-    })
+export async function getMealPlans(query?: any): Promise<ListResponse<MealPlan>> {
+    const searchParams = new URLSearchParams(query).toString()
+    const response = await fetchData('/v1/meal-plans/?' + searchParams)
     return await response.json()
 }
 
@@ -56,7 +53,7 @@ export async function createMealPlan(
     revalidateTag(`meal-plans`)
     return await response.json()
   }
-  
+
 
   export async function updateMealPlan(
     meal_plan_id: string,

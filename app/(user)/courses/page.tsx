@@ -8,7 +8,7 @@ import Link from "next/link"
 import React, { useState, useEffect } from "react"
 import Image from "next/image"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { getCourses } from "@/network/server/courses"
+import { getCoursesByType } from "@/network/server/courses"
 import { cn } from "@/lib/utils"
 import {
   DIFFICULTY_LEVEL_OPTIONS,
@@ -17,7 +17,7 @@ import {
   getDifficultyLevelLabel,
 } from "@/lib/label"
 import type { Course, FormCategory } from "@/models/course"
-import { getSubscriptions } from "@/network/server/subcriptions"
+import { getSubscriptions } from "@/network/server/subscriptions"
 import type { Subscription } from "@/models/subscriptions"
 import PopularCoursesCarousel from "./_components/PopularCoursesCarousel"
 
@@ -58,7 +58,7 @@ const NextButton = ({ className }: { className?: string }) => {
 
 export const fetchCache = "default-no-store"
 
-export default function TrainingCoursesPage() {
+export default function CoursesPage() {
   const [difficulty, setDifficulty] = useState("")
   const [formCategory, setFormCategory] = useState("")
   const [subscriptionId, setSubscriptionId] = useState<string | number>("")
@@ -77,8 +77,8 @@ export default function TrainingCoursesPage() {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      const videoCourses = await getCourses("video")
-      const zoomCourses = await getCourses("live")
+      const videoCourses = await getCoursesByType("video")
+      const zoomCourses = await getCoursesByType("live")
       setCourses(videoCourses.data)
       setCoursesZoom(zoomCourses.data)
     }

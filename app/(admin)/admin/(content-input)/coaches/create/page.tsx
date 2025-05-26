@@ -1,10 +1,10 @@
 import { ContentLayout } from '@/components/admin-panel/content-layout'
-import { CreateTrainerForm } from '@/components/forms/create-trainer-form'
+import { CreateCoachForm } from '@/components/forms/create-coach-form'
 
-export default function CreateTrainerPage() {
+export default function CreateCoachPage() {
   return (
     <ContentLayout title="Tạo mới huấn luyện viên">
-      <CreateTrainerForm isEdit={false} />
+      <CreateCoachForm isEdit={false} />
     </ContentLayout>
   )
 }

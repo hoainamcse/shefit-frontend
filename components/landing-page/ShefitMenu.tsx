@@ -43,7 +43,7 @@ export default function Menu() {
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
-      <Link href={"/menu"}>
+      <Link href={"/meal-plans"}>
         <Button className="bg-button hover:bg-[#11c296] flex p-4 mt-16 text-xl mx-auto justify-center rounded-[100px] w-[296px] h-14">
           Xem menu
         </Button>

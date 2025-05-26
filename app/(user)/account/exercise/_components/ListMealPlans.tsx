@@ -25,7 +25,7 @@ export default async function ListMealPlans() {
         <div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
             {mealPlans.data.map((mealPlan) => (
-              <Link href={`/menu/${mealPlan.meal_plan.id}`} key={mealPlan.id}>
+              <Link href={`/meal-plans/${mealPlan.meal_plan.id}`} key={mealPlan.id}>
                 <div key={mealPlan.id}>
                   <div className="relative group">
                     <div className="absolute top-4 right-4 z-10">

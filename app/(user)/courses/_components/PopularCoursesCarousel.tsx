@@ -3,7 +3,7 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import { getCourses } from "@/network/server/courses"
+import { getCoursesByType } from "@/network/server/courses"
 import type { Course } from "@/models/course"
 import Link from "next/link"
 import { getFormCategoryLabel } from "@/lib/label"
@@ -12,7 +12,7 @@ export default function PopularCoursesCarousel() {
 
   useEffect(() => {
     const fetchPopularCourses = async () => {
-      const [videoCourses, liveCourses] = await Promise.all([getCourses("video"), getCourses("live")])
+      const [videoCourses, liveCourses] = await Promise.all([getCoursesByType("video"), getCoursesByType("live")])
 
       const allCourses = [...videoCourses.data, ...liveCourses.data]
       const popular = allCourses.filter((course) => course.is_popular)

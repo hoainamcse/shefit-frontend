@@ -20,7 +20,7 @@ import { Diet } from '@/models/diets'
 import { MealPlan } from '@/models/meal-plans'
 import { getCalories } from '@/network/server/calorie'
 import { getDiets } from '@/network/server/diets'
-import { deleteMealPlan, getListMealPlans, getMealPlanDetails, updateMealPlan } from '@/network/server/meal-plans'
+import { deleteMealPlan, getMealPlans, getMealPlanDetails, updateMealPlan } from '@/network/server/meal-plans'
 import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useMemo } from 'react'
@@ -129,7 +129,7 @@ export default function MealPlansPage() {
 
   useEffect(() => {
     const fetchMealPlans = async () => {
-      const response = await getListMealPlans()
+      const response = await getMealPlans()
       const dietResponse = await getDiets()
       setDietList(dietResponse.data || [])
       setMealPlans(response.data || [])

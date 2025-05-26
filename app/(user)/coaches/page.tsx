@@ -1,11 +1,11 @@
 import React from "react"
-import { getListCoaches } from "@/network/server/coaches"
+import { getCoaches } from "@/network/server/coaches"
 import { Coach } from "@/models/coaches"
 
 export const dynamic = "force-dynamic"
 
-export default async function TrainersPage() {
-  const coaches = await getListCoaches()
+export default async function CoachesPage() {
+  const coaches = await getCoaches()
   return (
     <div>
       <div className="max-w-screen-xl mx-auto">

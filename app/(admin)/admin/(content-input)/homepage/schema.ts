@@ -69,7 +69,7 @@ export const formSchema = z.object({
   section_7: z.object({
     title: z.string(),
     subtitle: z.string(),
-    diet_ids: z.array(z.string()),
+    meal_plan_ids: z.array(z.string()),
   }),
   section_8: z.object({
     title: z.string(),
@@ -77,7 +77,7 @@ export const formSchema = z.object({
     product_ids: z.array(z.string()),
   }),
   section_9: z.object({
-    coacher_ids: z.array(z.string()),
+    coach_ids: z.array(z.string()),
   }),
   section_10: z.object({
     top: z.object({

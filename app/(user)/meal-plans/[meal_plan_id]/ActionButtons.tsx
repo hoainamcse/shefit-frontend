@@ -22,7 +22,7 @@ const handleSaveMealPlan = async (mealPlanId: string) => {
 export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
   return (
     <div className="gap-5 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
-      <Link href={`/menu/${mealPlanId}/detail`} className="w-full">
+      <Link href={`/meal-plans/${mealPlanId}/detail`} className="w-full">
         <Button className="w-full rounded-full text-xl bg-button text-white hover:bg-[#11c296] h-14">Bắt đầu</Button>
       </Link>
       <Button

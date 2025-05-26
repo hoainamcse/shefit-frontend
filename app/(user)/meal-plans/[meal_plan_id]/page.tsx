@@ -7,10 +7,10 @@ import { getMealPlanDetails } from "@/network/server/meal-plans"
 import { createUserMealPlan } from "@/network/server/user-meal-plans"
 import { getGoalLabel } from "@/lib/label"
 import ActionButtons from "./ActionButtons"
-export default async function MenuDetail({ params }: { params: Promise<{ id: string }> }) {
+export default async function MealPlanPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   try {
-    const { id } = await params
-    const { data: mealPlan } = await getMealPlanDetails(id)
+    const { meal_plan_id } = await params
+    const { data: mealPlan } = await getMealPlanDetails(meal_plan_id)
 
     if (!mealPlan) {
       throw new Error("Không tìm thấy thông tin thực đơn")
@@ -24,7 +24,7 @@ export default async function MenuDetail({ params }: { params: Promise<{ id: str
         <div className="flex flex-col items-center justify-center mt-16 max-lg:mt-0 mx-auto p-10 max-w-screen-3xl mb-20">
           <div className="relative w-full">
             <Link
-              href="/menu"
+              href="/meal-plans"
               className="absolute top-0 left-0 mt-8 ml-2 xl:hidden max-lg:block hover:bg-transparent focus:bg-transparent active:bg-transparent"
             >
               <Button className="flex items-center gap-2 text-xl bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent">

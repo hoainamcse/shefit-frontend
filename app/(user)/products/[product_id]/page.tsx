@@ -20,8 +20,8 @@ import { addCart, getCarts } from "@/network/server/cart"
 import { toast } from "sonner"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 
-export default function Equipment({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params)
+export default function ProductPage({ params }: { params: Promise<{ product_id: string }> }) {
+  const { product_id } = use(params)
   const [product, setProduct] = useState<any>(null)
   const [colors, setColors] = useState<any[]>([])
   const [sizes, setSizes] = useState<any[]>([])
@@ -55,7 +55,7 @@ export default function Equipment({ params }: { params: Promise<{ slug: string }
   useEffect(() => {
     async function fetchData() {
       try {
-        const productResponse = await getProduct(slug)
+        const productResponse = await getProduct(product_id)
         setProduct(productResponse.data)
 
         const colorsResponse = await getColors()
@@ -76,7 +76,7 @@ export default function Equipment({ params }: { params: Promise<{ slug: string }
       }
     }
     fetchData()
-  }, [slug])
+  }, [product_id])
 
   if (!product) return <div>Loading...</div>
 

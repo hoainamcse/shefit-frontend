@@ -21,7 +21,7 @@ import { Coupon } from '@/models/coupon'
 import { useEffect, useState } from 'react'
 import { deleteCoupon, getListCoupons } from '@/network/server/coupon'
 import { toast } from 'sonner'
-import { deleteSubscription, getSubscriptions } from '@/network/server/subcriptions-admin'
+import { deleteSubscription, getSubscriptions } from '@/network/server/subscriptions-admin'
 import { Subscription } from '@/models/subscription-admin'
 
 // Helper to map course_format to label

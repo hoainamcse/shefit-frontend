@@ -6,8 +6,9 @@ import { ApiResponse, ListResponse } from "@/models/response"
 import { fetchDataServer } from "../helpers/fetch-data-server"
 import { revalidateTag } from "next/cache"
 
-export async function getProducts(): Promise<ListResponse<Product>> {
-    const response = await fetchData("/v1/products/", {
+export async function getProducts(query?: any): Promise<ListResponse<Product>> {
+    const searchParams = new URLSearchParams(query).toString()
+    const response = await fetchData("/v1/products/?" + searchParams, {
         next: {
             revalidate: 3600,
             tags: ["products"],

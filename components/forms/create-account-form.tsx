@@ -20,7 +20,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { User } from '@/models/user'
 import { calculateMonthsFromDates, generatePassword, generateUsername } from '@/helper/user'
 import { getUsers, updatePassword, updateUser } from '@/network/server/user'
-import { getSubscriptions } from '@/network/server/subcriptions-admin'
+import { getSubscriptions } from '@/network/server/subscriptions-admin'
 import { Subscription } from '@/models/subscription-admin'
 import { UserSubscription } from '@/models/user-subscriptions'
 import {
@@ -31,7 +31,7 @@ import {
 } from '@/network/server/user-subscriptions'
 import { Course } from '@/models/course'
 import { getCoursesBySubscriptionId } from '@/network/server/courses'
-import { getListMealPlans } from '@/network/server/meal-plans'
+import { getMealPlans } from '@/network/server/meal-plans'
 import { getListDishes } from '@/network/server/dish'
 import { MealPlan } from '@/models/meal-plans'
 import { Dish } from '@/models/dish'
@@ -177,7 +177,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
   }
 
   const fetchMealPlans = async () => {
-    const response = await getListMealPlans()
+    const response = await getMealPlans()
     const mealPlans = response.data.map((mealPlan: MealPlan) => ({
       value: String(mealPlan.id),
       label: mealPlan.title,

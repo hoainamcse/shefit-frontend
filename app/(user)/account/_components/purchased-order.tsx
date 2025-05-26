@@ -12,7 +12,7 @@ export default async function PurchasedOrder() {
     return (
       <div className="flex flex-col items-center justify-center mt-20 w-full">
         <p className="text-2xl mb-6 text-center">Bạn chưa có sản phẩm nào, xem sản phẩm của chúng tôi</p>
-        <Link href="/equipment">
+        <Link href="/products">
           <Button className=" h-[60px] w-[586px] bg-button text-white px-6 py-2 rounded-full text-lg transition-colors">
             Mua ngay
           </Button>

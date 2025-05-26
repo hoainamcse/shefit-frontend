@@ -1,6 +1,6 @@
 import Layout from "@/components/common/Layout"
 
-export default async function TrainersLayout({ children }: { children: React.ReactNode }) {
+export default async function CoachesLayout({ children }: { children: React.ReactNode }) {
   //TODO: Use this slug later on for fetching data
   return (
     <Layout>

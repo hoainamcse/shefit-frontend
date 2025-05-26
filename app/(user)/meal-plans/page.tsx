@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import React, { useState, useEffect } from 'react'
-import { getListMealPlans } from '@/network/server/meal-plans'
+import { getMealPlans } from '@/network/server/meal-plans'
 import { GOAL_OPTIONS } from '@/lib/label'
 import type { MealPlan } from '@/models/meal-plans'
 
@@ -52,14 +52,14 @@ const NextButton = ({ href, className }: { href: string; className?: string }) =
   )
 }
 
-export default function MenuPage() {
+export default function MealPlansPage() {
   const [goal, setGoal] = useState('')
   const [calorieCategory, setCalorieCategory] = useState('')
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([])
 
   useEffect(() => {
     const fetchMealPlans = async () => {
-      const response = await getListMealPlans()
+      const response = await getMealPlans()
       setMealPlans(response.data || [])
     }
     fetchMealPlans()
@@ -100,7 +100,7 @@ export default function MenuPage() {
               <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
               <NextButton
                 className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1"
-                href={`/menu/${mealPlan.id}`}
+                href={`/meal-plans/${mealPlan.id}`}
               />
             </div>
             <p className="font-medium">{mealPlan.title}</p>
