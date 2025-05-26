@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import Image from "next/image"
-import { getSubscriptions } from "@/network/server/subcriptions"
+import { getSubscriptions } from "@/network/server/subscriptions"
 
 export default async function PurchasePackage() {
   const subscriptions = await getSubscriptions()

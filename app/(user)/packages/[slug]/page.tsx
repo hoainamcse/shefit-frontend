@@ -1,12 +1,12 @@
 import Image from "next/image"
 import { BackIcon } from "@/components/icons/BackIcon"
 import { Checkbox } from "@/components/ui/checkbox"
-import { getSubscription } from "@/network/server/subcriptions"
+import { getSubscription } from "@/network/server/subscriptions"
 import { PackagePayment } from "./package-payment"
 import Link from "next/link"
 
-export default async function PackageDetail({ params }: { params: { slug: string } }) {
-  const subscription = await getSubscription(Number(params.slug))
+export default async function PackageDetail({ params }: { params: Promise<{ slug: string }> }) {
+  const subscription = await getSubscription(Number((await params).slug))
 
   return subscription.data ? (
     <div className="flex">
