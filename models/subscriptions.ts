@@ -13,6 +13,11 @@ type Subscription = {
     course_ids: number[]
     duration: number
     price: number
+    prices: {
+        id: number
+        duration: number
+        price: number
+    }[]
     gifts: Gift[]
     cover_image: string
     thumbnail_image: string
