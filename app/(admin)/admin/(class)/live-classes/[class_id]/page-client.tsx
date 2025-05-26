@@ -21,6 +21,16 @@ import { ApiResponse } from '@/models/response'
 import { TimePicker } from '@/components/ui/time-picker'
 import { CreateCourseForm } from '@/components/forms/create-course-form'
 import { MainButton } from '@/components/buttons/main-button'
+import {
+  createDaySession,
+  createLiveDay,
+  deleteDaySession,
+  deleteLiveDay,
+  getLives,
+  updateDaySession,
+  updateLiveDay,
+} from '@/network/server/live-admin'
+import { Session } from '@/models/live-admin'
 
 // Define the schema for sessions
 const sessionSchema = z.object({
@@ -37,19 +47,24 @@ const sessionSchema = z.object({
 const daySchema = z.object({
   id: z.number().optional(),
   day_of_week: z.string(),
+  start_time: z.string().optional(),
+  end_time: z.string().optional(),
   description: z.string().optional(),
-  sessions: z.array(sessionSchema),
+  sessions: z.array(sessionSchema).optional(),
 })
 
 // Define the schema for the course structure form
 const courseStructureSchema = z.object({
-  days: z.array(daySchema),
+  days: z.array(daySchema).optional(),
 })
 
 // Define the type for the form data
 type CourseStructureFormData = z.infer<typeof courseStructureSchema>
 
 export default function LiveClassPageClient({ data }: { data: any }) {
+  // Get the class ID from the URL params
+  const params = useParams()
+  const router = useRouter()
   // State for tracking selected day index
   const [selectedDayIndex, setSelectedDayIndex] = useState<number | null>(0)
   const [activeTab, setActiveTab] = useState('basic')
@@ -77,6 +92,30 @@ export default function LiveClassPageClient({ data }: { data: any }) {
     },
   })
 
+  const {
+    formState: { isSubmitting },
+  } = form
+
+  useEffect(() => {
+    const fetchCourseStructure = async () => {
+      try {
+        setIsLoading(true)
+        const courseId = params.class_id as string
+        const response = await getLives(courseId)
+        if (response.data) {
+          form.reset({ days: response.data })
+          setUsedDays(response.data.map((day) => day.day_of_week))
+        }
+      } catch (error) {
+        console.error('Error fetching course structure:', error)
+        toast.error('Failed to load course structure')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchCourseStructure()
+  }, [params.class_id])
+
   // Get days field array from the form
   const {
     fields: dayFields,
@@ -87,11 +126,6 @@ export default function LiveClassPageClient({ data }: { data: any }) {
     control: form.control,
     name: 'days',
   })
-
-  // Get the class ID from the URL params
-  const params = useParams()
-  const router = useRouter()
-  const classId = params.class_id as string
 
   // Function to select a day
   const selectDay = (dayIndex: number) => {
@@ -108,6 +142,8 @@ export default function LiveClassPageClient({ data }: { data: any }) {
 
     appendDay({
       day_of_week: dayOfWeek,
+      start_time: '09:00',
+      end_time: '10:00',
       description: '',
       sessions: [],
     })
@@ -121,8 +157,9 @@ export default function LiveClassPageClient({ data }: { data: any }) {
 
   // Function to add a new session to a day
   const addSession = (dayIndex: number) => {
-    const day = form.getValues().days[dayIndex]
-    if (day) {
+    const day = form.getValues()?.days?.[dayIndex]
+    if (!day) return
+    if (day.sessions) {
       const updatedDay = {
         ...day,
         sessions: [
@@ -143,27 +180,28 @@ export default function LiveClassPageClient({ data }: { data: any }) {
 
   // Function to remove a day
   const handleRemoveDay = (dayIndex: number) => {
-    const day = form.getValues().days[dayIndex]
-    if (day) {
-      // Update the used days to remove this day
-      setUsedDays((prev) => prev.filter((d) => d !== day.day_of_week))
+    const day = form.getValues()?.days?.[dayIndex]
+    if (!day) return
 
-      // Remove the day
-      removeDay(dayIndex)
+    // Update the used days to remove this day
+    setUsedDays((prev) => prev.filter((d) => d !== day.day_of_week))
 
-      // Update selected day index
-      if (selectedDayIndex === dayIndex) {
-        setSelectedDayIndex(dayFields.length > 1 ? 0 : null)
-      } else if (selectedDayIndex !== null && selectedDayIndex > dayIndex) {
-        setSelectedDayIndex(selectedDayIndex - 1)
-      }
+    // Remove the day
+    removeDay(dayIndex)
+
+    // Update selected day index
+    if (selectedDayIndex === dayIndex) {
+      setSelectedDayIndex(dayFields.length > 1 ? 0 : null)
+    } else if (selectedDayIndex !== null && selectedDayIndex > dayIndex) {
+      setSelectedDayIndex(selectedDayIndex - 1)
     }
   }
 
   // Function to remove a session from a day
   const removeSession = (dayIndex: number, sessionIndex: number) => {
-    const day = form.getValues().days[dayIndex]
-    if (day) {
+    const day = form.getValues()?.days?.[dayIndex]
+    if (!day) return
+    if (day.sessions) {
       const updatedSessions = [...day.sessions]
       updatedSessions.splice(sessionIndex, 1)
 
@@ -182,8 +220,120 @@ export default function LiveClassPageClient({ data }: { data: any }) {
 
   // Function to handle form submission
   const onSubmit = async (formData: CourseStructureFormData) => {
-    console.log('Form submitted:', formData)
-    toast.success('Form submitted successfully')
+    try {
+      const courseId = params.class_id as string
+      const toastId = toast.loading('Updating course structure...')
+
+      let existingDaysResponse
+      try {
+        existingDaysResponse = await getLives(courseId)
+      } catch (error) {
+        console.error(`Error fetching days:`, error)
+        existingDaysResponse = { data: [] }
+      }
+      const existingDays = existingDaysResponse.data || []
+
+      // Track processed days to identify deleted ones
+      const processedDayIds = new Set()
+
+      if (!formData.days) {
+        formData.days = []
+      }
+
+      // Process days for this week
+      for (const day of formData.days) {
+        // Format day data
+        const dayData = {
+          day_of_week: day.day_of_week,
+          start_time: day.start_time,
+          end_time: day.end_time,
+          description: day.description,
+        }
+
+        // Check if day exists
+        const existingDay = existingDays.find((d) => d.id === day.id)
+
+        let dayResult
+        if (!day.id) {
+          // Create new day
+          dayResult = await createLiveDay(courseId, dayData)
+        } else if (existingDay) {
+          // Update existing day
+          processedDayIds.add(day.id)
+          dayResult = await updateLiveDay(courseId, day.id.toString(), dayData)
+        } else {
+          // Skip this day as it doesn't exist and doesn't need to be created
+          continue
+        }
+
+        if (!dayResult.data) {
+          console.error('Failed to create/update day:', dayResult)
+          continue
+        }
+
+        const dayId = dayResult.data?.id?.toString()
+
+        // Get existing circuits for this day
+        let existingSessions: Session[] = []
+        try {
+          existingSessions = existingDays.find((d) => d.id === day.id)?.sessions || []
+        } catch (error) {
+          console.error(`Error fetching sessions for day ${dayId}:`, error)
+          existingSessions = []
+        }
+
+        // Track processed sessions to identify deleted ones
+        const processedSessionIds = new Set()
+
+        // Process sessions for this day
+        for (const session of day.sessions || []) {
+          // Format session data
+          const sessionData = {
+            session_number: session.session_number,
+            name: session.name,
+            description: session.description || '',
+            start_time: session.start_time,
+            end_time: session.end_time,
+            link_zoom: session.link_zoom,
+          }
+
+          // Check if session exists
+          const existingSession = existingSessions.find((s) => s.id === session.id)
+
+          if (!session.id && dayId) {
+            // Create new session
+            await createDaySession(courseId, dayId, sessionData)
+          } else if (existingSession && dayId) {
+            // Update existing circuit
+            processedSessionIds.add(session.id)
+            await updateDaySession(courseId, dayId, session.id!.toString(), sessionData)
+          }
+        }
+
+        // Delete sessions that were removed
+        for (const existingSession of existingSessions) {
+          if (!processedSessionIds.has(existingSession.id)) {
+            await deleteDaySession(courseId, dayId!, existingSession.id!.toString())
+          }
+        }
+      }
+
+      // Delete days that were removed
+      for (const existingDay of existingDays) {
+        if (!processedDayIds.has(existingDay.id)) {
+          await deleteLiveDay(courseId, existingDay.id!.toString())
+        }
+      }
+
+      toast.dismiss(toastId)
+      toast.success('Course structure updated successfully')
+
+      // Refresh the page to show updated data
+      router.refresh()
+    } catch (error) {
+      console.error('Error updating course structure:', error)
+      toast.error('Failed to update course structure')
+    }
   }
 
   // Get the currently selected day
@@ -192,6 +342,7 @@ export default function LiveClassPageClient({ data }: { data: any }) {
   // Render the component
   return (
     <div className="space-y-6">
+      {isSubmitting && <div className="fixed inset-0 bg-white/50 backdrop-blur-sm z-50" />}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="basic">Basic Details</TabsTrigger>
@@ -418,7 +569,7 @@ export default function LiveClassPageClient({ data }: { data: any }) {
                       </div>
                     </div>
 
-                    <MainButton text="Lưu cấu trúc khoá học" type="submit" className="w-full" disabled={isLoading} />
+                    <MainButton text="Lưu cấu trúc khoá học" type="submit" className="w-full" disabled={isSubmitting} />
                   </form>
                 </Form>
               )}
