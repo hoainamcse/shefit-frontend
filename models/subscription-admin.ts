@@ -16,6 +16,7 @@ type Subscription = {
     id: number
     name: string
     course_format: 'video' | 'live' | 'both'
+    course_ids: number[]
     prices: Price[]
     gifts: Gift[]
     cover_image: string

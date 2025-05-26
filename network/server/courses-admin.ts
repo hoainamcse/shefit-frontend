@@ -6,19 +6,21 @@ import type { DetailCourse, ListCourse } from '@/models/course-admin'
 import type { ApiResponse, ListResponse } from '@/models/response'
 import { fetchDataServer } from '@/network/helpers/fetch-data-server'
 
-export async function getCourses(format: 'video' | 'live' | '', isOneOnOne: boolean): Promise<ListResponse<ListCourse>> {
-  let url = ''
-  if (format === '') {
-    url = `/v1/courses/?is_one_on_one=${isOneOnOne}`
-  } else {
-    url = `/v1/courses/?course_format=${format}&is_one_on_one=${isOneOnOne}`
-  }
+export async function getCourses(
+  format?: 'video' | 'live',
+  isOneOnOne?: boolean
+): Promise<ListResponse<ListCourse>> {
+  // Build query parameters dynamically
+  const params = new URLSearchParams()
+  if (format) params.append('course_format', format)
+  if (isOneOnOne !== undefined) params.append('is_one_on_one', String(isOneOnOne))
+  const query = params.toString()
+  const url = `/v1/courses/${query ? `?${query}` : ''}`
 
   const response = await fetchDataServer(url, {
-    // cache: 'force-cache',
     next: {
       revalidate: 0,
-      tags: [`courses:${format}`],
+      tags: [format ? `courses:${format}` : 'courses'],
     },
   })
   return await response.json()
@@ -75,5 +77,3 @@ export async function deleteCourse(course_id: string): Promise<ApiResponse<any>>
   revalidateTag(`courses:${course_id}`)
   return await response.json()
 }
-  
-  

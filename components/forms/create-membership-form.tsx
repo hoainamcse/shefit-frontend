@@ -4,7 +4,7 @@ import * as React from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, useFieldArray } from 'react-hook-form'
 import * as z from 'zod'
-import { useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -20,13 +20,13 @@ import { Card, CardContent } from '../ui/card'
 import { Subscription } from '@/models/subscription-admin'
 import { string } from 'zod'
 import { FormImageInputField } from './fields/form-image-input-field'
-import { FormSelectField } from './fields'
+import { FormMultiSelectField, FormSelectField } from './fields'
 import { useRouter } from 'next/navigation'
 import { createSubscription, updateSubscription } from '@/network/server/subscriptions-admin'
 import { createGift } from '@/network/server/gifts'
 import { updateGift } from '@/network/server/gifts'
 import { updateSubscriptionPrice } from '@/network/server/subscriptions'
-
+import { getCourses } from '@/network/server/courses-admin'
 // Define the form schema
 const formSchema = z.object({
   name: z.string().min(3, {
@@ -35,6 +35,7 @@ const formSchema = z.object({
   course_format: z.enum(['video', 'live', 'both'], {
     required_error: 'Vui lòng chọn loại hình.',
   }),
+  course_ids: z.array(z.string()).optional(),
   description_1: z.string().min(10, {
     message: 'Mô tả phải có ít nhất 10 ký tự.',
   }),
@@ -78,21 +79,47 @@ const AVAILABLE_COURSE_FORMATS = [
 
 export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
   const [isPending, startTransition] = useTransition()
+  const [courseList, setCourseList] = useState<any[]>([])
+
   const router = useRouter()
+
+  const AVAILABLE_COURSES = useMemo(
+    () => courseList.map((course) => ({ value: course.id.toString(), label: course.course_name })),
+    [courseList]
+  )
+
+  const fetchCourses = async (format?: 'video' | 'live' | 'both') => {
+    console.log('format', format)
+    if (format === 'both') {
+      const response = await getCourses()
+      setCourseList(response.data || [])
+      console.log('both', response)
+    } else {
+      const response = await getCourses(format)
+      console.log('format', response)
+      setCourseList(response.data || [])
+    }
+  }
 
   // Initialize the form with default values
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: data || {
-      name: '',
-      course_format: 'video',
-      prices: [],
-      gifts: [],
-      cover_image: '',
-      thumbnail_image: '',
-      description_1: '',
-      description_2: '',
-    },
+    defaultValues: data
+      ? {
+          ...data,
+          course_ids: data.course_ids.map((courseId) => courseId.toString()),
+        }
+      : {
+          name: '',
+          course_format: 'video',
+          course_ids: [],
+          prices: [],
+          gifts: [],
+          cover_image: '',
+          thumbnail_image: '',
+          description_1: '',
+          description_2: '',
+        },
   })
 
   // Setup field arrays for gifts and prices
@@ -129,6 +156,12 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
       duration: 1,
     })
   }
+
+  const courseFormat = form.watch('course_format')
+
+  useEffect(() => {
+    fetchCourses(courseFormat)
+  }, [courseFormat])
 
   async function onSubmit(values: FormValues) {
     startTransition(async () => {
@@ -216,6 +249,15 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                 label="Loại hình"
                 data={AVAILABLE_COURSE_FORMATS}
                 placeholder="Chọn loại hình"
+                withAsterisk
+              />
+
+              <FormMultiSelectField
+                form={form}
+                name="course_ids"
+                label="Danh sách khoá học"
+                data={AVAILABLE_COURSES}
+                placeholder="Chọn khoá học"
                 withAsterisk
               />
 

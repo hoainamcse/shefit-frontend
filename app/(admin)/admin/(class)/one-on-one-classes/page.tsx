@@ -89,7 +89,7 @@ export default function OneOnOneClassesPage() {
   const [oneOnOneClasses, setOneOnOneClasses] = useState<ListCourse[]>([])
 
   const fetchOneOnOneClasses = async () => {
-    const oneOnOneResponse = await getCourses('', true)
+    const oneOnOneResponse = await getCourses(undefined, true)
     setOneOnOneClasses(oneOnOneResponse.data)
   }
 
