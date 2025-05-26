@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
 import { type UseFormReturn, type FieldValues, type Path } from 'react-hook-form'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -40,36 +39,42 @@ function RichTextEditor<
       name={name}
       render={({ field }) => {
         const quillRef = React.useRef<HTMLDivElement | null>(null)
-        const editorRef = React.useRef<Quill | null>(null)
+        const editorRef = React.useRef<any>(null)
 
         React.useEffect(() => {
-          if (quillRef.current && !editorRef.current) {
-            editorRef.current = new Quill(quillRef.current, {
-              theme: 'snow',
-              placeholder,
-              modules: {
-                toolbar: [
-                  [{ header: [1, 2, 3, 4, 5, 6, false] }],
-                  ['bold', 'italic', 'underline', 'strike'],
-                  [{ color: [] }, { background: [] }],
-                  [{ align: [] }],
-                  [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
-                  [{ indent: '-1' }, { indent: '+1' }],
-                  ['blockquote', 'code-block'],
-                  ['link', 'image', 'video'],
-                  ['clean'],
-                ],
-              },
-            })
-            editorRef.current.on('text-change', () => {
-              field.onChange(editorRef.current!.root.innerHTML)
-            })
-            // Set initial value
-            editorRef.current.root.innerHTML = field.value || ''
-          }
-          // Keep value in sync
-          if (editorRef.current && editorRef.current.root.innerHTML !== field.value) {
-            editorRef.current.root.innerHTML = field.value || ''
+          let isMounted = true
+          import('quill').then((QuillModule) => {
+            if (!isMounted) return
+            const Quill = QuillModule.default
+            if (quillRef.current && !editorRef.current) {
+              editorRef.current = new Quill(quillRef.current, {
+                theme: 'snow',
+                placeholder,
+                modules: {
+                  toolbar: [
+                    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ color: [] }, { background: [] }],
+                    [{ align: [] }],
+                    [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
+                    [{ indent: '-1' }, { indent: '+1' }],
+                    ['blockquote', 'code-block'],
+                    ['link', 'image', 'video'],
+                    ['clean'],
+                  ],
+                },
+              })
+              editorRef.current.on('text-change', () => {
+                field.onChange(editorRef.current.root.innerHTML)
+              })
+              editorRef.current.root.innerHTML = field.value || ''
+            }
+            if (editorRef.current && editorRef.current.root.innerHTML !== field.value) {
+              editorRef.current.root.innerHTML = field.value || ''
+            }
+          })
+          return () => {
+            isMounted = false
           }
         }, [field.value, field.onChange, placeholder])
 

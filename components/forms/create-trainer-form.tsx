@@ -14,25 +14,21 @@ import { toast } from 'sonner'
 import { MainButton } from '@/components/buttons/main-button'
 import { FormInputField } from './fields/form-input-field'
 import { FormTextareaField } from './fields'
-
-export interface Trainer {
-  id?: string
-  name: string
-  quote: string
-  image?: string | File[]
-  specialty: string
-}
+import { Coach } from '@/models/coaches'
+import { FormImageInputField } from './fields/form-image-input-field'
+import { createCoach, updateCoach } from '@/network/server/coaches'
+import { useRouter } from 'next/navigation'
 
 const trainerSchema = z.object({
   name: z.string().min(2, {
     message: 'Name must be at least 2 characters.',
   }),
-  quote: z.string().min(100, {
-    message: 'Quote must be at least 100 characters.',
+  description: z.string().min(10, {
+    message: 'Description must be at least 10 characters.',
   }),
-  image: z.array(z.instanceof(File)).length(1, { message: 'Must upload exactly 1 image.' }),
-  specialty: z.string().min(2, {
-    message: 'Specialty must be at least 2 characters.',
+  image: z.string().url().min(1, { message: 'Image is required' }),
+  detail: z.string().min(10, {
+    message: 'Detail must be at least 10 characters.',
   }),
 })
 
@@ -40,18 +36,19 @@ type FormValues = z.infer<typeof trainerSchema>
 
 type TrainerFormProps = {
   isEdit: boolean
-  data?: Trainer
+  data?: Coach
 }
 
 export function CreateTrainerForm({ isEdit, data }: TrainerFormProps) {
   const [isPending, startTransition] = useTransition()
+  const router = useRouter()
 
   // Convert the image URL to File[] if in edit mode and data exists
-  const initialValues: Partial<FormValues> = {
-    name: data?.name || '',
-    quote: data?.quote || '',
-    image: Array.isArray(data?.image) ? data.image : [],
-    specialty: data?.specialty || '',
+  const initialValues: Partial<FormValues> = data || {
+    name: '',
+    description: '',
+    image: '',
+    detail: '',
   }
 
   const form = useForm<FormValues>({
@@ -62,18 +59,23 @@ export function CreateTrainerForm({ isEdit, data }: TrainerFormProps) {
   async function onSubmit(values: FormValues) {
     startTransition(async () => {
       try {
-        // For demonstration purposes, just log the values
-        console.log(values)
-
         if (!isEdit) {
-          // TODO: Implement API call to create blog
-          toast.success('Blog created successfully!')
+          const coachResult = await createCoach(values)
+          if (coachResult.status === 'success') {
+            toast.success('Tạo huấn luyện viên thành công')
+            router.push('/admin/coach')
+          }
         } else {
-          // TODO: Implement API call to update blog
-          toast.success('Blog updated successfully!')
+          if (data?.id) {
+            const coachResult = await updateCoach(data.id.toString(), values)
+            if (coachResult.status === 'success') {
+              toast.success('Cập nhật huấn luyện viên thành công')
+            }
+          }
         }
       } catch (error) {
-        toast.error(`Failed to ${!isEdit ? 'create' : 'update'} blog`)
+        console.error('Error:', error)
+        toast.error(isEdit ? 'Cập nhật bài viết thất bại' : 'Tạo bài viết thất bại')
       }
     })
   }
@@ -82,31 +84,10 @@ export function CreateTrainerForm({ isEdit, data }: TrainerFormProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormInputField form={form} name="name" label="Tên" required placeholder="Nhập tên huấn luyện viên" />
-        <FormTextareaField form={form} name="quote" label="Quote" required placeholder="Nhập quote" />
-        <FormInputField form={form} name="specialty" label="Chuyên môn" required placeholder="Nhập chuyên môn" />
-        <FormField
-          control={form.control}
-          name="image"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Hình ảnh</FormLabel>
-              <FormControl>
-                <FileUploader
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  maxFileCount={1}
-                  accept={{
-                    'image/*': [],
-                  }}
-                  disabled={isPending}
-                />
-              </FormControl>
-              <FormDescription>Tải lên hình ảnh minh họa cho bài viết</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <MainButton text={!isEdit ? 'Tạo mới' : 'Lưu'} type="submit" disabled={isPending} />
+        <FormInputField form={form} name="detail" label="Chuyên môn" required placeholder="Nhập chuyên môn" />
+        <FormTextareaField form={form} name="description" label="Quote" required placeholder="Nhập quote" />
+        <FormImageInputField form={form} name="image" label="Hình ảnh" />
+        <MainButton text={!isEdit ? 'Tạo mới' : 'Lưu'} type="submit" loading={isPending} />
       </form>
     </Form>
   )

@@ -49,7 +49,7 @@ export function getMenuList(pathname: string): Group[] {
               label: 'About Us',
             },
             {
-              href: '/admin/trainer',
+              href: '/admin/coach',
               label: 'HLV',
             }
           ],
