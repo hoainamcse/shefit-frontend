@@ -15,105 +15,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 
-// Define the form schema based on data.ts structure
-const formSchema = z.object({
-  section_1: z.object({
-    title: z.string(),
-    features: z.array(z.string()),
-    description: z.string(),
-    image: z.string(),
-    cta: z.object({
-      text: z.string(),
-      href: z.string(),
-    }),
-  }),
-  section_2: z.object({
-    title: z.string(),
-    subtitle: z.string(),
-    description: z.string(),
-    features: z.array(
-      z.object({
-        title: z.string(),
-        description: z.string(),
-      })
-    ),
-    image: z.string(),
-    cta: z.object({
-      text: z.string(),
-      href: z.string(),
-    }),
-  }),
-  section_3: z.object({
-    title: z.string(),
-    description: z.string(),
-    membership_ids: z.array(z.string()),
-  }),
-  section_4: z.object({
-    title: z.string(),
-    description: z.string(),
-    cta: z.object({
-      text: z.string(),
-      href: z.string(),
-    }),
-  }),
-  section_5: z.object({
-    title: z.string(),
-    description: z.string(),
-    form_category: z.object({
-      pear: z.object({
-        description: z.string(),
-        course_ids: z.array(z.string()),
-      }),
-      apple: z.object({
-        description: z.string(),
-        course_ids: z.array(z.string()),
-      }),
-      rectangle: z.object({
-        description: z.string(),
-        course_ids: z.array(z.string()),
-      }),
-      hourglass: z.object({
-        description: z.string(),
-        course_ids: z.array(z.string()),
-      }),
-      inverted_triangle: z.object({
-        description: z.string(),
-        course_ids: z.array(z.string()),
-      }),
-    }),
-  }),
-  section_7: z.object({
-    title: z.string(),
-    subtitle: z.string(),
-    diet_ids: z.array(z.string()),
-  }),
-  section_8: z.object({
-    title: z.string(),
-    description: z.string(),
-    product_ids: z.array(z.string()),
-  }),
-  section_9: z.object({
-    coacher_ids: z.array(z.string()),
-  }),
-  section_10: z.object({
-    top: z.object({
-      title: z.string(),
-      description: z.string(),
-      image: z.string(),
-    }),
-    bottom: z.object({
-      title: z.string(),
-      description: z.string(),
-      image: z.string(),
-    }),
-  }),
-  section_11: z.object({
-    image: z.string(),
-  }),
-});
-
-// Import the default data
-import { data as defaultData } from "@/app/(user)/home/data";
 import { MainButton } from "@/components/buttons/main-button";
 import {
   SectionOne,
@@ -128,8 +29,40 @@ import {
   SectionEleven,
 } from "@/app/(user)/home/section";
 import { FormInputField, FormTextareaField } from "@/components/forms/fields";
+import { useMutation } from "@/hooks/use-mutation";
+import {
+  getConfiguration,
+  updateConfiguration,
+} from "@/network/server/configuarations";
+import { toast } from "sonner";
+import { formSchema } from "./schema";
+import { useQuery } from "@/hooks/use-query";
+import { Configuration } from "@/models/configuration";
+
+const homepageID = 3;
 
 export default function HomepagePage() {
+  const { data, isLoading, error } = useQuery(() =>
+    getConfiguration(homepageID)
+  );
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading homepage configuration: {error.message}</div>;
+  }
+
+  if (!data || !data.data) {
+    return <div>No configuration data found</div>;
+  }
+
+  return <HomepageForm defaultData={data.data.data} />;
+}
+
+function HomepageForm({ defaultData }: { defaultData: Configuration['data'] }) {
+  console.log("Default Data:", defaultData);
   const [activeTab, setActiveTab] = useState("section_1");
 
   // Initialize form with the default data
@@ -138,15 +71,35 @@ export default function HomepagePage() {
     defaultValues: defaultData,
   });
 
+  const { mutate, isLoading } = useMutation(
+    (body: any) => updateConfiguration(homepageID, body),
+    {
+      onSuccess: () => {
+        toast.success("Configuration updated successfully");
+      },
+      onError: (error) => {
+        toast.error(`Failed to update configuration: ${error.message}`);
+      },
+    }
+  );
+
   // Form submission handler
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    // console.log(values);
+    mutate({ type: "homepage", data: values });
   }
 
   return (
     <ContentLayout
       title="Homepage Content"
-      rightSection={<MainButton text="Lưu thay đổi" />}
+      rightSection={
+        <MainButton
+          text="Lưu thay đổi"
+          loading={isLoading}
+          type="submit"
+          form="hook-form"
+        />
+      }
     >
       <Tabs defaultValue="edit">
         <TabsList className="mb-4 w-full [&>button]:flex-1">
@@ -192,6 +145,7 @@ export default function HomepagePage() {
         <TabsContent value="edit">
           <Form {...form}>
             <form
+              id="hook-form"
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-8 col-span-3"
             >

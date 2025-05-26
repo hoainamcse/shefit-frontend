@@ -2,21 +2,23 @@ import Link from "next/link";
 
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
-import { data } from "./data";
 import { ExerciseYogaIconGray } from "@/components/icons/ExerciseYogaIconGray";
 import { FoodGrainsIconGray } from "@/components/icons/FoodGrainsIconGray";
 import { GymIconGray } from "@/components/icons/GymIconGray";
 import { StarIconGray } from "@/components/icons/StarIconGray";
 import { AccountIconGray } from "@/components/icons/AccountIconGray";
 import { HomeSection } from "./section";
+import { getConfiguration } from "@/network/server/configuarations";
 
-export default function HomePage() {
-  // Todo: Need to get data from API
+const homepageID = 3;
+
+export default async function HomePage() {
+  const data = await getConfiguration(homepageID);
 
   return (
     <div className="relative">
       <Header />
-      <HomeSection data={data} />
+      <HomeSection data={data.data.data} />
       <Footer />
       <BottomNavbar />
     </div>

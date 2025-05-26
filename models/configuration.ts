@@ -24,3 +24,15 @@ export type ConfigurationsResponse = {
 export type Configurations = {
     about_us: AboutUsData | null;
 };
+
+type ConfigurationType = 'about_us' | 'policy' | 'homepage';
+
+type Configuration = {
+    id: number;
+    type: ConfigurationType;
+    data: Record<string, any>;
+    created_at: string;
+    updated_at: string;
+}
+
+export type { ConfigurationType, Configuration };

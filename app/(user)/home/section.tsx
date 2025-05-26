@@ -23,12 +23,12 @@ import { RectangleIcon } from "@/components/icons/RectangleIcon";
 import { ClockIcon } from "@/components/icons/ClockIcon";
 import { TriangleIcon } from "@/components/icons/TriangleIcon";
 import { ArrowRight } from "lucide-react";
-import { data } from "./data";
+import { formSchema } from "@/app/(admin)/admin/(content-input)/homepage/schema";
+import { z } from "zod";
 
+type DataType = z.infer<typeof formSchema>;
 
-type DataType = typeof data;
-
-export function HomeSection({ data }: { data: DataType }) {
+export function HomeSection({ data }: { data: any }) {
   return (
     <>
       <SectionOne data={data.section_1} />
@@ -102,10 +102,7 @@ export function SectionTwo({ data }: { data: DataType["section_2"] }) {
           </div>
           <div className="lg:col-span-2 flex flex-col items-center lg:items-start gap-6">
             {data.features.map((feature, index) => (
-              <div
-                key={index}
-                className="flex items-start gap-4 text-text"
-              >
+              <div key={index} className="flex items-start gap-4 text-text">
                 <span className="flex-shrink-0">
                   {index === 0 && <BodyIcon size={32} />}
                   {index === 1 && <DumbbellIcon size={32} />}
