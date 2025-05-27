@@ -35,6 +35,7 @@ import { deleteCourse, updateCourse } from '@/network/server/courses-admin'
 import { toast } from 'sonner'
 import { ListCourse } from '@/models/course-admin'
 import { useDebounced } from '@/hooks/useDebounced'
+import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 
 const PublicSwitchCell = ({ row }: { row: ListCourse }) => {
   const [checked, setChecked] = useState(row.is_public)
@@ -60,7 +61,6 @@ export default function VideoClassesPageClient({ data }: { data: ListResponse<Li
     } else {
       toast.error('Xoá khoá học thất bại')
     }
-    //router.refresh()
   }
 
   const columns: ColumnDef<ListCourse>[] = [
@@ -131,12 +131,7 @@ export default function VideoClassesPageClient({ data }: { data: ListResponse<Li
             <DropdownMenuItem onClick={() => router.push(`/admin/video-classes/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onClick={() => handleDelete(row.id.toString())}
-            >
-              <Trash2 /> Xoá
-            </DropdownMenuItem>
+            <DeleteMenuItem onConfirm={() => handleDelete(row.id.toString())} />
           </DropdownMenuContent>
         </DropdownMenu>
       ),

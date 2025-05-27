@@ -2,6 +2,8 @@
 
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { AddButton } from '@/components/buttons/add-button'
+import { DeleteButton } from '@/components/buttons/delete-button'
+import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 import { MainButton } from '@/components/buttons/main-button'
 import { ColumnDef, DataTable } from '@/components/data-table'
 import { FormMultiSelectField, FormInputField, FormTextareaField } from '@/components/forms/fields'
@@ -40,16 +42,14 @@ export default function ExercisesPage() {
   }, [])
 
   const handleDeleteExercise = async (id: number) => {
-    if (window.confirm('Bạn có chắc muốn xoá bài tập này?')) {
-      try {
-        const res = await deleteExercise(id)
-        if (res.status === 'success') {
-          toast.success('Xoá bài tập thành công')
-          fetchExercises()
-        }
-      } catch (e) {
-        toast.error('Có lỗi khi xoá bài tập')
+    try {
+      const res = await deleteExercise(id)
+      if (res.status === 'success') {
+        toast.success('Xoá bài tập thành công')
+        fetchExercises()
       }
+    } catch (e) {
+      toast.error('Có lỗi khi xoá bài tập')
     }
   }
 
@@ -118,12 +118,7 @@ export default function ExercisesPage() {
             <DropdownMenuItem onClick={() => router.push(`/admin/exercises/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onClick={() => handleDeleteExercise(row.id)}
-            >
-              <Trash2 /> Xoá
-            </DropdownMenuItem>
+            <DeleteMenuItem onConfirm={() => handleDeleteExercise(row.id)} />
           </DropdownMenuContent>
         </DropdownMenu>
       ),

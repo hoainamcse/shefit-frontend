@@ -34,6 +34,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { deleteCourse, updateCourse } from '@/network/server/courses-admin'
 import { toast } from 'sonner'
 import { ListCourse } from '@/models/course-admin'
+import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 
 const PublicSwitchCell = ({ row }: { row: ListCourse }) => {
   const [checked, setChecked] = useState(row.is_public)
@@ -130,12 +131,7 @@ export default function LiveClassesPageClient({ data }: { data: ListResponse<Lis
             <DropdownMenuItem onClick={() => router.push(`/admin/live-classes/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onClick={() => handleDelete(row.id.toString())}
-            >
-              <Trash2 /> Xoá
-            </DropdownMenuItem>
+            <DeleteMenuItem onConfirm={() => handleDelete(row.id.toString())} />
           </DropdownMenuContent>
         </DropdownMenu>
       ),

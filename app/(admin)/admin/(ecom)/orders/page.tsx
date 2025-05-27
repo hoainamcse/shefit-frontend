@@ -1,6 +1,7 @@
 'use client'
 
 import { ContentLayout } from '@/components/admin-panel/content-layout'
+import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 import { ColumnDef, DataTable } from '@/components/data-table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -165,9 +166,7 @@ export default function OrdersPage() {
             <DropdownMenuItem onClick={() => router.push(`/admin/orders/${row.id}`)}>
               <Eye /> Xem
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => deleteOrder(row.id)}>
-              <Trash2 /> Xoá
-            </DropdownMenuItem>
+            <DeleteMenuItem onConfirm={() => deleteOrder(row.id)} />
           </DropdownMenuContent>
         </DropdownMenu>
       ),

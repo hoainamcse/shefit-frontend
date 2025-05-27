@@ -14,6 +14,7 @@ import { createCalorie, deleteCalorie, getCalories, updateCalorie } from '@/netw
 import { createDiet, deleteDiet, getDiets, updateDiet } from '@/network/server/diet-admin'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { CreateDietForm } from '@/components/forms/create-diet-form'
+import { DeleteButton } from '@/components/buttons/delete-button'
 
 export default function DietsCaloriesPage() {
   // Diet state
@@ -85,8 +86,6 @@ export default function DietsCaloriesPage() {
   }
 
   const handleDeleteCalorie = async (id: number) => {
-    if (!confirm('Bạn có chắc muốn xoá lượng calo này?')) return
-
     try {
       setLoading(true)
       const response = await deleteCalorie(id)
@@ -104,8 +103,6 @@ export default function DietsCaloriesPage() {
 
   // Diet CRUD handlers
   const handleDeleteDiet = async (id: number) => {
-    if (!confirm('Bạn có chắc muốn xoá chế độ ăn này?')) return
-
     try {
       const response = await deleteDiet([id])
       if (response.status === 'success') {
@@ -166,14 +163,12 @@ export default function DietsCaloriesPage() {
           >
             <Edit />
           </Button>
-          <Button
+          <DeleteButton
             size="icon"
-            variant="ghost"
-            className="text-destructive hover:text-destructive"
-            onClick={() => handleDeleteDiet(row.id)}
-          >
-            <Trash2 />
-          </Button>
+            disabled={loading}
+            onConfirm={() => handleDeleteDiet(row.id)}
+            style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}
+          />
         </div>
       ),
     },
@@ -227,15 +222,14 @@ export default function DietsCaloriesPage() {
             >
               <Pencil className="h-4 w-4 mr-1" /> Cập nhật
             </Button>
-            <Button
+            <DeleteButton
+              text="Xoá"
               size="sm"
               variant="outline"
               className="text-destructive border-destructive hover:bg-destructive/10"
-              onClick={() => handleDeleteCalorie(row.id)}
+              onConfirm={() => handleDeleteCalorie(row.id)}
               disabled={loading || !!editCalorie}
-            >
-              <Trash2 className="h-4 w-4 mr-1" /> Xoá
-            </Button>
+            />
           </div>
         )
       },

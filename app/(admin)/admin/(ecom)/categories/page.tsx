@@ -26,6 +26,7 @@ import {
 } from '@/network/server/category'
 import { Coupon } from '@/models/coupon'
 import { getListCoupons, deleteCoupon } from '@/network/server/coupon'
+import { DeleteButton } from '@/components/buttons/delete-button'
 
 export default function CategoriesPage() {
   // Category state
@@ -116,8 +117,6 @@ export default function CategoriesPage() {
   }
 
   const handleDeleteCategory = async (id: number) => {
-    if (!confirm('Bạn có chắc muốn xoá phân loại này?')) return
-
     try {
       setLoading(true)
       const response = await deleteCategory(id.toString())
@@ -173,8 +172,6 @@ export default function CategoriesPage() {
   }
 
   const handleDeleteSize = async (id: number) => {
-    if (!confirm('Bạn có chắc muốn xoá kích thước này?')) return
-
     try {
       setLoading(true)
       const response = await deleteSize(id.toString())
@@ -234,8 +231,6 @@ export default function CategoriesPage() {
   }
 
   const handleDeleteColor = async (id: number) => {
-    if (!confirm('Bạn có chắc muốn xoá màu này?')) return
-
     try {
       setLoading(true)
       const response = await deleteColor(id.toString())
@@ -253,8 +248,6 @@ export default function CategoriesPage() {
 
   // Coupon CRUD handlers
   const handleDeleteCoupon = async (id: number) => {
-    if (!confirm('Bạn có chắc muốn xoá khuyến mãi này?')) return
-
     try {
       const response = await deleteCoupon(id.toString())
       if (response.status === 'success') {
@@ -314,15 +307,14 @@ export default function CategoriesPage() {
             >
               <Pencil className="h-4 w-4 mr-1" /> Cập nhật
             </Button>
-            <Button
+            <DeleteButton
+              text="Xoá"
               size="sm"
+              disabled={loading || !!editCategory || !!editSize || !!editColor}
+              onConfirm={() => handleDeleteCategory(row.id)}
               variant="outline"
               className="text-destructive border-destructive hover:bg-destructive/10"
-              onClick={() => handleDeleteCategory(row.id)}
-              disabled={loading || !!editCategory || !!editSize || !!editColor}
-            >
-              <Trash2 className="h-4 w-4 mr-1" /> Xoá
-            </Button>
+            />
           </div>
         )
       },
@@ -375,15 +367,14 @@ export default function CategoriesPage() {
             >
               <Pencil className="h-4 w-4 mr-1" /> Cập nhật
             </Button>
-            <Button
-              size="sm"
+            <DeleteButton
               variant="outline"
               className="text-destructive border-destructive hover:bg-destructive/10"
-              onClick={() => handleDeleteSize(row.id)}
+              text="Xoá"
+              size="sm"
               disabled={loading || !!editCategory || !!editSize || !!editColor}
-            >
-              <Trash2 className="h-4 w-4 mr-1" /> Xoá
-            </Button>
+              onConfirm={() => handleDeleteSize(row.id)}
+            />
           </div>
         )
       },
@@ -476,15 +467,14 @@ export default function CategoriesPage() {
             >
               <Pencil className="h-4 w-4 mr-1" /> Cập nhật
             </Button>
-            <Button
-              size="sm"
+            <DeleteButton
               variant="outline"
               className="text-destructive border-destructive hover:bg-destructive/10"
-              onClick={() => handleDeleteColor(row.id)}
+              text="Xoá"
+              size="sm"
               disabled={loading || !!editCategory || !!editSize || !!editColor}
-            >
-              <Trash2 className="h-4 w-4 mr-1" /> Xoá
-            </Button>
+              onConfirm={() => handleDeleteColor(row.id)}
+            />
           </div>
         )
       },
@@ -541,14 +531,12 @@ export default function CategoriesPage() {
           >
             <Edit />
           </Button>
-          <Button
+          <DeleteButton
             size="icon"
-            variant="ghost"
-            className="text-destructive hover:text-destructive"
-            onClick={() => handleDeleteCoupon(row.id)}
-          >
-            <Trash2 />
-          </Button>
+            disabled={loading}
+            onConfirm={() => handleDeleteCoupon(row.id)}
+            style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}
+          />
         </div>
       ),
     },

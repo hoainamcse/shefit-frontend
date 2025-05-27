@@ -23,6 +23,8 @@ import { deleteCoupon, getListCoupons } from '@/network/server/coupon'
 import { toast } from 'sonner'
 import { deleteSubscription, getSubscriptions } from '@/network/server/subscriptions-admin'
 import { Subscription } from '@/models/subscription-admin'
+import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
+import { DeleteButton } from '@/components/buttons/delete-button'
 
 // Helper to map course_format to label
 const getCourseFormatLabel = (format: string): string => {
@@ -64,30 +66,26 @@ export default function MembershipPage() {
   }
 
   const handleDeleteCoupon = async (couponId: number) => {
-    if (window.confirm('Bạn có chắc muốn xoá khuyến mãi này?')) {
-      try {
-        const res = await deleteCoupon(couponId.toString())
-        if (res.status === 'success') {
-          toast.success('Xoá khuyến mãi thành công')
-          setCoupons((coupons) => coupons.filter((c) => c.id !== couponId))
-        }
-      } catch (e) {
-        toast.error('Có lỗi khi xoá khuyến mãi')
+    try {
+      const res = await deleteCoupon(couponId.toString())
+      if (res.status === 'success') {
+        toast.success('Xoá khuyến mãi thành công')
+        fetchCoupons()
       }
+    } catch (e) {
+      toast.error('Có lỗi khi xoá khuyến mãi')
     }
   }
 
   const handleDeleteMembership = async (membershipId: number) => {
-    if (window.confirm('Bạn có chắc muốn xoá gói thành viên này?')) {
-      try {
-        const res = await deleteSubscription(membershipId)
-        if (res.status === 'success') {
-          toast.success('Xoá gói thành viên thành công')
-          fetchMemberships()
-        }
-      } catch (e) {
-        toast.error('Có lỗi khi xoá gói thành viên')
+    try {
+      const res = await deleteSubscription(membershipId)
+      if (res.status === 'success') {
+        toast.success('Xoá gói thành viên thành công')
+        fetchMemberships()
       }
+    } catch (e) {
+      toast.error('Có lỗi khi xoá gói thành viên')
     }
   }
 
@@ -122,14 +120,13 @@ export default function MembershipPage() {
           >
             <Edit />
           </Button>
-          <Button
+          <DeleteButton
             size="icon"
             variant="ghost"
+            onConfirm={() => handleDeleteCoupon(row.id)}
             className="text-destructive hover:text-destructive"
-            onClick={() => handleDeleteCoupon(row.id)}
-          >
-            <Trash2 />
-          </Button>
+            style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}
+          />
         </div>
       ),
     },
@@ -198,12 +195,7 @@ export default function MembershipPage() {
             <DropdownMenuItem onClick={() => router.push(`/admin/membership/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onClick={() => handleDeleteMembership(row.id)}
-            >
-              <Trash2 /> Xoá
-            </DropdownMenuItem>
+            <DeleteMenuItem onConfirm={() => handleDeleteMembership(row.id)} />
           </DropdownMenuContent>
         </DropdownMenu>
       ),

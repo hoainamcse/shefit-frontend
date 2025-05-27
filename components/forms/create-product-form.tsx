@@ -225,8 +225,6 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
     if (!isSame) {
       form.setValue('variants', newVariants)
     }
-
-    console.log('form', form.getValues)
   }, [sizes, colors, isEdit, form])
 
   const variants = form.watch('variants')
@@ -258,8 +256,6 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
             features: values.features,
             muscle_group_ids: values.muscle_group_ids || [],
           }
-
-          console.log('productData', productData)
 
           if (isEdit) {
             await handleEditProduct(productData, data)

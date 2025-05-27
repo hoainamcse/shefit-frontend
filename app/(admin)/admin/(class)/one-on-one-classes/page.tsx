@@ -2,6 +2,7 @@
 
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { AddButton } from '@/components/buttons/add-button'
+import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 import { MainButton } from '@/components/buttons/main-button'
 import { ColumnDef, DataTable } from '@/components/data-table'
 import { CreateCourseForm } from '@/components/forms/create-course-form'
@@ -210,12 +211,8 @@ export default function OneOnOneClassesPage() {
             <DropdownMenuItem onClick={() => router.push(`/admin/${row.course_format}-classes/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onClick={() => handleDelete(row.id.toString())}
-            >
-              <Trash2 /> Xoá
-            </DropdownMenuItem>
+
+            <DeleteMenuItem onConfirm={() => handleDelete(row.id.toString())} />
           </DropdownMenuContent>
         </DropdownMenu>
       ),

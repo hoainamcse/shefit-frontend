@@ -6,8 +6,6 @@ export default async function EditMealPlanPage({ params }: { params: Promise<{ m
   const { meal_plan_id } = await params
   const mealPlan = await getMealPlanDetails(meal_plan_id)
 
-  console.log('mealPlan', mealPlan.data)
-
   return (
     <ContentLayout title="Cập nhật thực đơn">
       <CreateMealPlanForm isEdit={true} data={mealPlan.data} />

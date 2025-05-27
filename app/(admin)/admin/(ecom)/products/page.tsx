@@ -2,6 +2,7 @@
 
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { AddButton } from '@/components/buttons/add-button'
+import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 import { ColumnDef, DataTable } from '@/components/data-table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -95,16 +96,14 @@ export default function ProductsPage() {
   }, [])
 
   const handleDelete = async (id: number) => {
-    if (window.confirm('Bạn có chắc muốn xoá sản phẩm này?')) {
-      try {
-        const res = await deleteProduct(id.toString())
-        if (res.status === 'success') {
-          toast.success('Xoá sản phẩm thành công')
-          fetchData()
-        }
-      } catch (e) {
-        toast.error('Có lỗi khi xoá sản phẩm')
+    try {
+      const res = await deleteProduct(id.toString())
+      if (res.status === 'success') {
+        toast.success('Xoá sản phẩm thành công')
+        fetchData()
       }
+    } catch (e) {
+      toast.error('Có lỗi khi xoá sản phẩm')
     }
   }
 
@@ -176,9 +175,7 @@ export default function ProductsPage() {
             <DropdownMenuItem onClick={() => router.push(`/admin/products/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(row.id)}>
-              <Trash2 /> Xoá
-            </DropdownMenuItem>
+            <DeleteMenuItem onConfirm={() => handleDelete(row.id)} />
           </DropdownMenuContent>
         </DropdownMenu>
       ),

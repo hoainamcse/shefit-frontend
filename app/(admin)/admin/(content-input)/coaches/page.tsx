@@ -61,13 +61,12 @@ export default function CoachPage() {
                   <div className="flex flex-row items-center gap-4 max-sm:flex-col">
                     <div className="flex-shrink-0 p-1 bg-gradient-to-tr from-primary/40 via-primary/20 to-primary/60 rounded-full shadow-lg">
                       <div className="rounded-full overflow-hidden border-2 border-white p-0.5 bg-white">
-                        <Image
+                        <img
                           src={coach.image}
                           alt={coach.name}
                           className="object-cover rounded-full hover:scale-105 transition-transform duration-300 aspect-square"
                           width={120}
                           height={120}
-                          quality={90}
                         />
                       </div>
                     </div>

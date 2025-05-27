@@ -51,7 +51,7 @@ export function CreateMuscleEquipForm({ onSuccess, isEdit = false, data, create,
       try {
         if (!isEdit) {
           const result = await create(values)
-          console.log(result)
+
           if (result.status === 'success') {
             toast.success(`Tạo ${entityLabel} thành công`)
             onSuccess?.()

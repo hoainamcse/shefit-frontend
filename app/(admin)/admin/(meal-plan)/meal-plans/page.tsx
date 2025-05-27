@@ -2,6 +2,7 @@
 
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { AddButton } from '@/components/buttons/add-button'
+import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 import { MainButton } from '@/components/buttons/main-button'
 import { ColumnDef, DataTable } from '@/components/data-table'
 import { Button } from '@/components/ui/button'
@@ -96,7 +97,6 @@ export default function MealPlansPage() {
               <Copy /> Sao chép thực đơn ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-
             <DropdownMenuItem
               onClick={() => {
                 router.push(`/admin/meal-plans/${row.id}`)
@@ -104,9 +104,7 @@ export default function MealPlansPage() {
             >
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(row.id)}>
-              <Trash2 /> Xoá
-            </DropdownMenuItem>
+            <DeleteMenuItem onConfirm={() => handleDelete(row.id)} />
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -114,16 +112,14 @@ export default function MealPlansPage() {
   ]
 
   const handleDelete = async (mealPlanId: string) => {
-    if (window.confirm('Bạn có chắc muốn xoá thực đơn này?')) {
-      try {
-        const res = await deleteMealPlan(mealPlanId)
-        if (res.status === 'success') {
-          toast.success('Xoá thực đơn thành công')
-          setMealPlans((mealPlans) => mealPlans.filter((mealPlan) => mealPlan.id !== mealPlanId))
-        }
-      } catch (e) {
-        toast.error('Có lỗi khi xoá thực đơn')
+    try {
+      const res = await deleteMealPlan(mealPlanId)
+      if (res.status === 'success') {
+        toast.success('Xoá thực đơn thành công')
+        setMealPlans((mealPlans) => mealPlans.filter((mealPlan) => mealPlan.id !== mealPlanId))
       }
+    } catch (e) {
+      toast.error('Có lỗi khi xoá thực đơn')
     }
   }
 

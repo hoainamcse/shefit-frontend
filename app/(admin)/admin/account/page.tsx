@@ -26,6 +26,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { generateUsername, generatePassword } from '@/helper/user'
 import PROVINCES from './provinceData'
+import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 interface AccountRow {
   id: number
   fullname: string
@@ -57,16 +58,14 @@ export default function AccountPage() {
   }
 
   const handleDeleteAccount = async (accountId: number) => {
-    if (window.confirm('Bạn có chắc muốn xoá tài khoản này?')) {
-      try {
-        const res = await deleteUser(accountId.toString())
-        if (res.status === 'success') {
-          toast.success('Xoá tài khoản thành công')
-          fetchAccounts()
-        }
-      } catch (e) {
-        toast.error('Có lỗi khi xoá tài khoản')
+    try {
+      const res = await deleteUser(accountId.toString())
+      if (res.status === 'success') {
+        toast.success('Xoá tài khoản thành công')
+        fetchAccounts()
       }
+    } catch (e) {
+      toast.error('Có lỗi khi xoá tài khoản')
     }
   }
 
@@ -109,12 +108,7 @@ export default function AccountPage() {
             <DropdownMenuItem onClick={() => router.push(`/admin/account/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onClick={() => handleDeleteAccount(row.id)}
-            >
-              <Trash2 /> Xoá
-            </DropdownMenuItem>
+            <DeleteMenuItem onConfirm={() => handleDeleteAccount(row.id)} />
           </DropdownMenuContent>
         </DropdownMenu>
       ),

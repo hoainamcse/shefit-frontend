@@ -377,13 +377,7 @@ export default function VideoClassPageClient({ data }: { data: ApiResponse<Detai
             } else if (existingCircuit) {
               // Update existing circuit
               processedCircuitIds.add(circuit.id)
-              console.log('circuitData', circuitData)
-              console.log('circuit.id', circuit.id)
-              console.log('weekId', weekId)
-              console.log('dayId', dayId)
-              console.log('courseId', courseId)
               const response = await updateCircuit(courseId, weekId, dayId, circuit.id.toString(), circuitData)
-              console.log('response-updateCircuit', response)
             }
           }
 
@@ -420,8 +414,6 @@ export default function VideoClassPageClient({ data }: { data: ApiResponse<Detai
       console.error('Error updating course structure:', error)
       toast.error('Failed to update course structure')
     }
-
-    console.log('formData', formData)
   }
 
   // Function to add a new exercise to a specific circuit

@@ -98,7 +98,8 @@ type selectOption = {
 type UserSubscriptionField = UserSubscription & { fieldId: string }
 
 export default function CreateAccountForm({ data }: CreateAccountFormProps) {
-  const [isPending, startTransition] = useTransition()
+  // const [isPending, startTransition] = useTransition()
+  const [isLoading, setIsLoading] = useState(true)
   const [membershipList, setMembershipList] = useState<Subscription[]>([])
   const [courses, setCourses] = useState<selectOption[]>([])
   const [mealPlans, setMealPlans] = useState<selectOption[]>([])
@@ -138,7 +139,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     control,
     getValues,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = form
   const {
     fields: subscriptions,
@@ -147,158 +148,131 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     remove: removeSubscription,
   } = useFieldArray({ control, name: 'subscriptions', keyName: 'fieldId' })
 
-  const fetchMembershipList = async () => {
-    const response = await getSubscriptions()
-    setMembershipList(response.data)
-  }
+  /**
+   * Fetch all data needed for the form
+   */
+  const fetchAllData = async () => {
+    setIsLoading(true)
+    try {
+      // Fetch data subscriptions, meal plans, dishes, exercises
+      const [subscriptionsResponse, mealPlansResponse, dishesResponse, exercisesResponse] = await Promise.all([
+        getSubscriptions(),
+        getMealPlans(),
+        getListDishes(),
+        getExercises(),
+      ])
 
-  const fetchAllCourses = async () => {
-    const responses = await Promise.all(membershipList.map((m) => getCoursesBySubscriptionId(m.id.toString())))
+      const memberships = subscriptionsResponse.data
+      setMembershipList(memberships)
 
-    let allCourses: any[] = []
-    for (const res of responses) {
-      if (res && Array.isArray(res.data)) {
-        for (const course of res.data) {
-          allCourses.push(course)
+      const formattedMealPlans = mealPlansResponse.data.map((mealPlan: MealPlan) => ({
+        value: String(mealPlan.id),
+        label: mealPlan.title,
+      }))
+      setMealPlans(formattedMealPlans)
+
+      const formattedDishes = dishesResponse.data.map((dish: Dish) => ({
+        value: String(dish.id),
+        label: dish.name,
+      }))
+      setDishes(formattedDishes)
+
+      const formattedExercises = exercisesResponse.data.map((exercise: Exercise) => ({
+        value: String(exercise.id),
+        label: exercise.name,
+      }))
+      setExercises(formattedExercises)
+
+      // Fetch courses
+      const courseResponses = await Promise.all(memberships.map((m) => getCoursesBySubscriptionId(m.id.toString())))
+
+      const allCourses = courseResponses.flatMap((res) => (Array.isArray(res.data) ? res.data : []))
+
+      const uniqueCourses = Array.from(
+        new Map(
+          allCourses.map((course) => [course.id, { value: String(course.id), label: course.course_name }])
+        ).values()
+      )
+      setCourses(uniqueCourses)
+
+      // Fetch user-courses, user-dishes, user-meal-plans, user-exercises
+      if (data?.id) {
+        const userId = data.id.toString()
+
+        const [
+          userSubscriptionsResponse,
+          userCoursesResponse,
+          userMealPlansResponse,
+          userExercisesResponse,
+          userDishesResponse,
+        ] = await Promise.all([
+          getUserSubscriptions(userId),
+          getUserCourses(userId),
+          getUserMealPlans(userId),
+          getUserExercises(userId),
+          getUserDishes(userId),
+        ])
+
+        const subscriptionsWithPlanId = userSubscriptionsResponse.data.map((sub: UserSubscription) => {
+          // Format API dates
+          const formattedSub = {
+            ...sub,
+            subscription_start_at: sub.subscription_start_at ? formatDate(sub.subscription_start_at) : '',
+            subscription_end_at: sub.subscription_end_at ? formatDate(sub.subscription_end_at) : '',
+          }
+
+          if (formattedSub.subscription_start_at && formattedSub.subscription_end_at) {
+            const duration = calculateMonthsFromDays(
+              formattedSub.subscription_start_at,
+              formattedSub.subscription_end_at
+            )
+            const membership = memberships.find((m) => m.id === sub.subscription_id)
+            const plan = membership?.prices.find((p) => p.duration === duration)
+            if (!plan) return { ...formattedSub }
+            return { ...formattedSub, plan_id: plan.id }
+          }
+          return { ...formattedSub }
+        })
+        setValue('subscriptions', subscriptionsWithPlanId)
+
+        // Set user courses
+        if (userCoursesResponse?.data?.length > 0) {
+          const courseIds = userCoursesResponse.data.map((course: UserCourse) => course.course_id.toString())
+          form.setValue('course_ids', courseIds)
+        }
+
+        // Set user meal plans
+        if (userMealPlansResponse?.data?.length > 0) {
+          const mealPlanIds = userMealPlansResponse.data.map((mealPlan: UserMealPlan) =>
+            mealPlan.meal_plan_id.toString()
+          )
+          form.setValue('meal_plan_ids', mealPlanIds)
+        }
+
+        // Set user exercises
+        if (userExercisesResponse?.data?.length > 0) {
+          const exerciseIds = userExercisesResponse.data.map((exercise: UserExercise) =>
+            exercise.exercise_id.toString()
+          )
+          form.setValue('exercise_ids', exerciseIds)
+        }
+
+        // Set user dishes
+        if (userDishesResponse?.data?.length > 0) {
+          const dishIds = userDishesResponse.data.map((dish: UserDish) => dish.dish_id.toString())
+          form.setValue('dish_ids', dishIds)
         }
       }
-    }
-
-    const seen = new Set()
-    const unique: { value: string; label: string }[] = []
-    for (const course of allCourses) {
-      if (!seen.has(course.id)) {
-        seen.add(course.id)
-        unique.push({ value: String(course.id), label: course.course_name })
-      }
-    }
-
-    setCourses(unique)
-  }
-
-  const fetchMealPlans = async () => {
-    const response = await getMealPlans()
-    const mealPlans = response.data.map((mealPlan: MealPlan) => ({
-      value: String(mealPlan.id),
-      label: mealPlan.title,
-    }))
-    setMealPlans(mealPlans)
-  }
-
-  const fetchDishes = async () => {
-    const response = await getListDishes()
-    const dishes = response.data.map((dish: Dish) => ({
-      value: String(dish.id),
-      label: dish.name,
-    }))
-    setDishes(dishes)
-  }
-
-  const fetchExercises = async () => {
-    const response = await getExercises()
-    const exercises = response.data.map((exercise: Exercise) => ({
-      value: String(exercise.id),
-      label: exercise.name,
-    }))
-    setExercises(exercises)
-  }
-
-  const fetchUserSubscriptions = async (userId: string) => {
-    const response = await getUserSubscriptions(userId)
-    console.log('user-subscription', response)
-    const subscriptionsWithPlanId = response.data.map((sub: UserSubscription) => {
-      // Format API dates
-      const formattedSub = {
-        ...sub,
-        subscription_start_at: sub.subscription_start_at ? formatDate(sub.subscription_start_at) : '',
-        subscription_end_at: sub.subscription_end_at ? formatDate(sub.subscription_end_at) : '',
-      }
-
-      if (formattedSub.subscription_start_at && formattedSub.subscription_end_at) {
-        const duration = calculateMonthsFromDays(formattedSub.subscription_start_at, formattedSub.subscription_end_at)
-        const membership = membershipList.find((m) => m.id === sub.subscription_id)
-        const plan = membership?.prices.find((p) => p.duration === duration)
-        if (!plan) return { ...formattedSub }
-        return { ...formattedSub, plan_id: plan.id }
-      }
-      return { ...formattedSub }
-    })
-    setValue('subscriptions', subscriptionsWithPlanId)
-  }
-
-  const fetchUserExercises = async (userId: string) => {
-    try {
-      const response = await getUserExercises(userId)
-
-      if (response?.data?.length > 0) {
-        const exercise_ids = response.data.map((exercise: UserExercise) => exercise.exercise_id.toString())
-        form.setValue('exercise_ids', exercise_ids)
-      }
     } catch (error) {
-      console.error('Error fetching user exercises:', error)
-    }
-  }
-
-  const fetchUserDishes = async (userId: string) => {
-    try {
-      const response = await getUserDishes(userId)
-
-      if (response?.data?.length > 0) {
-        const dish_ids = response.data.map((dish: UserDish) => dish.dish_id.toString())
-        form.setValue('dish_ids', dish_ids)
-      }
-    } catch (error) {
-      console.error('Error fetching user dishes:', error)
-    }
-  }
-
-  const fetchUserMealPlans = async (userId: string) => {
-    try {
-      const response = await getUserMealPlans(userId)
-
-      if (response?.data?.length > 0) {
-        const meal_plan_ids = response.data.map((mealPlan: UserMealPlan) => mealPlan.meal_plan_id.toString())
-        form.setValue('meal_plan_ids', meal_plan_ids)
-      }
-    } catch (error) {
-      console.error('Error fetching user meal plans:', error)
-    }
-  }
-
-  const fetchUserCourses = async (userId: string) => {
-    try {
-      const response = await getUserCourses(userId)
-
-      if (response?.data?.length > 0) {
-        const course_ids = response.data.map((course: UserCourse) => course.course_id.toString())
-        form.setValue('course_ids', course_ids)
-      }
-    } catch (error) {
-      console.error('Error fetching user courses:', error)
+      console.error('Error fetching account data:', error)
+      toast.error('Failed to load account data')
+    } finally {
+      setIsLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchMembershipList()
-    fetchMealPlans()
-    fetchDishes()
-    fetchExercises()
-  }, [])
-
-  useEffect(() => {
-    if (data?.id) {
-      fetchUserSubscriptions(data.id.toString())
-    }
-    fetchAllCourses()
-  }, [membershipList])
-
-  useEffect(() => {
-    if (data?.id) {
-      fetchUserCourses(data.id.toString())
-      fetchUserMealPlans(data.id.toString())
-      fetchUserExercises(data.id.toString())
-      fetchUserDishes(data.id.toString())
-    }
+    fetchAllData()
   }, [data?.id])
 
   useEffect(() => {
@@ -312,7 +286,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     return () => subscription.unsubscribe()
   }, [form])
 
-  function onSubmit(values: AccountFormData) {
+  async function onSubmit(values: AccountFormData) {
     if (values.subscriptions?.some((sub) => !sub.subscription_id || !sub.subscription_start_at || !sub.plan_id)) {
       form.setError('subscriptions', {
         type: 'custom',
@@ -321,70 +295,72 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       return
     }
 
-    startTransition(async () => {
-      try {
-        if (!data?.id) {
-          toast.error('Không tìm thấy thông tin người dùng')
-          return
-        }
-
-        const userId = data.id.toString()
-
-        // 1. Update user basic information
-        const userUpdateData = {
-          ...data,
-          fullname: values.fullname,
-          username: values.username,
-          phone_number: values.phone_number,
-          province: values.province,
-          address: values.address,
-        }
-
-        await updateUser(userId, userUpdateData)
-
-        // 2. Handle subscriptions
-        if (values.subscriptions && values.subscriptions.length > 0) {
-          const currentSubscriptions = await getUserSubscriptions(userId)
-          const formSubIds = values.subscriptions.filter((sub) => sub.id).map((sub) => sub.id)
-          const deletedSubscriptions = currentSubscriptions.data.filter((sub) => !formSubIds.includes(sub.id))
-
-          if (deletedSubscriptions.length > 0) {
-            await Promise.all(
-              deletedSubscriptions
-                .filter((sub) => sub.id)
-                .map((sub) => deleteUserSubscription(userId, sub.subscription_id.toString()))
-            )
-            await handleCreateUpdateUserSubscription(values.subscriptions, userId)
-          } else {
-            await handleCreateUpdateUserSubscription(values.subscriptions, userId)
-          }
-        }
-
-        // 3. Handle exercises
-        if (values.exercise_ids && values.exercise_ids.length > 0) {
-          await handleAssignUserExercise(values.exercise_ids, userId)
-        }
-
-        // 4. Handle dishes
-        if (values.dish_ids && values.dish_ids.length > 0) {
-          await handleAssignUserDish(values.dish_ids, userId)
-        }
-
-        // 5. Handle meal plans
-        if (values.meal_plan_ids && values.meal_plan_ids.length > 0) {
-          await handleAssignUserMealPlan(values.meal_plan_ids, userId)
-        }
-
-        // 6. Handle courses
-        if (values.course_ids && values.course_ids.length > 0) {
-          await handleAssignUserCourse(values.course_ids, userId)
-        }
-
-        toast.success('Cập nhật tài khoản thành công')
-      } catch (error) {
-        toast.error('Có lỗi xảy ra khi cập nhật tài khoản')
+    // startTransition(async () => {
+    try {
+      const toastId = toast.loading('Updating course structure...')
+      if (!data?.id) {
+        toast.error('Không tìm thấy thông tin người dùng')
+        return
       }
-    })
+
+      const userId = data.id.toString()
+
+      // 1. Update user basic information
+      const userUpdateData = {
+        ...data,
+        fullname: values.fullname,
+        username: values.username,
+        phone_number: values.phone_number,
+        province: values.province,
+        address: values.address,
+      }
+
+      await updateUser(userId, userUpdateData)
+
+      // 2. Handle subscriptions
+      if (values.subscriptions && values.subscriptions.length > 0) {
+        const currentSubscriptions = await getUserSubscriptions(userId)
+        const formSubIds = values.subscriptions.filter((sub) => sub.id).map((sub) => sub.id)
+        const deletedSubscriptions = currentSubscriptions.data.filter((sub) => !formSubIds.includes(sub.id))
+
+        if (deletedSubscriptions.length > 0) {
+          await Promise.all(
+            deletedSubscriptions
+              .filter((sub) => sub.id)
+              .map((sub) => deleteUserSubscription(userId, sub.subscription_id.toString()))
+          )
+          await handleCreateUpdateUserSubscription(values.subscriptions, userId)
+        } else {
+          await handleCreateUpdateUserSubscription(values.subscriptions, userId)
+        }
+      }
+
+      // 3. Handle exercises
+      if (values.exercise_ids && values.exercise_ids.length > 0) {
+        await handleAssignUserExercise(values.exercise_ids, userId)
+      }
+
+      // 4. Handle dishes
+      if (values.dish_ids && values.dish_ids.length > 0) {
+        await handleAssignUserDish(values.dish_ids, userId)
+      }
+
+      // 5. Handle meal plans
+      if (values.meal_plan_ids && values.meal_plan_ids.length > 0) {
+        await handleAssignUserMealPlan(values.meal_plan_ids, userId)
+      }
+
+      // 6. Handle courses
+      if (values.course_ids && values.course_ids.length > 0) {
+        await handleAssignUserCourse(values.course_ids, userId)
+      }
+
+      toast.dismiss(toastId)
+      toast.success('Cập nhật tài khoản thành công')
+    } catch (error) {
+      toast.error('Có lỗi xảy ra khi cập nhật tài khoản')
+    }
+    // })
   }
 
   const handleCreateUpdateUserSubscription = async (subscriptionData: any, userId: string) => {
@@ -793,121 +769,140 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     [membershipList, subscriptions]
   )
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center w-full py-12">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          <p className="text-sm text-muted-foreground">Loading account data...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {/* Account Information */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Account - STT</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormInputField form={form} name="fullname" label="Tên" required placeholder="Nhập tên" />
-            <FormInputField
-              form={form}
-              name="phone_number"
-              label="Số điện thoại"
-              type="tel"
-              pattern="^0[0-9]{9,10}$"
-              required
-              placeholder="Nhập số điện thoại"
-            />
-            <FormSelectField
-              form={form}
-              name="province"
-              label="Tỉnh / thành phố"
-              placeholder="Chọn tỉnh/thành phố của bạn đang sống"
-              data={PROVINCES}
-            />
-            <FormInputField form={form} name="address" label="Địa chỉ chi tiết" placeholder="Nhập địa chỉ của bạn" />
-            <FormInputField form={form} name="username" label="Username" required placeholder="Nhập username" />
-            <div className="flex flex-col sm:flex-row w-full gap-2">
-              <div className="flex-1 w-full">
-                <FormInputField form={form} name="new_password" label="Thay đổi mật khẩu" placeholder="Nhập mật khẩu" />
-              </div>
-              <div className="flex items-end w-full sm:w-auto">
-                <Button
-                  type="button"
-                  className="w-full sm:w-auto flex-1"
-                  onClick={() => {
-                    const pwd = generatePassword()
-                    form.setValue('new_password', pwd)
-                  }}
-                >
-                  Tạo mật khẩu
-                </Button>
-              </div>
-              <div className="flex items-end w-full sm:w-auto">
-                <MainButton
-                  type="button"
-                  className="w-full sm:w-auto flex-1"
-                  onClick={handleApplyPassword}
-                  text="Apply"
-                  loading={isApplyingPassword}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Membership Packages */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Gói membership</h2>
-          <DataTable
-            data={subscriptions}
-            columns={accountMembershipColumns}
-            searchPlaceholder="Tìm kiếm gói membership"
-            headerExtraContent={membershipHeaderExtraContent}
-          />
-          {errors.subscriptions && (
-            <div className="text-sm text-red-500 space-y-1 mt-2 p-2 border border-red-200 rounded bg-red-50">
-              {errors.subscriptions?.message && <p className="font-medium"> {errors.subscriptions.message}</p>}
-            </div>
-          )}
-        </div>
-
-        {/* Assigned Items */}
-        <div className="space-y-8">
-          <h2 className="text-lg font-semibold">Gán khóa học, thực đơn cho học viên</h2>
+    <>
+      {isSubmitting && <div className="fixed inset-0 bg-white/50 backdrop-blur-sm z-50" />}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          {/* Account Information */}
           <div className="space-y-4">
-            <FormMultiSelectField
-              form={form}
-              name="course_ids"
-              label="Khóa học"
-              data={courses}
-              placeholder="Chọn khóa học"
-              key={`course-select-${form.watch('course_ids')?.length || 0}`}
-            />
-
-            <FormMultiSelectField
-              form={form}
-              name="meal_plan_ids"
-              label="Thực đơn"
-              data={mealPlans}
-              placeholder="Chọn thực đơn"
-              key={`meal-plan-select-${form.watch('meal_plan_ids')?.length || 0}`}
-            />
-
-            <FormMultiSelectField
-              form={form}
-              name="exercise_ids"
-              label="Bài tập"
-              data={exercises}
-              placeholder="Chọn bài tập"
-              key={`exercise-select-${form.watch('exercise_ids')?.length || 0}`}
-            />
-
-            <FormMultiSelectField
-              form={form}
-              name="dish_ids"
-              label="Món ăn"
-              data={dishes}
-              placeholder="Chọn món ăn"
-              key={`dish-select-${form.watch('dish_ids')?.length || 0}`}
-            />
+            <h2 className="text-lg font-semibold">Account - STT</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormInputField form={form} name="fullname" label="Tên" required placeholder="Nhập tên" />
+              <FormInputField
+                form={form}
+                name="phone_number"
+                label="Số điện thoại"
+                type="tel"
+                pattern="^0[0-9]{9,10}$"
+                required
+                placeholder="Nhập số điện thoại"
+              />
+              <FormSelectField
+                form={form}
+                name="province"
+                label="Tỉnh / thành phố"
+                placeholder="Chọn tỉnh/thành phố của bạn đang sống"
+                data={PROVINCES}
+              />
+              <FormInputField form={form} name="address" label="Địa chỉ chi tiết" placeholder="Nhập địa chỉ của bạn" />
+              <FormInputField form={form} name="username" label="Username" required placeholder="Nhập username" />
+              <div className="flex flex-col sm:flex-row w-full gap-2">
+                <div className="flex-1 w-full">
+                  <FormInputField
+                    form={form}
+                    name="new_password"
+                    label="Thay đổi mật khẩu"
+                    placeholder="Nhập mật khẩu"
+                  />
+                </div>
+                <div className="flex items-end w-full sm:w-auto">
+                  <Button
+                    type="button"
+                    className="w-full sm:w-auto flex-1"
+                    onClick={() => {
+                      const pwd = generatePassword()
+                      form.setValue('new_password', pwd)
+                    }}
+                  >
+                    Tạo mật khẩu
+                  </Button>
+                </div>
+                <div className="flex items-end w-full sm:w-auto">
+                  <MainButton
+                    type="button"
+                    className="w-full sm:w-auto flex-1"
+                    onClick={handleApplyPassword}
+                    text="Apply"
+                    loading={isApplyingPassword}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <MainButton text="Lưu" className="w-full" loading={isPending} />
-      </form>
-    </Form>
+          {/* Membership Packages */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Gói membership</h2>
+            <DataTable
+              data={subscriptions}
+              columns={accountMembershipColumns}
+              searchPlaceholder="Tìm kiếm gói membership"
+              headerExtraContent={membershipHeaderExtraContent}
+            />
+            {errors.subscriptions && (
+              <div className="text-sm text-red-500 space-y-1 mt-2 p-2 border border-red-200 rounded bg-red-50">
+                {errors.subscriptions?.message && <p className="font-medium"> {errors.subscriptions.message}</p>}
+              </div>
+            )}
+          </div>
+
+          {/* Assigned Items */}
+          <div className="space-y-8">
+            <h2 className="text-lg font-semibold">Gán khóa học, thực đơn cho học viên</h2>
+            <div className="space-y-4">
+              <FormMultiSelectField
+                form={form}
+                name="course_ids"
+                label="Khóa học"
+                data={courses}
+                placeholder="Chọn khóa học"
+                key={`course-select-${form.watch('course_ids')?.length || 0}`}
+              />
+
+              <FormMultiSelectField
+                form={form}
+                name="meal_plan_ids"
+                label="Thực đơn"
+                data={mealPlans}
+                placeholder="Chọn thực đơn"
+                key={`meal-plan-select-${form.watch('meal_plan_ids')?.length || 0}`}
+              />
+
+              <FormMultiSelectField
+                form={form}
+                name="exercise_ids"
+                label="Bài tập"
+                data={exercises}
+                placeholder="Chọn bài tập"
+                key={`exercise-select-${form.watch('exercise_ids')?.length || 0}`}
+              />
+
+              <FormMultiSelectField
+                form={form}
+                name="dish_ids"
+                label="Món ăn"
+                data={dishes}
+                placeholder="Chọn món ăn"
+                key={`dish-select-${form.watch('dish_ids')?.length || 0}`}
+              />
+            </div>
+          </div>
+
+          <MainButton text="Lưu" className="w-full" disabled={isSubmitting} />
+        </form>
+      </Form>
+    </>
   )
 }

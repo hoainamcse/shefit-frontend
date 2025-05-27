@@ -2,6 +2,7 @@
 
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { AddButton } from '@/components/buttons/add-button'
+import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 import { MainButton } from '@/components/buttons/main-button'
 import { ColumnDef, DataTable } from '@/components/data-table'
 import { FileUploader } from '@/components/file-uploader'
@@ -40,7 +41,6 @@ export default function MuscleGroupsAndEquipmentsPage() {
 
   const fetchMuscleGroups = async () => {
     const response = await getMuscleGroups()
-    console.log(response)
     setMuscleGroups(response.data || [])
   }
 
@@ -55,30 +55,26 @@ export default function MuscleGroupsAndEquipmentsPage() {
   }, [])
 
   const handleDeleteMuscleGroup = async (id: string) => {
-    if (window.confirm('Bạn có chắc muốn xoá nhóm cơ này?')) {
-      try {
-        const res = await deleteMuscleGroup(id)
-        if (res.status === 'success') {
-          toast.success('Xoá nhóm cơ thành công')
-          fetchMuscleGroups()
-        }
-      } catch (e) {
-        toast.error('Có lỗi khi xoá nhóm cơ')
+    try {
+      const res = await deleteMuscleGroup(id)
+      if (res.status === 'success') {
+        toast.success('Xoá nhóm cơ thành công')
+        fetchMuscleGroups()
       }
+    } catch (e) {
+      toast.error('Có lỗi khi xoá nhóm cơ')
     }
   }
 
   const handleDeleteEquipment = async (id: string) => {
-    if (window.confirm('Bạn có chắc muốn xoá dụng cụ này?')) {
-      try {
-        const res = await deleteEquipment(id)
-        if (res.status === 'success') {
-          toast.success('Xoá dụng cụ thành công')
-          fetchEquipments()
-        }
-      } catch (e) {
-        toast.error('Có lỗi khi xoá dụng cụ')
+    try {
+      const res = await deleteEquipment(id)
+      if (res.status === 'success') {
+        toast.success('Xoá dụng cụ thành công')
+        fetchEquipments()
       }
+    } catch (e) {
+      toast.error('Có lỗi khi xoá dụng cụ')
     }
   }
 
@@ -117,12 +113,7 @@ export default function MuscleGroupsAndEquipmentsPage() {
             >
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onClick={() => handleDeleteMuscleGroup(row.id.toString())}
-            >
-              <Trash2 /> Xoá
-            </DropdownMenuItem>
+            <DeleteMenuItem onConfirm={() => handleDeleteMuscleGroup(row.id.toString())} />
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -183,12 +174,7 @@ export default function MuscleGroupsAndEquipmentsPage() {
             >
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onClick={() => handleDeleteEquipment(row.id.toString())}
-            >
-              <Trash2 /> Xoá
-            </DropdownMenuItem>
+            <DeleteMenuItem onConfirm={() => handleDeleteEquipment(row.id.toString())} />
           </DropdownMenuContent>
         </DropdownMenu>
       ),
