@@ -492,25 +492,28 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
           <div className="font-[family-name:var(--font-coiny)] text-text xl:text-[40px] max-lg:text-[30px]">Title</div>
           <p className="text-[#737373] xl:text-xl max-lg:text-base">{product.description}</p>
         </div>
-        <div>
-          <div className="font-[family-name:var(--font-coiny)] text-text xl:text-[40px] mb-5 max-lg:text-[30px]">
-            Tính năng
-          </div>
-          <div className="grid xl:grid-cols-12 lg:grid-cols-10 md:grid-cols-6 sm:grid-cols-4 gap-10">
-            {muscleGroups.map((muscleGroup) => (
-              <div key={muscleGroup.id} className="xl:text-xl max-lg:text-base">
-                <div className="group">
-                  <img
-                    src={muscleGroup.image}
-                    alt={muscleGroup.name}
-                    className="object-cover rounded-xl mb-4 size-[122px]"
-                  />
+
+        {muscleGroups.length > 0 && (
+          <div>
+            <div className="font-[family-name:var(--font-coiny)] text-text xl:text-[40px] mb-5 max-lg:text-[30px]">
+              Tính năng
+            </div>
+            <div className="grid xl:grid-cols-12 lg:grid-cols-10 md:grid-cols-6 sm:grid-cols-4 gap-10">
+              {muscleGroups.map((muscleGroup) => (
+                <div key={muscleGroup.id} className="xl:text-xl max-lg:text-base">
+                  <div className="group">
+                    <img
+                      src={muscleGroup.image}
+                      alt={muscleGroup.name}
+                      className="object-cover rounded-xl mb-4 size-[122px]"
+                    />
+                  </div>
+                  <div className="font-medium">{muscleGroup.name}</div>
                 </div>
-                <div className="font-medium">{muscleGroup.name}</div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

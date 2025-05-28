@@ -133,49 +133,57 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         ) : (
           <>
             <div>
-              <p className="font-[family-name:var(--font-coiny)] text-text text-2xl xl:text-[40px]">Thông tin khoá</p>
+              <p className="font-[family-name:var(--font-coiny)] text-text text-2xl xl:text-[40px]">Thông tin</p>
               <p>{course?.data?.description}</p>
             </div>
-            <div>
-              <p className="font-[family-name:var(--font-coiny)] text-text text-2xl xl:text-[40px]">Dụng cụ</p>
-              <ScrollArea className="w-screen-max-xl">
-                <div className="flex w-max space-x-4 py-4">
-                  {equipment?.data?.map((equipment: any, index: number) => (
-                    <figure key={`equipment-${equipment.id}-${index}`} className="shrink-0">
-                      <div className="overflow-hidden rounded-md">
-                        <img src={equipment.image} alt={equipment.name} className="w-[168px] h-[175px] object-cover" />
-                      </div>
-                      <figcaption className="pt-2 font-semibold text-xs text-muted-foreground">
-                        {equipment.name}
-                      </figcaption>
-                    </figure>
-                  ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-            </div>
-            <div>
-              <p className="font-[family-name:var(--font-coiny)] text-text text-2xl xl:text-[40px]">Nhóm cơ</p>
-              <ScrollArea className="w-screen-max-xl">
-                <div className="flex w-max space-x-4 py-4">
-                  {muscleGroup?.data?.map((muscleGroup: any, index: number) => (
-                    <figure key={`muscleGroup-${muscleGroup.id}-${index}`} className="shrink-0">
-                      <div className="overflow-hidden rounded-md">
-                        <img
-                          src={muscleGroup.image}
-                          alt={muscleGroup.name}
-                          className="w-[168px] h-[175px] object-cover"
-                        />
-                      </div>
-                      <figcaption className="pt-2 font-semibold text-xs text-muted-foreground">
-                        {muscleGroup.name}
-                      </figcaption>
-                    </figure>
-                  ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-            </div>
+            {equipment?.data?.length > 0 && (
+              <div>
+                <p className="font-[family-name:var(--font-coiny)] text-text text-2xl xl:text-[40px]">Dụng cụ</p>
+                <ScrollArea className="w-screen-max-xl">
+                  <div className="flex w-max space-x-4 py-4">
+                    {equipment?.data?.map((equipment: any, index: number) => (
+                      <figure key={`equipment-${equipment.id}-${index}`} className="shrink-0">
+                        <div className="overflow-hidden rounded-md">
+                          <img
+                            src={equipment.image}
+                            alt={equipment.name}
+                            className="w-[168px] h-[175px] object-cover"
+                          />
+                        </div>
+                        <figcaption className="pt-2 font-semibold text-xs text-muted-foreground">
+                          {equipment.name}
+                        </figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                  <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+              </div>
+            )}
+            {muscleGroup?.data?.length > 0 && (
+              <div>
+                <p className="font-[family-name:var(--font-coiny)] text-text text-2xl xl:text-[40px]">Nhóm cơ</p>
+                <ScrollArea className="w-screen-max-xl">
+                  <div className="flex w-max space-x-4 py-4">
+                    {muscleGroup?.data?.map((muscleGroup: any, index: number) => (
+                      <figure key={`muscleGroup-${muscleGroup.id}-${index}`} className="shrink-0">
+                        <div className="overflow-hidden rounded-md">
+                          <img
+                            src={muscleGroup.image}
+                            alt={muscleGroup.name}
+                            className="w-[168px] h-[175px] object-cover"
+                          />
+                        </div>
+                        <figcaption className="pt-2 font-semibold text-xs text-muted-foreground">
+                          {muscleGroup.name}
+                        </figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                  <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+              </div>
+            )}
           </>
         )}
       </div>
