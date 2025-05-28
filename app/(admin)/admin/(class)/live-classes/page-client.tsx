@@ -35,6 +35,7 @@ import { deleteCourse, updateCourse } from '@/network/server/courses-admin'
 import { toast } from 'sonner'
 import { ListCourse } from '@/models/course-admin'
 import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
+import { useClipboard } from '@/hooks/use-clipboard'
 
 const PublicSwitchCell = ({ row }: { row: ListCourse }) => {
   const [checked, setChecked] = useState(row.is_public)
@@ -51,6 +52,7 @@ const PublicSwitchCell = ({ row }: { row: ListCourse }) => {
 }
 
 export default function LiveClassesPageClient({ data }: { data: ListResponse<ListCourse> }) {
+  const { copy } = useClipboard()
   const router = useRouter()
 
   const handleDelete = async (id: string) => {
@@ -124,7 +126,7 @@ export default function LiveClassesPageClient({ data }: { data: ListResponse<Lis
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => copy(row.id)}>
               <Copy /> Sao chép khoá học ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />

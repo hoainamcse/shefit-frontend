@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Switch } from '@/components/ui/switch'
+import { useClipboard } from '@/hooks/use-clipboard'
 import { useDebounced } from '@/hooks/useDebounced'
 import { Calorie } from '@/models/calorie'
 import { Diet } from '@/models/diets'
@@ -45,6 +46,7 @@ const PublicSwitchCell = ({ mealPlanData }: { mealPlanData: MealPlan }) => {
 }
 
 export default function MealPlansPage() {
+  const { copy } = useClipboard()
   const router = useRouter()
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([])
   const [dietList, setDietList] = useState<Diet[]>([])
@@ -93,7 +95,7 @@ export default function MealPlansPage() {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => copy(row.id)}>
               <Copy /> Sao chép thực đơn ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />

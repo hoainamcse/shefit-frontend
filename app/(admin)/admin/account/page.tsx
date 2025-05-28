@@ -102,7 +102,7 @@ export default function AccountPage() {
           <DropdownMenuContent>
             <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
             <DropdownMenuItem>
-              <Copy /> Sao chép account ID
+              <Copy /> Sao chép tài khoản ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => router.push(`/admin/account/${row.id}`)}>

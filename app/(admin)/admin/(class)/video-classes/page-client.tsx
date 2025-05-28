@@ -36,6 +36,7 @@ import { toast } from 'sonner'
 import { ListCourse } from '@/models/course-admin'
 import { useDebounced } from '@/hooks/useDebounced'
 import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
+import { useClipboard } from '@/hooks/use-clipboard'
 
 const PublicSwitchCell = ({ row }: { row: ListCourse }) => {
   const [checked, setChecked] = useState(row.is_public)
@@ -52,6 +53,7 @@ const PublicSwitchCell = ({ row }: { row: ListCourse }) => {
 }
 
 export default function VideoClassesPageClient({ data }: { data: ListResponse<ListCourse> }) {
+  const { copy } = useClipboard()
   const router = useRouter()
 
   const handleDelete = async (id: string) => {
@@ -124,7 +126,7 @@ export default function VideoClassesPageClient({ data }: { data: ListResponse<Li
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => copy(row.id)}>
               <Copy /> Sao chép khoá học ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />

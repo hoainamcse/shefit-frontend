@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Switch } from '@/components/ui/switch'
+import { useClipboard } from '@/hooks/use-clipboard'
 import { useDebounced } from '@/hooks/useDebounced'
 import { getFormCategoryLabel } from '@/lib/label'
 import { ListCourse } from '@/models/course-admin'
@@ -83,6 +84,7 @@ const PublicSwitchCell = ({ row }: { row: ListCourse }) => {
 }
 
 export default function OneOnOneClassesPage() {
+  const { copy } = useClipboard()
   const router = useRouter()
   const [videoDialogOpen, setVideoDialogOpen] = useState(false)
   const [liveDialogOpen, setLiveDialogOpen] = useState(false)
@@ -204,7 +206,7 @@ export default function OneOnOneClassesPage() {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => copy(row.id)}>
               <Copy /> Sao chép khoá học ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />

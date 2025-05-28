@@ -25,6 +25,7 @@ import { deleteSubscription, getSubscriptions } from '@/network/server/subscript
 import { Subscription } from '@/models/subscription-admin'
 import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 import { DeleteButton } from '@/components/buttons/delete-button'
+import { useClipboard } from '@/hooks/use-clipboard'
 
 // Helper to map course_format to label
 const getCourseFormatLabel = (format: string): string => {
@@ -42,6 +43,7 @@ interface MembershipRow {
 }
 
 export default function MembershipPage() {
+  const { copy } = useClipboard()
   const router = useRouter()
   const [coupons, setCoupons] = useState<Coupon[]>([])
   const [membershipTable, setMembershipTable] = useState<MembershipRow[]>([])
@@ -187,8 +189,8 @@ export default function MembershipPage() {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
-            <DropdownMenuItem>
-              <Copy /> Sao chép ID gói
+            <DropdownMenuItem onClick={() => copy(row.id)}>
+              <Copy /> Sao chép gói tập ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
 

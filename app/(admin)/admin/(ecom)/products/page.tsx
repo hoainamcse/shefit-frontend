@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useClipboard } from '@/hooks/use-clipboard'
 import { getProducts, getCategories, getColors, getSizes, deleteProduct } from '@/network/server/products'
 import { Copy, Edit, Ellipsis, Eye, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -42,6 +43,7 @@ interface ProductRow {
 }
 
 export default function ProductsPage() {
+  const { copy } = useClipboard()
   const [productTable, setProductTable] = useState<ProductRow[]>([])
   const router = useRouter()
 
@@ -165,7 +167,7 @@ export default function ProductsPage() {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => copy(row.id)}>
               <Copy /> Sao chép sản phẩm ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
