@@ -1,5 +1,6 @@
 "use client"
-import { use, useEffect, useState } from "react"
+
+import { use, useEffect, useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -19,9 +20,16 @@ import { getMuscleGroups } from "@/network/server/muscle-group"
 import { addCart, getCarts } from "@/network/server/cart"
 import { toast } from "sonner"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-
+import { generateQrToken, createQr, generateToken, syncTransaction } from "@/network/server/payment"
+import { getUserById } from "@/network/server/user"
+import { useQRCode } from "next-qrcode"
 export default function ProductPage({ params }: { params: Promise<{ product_id: string }> }) {
   const { product_id } = use(params)
+  const { Canvas } = useQRCode()
+  const [accessToken, setAccessToken] = useState<string | null>(null)
+  const [qrData, setQrData] = useState<any>(null)
+  const [isLoadingPayment, setIsLoadingPayment] = useState(false)
+  const [paymentError, setPaymentError] = useState<string | null>(null)
   const [product, setProduct] = useState<any>(null)
   const [colors, setColors] = useState<any[]>([])
   const [sizes, setSizes] = useState<any[]>([])
@@ -32,6 +40,13 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
   const [cartId, setCartId] = useState<number | null>(null)
   const [isAdding, setIsAdding] = useState(false)
   const [quantity, setQuantity] = useState(1)
+  const [orderId, setOrderId] = useState<string>("")
+  const [qrToken, setQrToken] = useState<string>("")
+  const [generatedAccessToken, setGeneratedAccessToken] = useState<string>("")
+  const [paymentContent, setPaymentContent] = useState<string>("")
+  const [isTransactionSuccess, setIsTransactionSuccess] = useState(false)
+  const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     if (product && product.variants && product.variants.length > 0) {
@@ -78,10 +93,110 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
     fetchData()
   }, [product_id])
 
+  useEffect(() => {
+    if (!generatedAccessToken || !orderId || isTransactionSuccess) return
+
+    const syncTransactionPeriodically = async () => {
+      try {
+        const syncResponse = await syncTransaction(generatedAccessToken, orderId, paymentContent)
+        console.log("Sync Transaction Response:", syncResponse)
+
+        if (syncResponse && syncResponse.error === false) {
+          console.log("Transaction successful!", syncResponse)
+          setIsTransactionSuccess(true)
+          setIsOrderDialogOpen(false)
+
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current)
+            intervalRef.current = null
+          }
+        }
+      } catch (error) {
+        console.error("Error calling syncTransaction API:", error)
+      }
+    }
+
+    syncTransactionPeriodically()
+
+    intervalRef.current = setInterval(syncTransactionPeriodically, 5000)
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
+    }
+  }, [generatedAccessToken, orderId, paymentContent, isTransactionSuccess])
+
   if (!product) return <div>Loading...</div>
 
+  const generateOrderId = () => {
+    return Math.floor(1000 + Math.random() * 9000).toString()
+  }
+
+  const handleBuyNow = async () => {
+    if (isTransactionSuccess || !selectedVariantId || !product) return
+
+    setIsLoadingPayment(true)
+    setQrData(null)
+    setPaymentError(null)
+    setIsOrderDialogOpen(true)
+
+    // Clear any existing intervals
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+
+    const newOrderId = generateOrderId()
+    setOrderId(newOrderId)
+
+    try {
+      // Step 1: Get QR token
+      const tokenResponse = await generateQrToken()
+
+      if (!tokenResponse.access_token) {
+        throw new Error("Không thể lấy mã xác thực thanh toán")
+      }
+
+      const token = tokenResponse.access_token
+      setAccessToken(token)
+      setQrToken(token)
+
+      const userResponse = await getUserById(localStorage.getItem("user_id") || "")
+      const username = userResponse.data.username
+      const content = `${username}_${newOrderId}`
+      setPaymentContent(content)
+      const amount = product.price * quantity
+
+      const qrResponse = await createQr(token, amount, newOrderId, content)
+
+      if (!qrResponse.data) {
+        throw new Error("Không thể tạo mã QR thanh toán")
+      }
+
+      setQrData(qrResponse.data)
+
+      await new Promise((resolve) => setTimeout(resolve, 10000))
+
+      const generatedTokenResponse = await generateToken(token)
+      console.log("Generate Token Response:", generatedTokenResponse)
+
+      if (generatedTokenResponse && generatedTokenResponse.access_token) {
+        setGeneratedAccessToken(generatedTokenResponse.access_token)
+      } else {
+        console.error("No access_token found in generateToken response")
+      }
+    } catch (error: any) {
+      console.error("Payment error:", error)
+      setPaymentError(error.message || "Không thể tạo đơn hàng. Vui lòng thử lại sau.")
+    } finally {
+      setIsLoadingPayment(false)
+    }
+  }
+
   const handleAddToCart = async () => {
-    if (!cartId || !selectedVariantId) return
+    if (isTransactionSuccess || !cartId || !selectedVariantId) return
 
     const currentQuantity = Math.max(1, Number(quantity))
     console.log("Current state values:", {
@@ -114,6 +229,36 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
 
   return (
     <div className="flex flex-col gap-10">
+      <AlertDialog
+        open={isTransactionSuccess}
+        onOpenChange={(open) => {
+          setIsTransactionSuccess(open)
+          if (!open) {
+            setQrData(null)
+            setAccessToken(null)
+            setQrToken("")
+            setGeneratedAccessToken("")
+            setPaymentContent("")
+            setOrderId("")
+            setPaymentError(null)
+            setIsOrderDialogOpen(false)
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader className="flex flex-col items-center text-center">
+            <AlertDialogCancel className="absolute top-4 right-4 border-none hover:bg-white shadow-none active:bg-none">
+              <CloseIcon />
+            </AlertDialogCancel>
+            <AlertDialogTitle className="text-text font-[family-name:var(--font-coiny)] text-[40px] pt-10">
+              Đặt hàng thành công
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-500 text-[20px] pb-10">
+              NV CSKH sẽ liên hệ để xác nhận đơn hàng
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+        </AlertDialogContent>
+      </AlertDialog>
       <div className="mb-20 p-10 mt-20">
         <div className="xl:w-[80%] max-lg:w-full xl:flex justify-between mb-20 max-lg:block">
           <div className="xl:w-3/4 max-lg:w-full px-8">
@@ -245,26 +390,91 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
               </div>
             </div>
             <div className="w-full flex gap-3 justify-center">
-              <AlertDialog>
+              <AlertDialog open={isOrderDialogOpen} onOpenChange={setIsOrderDialogOpen}>
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="outline"
                     className="w-full rounded-full bg-button hover:bg-[#11c296] text-white hover:text-white"
+                    onClick={() => handleBuyNow()}
+                    disabled={!selectedVariantId || isLoadingPayment}
                   >
-                    Mua ngay
+                    {isLoadingPayment ? "Đang xử lý..." : "Mua ngay"}
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader className="flex flex-col items-center text-center">
+                <AlertDialogContent className="max-w-md">
+                  <AlertDialogHeader>
                     <AlertDialogCancel className="absolute top-4 right-4 border-none hover:bg-white shadow-none active:bg-none">
                       <CloseIcon />
                     </AlertDialogCancel>
-                    <AlertDialogTitle className="text-text font-[family-name:var(--font-coiny)] text-[40px] pt-10">
-                      Đặt hàng thành công
-                    </AlertDialogTitle>
-                    <AlertDialogDescription className="text-gray-500 text-[20px] pb-10">
-                      NV CSKH sẽ liên hệ để xác nhận đơn hàng
-                    </AlertDialogDescription>
+                    {qrData ? (
+                      <div className="flex flex-col items-center gap-4 py-4">
+                        <AlertDialogTitle className="text-text font-[family-name:var(--font-coiny)] text-2xl">
+                          Thanh toán đơn hàng
+                        </AlertDialogTitle>
+                        <div className="border rounded-md p-4 w-full flex justify-center">
+                          {qrData.qrCode ? (
+                            <Canvas
+                              text={qrData.qrCode}
+                              options={{
+                                errorCorrectionLevel: "M",
+                                margin: 3,
+                                scale: 4,
+                                width: 300,
+                              }}
+                            />
+                          ) : (
+                            <div className="p-8 text-center text-gray-500">QR code không khả dụng</div>
+                          )}
+                        </div>
+                        <div className="w-full space-y-3 text-left">
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Ngân hàng:</span>
+                            <span className="font-medium">{qrData.bankName}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Số tài khoản:</span>
+                            <span className="font-medium">{qrData.bankAccount}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Chủ tài khoản:</span>
+                            <span className="font-medium">{qrData.userBankName}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Số tiền:</span>
+                            <span className="font-medium text-[#00C7BE]">
+                              {Number(qrData.amount).toLocaleString()} VNĐ
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Mã đơn hàng:</span>
+                            <span className="font-medium">{qrData.orderId}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Nội dung:</span>
+                            <span className="font-medium">{qrData.content}</span>
+                          </div>
+                        </div>
+                        <AlertDialogDescription className="text-center mt-4">
+                          Quét mã QR để thanh toán đơn hàng của bạn.
+                        </AlertDialogDescription>
+                      </div>
+                    ) : paymentError ? (
+                      <div className="flex flex-col items-center py-6">
+                        <AlertDialogTitle className="text-text font-[family-name:var(--font-coiny)] text-xl text-red-500">
+                          Lỗi thanh toán
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-center mt-4">{paymentError}</AlertDialogDescription>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center py-6">
+                        <AlertDialogTitle className="text-text font-[family-name:var(--font-coiny)] text-xl">
+                          Đang tạo đơn hàng
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-center mt-4">
+                          Vui lòng đợi trong giây lát...
+                        </AlertDialogDescription>
+                      </div>
+                    )}
                   </AlertDialogHeader>
                 </AlertDialogContent>
               </AlertDialog>

@@ -22,7 +22,7 @@ export default async function PurchasePackage() {
           <div key={subscription.id} className="bg-[#FFAEB01A] rounded-[20px] py-7 px-5">
             <div>
               <div className="flex justify-between">
-                <div className="font-[Coiny] text-[#000000] text-xl md:text-2xl mb-[18px]">Gói {subscription.name}</div>
+                <div className="font-[Coiny] text-[#000000] text-xl md:text-2xl mb-[18px]">{subscription.name}</div>
 
                 <Dialog>
                   <DialogTrigger className="h-fit text-base md:text-xl lg:text-2xl text-[#13D8A7] mb-[18px] max-md:font-light">
