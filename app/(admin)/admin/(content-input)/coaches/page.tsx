@@ -44,7 +44,7 @@ export default function CoachPage() {
   return (
     <ContentLayout title="Huấn luyện viên">
       <div className="flex justify-between items-center mb-6">
-        <Link href="/admin/coach/create">
+        <Link href="/admin/coaches/create">
           <AddButton text="Tạo mới" />
         </Link>
       </div>
@@ -55,7 +55,7 @@ export default function CoachPage() {
             <div className="absolute top-2 right-2 z-10">
               <DeleteButton size="icon" variant="outline" onConfirm={() => handleDeleteCoach(coach.id.toString())} />
             </div>
-            <Link href={`/admin/coach/${coach.id}`} className="block focus:outline-none rounded-xl">
+            <Link href={`/admin/coaches/${coach.id}`} className="block focus:outline-none rounded-xl">
               <Card>
                 <CardContent className="p-4">
                   <div className="flex flex-row items-center gap-4 max-sm:flex-col">

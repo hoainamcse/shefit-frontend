@@ -63,7 +63,7 @@ export function CreateCoachForm({ isEdit, data }: CoachFormProps) {
           const coachResult = await createCoach(values)
           if (coachResult.status === 'success') {
             toast.success('Tạo huấn luyện viên thành công')
-            router.push('/admin/coach')
+            router.push('/admin/coaches')
           }
         } else {
           if (data?.id) {
