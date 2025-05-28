@@ -11,83 +11,102 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { formatDateString } from '@/lib/utils'
+import UserBodyQuizz from '@/models/user-body-quizz'
+import { getAllUserBodyQuizzes } from '@/network/server/user-body-quizz'
 import { Copy, Edit, Ellipsis, Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
-type QuizResult = {
-  id: string
-  name: string
-  phone_number: string
-  comment: string
-  num_completed: number
-  createdAt: string
-  updatedAt: string
-}
+// type QuizResult = {
+//   id: string
+//   name: string
+//   phone_number: string
+//   comment: string
+//   num_completed: number
+//   createdAt: string
+//   updatedAt: string
+// }
 
-const quizResults: QuizResult[] = [
-  {
-    id: '1',
-    name: 'Nguyễn Văn A',
-    phone_number: '0909090909',
-    comment: 'Cần tập nhiều kháng lực hơn',
-    num_completed: 10,
-    createdAt: '2025-03-26',
-    updatedAt: '2025-03-26',
-  },
-  {
-    id: '2',
-    name: 'Nguyễn Văn B',
-    phone_number: '0909090909',
-    comment: 'Cần tập nhiều kháng lực hơn',
-    num_completed: 10,
-    createdAt: '2025-03-26',
-    updatedAt: '2025-03-26',
-  },
-  {
-    id: '3',
-    name: 'Nguyễn Văn C',
-    phone_number: '0909090909',
-    comment: 'Cần tập nhiều kháng lực hơn',
-    num_completed: 10,
-    createdAt: '2025-03-26',
-    updatedAt: '2025-03-26',
-  },
-  {
-    id: '4',
-    name: 'Nguyễn Văn D',
-    phone_number: '0909090909',
-    comment: 'Cần tập nhiều kháng lực hơn',
-    num_completed: 10,
-    createdAt: '2025-03-26',
-    updatedAt: '2025-03-26',
-  },
-  {
-    id: '5',
-    name: 'Nguyễn Văn E',
-    phone_number: '0909090909',
-    comment: 'Cần tập nhiều kháng lực hơn',
-    num_completed: 10,
-    createdAt: '2025-03-26',
-    updatedAt: '2025-03-26',
-  },
-  {
-    id: '6',
-    name: 'Nguyễn Văn F',
-    phone_number: '0909090909',
-    comment: 'Cần tập nhiều kháng lực hơn',
-    num_completed: 10,
-    createdAt: '2025-03-26',
-    updatedAt: '2025-03-26',
-  },
-]
+// const quizResults: QuizResult[] = [
+//   {
+//     id: '1',
+//     name: 'Nguyễn Văn A',
+//     phone_number: '0909090909',
+//     comment: 'Cần tập nhiều kháng lực hơn',
+//     num_completed: 10,
+//     createdAt: '2025-03-26',
+//     updatedAt: '2025-03-26',
+//   },
+//   {
+//     id: '2',
+//     name: 'Nguyễn Văn B',
+//     phone_number: '0909090909',
+//     comment: 'Cần tập nhiều kháng lực hơn',
+//     num_completed: 10,
+//     createdAt: '2025-03-26',
+//     updatedAt: '2025-03-26',
+//   },
+//   {
+//     id: '3',
+//     name: 'Nguyễn Văn C',
+//     phone_number: '0909090909',
+//     comment: 'Cần tập nhiều kháng lực hơn',
+//     num_completed: 10,
+//     createdAt: '2025-03-26',
+//     updatedAt: '2025-03-26',
+//   },
+//   {
+//     id: '4',
+//     name: 'Nguyễn Văn D',
+//     phone_number: '0909090909',
+//     comment: 'Cần tập nhiều kháng lực hơn',
+//     num_completed: 10,
+//     createdAt: '2025-03-26',
+//     updatedAt: '2025-03-26',
+//   },
+//   {
+//     id: '5',
+//     name: 'Nguyễn Văn E',
+//     phone_number: '0909090909',
+//     comment: 'Cần tập nhiều kháng lực hơn',
+//     num_completed: 10,
+//     createdAt: '2025-03-26',
+//     updatedAt: '2025-03-26',
+//   },
+//   {
+//     id: '6',
+//     name: 'Nguyễn Văn F',
+//     phone_number: '0909090909',
+//     comment: 'Cần tập nhiều kháng lực hơn',
+//     num_completed: 10,
+//     createdAt: '2025-03-26',
+//     updatedAt: '2025-03-26',
+//   },
+// ]
 
 export default function QuizResultsPage() {
-  const columns: ColumnDef<QuizResult>[] = [
+  const [quizResults, setQuizResults] = useState<UserBodyQuizz[]>([])
+  const router = useRouter()
+
+  const fetchData = async () => {
+    const response = await getAllUserBodyQuizzes()
+    const mapped = (response.data || []).map((item: any) => {
+      return {
+        ...item,
+        created_at: formatDateString(item.created_at),
+        updated_at: formatDateString(item.updated_at),
+      }
+    })
+    setQuizResults(mapped)
+  }
+  const columns: ColumnDef<UserBodyQuizz>[] = [
     {
-      accessorKey: 'name',
+      accessorKey: 'user_name',
       header: 'Tên',
     },
     {
-      accessorKey: 'phone_number',
+      accessorKey: 'telephone_number',
       header: 'SĐT',
     },
     {
@@ -95,15 +114,11 @@ export default function QuizResultsPage() {
       header: 'Nhận xét',
     },
     {
-      accessorKey: 'num_completed',
-      header: 'Số lần đã làm',
-    },
-    {
-      accessorKey: 'createdAt',
+      accessorKey: 'created_at',
       header: 'Ngày tham gia',
     },
     {
-      accessorKey: 'updatedAt',
+      accessorKey: 'updated_at',
       header: 'Ngày cập nhật',
     },
     {
@@ -121,17 +136,21 @@ export default function QuizResultsPage() {
               <Copy /> Sao chép kết quả ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push(`/admin/quizzes/results/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
+            {/* <DropdownMenuItem className="text-destructive focus:text-destructive">
               <Trash2 /> Xoá
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       ),
     },
   ]
+
+  useEffect(() => {
+    fetchData()
+  }, [])
 
   return (
     <ContentLayout title="Kết quả quiz">

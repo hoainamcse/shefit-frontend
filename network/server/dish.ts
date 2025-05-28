@@ -14,14 +14,18 @@ export async function getListDishes(): Promise<ListResponse<Dish>> {
     return await response.json()
 }
 
-export async function createDish(data: any[]): Promise<ListResponse<Dish>> {
-    const response = await fetchDataServer('/v1/dishes:bulkCreate', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        credentials: 'include',
-    })
-    revalidateTag(`dishes`)
-    return await response.json()
+export async function createDish(
+  data: any | any[],
+  bulk: boolean = false
+): Promise<ListResponse<Dish>> {
+  const endpoint = `/v1/dishes:bulkCreate?bulk=${bulk}`
+  const response = await fetchDataServer(endpoint, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    credentials: 'include',
+  })
+  revalidateTag('dishes')
+  return response.json()
 }
 
 export async function updateDish(dish_id: string, data: any): Promise<ApiResponse<Dish>> {

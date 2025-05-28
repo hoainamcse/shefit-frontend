@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Form } from '@/components/ui/form'
 import { FormMultiSelectField, FormInputField, FormTextareaField, FormSelectField } from '@/components/forms/fields'
-import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
+import { Copy, Edit, Ellipsis, Eye, Import, Trash2, FolderDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { MainButton } from '@/components/buttons/main-button'
@@ -27,34 +27,69 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { generateUsername, generatePassword } from '@/helper/user'
 import PROVINCES from './provinceData'
 import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
-interface AccountRow {
-  id: number
-  fullname: string
-  phone_number: string
-  username: string
-  created_at: string
-}
+import { User } from '@/models/user'
+import { formatDateString } from '@/lib/utils'
 
 export default function AccountPage() {
   const router = useRouter()
-  const [accountTable, setAccountTable] = useState<AccountRow[]>([])
+  const [accountTable, setAccountTable] = useState<User[]>([])
 
   const fetchAccounts = async () => {
     const response = await getUsers()
     const mapped = (response.data || []).map((item: any) => {
-      const date = new Date(item.created_at)
-      const formattedDate = `${date.getDate().toString().padStart(2, '0')}-
-        ${date.getMonth().toString().padStart(2, '0')}-
-        ${date.getFullYear()}`
       return {
-        id: item.id,
-        fullname: item.fullname,
-        username: item.username,
-        phone_number: item.phone_number,
-        created_at: formattedDate,
+        ...item,
+        created_at: formatDateString(item.created_at),
       }
     })
     setAccountTable(mapped)
+  }
+
+  const handleExportCsv = () => {
+    if (accountTable.length === 0) {
+      toast.info('Không có dữ liệu để xuất.')
+      return
+    }
+
+    const headers = [
+      'ID',
+      'Họ & tên',
+      'Username',
+      'Số điện thoại',
+      'Role',
+      'Ngày tạo',
+      'Tỉnh/Thành phố',
+      'Địa chỉ chi tiết',
+    ]
+    const csvRows = []
+    csvRows.push(headers.join(','))
+
+    accountTable.forEach((account) => {
+      const row = [
+        account.id.toString(),
+        account.fullname,
+        account.username,
+        account.phone_number,
+        account.role,
+        account.created_at,
+        account.province || '',
+        account.address || '',
+      ]
+      csvRows.push(row.map((field) => `"${field}"`).join(','))
+    })
+
+    const csvString = csvRows.join('\n')
+    console.log(csvRows)
+    console.log(csvString)
+
+    const blob = new Blob(['\uFEFF' + csvString], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.setAttribute('download', 'accounts.csv')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    toast.success('Dữ liệu đã được xuất thành công!')
   }
 
   const handleDeleteAccount = async (accountId: number) => {
@@ -69,7 +104,7 @@ export default function AccountPage() {
     }
   }
 
-  const columns: ColumnDef<AccountRow>[] = [
+  const columns: ColumnDef<User>[] = [
     {
       accessorKey: 'id',
       header: 'STT',
@@ -115,9 +150,12 @@ export default function AccountPage() {
     },
   ]
   const headerExtraContent = (
-    <CreateAccountDialog updateData={fetchAccounts}>
-      <AddButton text="Thêm tài khoản" />
-    </CreateAccountDialog>
+    <div className="flex items-center gap-2">
+      <CreateAccountDialog updateData={fetchAccounts}>
+        <AddButton text="Thêm tài khoản" />
+      </CreateAccountDialog>
+      <MainButton variant="outline" text="Xuất dữ liệu" onClick={handleExportCsv} icon={FolderDown} />
+    </div>
   )
 
   useEffect(() => {

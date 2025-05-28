@@ -98,7 +98,7 @@ export default function CreateDishForm({ isEdit, data, namePrefix = '' }: Create
     startTransition(async () => {
       try {
         if (!isEdit) {
-          const dishResult = await createDish([values])
+          const dishResult = await createDish(values)
           if (dishResult.status === 'success') {
             toast.success('Tạo món ăn thành công')
             router.push('/admin/dishes')
