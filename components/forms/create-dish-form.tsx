@@ -63,7 +63,7 @@ export type FormDishValues = z.infer<typeof formSchema>
 const defaultValues: Partial<FormDishValues> = {
   name: '',
   description: '',
-  diet_id: 1,
+  diet_id: undefined,
   image:
     'https://images.unsplash.com/photo-1523218345414-cd47aea19ba6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fG1lYWx8ZW58MHx8MHx8fDA%3D',
   calories: 0,
@@ -132,10 +132,10 @@ export default function CreateDishForm({ isEdit, data, namePrefix = '' }: Create
 type DishFormFieldsProps = {
   form: any
   namePrefix?: string
-  isShowImage?: boolean
+  isDishMealPlan?: boolean
 }
 
-export const DishFormFields = ({ form, namePrefix = '', isShowImage = true }: DishFormFieldsProps) => {
+export const DishFormFields = ({ form, namePrefix = '', isDishMealPlan = false }: DishFormFieldsProps) => {
   const prefixedName = (name: string) => (namePrefix ? `${namePrefix}.${name}` : name)
 
   // // Get field array for ingredients
@@ -193,13 +193,15 @@ export const DishFormFields = ({ form, namePrefix = '', isShowImage = true }: Di
         )}
       />
 
-      <FormSelectField
-        form={form}
-        name={prefixedName('diet_id')}
-        label="Chế độ ăn"
-        data={AVAILABLE_DIETS}
-        placeholder="Chọn chế độ ăn"
-      />
+      {!isDishMealPlan && (
+        <FormSelectField
+          form={form}
+          name={prefixedName('diet_id')}
+          label="Chế độ ăn"
+          data={AVAILABLE_DIETS}
+          placeholder="Chọn chế độ ăn"
+        />
+      )}
 
       {/* <FormField
         control={form.control}
@@ -220,7 +222,7 @@ export const DishFormFields = ({ form, namePrefix = '', isShowImage = true }: Di
         )}
       /> */}
 
-      {isShowImage && (
+      {!isDishMealPlan && (
         <FormImageInputField
           form={form}
           name={prefixedName('image')}

@@ -14,7 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { FormInputField, FormSelectField, FormSwitchField, FormTextareaField } from './fields'
-import { formSchema as dishFormSchema, DishFormFields, FormDishValues } from './create-dish-form'
+import { DishFormFields, FormDishValues } from './create-dish-form'
 import { Diet } from '@/models/diets'
 import { getDiets } from '@/network/server/diets'
 import { useEffect, useMemo, useState, useTransition } from 'react'
@@ -35,6 +35,28 @@ import { FormImageInputField } from './fields/form-image-input-field'
 import { MealPlan } from '@/models/meal-plans'
 import { Calorie } from '@/models/calorie'
 import { getCalories } from '@/network/server/calorie'
+
+const dishFormSchema = z.object({
+  id: z.coerce.number().optional(),
+  name: z.string().min(2, {
+    message: 'Dish name must be at least 2 characters.',
+  }),
+  description: z.string().min(10, {
+    message: 'Preparation instructions must be at least 10 characters.',
+  }),
+  image: z.string(),
+  calories: z.coerce.number().min(0, 'Calories value is required'),
+  protein: z.coerce.number().min(0, 'Protein value is required'),
+  carb: z.coerce.number().min(0, 'Carbs value is required'),
+  fat: z.coerce.number().min(0, 'Fat value is required'),
+  fiber: z.coerce.number().min(0, 'Fiber value is required'),
+  protein_source: z.array(z.string()).optional(),
+  vegetable: z.array(z.string()).optional(),
+  starch: z.array(z.string()).optional(),
+  spices: z.array(z.string()).optional(),
+  others: z.array(z.string()).optional(),
+  meal_time: z.string().optional(),
+})
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -87,10 +109,16 @@ const fetchMealPlanFormDefaults = async (mealPlanId: string, rawData: any): Prom
 
   const days = daysRes?.data || []
   const daysWithDishes = await Promise.all(
-    days.map(async (day: any) => ({
-      ...day,
-      dishes: (await getMealPlanDishes(mealPlanId, day.id))?.data || [],
-    }))
+    days.map(async (day: any) => {
+      const dishesRes = await getMealPlanDishes(mealPlanId, day.id)
+
+      const dishesWithoutDietId = dishesRes?.data?.map(({ diet_id, ...rest }: any) => rest) || []
+
+      return {
+        ...day,
+        dishes: dishesWithoutDietId,
+      }
+    })
   )
 
   const { calories, ...rest } = rawData
@@ -206,7 +234,6 @@ export default function CreateMealPlanForm({ isEdit = false, data }: { isEdit: b
     const newDish = {
       name: '',
       description: '',
-      diet_id: 1,
       image:
         'https://images.unsplash.com/photo-1523218345414-cd47aea19ba6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fG1lYWx8ZW58MHx8MHx8fDA%3D',
       calories: 0,
@@ -676,7 +703,7 @@ export default function CreateMealPlanForm({ isEdit = false, data }: { isEdit: b
                                                     <DishFormFields
                                                       form={form}
                                                       namePrefix={`days.${dayIndex}.dishes.${dishIndex}`}
-                                                      isShowImage={false}
+                                                      isDishMealPlan={true}
                                                     />
                                                   </div>
                                                 </div>
