@@ -1,21 +1,21 @@
-"use client"
+'use client'
 
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { getCourse } from "@/network/server/courses"
-import { getEquipments } from "@/network/server/equipments"
-import { getMuscleGroups } from "@/network/server/muscle-group"
-import { getFormCategoryLabel, getDifficultyLevelLabel } from "@/lib/label"
-import { useState, useEffect, useRef } from "react"
-import { FormCategory } from "@/models/course"
-import LiveCourseDetail from "./LiveCourseDetail"
-import VideoCourseDetail from "./VideoCourseDetail"
-import { BackIcon } from "@/components/icons/BackIcon"
-import { useRouter } from "next/navigation"
-import ActionButtons from "./ActionButtons"
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { getCourse } from '@/network/server/courses'
+import { getEquipments } from '@/network/server/equipments'
+import { getMuscleGroups } from '@/network/server/muscle-group'
+import { getFormCategoryLabel, getDifficultyLevelLabel } from '@/lib/label'
+import { useState, useEffect, useRef } from 'react'
+import { FormCategory } from '@/models/course'
+import LiveCourseDetail from './LiveCourseDetail'
+import VideoCourseDetail from './VideoCourseDetail'
+import { BackIcon } from '@/components/icons/BackIcon'
+import { useRouter } from 'next/navigation'
+import ActionButtons from './ActionButtons'
 
 interface CourseDetailProps {
   courseId: string
-  typeCourse: "video" | "live"
+  typeCourse: 'video' | 'live'
 }
 
 export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps) {
@@ -52,7 +52,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         }
         setMuscleGroup(filteredMuscleGroups)
       } catch (error) {
-        console.error("Error fetching data:", error)
+        console.error('Error fetching data:', error)
       }
     }
 
@@ -66,12 +66,12 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         setIsFooterVisible(entry.isIntersecting)
       },
       {
-        rootMargin: "0px",
+        rootMargin: '0px',
         threshold: 0.1, // When 10% of the footer is visible
       }
     )
 
-    const siteFooter = document.querySelector("footer")
+    const siteFooter = document.querySelector('footer')
 
     if (siteFooter) {
       observer.observe(siteFooter)
@@ -95,7 +95,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
     <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full pb-24 relative">
       <div className="p-6 mb-20 flex flex-col gap-10">
         <div className="flex items-center gap-[10px] cursor-pointer" onClick={() => router.back()}>
-          <BackIcon color="#000000" style={{ marginBottom: "4px" }} />
+          <BackIcon color="#000000" style={{ marginBottom: '4px' }} />
           <div className="text-xl text-[#000000] font-semibold">Quay về</div>
         </div>
         <img
@@ -113,7 +113,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
           <div className="text-gray-500">
             {course?.data?.form_categories &&
               (Array.isArray(course.data.form_categories)
-                ? course.data.form_categories.map((cat: FormCategory) => getFormCategoryLabel(cat)).join(", ")
+                ? course.data.form_categories.map((cat: FormCategory) => getFormCategoryLabel(cat)).join(', ')
                 : getFormCategoryLabel(course.data.form_categories))}
           </div>
         </div>
@@ -125,7 +125,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         </div>
 
         {showDetails ? (
-          typeCourse === "video" ? (
+          typeCourse === 'video' ? (
             <VideoCourseDetail courseId={courseId} />
           ) : (
             <LiveCourseDetail courseId={courseId} />
@@ -188,7 +188,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         )}
       </div>
 
-      <ActionButtons courseId={courseId} />
+      <ActionButtons courseId={courseId} showDetails={showDetails} handleToggleDetails={handleToggleDetails} />
     </div>
   )
 }

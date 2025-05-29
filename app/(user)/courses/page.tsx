@@ -1,25 +1,25 @@
-"use client"
+'use client'
 
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-import Layout from "@/components/common/Layout"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ChevronRight } from "lucide-react"
-import Link from "next/link"
-import React, { useState, useEffect } from "react"
-import Image from "next/image"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { getCoursesByType } from "@/network/server/courses"
-import { cn } from "@/lib/utils"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
+import Layout from '@/components/common/Layout'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { ChevronRight } from 'lucide-react'
+import Link from 'next/link'
+import React, { useState, useEffect } from 'react'
+import Image from 'next/image'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { getCoursesByType } from '@/network/server/courses'
+import { cn } from '@/lib/utils'
 import {
   DIFFICULTY_LEVEL_OPTIONS,
   FORM_CATEGORY_OPTIONS,
   getFormCategoryLabel,
   getDifficultyLevelLabel,
-} from "@/lib/label"
-import type { Course, FormCategory } from "@/models/course"
-import { getSubscriptions } from "@/network/server/subscriptions"
-import type { Subscription } from "@/models/subscriptions"
-import PopularCoursesCarousel from "./_components/PopularCoursesCarousel"
+} from '@/lib/label'
+import type { Course, FormCategory } from '@/models/course'
+import { getSubscriptions } from '@/network/server/subscriptions'
+import type { Subscription } from '@/models/subscriptions'
+import PopularCoursesCarousel from './_components/PopularCoursesCarousel'
 
 function SelectHero({
   placeholder,
@@ -56,15 +56,15 @@ const NextButton = ({ className }: { className?: string }) => {
   )
 }
 
-export const fetchCache = "default-no-store"
+export const fetchCache = 'default-no-store'
 
 export default function CoursesPage() {
-  const [difficulty, setDifficulty] = useState("")
-  const [formCategory, setFormCategory] = useState("")
-  const [subscriptionId, setSubscriptionId] = useState<string | number>("")
+  const [difficulty, setDifficulty] = useState('')
+  const [formCategory, setFormCategory] = useState('')
+  const [subscriptionId, setSubscriptionId] = useState<string | number>('')
   const [courses, setCourses] = useState<Course[]>([])
   const [coursesZoom, setCoursesZoom] = useState<Course[]>([])
-  const [activeTab, setActiveTab] = useState("video")
+  const [activeTab, setActiveTab] = useState('video')
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
 
   useEffect(() => {
@@ -77,8 +77,8 @@ export default function CoursesPage() {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      const videoCourses = await getCoursesByType("video")
-      const zoomCourses = await getCoursesByType("live")
+      const videoCourses = await getCoursesByType('video')
+      const zoomCourses = await getCoursesByType('live')
       setCourses(videoCourses.data)
       setCoursesZoom(zoomCourses.data)
     }
@@ -136,10 +136,10 @@ export default function CoursesPage() {
             <Tabs defaultValue="video" onValueChange={setActiveTab}>
               <div className="flex justify-center gap-4 mb-10">
                 <TabsList className="bg-white">
-                  <TabsTrigger value="video" className={cn("underline text-text bg-white !shadow-none")}>
+                  <TabsTrigger value="video" className={cn('underline text-text bg-white !shadow-none')}>
                     Video
                   </TabsTrigger>
-                  <TabsTrigger value="live" className={cn("underline text-text bg-white !shadow-none")}>
+                  <TabsTrigger value="live" className={cn('underline text-text bg-white !shadow-none')}>
                     Zoom
                   </TabsTrigger>
                 </TabsList>
@@ -173,7 +173,7 @@ export default function CoursesPage() {
                         </div>
                         <div className="text-gray-500">
                           {Array.isArray(course.form_categories)
-                            ? course.form_categories.map((cat) => getFormCategoryLabel(cat)).join(", ")
+                            ? course.form_categories.map((cat) => getFormCategoryLabel(cat)).join(', ')
                             : getFormCategoryLabel(course.form_categories)}
                         </div>
                       </div>
@@ -187,7 +187,7 @@ export default function CoursesPage() {
                   {filteredCoursesZoom.map((course) => (
                     <div key={`zoom-${course.id}`}>
                       <div className="relative group">
-                        <Image
+                        <img
                           src={course.cover_image}
                           alt={course.course_name}
                           className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
@@ -211,7 +211,7 @@ export default function CoursesPage() {
                         </div>
                         <div className="text-gray-500">
                           {Array.isArray(course.form_categories)
-                            ? course.form_categories.map((cat) => getFormCategoryLabel(cat)).join(", ")
+                            ? course.form_categories.map((cat) => getFormCategoryLabel(cat)).join(', ')
                             : getFormCategoryLabel(course.form_categories)}
                         </div>
                       </div>
