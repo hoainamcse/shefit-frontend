@@ -29,10 +29,23 @@ import PROVINCES from './provinceData'
 import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 import { User } from '@/models/user'
 import { formatDateString } from '@/lib/utils'
+import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { getUserCourses } from '@/network/server/user-courses'
+import { getUserMealPlans } from '@/network/server/user-meal-plans'
+import { getUserExercises } from '@/network/server/user-exercises'
+import { getUserDishes } from '@/network/server/user-dishes'
+import { getSubscription } from '@/network/server/subscriptions-admin'
+import { UserCourse } from '@/models/user-courses'
+import { UserMealPlan } from '@/models/user-meal-plans'
+import { UserExercise } from '@/models/user-exercises'
+import { UserDish } from '@/models/user-dishes'
+import { Subscription } from '@/models/subscription-admin'
+import { UserSubscription } from '@/models/user-subscriptions'
 
 export default function AccountPage() {
   const router = useRouter()
   const [accountTable, setAccountTable] = useState<User[]>([])
+  const [isExporting, setIsExporting] = useState(false)
 
   const fetchAccounts = async () => {
     const response = await getUsers()
@@ -45,51 +58,136 @@ export default function AccountPage() {
     setAccountTable(mapped)
   }
 
-  const handleExportCsv = () => {
+  const handleExportCsv = async () => {
     if (accountTable.length === 0) {
       toast.info('Không có dữ liệu để xuất.')
       return
     }
 
-    const headers = [
-      'ID',
-      'Họ & tên',
-      'Username',
-      'Số điện thoại',
-      'Role',
-      'Ngày tạo',
-      'Tỉnh/Thành phố',
-      'Địa chỉ chi tiết',
-    ]
-    const csvRows = []
-    csvRows.push(headers.join(','))
-
-    accountTable.forEach((account) => {
-      const row = [
-        account.id.toString(),
-        account.fullname,
-        account.username,
-        account.phone_number,
-        account.role,
-        account.created_at,
-        account.province || '',
-        account.address || '',
+    try {
+      setIsExporting(true)
+      const headers = [
+        'ID',
+        'Họ & tên',
+        'Username',
+        'Số điện thoại',
+        'Role',
+        'Ngày tạo',
+        'Tỉnh/Thành phố',
+        'Địa chỉ chi tiết',
+        'Gói membership',
+        'Khoá học',
+        'Thực đơn',
+        'Bài tập',
+        'Món ăn',
       ]
-      csvRows.push(row.map((field) => `"${field}"`).join(','))
-    })
+      const csvRows = []
+      csvRows.push(headers.join(','))
 
-    const csvString = csvRows.join('\n')
-    console.log(csvRows)
-    console.log(csvString)
+      for (const account of accountTable) {
+        const userId = account.id.toString()
+        let membershipNames = ''
+        let courseNames = ''
+        let mealPlanNames = ''
+        let exerciseNames = ''
+        let dishNames = ''
 
-    const blob = new Blob(['\uFEFF' + csvString], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    link.href = URL.createObjectURL(blob)
-    link.setAttribute('download', 'accounts.csv')
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    toast.success('Dữ liệu đã được xuất thành công!')
+        try {
+          const [
+            userSubscriptionsResponse,
+            userCoursesResponse,
+            userMealPlansResponse,
+            userExercisesResponse,
+            userDishesResponse,
+          ] = await Promise.all([
+            getUserSubscriptions(userId),
+            getUserCourses(userId),
+            getUserMealPlans(userId),
+            getUserExercises(userId),
+            getUserDishes(userId),
+          ])
+
+          // Process Subscriptions
+          if (userSubscriptionsResponse?.data && userSubscriptionsResponse.data.length > 0) {
+            const subscriptionDetails = await Promise.all(
+              userSubscriptionsResponse.data.map((sub: UserSubscription) => getSubscription(sub.subscription_id))
+            )
+            membershipNames = subscriptionDetails
+              .map((detail) => (detail.data as Subscription)?.name)
+              .filter(Boolean)
+              .join(', ')
+          }
+
+          // Process Courses
+          if (userCoursesResponse?.data && userCoursesResponse.data.length > 0) {
+            courseNames = userCoursesResponse.data
+              .map((item: UserCourse) => item.course?.course_name)
+              .filter(Boolean)
+              .join(', ')
+          }
+
+          // Process Meal Plans
+          if (userMealPlansResponse?.data && userMealPlansResponse.data.length > 0) {
+            mealPlanNames = userMealPlansResponse.data
+              .map((item: UserMealPlan) => item.meal_plan?.title)
+              .filter(Boolean)
+              .join(', ')
+          }
+
+          // Process Exercises
+          if (userExercisesResponse?.data && userExercisesResponse.data.length > 0) {
+            exerciseNames = userExercisesResponse.data
+              .map((item: UserExercise) => item.exercise?.name)
+              .filter(Boolean)
+              .join(', ')
+          }
+
+          // Process Dishes
+          if (userDishesResponse?.data && userDishesResponse.data.length > 0) {
+            dishNames = userDishesResponse.data
+              .map((item: UserDish) => item.dish?.name)
+              .filter(Boolean)
+              .join(', ')
+          }
+        } catch (error) {
+          console.error(`Error fetching detailed data for user ${userId}:`, error)
+        }
+
+        const row = [
+          account.id.toString(),
+          account.fullname,
+          account.username,
+          account.phone_number,
+          account.role,
+          account.created_at,
+          account.province || '',
+          account.address || '',
+          membershipNames,
+          courseNames,
+          mealPlanNames,
+          exerciseNames,
+          dishNames,
+        ]
+        csvRows.push(row.map((field) => `"${field}"`).join(','))
+      }
+
+      const csvString = csvRows.join('\n')
+
+      const blob = new Blob(['\uFEFF' + csvString], { type: 'text/csv;charset=utf-8;' })
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(blob)
+      link.setAttribute('download', 'accounts.csv')
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      toast.success('Dữ liệu đã được xuất thành công!')
+      setIsExporting(false)
+    } catch (error) {
+      console.error('Error exporting CSV:', error)
+      toast.error('Có lỗi khi xuất dữ liệu')
+    } finally {
+      setIsExporting(false)
+    }
   }
 
   const handleDeleteAccount = async (accountId: number) => {
@@ -163,15 +261,26 @@ export default function AccountPage() {
   }, [])
 
   return (
-    <ContentLayout title="Danh sách tài khoản">
-      <DataTable
-        headerExtraContent={headerExtraContent}
-        searchPlaceholder="Tìm kiếm theo sdt"
-        data={accountTable}
-        columns={columns}
-        onSelectChange={() => {}}
-      />
-    </ContentLayout>
+    <>
+      {isExporting && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm z-50">
+          <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-lg">
+            <p className="text-lg font-semibold">Đang xuất dữ liệu. Vui lòng chờ...</p>
+            <p className="text-sm text-gray-600 mt-2">Quá trình này có thể mất vài phút.</p>
+            <div className="mt-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          </div>
+        </div>
+      )}
+      <ContentLayout title="Danh sách tài khoản">
+        <DataTable
+          headerExtraContent={headerExtraContent}
+          searchPlaceholder="Tìm kiếm theo sdt"
+          data={accountTable}
+          columns={columns}
+          onSelectChange={() => {}}
+        />
+      </ContentLayout>
+    </>
   )
 }
 
