@@ -1,14 +1,16 @@
-"use client"
+'use client'
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { MainButton } from "@/components/buttons/main-button"
-import { login, handleGoogleCallback as handleGoogleOAuth, getOauth2AuthUrl } from "@/network/server/auth"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
-import React, { useState } from "react"
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { MainButton } from '@/components/buttons/main-button'
+import { login, handleGoogleCallback as handleGoogleOAuth, getOauth2AuthUrl } from '@/network/server/auth'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import React, { useState } from 'react'
+import { getUserById } from '@/network/server/user'
+import { useAuth } from '../providers/auth-context'
 
 function GoogleIcon() {
   return (
@@ -68,41 +70,54 @@ function FacebookIcon() {
 
 export default function LoginForm() {
   const router = useRouter()
+  const { login } = useAuth()
 
   const handleGoogleSignIn = async () => {
     try {
       const response = await getOauth2AuthUrl(encodeURIComponent(process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!))
       window.location.href = response.data.url
     } catch (error) {
-      console.error("Error during login:", error)
-      toast.error("Đăng nhập thất bại!")
+      console.error('Error during login:', error)
+      toast.error('Đăng nhập thất bại!')
     }
   }
 
+  // async function handleSubmit(formData: FormData) {
+  //   try {
+  //     const data = {
+  //       username: formData.get('username')?.toString() || '',
+  //       password: formData.get('password')?.toString() || '',
+  //       grant_type: 'password' as const,
+  //     }
+
+  //     const response = await login(data)
+
+  //     localStorage.setItem('access_token', response.access_token)
+  //     localStorage.setItem('refresh_token', response.refresh_token)
+
+  //     const tokenParts = response.access_token.split('.')
+  //     let payload: any
+  //     if (tokenParts.length === 3) {
+  //       payload = JSON.parse(atob(tokenParts[1]))
+  //       console.log('user_id:', payload.sub)
+  //       localStorage.setItem('user_id', payload.sub)
+  //     }
+  //     toast.success('Đăng nhập thành công!')
+  //     const role = (await getUserById(payload.sub))?.data?.role
+  //     if (role === 'normal_user') router.push('/')
+  //     else if (role === 'sub_admin' || role === 'admin') router.push('/admin')
+  //   } catch (error) {
+  //     console.error('Error during login:', error)
+  //     toast.error('Đăng nhập thất bại!')
+  //   }
+  // }
   async function handleSubmit(formData: FormData) {
+    const user = formData.get('username')?.toString() || ''
+    const pass = formData.get('password')?.toString() || ''
     try {
-      const data = {
-        username: formData.get("username")?.toString() || "",
-        password: formData.get("password")?.toString() || "",
-        grant_type: "password" as const,
-      }
-
-      const response = await login(data)
-
-      localStorage.setItem("access_token", response.access_token)
-      localStorage.setItem("refresh_token", response.refresh_token)
-
-      const tokenParts = response.access_token.split(".")
-      if (tokenParts.length === 3) {
-        const payload = JSON.parse(atob(tokenParts[1]))
-        console.log("user_id:", payload.sub)
-        localStorage.setItem("user_id", payload.sub)
-      }
-      toast.success("Đăng nhập thành công!")
-      router.push("/")
-    } catch (error) {
-      console.error("Error during login:", error)
-      toast.error("Đăng nhập thất bại!")
+      await login(user, pass)
+    } catch {
+      toast.error('Đăng nhập thất bại!')
     }
   }
 

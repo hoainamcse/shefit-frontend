@@ -1,11 +1,15 @@
-import { cookies } from 'next/headers'
-
 import { Sidebar, SidebarContent } from '@/components/admin-panel/sidebar'
 import { SidebarProvider } from '@/components/providers/sidebar-provider'
+import React, { useState, useEffect } from 'react'
 
-export default async function AdminPanelLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies()
-  const defaultOpen = cookieStore.get('sidebar_state')?.value === 'true'
+export default function AdminPanelLayout({ children }: { children: React.ReactNode }) {
+  const [defaultOpen, setDefaultOpen] = useState(false)
+
+  useEffect(() => {
+    const cookiePair = document.cookie.split('; ').find((row) => row.startsWith('sidebar_state='))
+    const val = cookiePair?.split('=')[1] === 'true'
+    setDefaultOpen(val)
+  }, [])
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>

@@ -15,8 +15,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useAuth } from '../providers/auth-context'
 
 export function UserNav() {
+  const { logout } = useAuth()
   return (
     <DropdownMenu>
       <Tooltip disableHoverableContent>
@@ -56,7 +58,7 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="hover:cursor-pointer" onClick={() => {}}>
+        <DropdownMenuItem className="hover:cursor-pointer" onClick={() => logout('/auth/login')}>
           <LogOut className="w-4 h-4 mr-3" />
           Đăng xuất
         </DropdownMenuItem>

@@ -5,6 +5,7 @@ import localFont from 'next/font/local'
 import './globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
+import { AuthProvider } from '@/components/providers/auth-context'
 
 const bdLifelessGrotesk = localFont({
   src: [
@@ -82,10 +83,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${yes.className} ${coiny.variable} ${encode.variable} antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {children}
-          <Toaster richColors position="top-right" />
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            {children}
+            <Toaster richColors position="top-right" />
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   )

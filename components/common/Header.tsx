@@ -1,16 +1,16 @@
-"use client"
+'use client'
 
-import Image from "next/image"
-import { MainButton } from "../buttons/main-button"
-import Link from "next/link"
-import { ExerciseYogaIcon } from "@/components/icons/ExerciseYogaIcon"
-import { FoodGrainsIcon } from "@/components/icons/FoodGrainsIcon"
-import { GymIcon } from "@/components/icons/GymIcon"
-import { FitnessLineIcon } from "@/components/icons/FitnessLineIcon"
-import { BookIcon } from "@/components/icons/BookIcon"
-import { AboutIcon } from "@/components/icons/AboutIcon"
-import { AccountIcon } from "@/components/icons/AccountIcon"
-import { MenuIcon } from "@/components/icons/MenuIcon"
+import Image from 'next/image'
+import { MainButton } from '../buttons/main-button'
+import Link from 'next/link'
+import { ExerciseYogaIcon } from '@/components/icons/ExerciseYogaIcon'
+import { FoodGrainsIcon } from '@/components/icons/FoodGrainsIcon'
+import { GymIcon } from '@/components/icons/GymIcon'
+import { FitnessLineIcon } from '@/components/icons/FitnessLineIcon'
+import { BookIcon } from '@/components/icons/BookIcon'
+import { AboutIcon } from '@/components/icons/AboutIcon'
+import { AccountIcon } from '@/components/icons/AccountIcon'
+import { MenuIcon } from '@/components/icons/MenuIcon'
 import {
   Sheet,
   SheetContent,
@@ -19,30 +19,20 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet"
-import { GalleryIcon } from "../icons/GalleryIcon"
-import { StarIcon } from "../icons/StarIcon"
-import { useState, useEffect } from "react"
-import { MemberShipIcon } from "../icons/MemberShipIcon"
-import { FacebookIcon } from "../icons/FacebookIcon"
+} from '@/components/ui/sheet'
+import { GalleryIcon } from '../icons/GalleryIcon'
+import { StarIcon } from '../icons/StarIcon'
+import { useState, useEffect } from 'react'
+import { MemberShipIcon } from '../icons/MemberShipIcon'
+import { FacebookIcon } from '../icons/FacebookIcon'
+import { useAuth } from '@/components/providers/auth-context'
 
 export default function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-
-  useEffect(() => {
-    const accessToken = localStorage.getItem("access_token")
-    const refreshToken = localStorage.getItem("refresh_token")
-    setIsLoggedIn(!!accessToken && !!refreshToken)
-  }, [])
-
-  const handleLogout = () => {
-    localStorage.removeItem("access_token")
-    localStorage.removeItem("refresh_token")
-    setIsLoggedIn(false)
-  }
+  const { userId, logout } = useAuth()
+  const isLoggedIn = !!userId
 
   const authButton = isLoggedIn ? (
-    <MainButton onClick={handleLogout} className="rounded-full w-44" text="Đăng xuất" variant="secondary" />
+    <MainButton onClick={() => logout('/')} className="rounded-full w-44" text="Đăng xuất" variant="secondary" />
   ) : (
     <Link href="/auth/login">
       <MainButton className="rounded-full w-44" text="Đăng nhập" />
@@ -51,54 +41,54 @@ export default function Header() {
 
   const navItems = [
     {
-      label: "Gói Member",
+      label: 'Gói Member',
       icon: MemberShipIcon,
-      url: "/account?tab=buy-package",
+      url: '/account?tab=buy-package',
     },
     {
-      label: "Khoá tập",
+      label: 'Khoá tập',
       icon: ExerciseYogaIcon,
-      url: "/courses",
+      url: '/courses',
     },
     {
-      label: "Thực đơn",
+      label: 'Thực đơn',
       icon: FoodGrainsIcon,
-      url: "/meal-plans",
+      url: '/meal-plans',
     },
     {
-      label: "Sản phẩm",
+      label: 'Sản phẩm',
       icon: GymIcon,
-      url: "/products",
+      url: '/products',
     },
     {
-      label: "Team HLV",
+      label: 'Team HLV',
       icon: FitnessLineIcon,
-      url: "/coaches",
+      url: '/coaches',
     },
     {
-      label: "Về Shefit",
+      label: 'Về Shefit',
       icon: AboutIcon,
-      url: "/about",
+      url: '/about',
     },
     {
-      label: "Blog healthy",
+      label: 'Blog healthy',
       icon: BookIcon,
-      url: "/blog",
+      url: '/blog',
     },
     {
-      label: "Thư viện",
+      label: 'Thư viện',
       icon: GalleryIcon,
-      url: "/gallery",
+      url: '/gallery',
     },
     {
-      label: "HLV 24/7",
+      label: 'HLV 24/7',
       icon: StarIcon,
-      url: "#",
+      url: '#',
     },
     {
-      label: "Tài khoản",
+      label: 'Tài khoản',
       icon: AccountIcon,
-      url: "/account",
+      url: '/account',
     },
   ]
 
