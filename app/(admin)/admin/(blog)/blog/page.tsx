@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
-import { HtmlContent } from '@/components/ui/html-content'
+import { HtmlContent } from '@/components/html-content'
 
 import { deleteBlog, getListBlogs } from '@/network/server/blog'
 import { Blog } from '@/models/blog'

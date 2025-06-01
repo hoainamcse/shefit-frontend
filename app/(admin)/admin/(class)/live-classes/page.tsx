@@ -8,7 +8,7 @@ import { getCourses } from '@/network/server/courses-admin'
 export const dynamic = 'force-static'
 
 export const metadata: Metadata = {
-  title: 'Quản lý khoá học Zoom',
+  title: 'Quản lý khoá tập Zoom',
   description: '',
 }
 
@@ -16,7 +16,7 @@ export default async function LiveClassesPage() {
   const data = await getCourses('live', false)
 
   return (
-    <ContentLayout title="Khoá học Zoom">
+    <ContentLayout title="Khoá tập Zoom">
       <LiveClassesPageClient data={data} />
     </ContentLayout>
   )

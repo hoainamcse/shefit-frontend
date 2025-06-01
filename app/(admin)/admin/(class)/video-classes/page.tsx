@@ -8,7 +8,7 @@ import { getCourses } from '@/network/server/courses-admin'
 export const dynamic = 'force-static'
 
 export const metadata: Metadata = {
-  title: 'Quản lý khoá học Video',
+  title: 'Quản lý khoá tập Video',
   description: '',
 }
 
@@ -16,7 +16,7 @@ export default async function VideoClassesPage() {
   const data = await getCourses('video', false)
 
   return (
-    <ContentLayout title="Khoá học Video">
+    <ContentLayout title="Khoá tập Video">
       <VideoClassesPageClient data={data} />
     </ContentLayout>
   )

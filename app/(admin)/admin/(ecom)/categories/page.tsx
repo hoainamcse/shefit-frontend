@@ -290,7 +290,7 @@ export default function CategoriesPage() {
 
         return isEditing ? (
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="default" onClick={handleSaveCategory} disabled={loading}>
+            <Button size="sm" onClick={handleSaveCategory} disabled={loading}>
               <Save className="h-4 w-4 mr-1" /> Lưu
             </Button>
             <Button size="sm" variant="outline" onClick={() => setEditCategory(null)} disabled={loading}>
@@ -350,7 +350,7 @@ export default function CategoriesPage() {
 
         return isEditing ? (
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="default" onClick={handleSaveSize} disabled={loading}>
+            <Button size="sm" onClick={handleSaveSize} disabled={loading}>
               <Save className="h-4 w-4 mr-1" /> Lưu
             </Button>
             <Button size="sm" variant="outline" onClick={() => setEditSize(null)} disabled={loading}>
@@ -450,7 +450,7 @@ export default function CategoriesPage() {
 
         return isEditing ? (
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="default" onClick={handleSaveColor} disabled={loading}>
+            <Button size="sm" onClick={handleSaveColor} disabled={loading}>
               <Save className="h-4 w-4 mr-1" /> Lưu
             </Button>
             <Button size="sm" variant="outline" onClick={() => setEditColor(null)} disabled={loading}>

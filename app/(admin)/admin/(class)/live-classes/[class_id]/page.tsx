@@ -7,7 +7,7 @@ export default async function LiveClassPage({ params }: { params: Promise<{ clas
   const data = await getCourse(class_id)
 
   return (
-    <ContentLayout title="Khoá học Zoom">
+    <ContentLayout title="Khoá tập Zoom">
       <LiveClassPageClient data={data} />
     </ContentLayout>
   )

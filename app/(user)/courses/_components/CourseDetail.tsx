@@ -118,7 +118,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
           </div>
         </div>
         <div className="bg-primary rounded-xl my-4 p-4">
-          <p className="text-white text-center text-2xl">Tóm tắt khoá học</p>
+          <p className="text-white text-center text-2xl">Tóm tắt khoá tập</p>
           <ul className="text-white list-disc pl-8">
             <li>{course?.data?.description}</li>
           </ul>

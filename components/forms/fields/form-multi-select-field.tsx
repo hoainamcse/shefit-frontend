@@ -17,7 +17,7 @@ import {
   MultiSelectTrigger,
   MultiSelectValue,
   renderMultiSelectOptions,
-} from "@/components/multi-select";
+} from "@/components/nyxb-ui/multi-select";
 import { useState } from "react";
 
 type MultiSelectOption = {

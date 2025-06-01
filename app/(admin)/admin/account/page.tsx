@@ -24,7 +24,7 @@ import { deleteUser, getUserById, getUsers, register, updateUser } from '@/netwo
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { generateUsername, generatePassword } from '@/helper/user'
+import { generateUsername, generatePassword } from '@/lib/user'
 import PROVINCES from './provinceData'
 import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 import { User } from '@/models/user'
@@ -76,7 +76,7 @@ export default function AccountPage() {
         'Tỉnh/Thành phố',
         'Địa chỉ chi tiết',
         'Gói membership',
-        'Khoá học',
+        'Khoá tập',
         'Thực đơn',
         'Bài tập',
         'Món ăn',

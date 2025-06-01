@@ -12,12 +12,12 @@ interface MainButtonProps extends ButtonProps {
 }
 
 const buttonVariant = {
-  default: 'bg-button text-button-foreground shadow hover:bg-button/90',
-  destructive: 'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
-  outline: 'border border-button bg-transparent text-button shadow-sm hover:bg-accent hover:text-button',
-  secondary: 'bg-secondary text-button shadow-sm hover:bg-secondary/80',
-  ghost: 'hover:bg-accent hover:text-button',
-  link: 'text-button underline-offset-4 hover:underline',
+  default: "bg-button text-button-foreground hover:bg-button/90",
+  destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+  outline: "border border-input bg-background hover:bg-accent hover:text-button",
+  secondary: "bg-secondary text-button hover:bg-secondary/80",
+  ghost: "hover:bg-accent hover:text-button",
+  link: "text-button underline-offset-4 hover:underline",
 }
 
 const MainButton = React.forwardRef<HTMLButtonElement, MainButtonProps>(

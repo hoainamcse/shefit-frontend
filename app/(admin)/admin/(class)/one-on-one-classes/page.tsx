@@ -59,8 +59,8 @@ function CreateCourseDialog({
   return (
     <DialogContent className="max-w-4xl" onInteractOutside={(e) => e.preventDefault()}>
       <DialogHeader>
-        <DialogTitle>Thêm khoá học</DialogTitle>
-        <DialogDescription>Tạo khoá học {courseFormat === 'video' ? 'Video' : 'Zoom'}</DialogDescription>
+        <DialogTitle>Thêm khoá tập</DialogTitle>
+        <DialogDescription>Tạo khoá tập {courseFormat === 'video' ? 'Video' : 'Zoom'}</DialogDescription>
         <ScrollArea className="h-[600px]" type="always">
           <CreateCourseForm format={courseFormat} isOneOnOne onSuccess={handleSuccess} />
         </ScrollArea>
@@ -103,10 +103,10 @@ export default function OneOnOneClassesPage() {
   const handleDelete = async (id: string) => {
     const response = await deleteCourse(id)
     if (response.status === 'success') {
-      toast.success('Xoá khoá học thành công')
+      toast.success('Xoá khoá tập thành công')
       fetchOneOnOneClasses()
     } else {
-      toast.error('Xoá khoá học thất bại')
+      toast.error('Xoá khoá tập thất bại')
     }
     //router.refresh()
   }
@@ -207,7 +207,7 @@ export default function OneOnOneClassesPage() {
           <DropdownMenuContent>
             <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
             <DropdownMenuItem onClick={() => copy(row.id)}>
-              <Copy /> Sao chép khoá học ID
+              <Copy /> Sao chép khoá tập ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => router.push(`/admin/${row.course_format}-classes/${row.id}`)}>
@@ -224,7 +224,7 @@ export default function OneOnOneClassesPage() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <AddButton text="Thêm khoá học" />
+          <AddButton text="Thêm khoá tập" />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem
@@ -233,7 +233,7 @@ export default function OneOnOneClassesPage() {
               setVideoDialogOpen(true)
             }}
           >
-            <Video className="mr-2 h-4 w-4" /> Khoá học Video
+            <Video className="mr-2 h-4 w-4" /> Khoá tập Video
           </DropdownMenuItem>
 
           <DropdownMenuItem
@@ -242,17 +242,17 @@ export default function OneOnOneClassesPage() {
               setLiveDialogOpen(true)
             }}
           >
-            <Radio className="mr-2 h-4 w-4" /> Khoá học Zoom
+            <Radio className="mr-2 h-4 w-4" /> Khoá tập Zoom
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <MainButton text="Nhập khoá học" variant="outline" icon={Import} />
+          <MainButton text="Nhập khoá tập" variant="outline" icon={Import} />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem onClick={() => router.push('/admin/video-classes/new')}>
-            <Video /> Khoá học Video
+            <Video /> Khoá tập Video
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -260,7 +260,7 @@ export default function OneOnOneClassesPage() {
   )
 
   return (
-    <ContentLayout title="Khoá học Zoom">
+    <ContentLayout title="Khoá tập Zoom">
       <DataTable
         headerExtraContent={headerExtraContent}
         searchPlaceholder="Tìm kiếm theo tên, ..."

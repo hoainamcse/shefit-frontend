@@ -163,17 +163,17 @@ function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, on
         if (isEdit && data?.id) {
           const response = await updateCourse(data.id.toString(), convertedValues)
           if (response.status === 'success') {
-            toast.success('Cập nhật khoá học thành công')
+            toast.success('Cập nhật khoá tập thành công')
           }
         } else {
           const response = await createCourse(convertedValues)
           if (response.status === 'success') {
-            toast.success('Tạo khoá học thành công')
+            toast.success('Tạo khoá tập thành công')
             onSuccess?.()
           }
         }
       } catch (error) {
-        toast.error('Tạo khoá học thất bại')
+        toast.error('Tạo khoá tập thất bại')
       }
     })
   }
@@ -191,7 +191,7 @@ function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, on
             name="course_name"
             label="Tên khoá"
             withAsterisk
-            placeholder="Nhập tên khoá học"
+            placeholder="Nhập tên khoá tập"
           />
           <FormInputField form={form} name="trainer" label="HLV" withAsterisk placeholder="Nhập tên HLV" />
         </div>
@@ -306,7 +306,7 @@ function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, on
           />
         </div>
         <div className="flex items-start gap-4">
-          <FormSwitchField form={form} name="is_free" label="Free" description="Khoá học miễn phí" />
+          <FormSwitchField form={form} name="is_free" label="Free" description="Khoá tập miễn phí" />
           {isFree && (
             <FormInputField
               form={form}

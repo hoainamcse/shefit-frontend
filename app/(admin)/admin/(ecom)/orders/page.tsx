@@ -70,7 +70,7 @@ export default function OrdersPage() {
       header: 'Tình trạng đăng ký',
       render: ({ row }) => {
         return row.is_signed_up ? (
-          <Badge variant="default" className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
+          <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
             Đã đăng ký
           </Badge>
         ) : (

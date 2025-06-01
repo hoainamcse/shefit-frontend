@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { getBlog } from '@/network/server/blog'
-import { HtmlContent } from '@/components/ui/html-content'
+import { HtmlContent } from '@/components/html-content'
 
 export default async function BlogDetail({ params }: { params: Promise<{ detail: string }> }) {
   const { detail } = await params

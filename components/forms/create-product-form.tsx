@@ -8,15 +8,6 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  MultiSelect,
-  MultiSelectContent,
-  MultiSelectItem,
-  MultiSelectList,
-  MultiSelectSearch,
-  MultiSelectTrigger,
-  MultiSelectValue,
-} from '@/components/multi-select'
 import { FileUploader } from '@/components/file-uploader'
 import { MainButton } from '@/components/buttons/main-button'
 import { ChevronsLeftRightEllipsisIcon, Plus, Trash2 } from 'lucide-react'

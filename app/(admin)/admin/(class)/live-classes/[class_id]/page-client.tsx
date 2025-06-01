@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Trash2, Clock, CalendarDays } from 'lucide-react'
 import { FormInputField, FormTextareaField } from '@/components/forms/fields'
 import { ApiResponse } from '@/models/response'
-import { TimePicker } from '@/components/ui/time-picker'
+import { TimePicker } from '@/components/time-picker'
 import { CreateCourseForm } from '@/components/forms/create-course-form'
 import { MainButton } from '@/components/buttons/main-button'
 import {
@@ -569,7 +569,7 @@ export default function LiveClassPageClient({ data }: { data: any }) {
                       </div>
                     </div>
 
-                    <MainButton text="Lưu cấu trúc khoá học" type="submit" className="w-full" disabled={isSubmitting} />
+                    <MainButton text="Lưu cấu trúc khoá tập" type="submit" className="w-full" disabled={isSubmitting} />
                   </form>
                 </Form>
               )}

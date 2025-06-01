@@ -58,9 +58,9 @@ export default function LiveClassesPageClient({ data }: { data: ListResponse<Lis
   const handleDelete = async (id: string) => {
     const response = await deleteCourse(id)
     if (response.status === 'success') {
-      toast.success('Xoá khoá học thành công')
+      toast.success('Xoá khoá tập thành công')
     } else {
-      toast.error('Xoá khoá học thất bại')
+      toast.error('Xoá khoá tập thất bại')
     }
     //router.refresh()
   }
@@ -127,7 +127,7 @@ export default function LiveClassesPageClient({ data }: { data: ListResponse<Lis
           <DropdownMenuContent>
             <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
             <DropdownMenuItem onClick={() => copy(row.id)}>
-              <Copy /> Sao chép khoá học ID
+              <Copy /> Sao chép khoá tập ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => router.push(`/admin/live-classes/${row.id}`)}>
@@ -142,7 +142,7 @@ export default function LiveClassesPageClient({ data }: { data: ListResponse<Lis
   const headerExtraContent = (
     <>
       <CreateCourseDialog />
-      <MainButton text="Nhập khoá học" variant="outline" icon={Import} />
+      <MainButton text="Nhập khoá tập" variant="outline" icon={Import} />
     </>
   )
 
@@ -167,12 +167,12 @@ function CreateCourseDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <AddButton text="Thêm khoá học" />
+        <AddButton text="Thêm khoá tập" />
       </DialogTrigger>
       <DialogContent className="max-w-4xl" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Thêm khoá học</DialogTitle>
-          <DialogDescription>Tạo khoá học Zoom</DialogDescription>
+          <DialogTitle>Thêm khoá tập</DialogTitle>
+          <DialogDescription>Tạo khoá tập Zoom</DialogDescription>
           <ScrollArea className="h-[600px]" type="always">
             <CreateCourseForm format="live" onSuccess={onSuccess} />
           </ScrollArea>

@@ -9,6 +9,8 @@ import {
   CreditCardIcon,
   ChartPieIcon,
   RssIcon,
+  Dumbbell,
+  User2Icon,
 } from 'lucide-react'
 
 type Submenu = {
@@ -42,15 +44,15 @@ export function getMenuList(pathname: string): Group[] {
           submenus: [
             {
               href: '/admin/homepage',
-              label: 'Homepage',
+              label: 'Trang chủ',
             },
             {
               href: '/admin/about-us',
-              label: 'About Us',
+              label: 'Về chúng tôi',
             },
             {
-              href: '/admin/coaches',
-              label: 'HLV',
+              href: '#',
+              label: 'Chính sách',
             }
           ],
         },
@@ -61,20 +63,20 @@ export function getMenuList(pathname: string): Group[] {
       menus: [
         {
           href: '',
-          label: 'Khoá học',
+          label: 'Khoá tập',
           icon: BookTextIcon,
           submenus: [
             {
               href: '/admin/video-classes',
-              label: 'Khoá học Video',
+              label: 'Khoá tập Video',
             },
             {
               href: '/admin/live-classes',
-              label: 'Khoá học Zoom',
+              label: 'Khoá tập Zoom',
             },
             {
               href: '/admin/one-on-one-classes',
-              label: 'Khoá học 1-on-1',
+              label: 'Khoá tập 1-on-1',
             },
             {
               href: '/admin/exercises',
@@ -131,11 +133,11 @@ export function getMenuList(pathname: string): Group[] {
           submenus: [
             {
               href: '/admin/quizzes',
-              label: 'Tạo quiz',
+              label: 'Danh sách khảo sát',
             },
             {
               href: '/admin/quizzes/results',
-              label: 'Kết quả quiz',
+              label: 'Kết quả khảo sát',
             },
           ],
         },
@@ -146,13 +148,18 @@ export function getMenuList(pathname: string): Group[] {
         },
         {
           href: '/admin/blog',
-          label: 'Blog',
+          label: 'Bài viết',
           icon: RssIcon,
+        },
+        {
+          href: '/admin/coaches',
+          label: 'Huấn luyện viên',
+          icon: User2Icon,
         },
       ],
     },
     {
-      groupLabel: 'Settings',
+      groupLabel: 'Chung',
       menus: [
         // {
         //   href: '#',

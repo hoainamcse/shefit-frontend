@@ -2,7 +2,7 @@ import { Card } from '@/components/ui/card'
 import Link from 'next/link'
 import { getBlogs } from '@/network/server/blog'
 import type { Blog } from '@/models/blog'
-import { HtmlContent } from '@/components/ui/html-content'
+import { HtmlContent } from '@/components/html-content'
 export default async function BlogPage() {
   const blogs = await getBlogs()
   return (

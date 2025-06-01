@@ -255,9 +255,9 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
               <FormMultiSelectField
                 form={form}
                 name="course_ids"
-                label="Danh sách khoá học"
+                label="Danh sách khoá tập"
                 data={AVAILABLE_COURSES}
-                placeholder="Chọn khoá học"
+                placeholder="Chọn khoá tập"
                 withAsterisk
               />
 

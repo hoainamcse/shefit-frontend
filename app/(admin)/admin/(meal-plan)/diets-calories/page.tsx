@@ -205,7 +205,7 @@ export default function DietsCaloriesPage() {
 
         return isEditing ? (
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="default" onClick={handleSaveCalorie} disabled={loading}>
+            <Button size="sm" onClick={handleSaveCalorie} disabled={loading}>
               <Save className="h-4 w-4 mr-1" /> Lưu
             </Button>
             <Button size="sm" variant="outline" onClick={() => setEditCalorie(null)} disabled={loading}>
