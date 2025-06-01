@@ -13,7 +13,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { MainButton } from '@/components/buttons/main-button'
 import { FormInputField, FormTextareaField } from '@/components/forms/fields'
-import { Plus, Trash2, ChevronDown, ChevronUp, Edit } from 'lucide-react'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { Plus, Trash2, Edit, HouseIcon, BoxIcon } from 'lucide-react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import {
   Dialog,
@@ -86,7 +87,6 @@ type CourseStructureFormData = z.infer<typeof courseStructureSchema>
 export default function VideoClassPageClient({ data }: { data: ApiResponse<DetailCourse> }) {
   const params = useParams()
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState('details')
   const [isExerciseDialogOpen, setIsExerciseDialogOpen] = useState(false)
   const [editingExerciseIndex, setEditingExerciseIndex] = useState<number | null>(null)
   const [editingExerciseData, setEditingExerciseData] = useState<z.infer<typeof exerciseSchema> | null>(null)
@@ -645,74 +645,137 @@ export default function VideoClassPageClient({ data }: { data: ApiResponse<Detai
   return (
     <>
       {isSubmitting && <div className="fixed inset-0 bg-white/50 backdrop-blur-sm z-50" />}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="details">Basic Details</TabsTrigger>
-          <TabsTrigger value="structure">Course Structure</TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="tab-1">
+        <ScrollArea>
+          <TabsList className="bg-background mb-3 h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse">
+            <TabsTrigger
+              value="tab-1"
+              className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e"
+            >
+              <HouseIcon
+                className="-ms-0.5 me-1.5 opacity-60"
+                size={16}
+                aria-hidden="true"
+              />
+              Thông tin cơ bản
+            </TabsTrigger>
+            <TabsTrigger
+              value="tab-2"
+              className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e"
+            >
+              <BoxIcon
+                className="-ms-0.5 me-1.5 opacity-60"
+                size={16}
+                aria-hidden="true"
+              />
+              Chi tiết khoá tập
+            </TabsTrigger>
+          </TabsList>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
 
-        <TabsContent value="details">
-          <Card>
-            <CardHeader>
-              <CardTitle>Basic Details</CardTitle>
-              <CardDescription>Edit the basic information about this video class.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CreateCourseForm format="video" isEdit data={data.data} />
-            </CardContent>
-          </Card>
+        <TabsContent value="tab-1">
+          <CreateCourseForm format="video" isEdit data={data.data} />
         </TabsContent>
 
-        <TabsContent value="structure">
-          <Card>
-            <CardHeader>
-              <CardTitle>Course Structure</CardTitle>
-              <CardDescription>Organize your course into weeks, days, circuits, and exercises.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="flex items-center justify-center w-full py-12">
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-                    <p className="text-sm text-muted-foreground">Loading course structure...</p>
+        <TabsContent value="tab-2">
+          {isLoading ? (
+            <div className="flex items-center justify-center w-full py-12">
+              <div className="flex flex-col items-center space-y-4">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+                <p className="text-sm text-muted-foreground">Loading course structure...</p>
+              </div>
+            </div>
+          ) : (
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {/* Column-based layout for weeks, days, and circuits */}
+                <div className="grid grid-cols-3 gap-4">
+                  {/* Weeks Column */}
+                  <div className="border-r pr-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-medium">Danh sách tuần</h3>
+                      <Button type="button" variant="outline" size="sm" onClick={addWeek}>
+                        <Plus className="h-4 w-4 mr-1" /> Thêm tuần
+                      </Button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {weekFields.map((week, weekIndex) => (
+                        <div
+                          key={week.id}
+                          className={`flex justify-between items-center p-2 rounded-md cursor-pointer ${
+                            selectedWeekIndex === weekIndex
+                              ? 'bg-primary text-primary-foreground'
+                              : 'hover:bg-muted/50'
+                          }`}
+                          onClick={() => selectWeek(weekIndex)}
+                        >
+                          <span className="truncate">Tuần {form.watch(`weeks.${weekIndex}.week_number`)}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleRemoveWeek(weekIndex)
+                            }}
+                            className={`h-8 w-8 p-0 ${
+                              selectedWeekIndex === weekIndex ? 'text-primary-foreground' : 'text-destructive'
+                            }`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Column-based layout for weeks, days, and circuits */}
-                    <div className="grid grid-cols-3 gap-4 border rounded-lg p-4">
-                      {/* Weeks Column */}
-                      <div className="border-r pr-4">
+
+                  {/* Days Column */}
+                  <div className="border-r pr-4">
+                    {selectedWeekIndex !== null && (
+                      <>
                         <div className="flex justify-between items-center mb-4">
-                          <h3 className="text-lg font-medium">Danh sách tuần</h3>
-                          <Button type="button" variant="outline" size="sm" onClick={addWeek}>
-                            <Plus className="h-4 w-4 mr-1" /> Thêm tuần
+                          <h3 className="text-lg font-medium">Danh sách ngày</h3>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => addDay(selectedWeekIndex)}
+                            disabled={form.watch(`weeks.${selectedWeekIndex}.days`)?.length >= 7}
+                          >
+                            <Plus className="h-4 w-4 mr-1" /> Thêm ngày
                           </Button>
                         </div>
 
                         <div className="space-y-2">
-                          {weekFields.map((week, weekIndex) => (
+                          {form.watch(`weeks.${selectedWeekIndex}.days`)?.map((day, dayIndex) => (
                             <div
-                              key={week.id}
+                              key={`day-${selectedWeekIndex}-${dayIndex}`}
                               className={`flex justify-between items-center p-2 rounded-md cursor-pointer ${
-                                selectedWeekIndex === weekIndex
+                                selectedDayIndex === dayIndex
                                   ? 'bg-primary text-primary-foreground'
                                   : 'hover:bg-muted/50'
                               }`}
-                              onClick={() => selectWeek(weekIndex)}
+                              onClick={() => selectDay(dayIndex)}
                             >
-                              <span className="truncate">Tuần {form.watch(`weeks.${weekIndex}.week_number`)}</span>
+                              <span className="truncate">
+                                Ngày {form.watch(`weeks.${selectedWeekIndex}.days.${dayIndex}.day_number`)}
+                              </span>
                               <Button
                                 type="button"
                                 variant="ghost"
                                 size="sm"
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  handleRemoveWeek(weekIndex)
+                                  if (form.watch(`weeks.${selectedWeekIndex}.days`).length > 1) {
+                                    removeDay(selectedWeekIndex, dayIndex)
+                                  } else {
+                                    toast.error('You must have at least one day')
+                                  }
                                 }}
                                 className={`h-8 w-8 p-0 ${
-                                  selectedWeekIndex === weekIndex ? 'text-primary-foreground' : 'text-destructive'
+                                  selectedDayIndex === dayIndex ? 'text-primary-foreground' : 'text-destructive'
                                 }`}
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -720,307 +783,251 @@ export default function VideoClassPageClient({ data }: { data: ApiResponse<Detai
                             </div>
                           ))}
                         </div>
-                      </div>
+                      </>
+                    )}
+                  </div>
 
-                      {/* Days Column */}
-                      <div className="border-r pr-4">
-                        {selectedWeekIndex !== null && (
-                          <>
-                            <div className="flex justify-between items-center mb-4">
-                              <h3 className="text-lg font-medium">Danh sách ngày</h3>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => addDay(selectedWeekIndex)}
-                                disabled={form.watch(`weeks.${selectedWeekIndex}.days`)?.length >= 7}
-                              >
-                                <Plus className="h-4 w-4 mr-1" /> Thêm ngày
-                              </Button>
-                            </div>
+                  {/* Circuits Column with Exercises */}
+                  <div>
+                    {selectedWeekIndex !== null && selectedDayIndex !== null && (
+                      <>
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="text-lg font-medium">Danh sách Circuit</h3>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => addCircuit(selectedWeekIndex, selectedDayIndex)}
+                          >
+                            <Plus className="h-4 w-4 mr-1" /> Add Circuit
+                          </Button>
+                        </div>
 
-                            <div className="space-y-2">
-                              {form.watch(`weeks.${selectedWeekIndex}.days`)?.map((day, dayIndex) => (
-                                <div
-                                  key={`day-${selectedWeekIndex}-${dayIndex}`}
-                                  className={`flex justify-between items-center p-2 rounded-md cursor-pointer ${
-                                    selectedDayIndex === dayIndex
-                                      ? 'bg-primary text-primary-foreground'
-                                      : 'hover:bg-muted/50'
-                                  }`}
-                                  onClick={() => selectDay(dayIndex)}
-                                >
-                                  <span className="truncate">
-                                    Ngày {form.watch(`weeks.${selectedWeekIndex}.days.${dayIndex}.day_number`)}
-                                  </span>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      if (form.watch(`weeks.${selectedWeekIndex}.days`).length > 1) {
-                                        removeDay(selectedWeekIndex, dayIndex)
-                                      } else {
-                                        toast.error('You must have at least one day')
-                                      }
-                                    }}
-                                    className={`h-8 w-8 p-0 ${
-                                      selectedDayIndex === dayIndex ? 'text-primary-foreground' : 'text-destructive'
-                                    }`}
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              ))}
-                            </div>
-                          </>
-                        )}
-                      </div>
+                        <div className="space-y-4">
+                          {form
+                            .watch(`weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits`)
+                            ?.map((circuit, circuitIndex) => (
+                              <Card key={`circuit-${selectedWeekIndex}-${selectedDayIndex}-${circuitIndex}`}>
+                                <CardHeader className="p-4 pb-2">
+                                  <div className="flex justify-between items-center">
+                                    <CardTitle className="text-md">
+                                      {form.watch(
+                                        `weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits.${circuitIndex}.name`
+                                      )}
+                                    </CardTitle>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => {
+                                        if (
+                                          form.watch(`weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits`)
+                                            .length > 1
+                                        ) {
+                                          removeCircuit(selectedWeekIndex, selectedDayIndex, circuitIndex)
+                                        } else {
+                                          toast.error('You must have at least one circuit')
+                                        }
+                                      }}
+                                      className="h-8 w-8 p-0 text-destructive"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </CardHeader>
+                                <CardContent className="p-4 pt-0">
+                                  <div className="space-y-4">
+                                    <FormInputField
+                                      form={form}
+                                      name={`weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits.${circuitIndex}.name`}
+                                      label="Circuit Name"
+                                      withAsterisk
+                                      placeholder="Enter circuit name"
+                                    />
+                                    <FormTextareaField
+                                      form={form}
+                                      name={`weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits.${circuitIndex}.description`}
+                                      label="Circuit Description"
+                                      placeholder="Enter circuit description"
+                                    />
+                                    <FormInputField
+                                      form={form}
+                                      name={`weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits.${circuitIndex}.auto_replay_count`}
+                                      label="Số lần phát lại tự động"
+                                      type="number"
+                                      min={1}
+                                      placeholder="Enter auto replay count"
+                                    />
 
-                      {/* Circuits Column with Exercises */}
-                      <div>
-                        {selectedWeekIndex !== null && selectedDayIndex !== null && (
-                          <>
-                            <div className="flex justify-between items-center mb-4">
-                              <h3 className="text-lg font-medium">Danh sách Circuit</h3>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => addCircuit(selectedWeekIndex, selectedDayIndex)}
-                              >
-                                <Plus className="h-4 w-4 mr-1" /> Add Circuit
-                              </Button>
-                            </div>
+                                    <Accordion type="single" collapsible className="w-full">
+                                      <AccordionItem value="exercises">
+                                        <AccordionTrigger className="py-2">
+                                          <div className="flex items-center">
+                                            <span>Danh sách bài tập</span>
+                                            <span className="ml-2 text-xs bg-muted px-2 py-0.5 rounded-full">
+                                              {form.watch(
+                                                `weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits.${circuitIndex}.circuit_exercises`
+                                              )?.length || 0}
+                                            </span>
+                                          </div>
+                                        </AccordionTrigger>
+                                        <AccordionContent>
+                                          <div className="pt-2 space-y-2">
+                                            <div className="flex justify-end mb-2">
+                                              <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() =>
+                                                  addExercise(selectedWeekIndex, selectedDayIndex, circuitIndex)
+                                                }
+                                              >
+                                                <Plus className="h-4 w-4 mr-1" /> Thêm bài tập
+                                              </Button>
+                                            </div>
 
-                            <div className="space-y-4">
-                              {form
-                                .watch(`weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits`)
-                                ?.map((circuit, circuitIndex) => (
-                                  <Card key={`circuit-${selectedWeekIndex}-${selectedDayIndex}-${circuitIndex}`}>
-                                    <CardHeader className="p-4 pb-2">
-                                      <div className="flex justify-between items-center">
-                                        <CardTitle className="text-md">
-                                          {form.watch(
-                                            `weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits.${circuitIndex}.name`
-                                          )}
-                                        </CardTitle>
-                                        <Button
-                                          type="button"
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => {
-                                            if (
-                                              form.watch(`weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits`)
-                                                .length > 1
-                                            ) {
-                                              removeCircuit(selectedWeekIndex, selectedDayIndex, circuitIndex)
-                                            } else {
-                                              toast.error('You must have at least one circuit')
-                                            }
-                                          }}
-                                          className="h-8 w-8 p-0 text-destructive"
-                                        >
-                                          <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                      </div>
-                                    </CardHeader>
-                                    <CardContent className="p-4 pt-0">
-                                      <div className="space-y-4">
-                                        <FormInputField
-                                          form={form}
-                                          name={`weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits.${circuitIndex}.name`}
-                                          label="Circuit Name"
-                                          withAsterisk
-                                          placeholder="Enter circuit name"
-                                        />
-                                        <FormTextareaField
-                                          form={form}
-                                          name={`weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits.${circuitIndex}.description`}
-                                          label="Circuit Description"
-                                          placeholder="Enter circuit description"
-                                        />
-                                        <FormInputField
-                                          form={form}
-                                          name={`weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits.${circuitIndex}.auto_replay_count`}
-                                          label="Số lần phát lại tự động"
-                                          type="number"
-                                          min={1}
-                                          placeholder="Enter auto replay count"
-                                        />
-
-                                        <Accordion type="single" collapsible className="w-full">
-                                          <AccordionItem value="exercises">
-                                            <AccordionTrigger className="py-2">
-                                              <div className="flex items-center">
-                                                <span>Danh sách bài tập</span>
-                                                <span className="ml-2 text-xs bg-muted px-2 py-0.5 rounded-full">
-                                                  {form.watch(
+                                            <div className="space-y-2">
+                                              {form.watch(
+                                                `weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits.${circuitIndex}.circuit_exercises`
+                                              )?.length > 0 ? (
+                                                form
+                                                  .watch(
                                                     `weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits.${circuitIndex}.circuit_exercises`
-                                                  )?.length || 0}
-                                                </span>
-                                              </div>
-                                            </AccordionTrigger>
-                                            <AccordionContent>
-                                              <div className="pt-2 space-y-2">
-                                                <div className="flex justify-end mb-2">
-                                                  <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() =>
-                                                      addExercise(selectedWeekIndex, selectedDayIndex, circuitIndex)
-                                                    }
-                                                  >
-                                                    <Plus className="h-4 w-4 mr-1" /> Thêm bài tập
-                                                  </Button>
-                                                </div>
+                                                  )
+                                                  ?.map((exercise, exerciseIndex) => (
+                                                    <Card
+                                                      key={`exercise-${selectedWeekIndex}-${selectedDayIndex}-${circuitIndex}-${exerciseIndex}`}
+                                                      className="group border border-border hover:border-primary/20 hover:shadow-md transition-all duration-200"
+                                                    >
+                                                      <CardHeader className="p-4 pb-2">
+                                                        <div className="flex justify-between items-start gap-4">
+                                                          <div>
+                                                            <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors">
+                                                              {exercise.circuit_exercise_title}
+                                                            </CardTitle>
+                                                            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                                                              {exercise.circuit_exercise_description ||
+                                                                'Chưa có mô tả'}
+                                                            </p>
+                                                          </div>
+                                                          <div className="flex gap-2">
+                                                            <Button
+                                                              type="button"
+                                                              variant="ghost"
+                                                              size="icon"
+                                                              onClick={() =>
+                                                                editExercise(
+                                                                  selectedWeekIndex!,
+                                                                  selectedDayIndex!,
+                                                                  circuitIndex,
+                                                                  exerciseIndex,
+                                                                  exercise
+                                                                )
+                                                              }
+                                                              className="h-8 w-8"
+                                                            >
+                                                              <Edit className="h-4 w-4 text-muted-foreground hover:text-primary" />
+                                                            </Button>
+                                                            <Button
+                                                              type="button"
+                                                              variant="ghost"
+                                                              size="icon"
+                                                              onClick={() =>
+                                                                removeExercise(
+                                                                  selectedWeekIndex!,
+                                                                  selectedDayIndex!,
+                                                                  circuitIndex,
+                                                                  exerciseIndex
+                                                                )
+                                                              }
+                                                              className="h-8 w-8"
+                                                            >
+                                                              <Trash2 className="h-4 w-4 text-destructive hover:text-destructive/80" />
+                                                            </Button>
+                                                          </div>
+                                                        </div>
+                                                      </CardHeader>
+                                                      <CardContent className="p-4 pt-2 grid gap-4">
+                                                        <div className="flex items-center gap-2 text-sm">
+                                                          <svg
+                                                            className="h-4 w-4 text-muted-foreground"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                          >
+                                                            <path
+                                                              strokeLinecap="round"
+                                                              strokeLinejoin="round"
+                                                              strokeWidth={2}
+                                                              d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                                                            />
+                                                            <path
+                                                              strokeLinecap="round"
+                                                              strokeLinejoin="round"
+                                                              strokeWidth={2}
+                                                              d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                            />
+                                                          </svg>
+                                                          {exercise.youtube_url ? (
+                                                            <a
+                                                              href={exercise.youtube_url}
+                                                              target="_blank"
+                                                              rel="noopener noreferrer"
+                                                              className="text-primary hover:underline inline-flex items-center gap-1 flex-1 truncate"
+                                                            >
+                                                              Link video youtube
+                                                            </a>
+                                                          ) : (
+                                                            <span className="text-muted-foreground">
+                                                              Chưa có video
+                                                            </span>
+                                                          )}
+                                                        </div>
+                                                        <div className="flex items-center gap-2 text-sm">
+                                                          <svg
+                                                            className="h-4 w-4 text-muted-foreground"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                          >
+                                                            <path
+                                                              strokeLinecap="round"
+                                                              strokeLinejoin="round"
+                                                              strokeWidth={2}
+                                                              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                                            />
+                                                          </svg>
+                                                          <span>
+                                                            Phát lại <strong>{exercise.no}</strong> lần
+                                                          </span>
+                                                        </div>
+                                                      </CardContent>
+                                                    </Card>
+                                                  ))
+                                              ) : (
+                                                <p className="text-sm text-muted-foreground italic">
+                                                  No exercises added yet.
+                                                </p>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </AccordionContent>
+                                      </AccordionItem>
+                                    </Accordion>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
 
-                                                <div className="space-y-2">
-                                                  {form.watch(
-                                                    `weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits.${circuitIndex}.circuit_exercises`
-                                                  )?.length > 0 ? (
-                                                    form
-                                                      .watch(
-                                                        `weeks.${selectedWeekIndex}.days.${selectedDayIndex}.circuits.${circuitIndex}.circuit_exercises`
-                                                      )
-                                                      ?.map((exercise, exerciseIndex) => (
-                                                        <Card
-                                                          key={`exercise-${selectedWeekIndex}-${selectedDayIndex}-${circuitIndex}-${exerciseIndex}`}
-                                                          className="group border border-border hover:border-primary/20 hover:shadow-md transition-all duration-200"
-                                                        >
-                                                          <CardHeader className="p-4 pb-2">
-                                                            <div className="flex justify-between items-start gap-4">
-                                                              <div>
-                                                                <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors">
-                                                                  {exercise.circuit_exercise_title}
-                                                                </CardTitle>
-                                                                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                                                                  {exercise.circuit_exercise_description ||
-                                                                    'Chưa có mô tả'}
-                                                                </p>
-                                                              </div>
-                                                              <div className="flex gap-2">
-                                                                <Button
-                                                                  type="button"
-                                                                  variant="ghost"
-                                                                  size="icon"
-                                                                  onClick={() =>
-                                                                    editExercise(
-                                                                      selectedWeekIndex!,
-                                                                      selectedDayIndex!,
-                                                                      circuitIndex,
-                                                                      exerciseIndex,
-                                                                      exercise
-                                                                    )
-                                                                  }
-                                                                  className="h-8 w-8"
-                                                                >
-                                                                  <Edit className="h-4 w-4 text-muted-foreground hover:text-primary" />
-                                                                </Button>
-                                                                <Button
-                                                                  type="button"
-                                                                  variant="ghost"
-                                                                  size="icon"
-                                                                  onClick={() =>
-                                                                    removeExercise(
-                                                                      selectedWeekIndex!,
-                                                                      selectedDayIndex!,
-                                                                      circuitIndex,
-                                                                      exerciseIndex
-                                                                    )
-                                                                  }
-                                                                  className="h-8 w-8"
-                                                                >
-                                                                  <Trash2 className="h-4 w-4 text-destructive hover:text-destructive/80" />
-                                                                </Button>
-                                                              </div>
-                                                            </div>
-                                                          </CardHeader>
-                                                          <CardContent className="p-4 pt-2 grid gap-4">
-                                                            <div className="flex items-center gap-2 text-sm">
-                                                              <svg
-                                                                className="h-4 w-4 text-muted-foreground"
-                                                                fill="none"
-                                                                stroke="currentColor"
-                                                                viewBox="0 0 24 24"
-                                                              >
-                                                                <path
-                                                                  strokeLinecap="round"
-                                                                  strokeLinejoin="round"
-                                                                  strokeWidth={2}
-                                                                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                                                                />
-                                                                <path
-                                                                  strokeLinecap="round"
-                                                                  strokeLinejoin="round"
-                                                                  strokeWidth={2}
-                                                                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                                                />
-                                                              </svg>
-                                                              {exercise.youtube_url ? (
-                                                                <a
-                                                                  href={exercise.youtube_url}
-                                                                  target="_blank"
-                                                                  rel="noopener noreferrer"
-                                                                  className="text-primary hover:underline inline-flex items-center gap-1 flex-1 truncate"
-                                                                >
-                                                                  Link video youtube
-                                                                </a>
-                                                              ) : (
-                                                                <span className="text-muted-foreground">
-                                                                  Chưa có video
-                                                                </span>
-                                                              )}
-                                                            </div>
-                                                            <div className="flex items-center gap-2 text-sm">
-                                                              <svg
-                                                                className="h-4 w-4 text-muted-foreground"
-                                                                fill="none"
-                                                                stroke="currentColor"
-                                                                viewBox="0 0 24 24"
-                                                              >
-                                                                <path
-                                                                  strokeLinecap="round"
-                                                                  strokeLinejoin="round"
-                                                                  strokeWidth={2}
-                                                                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                                                                />
-                                                              </svg>
-                                                              <span>
-                                                                Phát lại <strong>{exercise.no}</strong> lần
-                                                              </span>
-                                                            </div>
-                                                          </CardContent>
-                                                        </Card>
-                                                      ))
-                                                  ) : (
-                                                    <p className="text-sm text-muted-foreground italic">
-                                                      No exercises added yet.
-                                                    </p>
-                                                  )}
-                                                </div>
-                                              </div>
-                                            </AccordionContent>
-                                          </AccordionItem>
-                                        </Accordion>
-                                      </div>
-                                    </CardContent>
-                                  </Card>
-                                ))}
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    <MainButton text="Lưu cấu trúc khóa học" disabled={isSubmitting} className="w-full" />
-                  </form>
-                </Form>
-              )}
-            </CardContent>
-          </Card>
+                <MainButton text="Lưu cấu trúc khóa học" disabled={isSubmitting} className="w-full" />
+              </form>
+            </Form>
+          )}
         </TabsContent>
       </Tabs>
 

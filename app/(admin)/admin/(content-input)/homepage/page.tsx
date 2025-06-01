@@ -30,6 +30,8 @@ import { toast } from "sonner";
 import { formSchema } from "./schema";
 import { useQuery } from "@/hooks/use-query";
 import { Configuration } from "@/models/configuration";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { BoxIcon } from "lucide-react";
 
 const homepageID = 3;
 
@@ -53,9 +55,20 @@ export default function HomepagePage() {
   return <HomepageForm defaultData={data.data.data} />;
 }
 
-function HomepageForm({ defaultData }: { defaultData: Configuration["data"] }) {
-  const [activeTab, setActiveTab] = useState("section_1");
+const data = [
+  { value: "section_1", label: "Hero" },
+  { value: "section_2", label: "Section 2" },
+  { value: "section_3", label: "Membership" },
+  { value: "section_4", label: "CTA" },
+  { value: "section_5", label: "Body Type" },
+  { value: "section_6", label: "Thực đơn" },
+  { value: "section_7", label: "Sản phẩm" },
+  { value: "section_8", label: "HLV" },
+  { value: "section_9", label: "FAQ" },
+  { value: "section_10", label: "Contact" },
+]
 
+function HomepageForm({ defaultData }: { defaultData: Configuration["data"] }) {
   // Initialize form with the default data
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -98,23 +111,26 @@ function HomepageForm({ defaultData }: { defaultData: Configuration["data"] }) {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 col-span-3"
         >
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            orientation="vertical"
-          >
-            <TabsList className="mb-4 w-full [&>button]:flex-1">
-              <TabsTrigger value="section_1">Hero</TabsTrigger>
-              <TabsTrigger value="section_2">Section 2</TabsTrigger>
-              <TabsTrigger value="section_3">Membership</TabsTrigger>
-              <TabsTrigger value="section_4">CTA</TabsTrigger>
-              <TabsTrigger value="section_5">Dáng</TabsTrigger>
-              <TabsTrigger value="section_7">Thực đơn</TabsTrigger>
-              <TabsTrigger value="section_8">Sản phẩm</TabsTrigger>
-              <TabsTrigger value="section_9">HLV</TabsTrigger>
-              <TabsTrigger value="section_10">FAQ</TabsTrigger>
-              <TabsTrigger value="section_11">Contact</TabsTrigger>
-            </TabsList>
+          <Tabs defaultValue="section_1">
+            <ScrollArea>
+              <TabsList className="bg-background mb-3 h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse">
+                {data.map((item) => (
+                  <TabsTrigger
+                    key={item.value}
+                    value={item.value}
+                    className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e"
+                  >
+                    <BoxIcon
+                      className="-ms-0.5 me-1.5 opacity-60"
+                      size={16}
+                      aria-hidden="true"
+                    />
+                    {item.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
 
             {/* Section 1 */}
             <TabsContent value="section_1">

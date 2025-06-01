@@ -1,6 +1,5 @@
 import React from "react"
 import Image from "next/image"
-import VideoCard from "@/assets/image/ImageIntro.png"
 import { getUserBodyQuizzesByUserId } from "@/network/server/user-body-quizz"
 
 const formatDate = (dateString: string) => {
@@ -22,11 +21,11 @@ export default async function About({ params }: { params: Promise<{ slug: string
 
   return (
     <div className="flex flex-col gap-10 mt-10 p-10">
-      <Image src={VideoCard} alt="" className="h-[680px]" />
+      <Image src="/body-quiz-image.jpg" alt="body-quiz-image" className="h-[680px]" />
       <div className="xl:text-3xl max-lg:text-xl flex flex-col gap-5">
         <p>Kết quả ngày {formatDate(quizData.quiz_date)}</p>
         <p className="text-gray-500">
-          Chỉ số <span className="text-text underline">HLV Đánh Giá Phom Dáng</span>
+          Chỉ số <span className="text-ring underline">HLV Đánh Giá Phom Dáng</span>
         </p>
         <div className="text-gray-500 xl:text-xl max-lg:base">
           {quizData.responses.map((response: string) => (

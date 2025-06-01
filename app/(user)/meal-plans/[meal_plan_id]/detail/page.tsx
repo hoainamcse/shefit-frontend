@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import Header from "@/components/common/Header"
+import { Header } from "@/app/(user)/_components/header"
 import Link from "next/link"
 import { BackIcon } from "@/components/icons/BackIcon"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -72,7 +72,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
           </div>
         </div>
         <div className="mr-auto text-xl my-20 max-lg:my-0 max-lg:p-4">
-          <div className="font-[family-name:var(--font-coiny)] text-text text-[40px] max-lg:text-[30px] mb-5">
+          <div className="font-[family-name:var(--font-coiny)] text-ring text-[40px] max-lg:text-[30px] mb-5">
             Menu theo lịch
           </div>
           <div>{mealPlan.description}</div>

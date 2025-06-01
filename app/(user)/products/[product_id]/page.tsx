@@ -250,7 +250,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
             <AlertDialogCancel className="absolute top-4 right-4 border-none hover:bg-white shadow-none active:bg-none">
               <CloseIcon />
             </AlertDialogCancel>
-            <AlertDialogTitle className="text-text font-[family-name:var(--font-coiny)] text-[40px] pt-10">
+            <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] text-[40px] pt-10">
               Đặt hàng thành công
             </AlertDialogTitle>
             <AlertDialogDescription className="text-gray-500 text-[20px] pb-10">
@@ -394,7 +394,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full rounded-full bg-button hover:bg-[#11c296] text-white hover:text-white"
+                    className="w-full rounded-full bg-[#13D8A7] hover:bg-[#11c296] text-white hover:text-white"
                     onClick={() => handleBuyNow()}
                     disabled={!selectedVariantId || isLoadingPayment}
                   >
@@ -408,7 +408,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
                     </AlertDialogCancel>
                     {qrData ? (
                       <div className="flex flex-col items-center gap-4 py-4">
-                        <AlertDialogTitle className="text-text font-[family-name:var(--font-coiny)] text-2xl">
+                        <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] text-2xl">
                           Thanh toán đơn hàng
                         </AlertDialogTitle>
                         <div className="border rounded-md p-4 w-full flex justify-center">
@@ -460,14 +460,14 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
                       </div>
                     ) : paymentError ? (
                       <div className="flex flex-col items-center py-6">
-                        <AlertDialogTitle className="text-text font-[family-name:var(--font-coiny)] text-xl text-red-500">
+                        <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] text-xl text-red-500">
                           Lỗi thanh toán
                         </AlertDialogTitle>
                         <AlertDialogDescription className="text-center mt-4">{paymentError}</AlertDialogDescription>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center py-6">
-                        <AlertDialogTitle className="text-text font-[family-name:var(--font-coiny)] text-xl">
+                        <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] text-xl">
                           Đang tạo đơn hàng
                         </AlertDialogTitle>
                         <AlertDialogDescription className="text-center mt-4">
@@ -479,7 +479,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
                 </AlertDialogContent>
               </AlertDialog>
               <Button
-                className="border-button border-2 text-button rounded-full w-full bg-white hover:bg-[#11c29628]"
+                className="border-[#13D8A7] border-2 text-[#13D8A7] rounded-full w-full bg-white hover:bg-[#11c29628]"
                 disabled={!selectedVariantId || !cartId || isAdding}
                 onClick={handleAddToCart}
               >
@@ -489,13 +489,13 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
           </div>
         </div>
         <div className="flex flex-col gap-5 mb-20">
-          <div className="font-[family-name:var(--font-coiny)] text-text xl:text-[40px] max-lg:text-[30px]">Title</div>
+          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] max-lg:text-[30px]">Title</div>
           <p className="text-[#737373] xl:text-xl max-lg:text-base">{product.description}</p>
         </div>
 
         {muscleGroups.length > 0 && (
           <div>
-            <div className="font-[family-name:var(--font-coiny)] text-text xl:text-[40px] mb-5 max-lg:text-[30px]">
+            <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] mb-5 max-lg:text-[30px]">
               Tính năng
             </div>
             <div className="grid xl:grid-cols-12 lg:grid-cols-10 md:grid-cols-6 sm:grid-cols-4 gap-10">

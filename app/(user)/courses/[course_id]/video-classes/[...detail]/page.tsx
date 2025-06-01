@@ -13,6 +13,7 @@ import VideoPlayer from "./VideoPlayer"
 import { MainButton } from "@/components/buttons/main-button"
 import { Pause, Play, ChevronDown, ChevronUp, PlayCircle } from "lucide-react"
 import { useState } from "react"
+import { getYoutubeThumbnail } from "@/lib/youtube"
 
 // Exercise type
 export type Exercise = {
@@ -231,7 +232,7 @@ export default async function Video({ params }: { params: Promise<{ course_id: s
     <div className="flex flex-col gap-10 mt-10">
       <div className="mb-20">
         {/* <div className="flex flex-col justify-center text-center gap-5 mb-20">
-          <div className="font-[family-name:var(--font-coiny)] text-text xl:text-[40px]">{courses.data[0].name}</div>
+          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px]">{courses.data[0].name}</div>
           <p className="text-[#737373] text-xl">{courses.data[0].description}</p>
         </div> */}
         {week1Day1Circuits.map((circuit, cIdx) => {
@@ -270,7 +271,7 @@ function CircuitItem({ circuit, cIdx }: { circuit: Circuit; cIdx: number }) {
         </button>
         <MainButton
           variant="ghost"
-          className="rounded-full p-2 h-10 w-10 bg-button text-white ml-3"
+          className="rounded-full p-2 h-10 w-10 bg-[#13D8A7] text-white ml-3"
           icon={isPlaying ? Pause : Play}
           onClick={handlePlayPauseToggle}
           aria-label={isPlaying ? "Pause circuit" : "Play circuit"}
@@ -303,7 +304,7 @@ function CircuitItem({ circuit, cIdx }: { circuit: Circuit; cIdx: number }) {
                   <div className="text-xl cursor-pointer" tabIndex={0} aria-label={`Open exercise ${exercise.name}`}>
                     <div className="hidden md:block">
                       <div className="relative group cursor-pointer">
-                        <img src="/temp/VideoCard.jpg" alt="" className="aspect-[5/3] object-cover rounded-xl mb-4" />
+                        <img src={getYoutubeThumbnail(exercise.url)} alt="" className="aspect-[5/3] object-cover rounded-xl mb-4" />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                         <div className="absolute inset-0 flex items-center justify-center">
                           <PlayCircle className="w-16 h-16 text-white opacity-70 group-hover:opacity-100 transition-opacity" />
@@ -323,7 +324,7 @@ function CircuitItem({ circuit, cIdx }: { circuit: Circuit; cIdx: number }) {
                       <div className="flex relative">
                         <div className="relative group cursor-pointer w-1/3 flex-shrink-0">
                           <img
-                            src="/temp/VideoCard.jpg"
+                            src={getYoutubeThumbnail(exercise.url)}
                             alt=""
                             className="aspect-square object-cover rounded-xl"
                             width={300}

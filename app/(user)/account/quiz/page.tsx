@@ -108,7 +108,7 @@ export default function BodyQuiz() {
         </div>
         <div className="w-full flex flex-col gap-5 mt-20">
           <div className="xl:w-[400px] max-lg:w-full mb-10">
-            <div className="font-[family-name:var(--font-coiny)] text-3xl text-text">Shefit.vn Body Quiz 1:1</div>
+            <div className="font-[family-name:var(--font-coiny)] text-3xl text-ring">Shefit.vn Body Quiz 1:1</div>
             <p className="text-gray-500">
               Khách hàng vui lòng trả lời các câu hỏi sau để HLV Shefit có thể lên Giáo Trình Tập & Thực Đơn cá nhân hóa
               phù hợp nhất. Đảm bảo đạt được body tỷ lệ đẹp nhất với phom dáng người.
@@ -119,7 +119,7 @@ export default function BodyQuiz() {
               <div className="space-y-6">
                 {bodyQuiz?.data.flatMap((quiz) => quiz.questions).map((question) => renderQuestionField(question))}
               </div>
-              <Button type="submit" className="bg-button text-white py-2 px-4 rounded-full w-full xl:h-20 text-xl">
+              <Button type="submit" className="bg-[#13D8A7] text-white py-2 px-4 rounded-full w-full xl:h-20 text-xl">
                 Gửi
               </Button>
             </form>

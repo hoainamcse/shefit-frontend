@@ -1,4 +1,4 @@
-import Layout from "@/components/common/Layout"
+import Layout from "@/app/(user)/_components/layout"
 
 export default async function GalleryLayout({ children }: { children: React.ReactNode }) {
   return (

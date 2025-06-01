@@ -133,12 +133,12 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         ) : (
           <>
             <div>
-              <p className="font-[family-name:var(--font-coiny)] text-text text-2xl xl:text-[40px]">Thông tin</p>
+              <p className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px]">Thông tin</p>
               <p>{course?.data?.description}</p>
             </div>
             {equipment?.data?.length > 0 && (
               <div>
-                <p className="font-[family-name:var(--font-coiny)] text-text text-2xl xl:text-[40px]">Dụng cụ</p>
+                <p className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px]">Dụng cụ</p>
                 <ScrollArea className="w-screen-max-xl">
                   <div className="flex w-max space-x-4 py-4">
                     {equipment?.data?.map((equipment: any, index: number) => (
@@ -162,7 +162,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
             )}
             {muscleGroup?.data?.length > 0 && (
               <div>
-                <p className="font-[family-name:var(--font-coiny)] text-text text-2xl xl:text-[40px]">Nhóm cơ</p>
+                <p className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px]">Nhóm cơ</p>
                 <ScrollArea className="w-screen-max-xl">
                   <div className="flex w-max space-x-4 py-4">
                     {muscleGroup?.data?.map((muscleGroup: any, index: number) => (

@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 
 import { FormInputField, FormSelectField } from "@/components/forms/fields"
-import { getValuable } from "@/lib/utils"
+import { getValuable } from "@/lib/helpers"
 
 import { getUserById } from "@/network/server/user"
 import { PROVINCES } from "@/lib/label"

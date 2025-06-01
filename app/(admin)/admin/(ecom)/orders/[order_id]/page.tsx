@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency } from '@/lib/helpers'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { Cart } from '@/models/cart'
 import { getCart } from '@/network/server/cart'

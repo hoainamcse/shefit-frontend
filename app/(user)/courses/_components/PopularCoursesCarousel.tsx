@@ -27,7 +27,7 @@ export default function PopularCoursesCarousel() {
 
   return (
     <div className="max-w-screen-2xl mx-auto">
-      <p className="text-center font-[family-name:var(--font-coiny)] text-text text-2xl my-4">
+      <p className="text-center font-[family-name:var(--font-coiny)] text-ring text-2xl my-4">
         Khoá tập hot nhất tháng
       </p>
       <Carousel
@@ -43,7 +43,7 @@ export default function PopularCoursesCarousel() {
                 <div className="text-center">
                   <div className="relative group">
                     <Image
-                      src={course.cover_image || "/temp/VideoCard.jpg"}
+                      src={course.cover_image}
                       alt={course.course_name}
                       className="aspect-[2/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
                       width={585}

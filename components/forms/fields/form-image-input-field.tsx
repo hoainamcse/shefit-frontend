@@ -68,36 +68,6 @@ function FormImageInputField<
           </FormLabel>
         )}
         {description && <FormDescription>{description}</FormDescription>}
-        {imageUrl && (
-          <div className="mb-3 flex flex-wrap gap-4">
-            <div className="relative">
-              <div className="h-24 w-24 overflow-hidden rounded border border-gray-200">
-                <img src={imageUrl} alt="Preview" aria-label="Image preview" className="h-full w-full object-cover" />
-              </div>
-              <button
-                type="button"
-                aria-label="Remove image"
-                tabIndex={0}
-                className={removeBtnClass}
-                onClick={handleRemove}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') handleRemove()
-                }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-3 w-3"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l8 8M6 14L14 6" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        )}
         <div className="flex items-center gap-2">
           <FormControl>
             <Input
@@ -127,6 +97,36 @@ function FormImageInputField<
             disabled={!isValidImageUrl(inputValue)}
           />
         </div>
+        {imageUrl && (
+          <div className="flex flex-wrap gap-4">
+            <div className="relative">
+              <div className="h-24 w-24 overflow-hidden rounded border border-gray-200">
+                <img src={imageUrl} alt="Preview" aria-label="Image preview" className="h-full w-full object-cover" />
+              </div>
+              <button
+                type="button"
+                aria-label="Remove image"
+                tabIndex={0}
+                className={removeBtnClass}
+                onClick={handleRemove}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') handleRemove()
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-3 w-3"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l8 8M6 14L14 6" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
         <FormMessage />
       </FormItem>
     )

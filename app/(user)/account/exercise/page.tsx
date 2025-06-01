@@ -8,7 +8,7 @@ export default function Exercise() {
     <div className="space-y-10 px-14">
       <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
         <AccordionItem value="item-1" className="border-b-0">
-          <AccordionTrigger className="text-3xl text-text font-[family-name:var(--font-coiny)] hover:no-underline">
+          <AccordionTrigger className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline">
             Khóa tập của bạn
           </AccordionTrigger>
           <AccordionContent>
@@ -18,7 +18,7 @@ export default function Exercise() {
       </Accordion>
       <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
         <AccordionItem value="item-1" className="border-b-0">
-          <AccordionTrigger className="text-3xl text-text font-[family-name:var(--font-coiny)] hover:no-underline">
+          <AccordionTrigger className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline">
             Thực đơn của bạn
           </AccordionTrigger>
           <AccordionContent>
@@ -28,7 +28,7 @@ export default function Exercise() {
       </Accordion>
       <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
         <AccordionItem value="item-1" className="border-b-0">
-          <AccordionTrigger className="text-3xl text-text font-[family-name:var(--font-coiny)] hover:no-underline">
+          <AccordionTrigger className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline">
             Động tác
           </AccordionTrigger>
           <AccordionContent>

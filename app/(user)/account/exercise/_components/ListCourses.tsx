@@ -41,7 +41,7 @@ export default async function ListCourses() {
                       </div>
                       <div className="flex gap-2 justify-end flex-col items-end">
                         <p>{getFormCategoryLabel(course.course.form_categories[0])}</p>
-                        {/* <Link href={`/courses/${course.course.id}`} className="text-text underline">
+                        {/* <Link href={`/courses/${course.course.id}`} className="text-ring underline">
                           Bắt đầu
                         </Link> */}
                       </div>
@@ -52,7 +52,7 @@ export default async function ListCourses() {
             ))}
           </div>
           <Link href="/exercise/detail">
-            <Button className="bg-button text-white text-xl w-full rounded-full h-14 mt-6">Thêm khóa tập</Button>
+            <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm khóa tập</Button>
           </Link>
         </div>
       )}

@@ -1,6 +1,6 @@
 'use client'
 
-import Layout from '@/components/common/Layout'
+import Layout from '@/app/(user)/_components/layout'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
@@ -45,7 +45,7 @@ function SelectHero({
 const NextButton = ({ href, className }: { href: string; className?: string }) => {
   return (
     <Link href={href}>
-      <button type="button" className={`bg-background p-2 rounded-3xl text-text ${className}`}>
+      <button type="button" className={`bg-background p-2 rounded-3xl text-ring ${className}`}>
         <ChevronRight className="w-4 h-4" />
       </button>
     </Link>
@@ -75,7 +75,7 @@ export default function MealPlansPage() {
   return (
     <Layout>
       <div className="max-w-screen-md mx-auto">
-        <p className="font-[family-name:var(--font-coiny)] sm:text-center text-text text-2xl sm:text-3xl my-2 sm:my-4">
+        <p className="font-[family-name:var(--font-coiny)] sm:text-center text-ring text-2xl sm:text-3xl my-2 sm:my-4">
           Chọn thực đơn
         </p>
         <p className="sm:text-center text-[#737373] text-base mb-4">

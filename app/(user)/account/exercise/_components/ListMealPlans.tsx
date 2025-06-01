@@ -51,7 +51,7 @@ export default async function ListMealPlans() {
             ))}
           </div>
           <Link href="/exercise/detail">
-            <Button className="bg-button text-white text-xl w-full rounded-full h-14 mt-6">Thêm thực đơn</Button>
+            <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm thực đơn</Button>
           </Link>
         </div>
       )}

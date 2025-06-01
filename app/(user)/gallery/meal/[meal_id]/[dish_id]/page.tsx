@@ -6,7 +6,7 @@ export default async function MealDetail({ params }: { params: Promise<{ dish_id
   const detailDish = await getDetailDish(dish_id)
   return (
     <div className="flex flex-col gap-10 mt-10">
-      <div className="font-[family-name:var(--font-coiny)] text-text xl:text-[40px] mb-5 text-center">
+      <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] mb-5 text-center">
         {detailDish.data?.name}
       </div>
       <img src={detailDish.data?.image} alt="" className="h-[680px] object-cover rounded-xl" />

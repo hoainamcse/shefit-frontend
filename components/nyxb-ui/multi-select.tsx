@@ -346,7 +346,7 @@ const MultiSelectList = React.forwardRef<
    return (
       <CommandList
          ref={ref}
-         className={cn("max-h-[unset] px-0 py-0", className)}
+         className={cn("max-h-[unset] px-0 py-1", className)}
          {...props}
       />
    )
@@ -402,7 +402,7 @@ const MultiSelectContent = React.forwardRef<
          >
             <Command
                className={cn(
-                  "max-h-96 w-full min-w-[var(--radix-select-trigger-width)] px-0",
+                  "max-h-96 w-full min-w-[var(--radix-select-trigger-width)] px-1",
                   className,
                )}
                shouldFilter={!context.onSearch}

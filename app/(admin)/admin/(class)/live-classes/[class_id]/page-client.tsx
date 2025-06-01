@@ -13,9 +13,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Plus, Trash2, Clock, CalendarDays } from 'lucide-react'
+import { Plus, Trash2, CalendarDays, HouseIcon, BoxIcon } from 'lucide-react'
 import { FormInputField, FormTextareaField } from '@/components/forms/fields'
 import { ApiResponse } from '@/models/response'
 import { TimePicker } from '@/components/time-picker'
@@ -67,7 +67,6 @@ export default function LiveClassPageClient({ data }: { data: any }) {
   const router = useRouter()
   // State for tracking selected day index
   const [selectedDayIndex, setSelectedDayIndex] = useState<number | null>(0)
-  const [activeTab, setActiveTab] = useState('basic')
   const [isLoading, setIsLoading] = useState(false)
 
   // Available days of week for selection
@@ -343,238 +342,245 @@ export default function LiveClassPageClient({ data }: { data: any }) {
   return (
     <div className="space-y-6">
       {isSubmitting && <div className="fixed inset-0 bg-white/50 backdrop-blur-sm z-50" />}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="basic">Basic Details</TabsTrigger>
-          <TabsTrigger value="structure">Course Structure</TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="tab-1">
+        <ScrollArea>
+          <TabsList className="bg-background mb-3 h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse">
+            <TabsTrigger
+              value="tab-1"
+              className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e"
+            >
+              <HouseIcon
+                className="-ms-0.5 me-1.5 opacity-60"
+                size={16}
+                aria-hidden="true"
+              />
+              Thông tin cơ bản
+            </TabsTrigger>
+            <TabsTrigger
+              value="tab-2"
+              className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e"
+            >
+              <BoxIcon
+                className="-ms-0.5 me-1.5 opacity-60"
+                size={16}
+                aria-hidden="true"
+              />
+              Chi tiết khoá tập
+            </TabsTrigger>
+          </TabsList>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
 
-        <TabsContent value="basic">
-          <Card>
-            <CardHeader>
-              <CardTitle>Basic Details</CardTitle>
-              <CardDescription>Edit the basic information about this live class.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CreateCourseForm format="live" isEdit data={data.data} />
-            </CardContent>
-          </Card>
+        <TabsContent value="tab-1">
+          <CreateCourseForm format="live" isEdit data={data.data} />
         </TabsContent>
 
-        <TabsContent value="structure">
-          <Card>
-            <CardHeader>
-              <CardTitle>Course Structure</CardTitle>
-              <CardDescription>Organize your live course into days and sessions.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="flex items-center justify-center w-full py-12">
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-                    <p className="text-sm text-muted-foreground">Loading course structure...</p>
-                  </div>
-                </div>
-              ) : (
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Column-based layout for days and sessions */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border rounded-lg p-4">
-                      {/* Days Column */}
-                      <div className="border-b pb-4 md:border-b-0 md:border-r md:pr-4">
-                        <div className="flex justify-between items-center mb-4">
-                          <h3 className="text-lg font-medium">Days</h3>
-                          <div className="w-48">
-                            <div className="w-full">
-                              <Select onValueChange={(value) => addDay(value)}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Add a day" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {daysOfWeek.map((day) => (
-                                    <SelectItem
-                                      key={day.value}
-                                      value={day.value.toString()}
-                                      disabled={usedDays.includes(day.value)}
-                                    >
-                                      {day.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          {dayFields.length === 0 && (
-                            <div className="text-center py-8 text-muted-foreground">
-                              <p>No days added yet. Select a day from the dropdown to add it.</p>
-                            </div>
-                          )}
-
-                          {dayFields.map((day, index) => (
-                            <div
-                              key={day.id || index}
-                              className={`flex justify-between items-center p-2 rounded-md cursor-pointer ${
-                                selectedDayIndex === index ? 'bg-primary text-primary-foreground' : 'hover:bg-muted/50'
-                              }`}
-                              onClick={() => selectDay(index)}
-                            >
-                              <span className="truncate">
-                                {daysOfWeek.find((d) => d.value === day.day_of_week)?.label}
-                              </span>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  handleRemoveDay(index)
-                                }}
-                                className={`h-8 w-8 p-0 ${
-                                  selectedDayIndex === index ? 'text-primary-foreground' : 'text-destructive'
-                                }`}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Sessions Column */}
-                      <div>
-                        {selectedDayIndex !== null && (
-                          <>
-                            <div className="flex justify-between items-center mb-4">
-                              <h3 className="text-lg font-medium">
-                                Sessions for{' '}
-                                {daysOfWeek.find((d) => d.value === dayFields[selectedDayIndex]?.day_of_week)?.label}
-                              </h3>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => addSession(selectedDayIndex)}
-                              >
-                                <Plus className="h-4 w-4 mr-1" /> Add Session
-                              </Button>
-                            </div>
-
-                            <div className="space-y-4">
-                              {!selectedDay?.sessions?.length && (
-                                <div className="text-center py-8 text-muted-foreground">
-                                  <p>No sessions added yet. Click "Add Session" to create one.</p>
-                                </div>
-                              )}
-
-                              {selectedDay?.sessions?.map((session, sessionIndex) => (
-                                <Card key={session.id || sessionIndex}>
-                                  <CardHeader className="p-4 pb-2">
-                                    <div className="flex justify-between items-center">
-                                      <FormInputField
-                                        form={form}
-                                        label="Session Name"
-                                        name={`days.${selectedDayIndex}.sessions.${sessionIndex}.name`}
-                                        placeholder="Session Name"
-                                        className="text-lg font-medium"
-                                      />
-
-                                      <FormInputField
-                                        form={form}
-                                        name={`days.${selectedDayIndex}.sessions.${sessionIndex}.session_number`}
-                                        label="Session Number"
-                                        type="number"
-                                      />
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => removeSession(selectedDayIndex, sessionIndex)}
-                                        className="h-8 w-8 p-0 text-destructive"
-                                      >
-                                        <Trash2 className="h-4 w-4" />
-                                      </Button>
-                                    </div>
-                                  </CardHeader>
-                                  <CardContent className="p-4 pt-0">
-                                    <div className="space-y-4">
-                                      <FormInputField
-                                        form={form}
-                                        name={`days.${selectedDayIndex}.sessions.${sessionIndex}.link_zoom`}
-                                        label="Zoom Link"
-                                        placeholder="Enter Zoom meeting link"
-                                      />
-                                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <FormField
-                                          control={form.control}
-                                          name={`days.${selectedDayIndex}.sessions.${sessionIndex}.start_time`}
-                                          render={({ field }) => (
-                                            <FormItem>
-                                              <FormLabel>Start Time</FormLabel>
-                                              <FormControl>
-                                                <TimePicker
-                                                  value={field.value}
-                                                  onChange={field.onChange}
-                                                  format="24"
-                                                  className="w-full"
-                                                />
-                                              </FormControl>
-                                              <FormMessage />
-                                            </FormItem>
-                                          )}
-                                        />
-                                        <FormField
-                                          control={form.control}
-                                          name={`days.${selectedDayIndex}.sessions.${sessionIndex}.end_time`}
-                                          render={({ field }) => (
-                                            <FormItem>
-                                              <FormLabel>End Time</FormLabel>
-                                              <FormControl>
-                                                <TimePicker
-                                                  value={field.value}
-                                                  onChange={field.onChange}
-                                                  format="24"
-                                                  className="w-full"
-                                                />
-                                              </FormControl>
-                                              <FormMessage />
-                                            </FormItem>
-                                          )}
-                                        />
-                                      </div>
-                                      <FormTextareaField
-                                        form={form}
-                                        name={`days.${selectedDayIndex}.sessions.${sessionIndex}.description`}
-                                        label="Description"
-                                        placeholder="Enter session description"
-                                      />
-                                    </div>
-                                  </CardContent>
-                                </Card>
+        <TabsContent value="tab-2">
+          {isLoading ? (
+            <div className="flex items-center justify-center w-full py-12">
+              <div className="flex flex-col items-center space-y-4">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+                <p className="text-sm text-muted-foreground">Loading course structure...</p>
+              </div>
+            </div>
+          ) : (
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {/* Column-based layout for days and sessions */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Days Column */}
+                  <div className="border-b pb-4 md:border-b-0 md:border-r md:pr-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-medium">Days</h3>
+                      <div className="w-48">
+                        <div className="w-full">
+                          <Select onValueChange={(value) => addDay(value)}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Add a day" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {daysOfWeek.map((day) => (
+                                <SelectItem
+                                  key={day.value}
+                                  value={day.value.toString()}
+                                  disabled={usedDays.includes(day.value)}
+                                >
+                                  {day.label}
+                                </SelectItem>
                               ))}
-                            </div>
-                          </>
-                        )}
-
-                        {selectedDayIndex === null && (
-                          <div className="flex items-center justify-center h-64">
-                            <div className="text-center text-muted-foreground">
-                              <CalendarDays className="mx-auto h-12 w-12 mb-2 text-muted-foreground/50" />
-                              <p>Select a day to manage its sessions</p>
-                            </div>
-                          </div>
-                        )}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     </div>
 
-                    <MainButton text="Lưu cấu trúc khoá tập" type="submit" className="w-full" disabled={isSubmitting} />
-                  </form>
-                </Form>
-              )}
-            </CardContent>
-          </Card>
+                    <div className="space-y-2">
+                      {dayFields.length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <p>No days added yet. Select a day from the dropdown to add it.</p>
+                        </div>
+                      )}
+
+                      {dayFields.map((day, index) => (
+                        <div
+                          key={day.id || index}
+                          className={`flex justify-between items-center p-2 rounded-md cursor-pointer ${
+                            selectedDayIndex === index ? 'bg-primary text-primary-foreground' : 'hover:bg-muted/50'
+                          }`}
+                          onClick={() => selectDay(index)}
+                        >
+                          <span className="truncate">
+                            {daysOfWeek.find((d) => d.value === day.day_of_week)?.label}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleRemoveDay(index)
+                            }}
+                            className={`h-8 w-8 p-0 ${
+                              selectedDayIndex === index ? 'text-primary-foreground' : 'text-destructive'
+                            }`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Sessions Column */}
+                  <div>
+                    {selectedDayIndex !== null && (
+                      <>
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="text-lg font-medium">
+                            Sessions for{' '}
+                            {daysOfWeek.find((d) => d.value === dayFields[selectedDayIndex]?.day_of_week)?.label}
+                          </h3>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => addSession(selectedDayIndex)}
+                          >
+                            <Plus className="h-4 w-4 mr-1" /> Add Session
+                          </Button>
+                        </div>
+
+                        <div className="space-y-4">
+                          {!selectedDay?.sessions?.length && (
+                            <div className="text-center py-8 text-muted-foreground">
+                              <p>No sessions added yet. Click "Add Session" to create one.</p>
+                            </div>
+                          )}
+
+                          {selectedDay?.sessions?.map((session, sessionIndex) => (
+                            <Card key={session.id || sessionIndex}>
+                              <CardHeader className="p-4 pb-2">
+                                <div className="flex justify-between items-center">
+                                  <FormInputField
+                                    form={form}
+                                    label="Session Name"
+                                    name={`days.${selectedDayIndex}.sessions.${sessionIndex}.name`}
+                                    placeholder="Session Name"
+                                    className="text-lg font-medium"
+                                  />
+
+                                  <FormInputField
+                                    form={form}
+                                    name={`days.${selectedDayIndex}.sessions.${sessionIndex}.session_number`}
+                                    label="Session Number"
+                                    type="number"
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => removeSession(selectedDayIndex, sessionIndex)}
+                                    className="h-8 w-8 p-0 text-destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </CardHeader>
+                              <CardContent className="p-4 pt-0">
+                                <div className="space-y-4">
+                                  <FormInputField
+                                    form={form}
+                                    name={`days.${selectedDayIndex}.sessions.${sessionIndex}.link_zoom`}
+                                    label="Zoom Link"
+                                    placeholder="Enter Zoom meeting link"
+                                  />
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <FormField
+                                      control={form.control}
+                                      name={`days.${selectedDayIndex}.sessions.${sessionIndex}.start_time`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Start Time</FormLabel>
+                                          <FormControl>
+                                            <TimePicker
+                                              value={field.value}
+                                              onChange={field.onChange}
+                                              format="24"
+                                              className="w-full"
+                                            />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                    <FormField
+                                      control={form.control}
+                                      name={`days.${selectedDayIndex}.sessions.${sessionIndex}.end_time`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>End Time</FormLabel>
+                                          <FormControl>
+                                            <TimePicker
+                                              value={field.value}
+                                              onChange={field.onChange}
+                                              format="24"
+                                              className="w-full"
+                                            />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                  </div>
+                                  <FormTextareaField
+                                    form={form}
+                                    name={`days.${selectedDayIndex}.sessions.${sessionIndex}.description`}
+                                    label="Description"
+                                    placeholder="Enter session description"
+                                  />
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      </>
+                    )}
+
+                    {selectedDayIndex === null && (
+                      <div className="flex items-center justify-center h-64">
+                        <div className="text-center text-muted-foreground">
+                          <CalendarDays className="mx-auto h-12 w-12 mb-2 text-muted-foreground/50" />
+                          <p>Select a day to manage its sessions</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <MainButton text="Lưu cấu trúc khoá tập" type="submit" className="w-full" disabled={isSubmitting} />
+              </form>
+            </Form>
+          )}
         </TabsContent>
       </Tabs>
     </div>

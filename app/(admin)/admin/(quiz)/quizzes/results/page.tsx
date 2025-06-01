@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { formatDateString } from '@/lib/utils'
+import { formatDateString } from '@/lib/helpers'
 import UserBodyQuizz from '@/models/user-body-quizz'
 import { getAllUserBodyQuizzes } from '@/network/server/user-body-quizz'
 import { Copy, Edit, Ellipsis, Trash2 } from 'lucide-react'

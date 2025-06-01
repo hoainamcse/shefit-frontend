@@ -123,7 +123,7 @@ export default function LoginForm() {
 
   return (
     <form action={handleSubmit} className="space-y-6">
-      <p className="text-text">
+      <p className="text-ring">
         Đăng ký tài khoản để xem +100 khóa tập, +1000 động tác, +30 thực đơn giúp bạn Độ Dáng tại bất kì đâu!
       </p>
       <div className="mx-auto space-y-2">

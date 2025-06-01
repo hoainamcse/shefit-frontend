@@ -1,7 +1,5 @@
 "use client"
 
-import Image from "next/image"
-import ImagteTitle from "@/assets/image/ImageTitle.png"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { getProducts } from "@/network/server/products"
@@ -41,10 +39,10 @@ export default function ProductsPage() {
 
   return (
     <div className="flex flex-col gap-10">
-      <Image src={ImagteTitle} className="w-full object-cover xl:h-[628px]" alt="" />
+      <img src="/body-quiz-image.jpg" className="w-full object-cover xl:h-[628px]" alt="" />
       <div className="mb-20 p-6 mt-20">
         <div className="flex flex-col gap-5 mb-20">
-          <div className="font-[family-name:var(--font-coiny)] text-text xl:text-[40px]">Title</div>
+          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px]">Title</div>
           <p className="text-[#737373] text-xl">
             Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis.
             Molestie nascetur justo sit accumsan nunc quam tincidunt blandit.

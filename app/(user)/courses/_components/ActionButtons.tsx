@@ -25,17 +25,17 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
   return (
     <div className="gap-5 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
       {/* <Link href={`/courses/${courseId}/detail`} className="w-full">
-        <Button className="w-full rounded-full text-xl bg-button text-white hover:bg-[#11c296] h-14">Bắt đầu</Button>
+        <Button className="w-full rounded-full text-xl bg-[#13D8A7] text-white hover:bg-[#11c296] h-14">Bắt đầu</Button>
       </Link> */}
       <Button
         onClick={handleToggleDetails}
-        className="w-full rounded-full text-xl bg-button text-white hover:bg-[#11c296] h-14"
+        className="w-full rounded-full text-xl bg-[#13D8A7] text-white hover:bg-[#11c296] h-14"
       >
         {showDetails ? 'Trở về' : 'Bắt đầu'}
       </Button>
       <Button
         onClick={() => handleSaveCourse(courseId)}
-        className="w-full rounded-full text-xl bg-white text-button h-14 border-2 border-button"
+        className="w-full rounded-full text-xl bg-white text-[#13D8A7] h-14 border-2 border-[#13D8A7]"
       >
         Lưu
       </Button>

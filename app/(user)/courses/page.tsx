@@ -1,7 +1,7 @@
 'use client'
 
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
-import Layout from '@/components/common/Layout'
+import Layout from '@/app/(user)/_components/layout'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
@@ -50,7 +50,7 @@ function SelectHero({
 
 const NextButton = ({ className }: { className?: string }) => {
   return (
-    <button type="button" className={`bg-background p-2 rounded-3xl text-text ${className}`}>
+    <button type="button" className={`bg-background p-2 rounded-3xl text-ring ${className}`}>
       <ChevronRight className="w-4 h-4" />
     </button>
   )
@@ -104,7 +104,7 @@ export default function CoursesPage() {
       <PopularCoursesCarousel />
       <div className="max-w-screen-2xl mx-auto">
         <div className="max-w-screen-xl mx-auto my-12 flex flex-col gap-4">
-          <p className="text-center font-[family-name:var(--font-coiny)] text-text text-2xl">Tất cả khoá tập</p>
+          <p className="text-center font-[family-name:var(--font-coiny)] text-ring text-2xl">Tất cả khoá tập</p>
           <p className="text-base text-center text-[#737373]">
             Lựa chọn khóa tập phù hợp với kinh nghiệm, mục tiêu và phom dáng của chị để bắt đầu hành trình độ dáng ngay
             hôm nay!
@@ -136,10 +136,10 @@ export default function CoursesPage() {
             <Tabs defaultValue="video" onValueChange={setActiveTab}>
               <div className="flex justify-center gap-4 mb-10">
                 <TabsList className="bg-white">
-                  <TabsTrigger value="video" className={cn('underline text-text bg-white !shadow-none')}>
+                  <TabsTrigger value="video" className={cn('underline text-ring bg-white !shadow-none')}>
                     Video
                   </TabsTrigger>
-                  <TabsTrigger value="live" className={cn('underline text-text bg-white !shadow-none')}>
+                  <TabsTrigger value="live" className={cn('underline text-ring bg-white !shadow-none')}>
                     Zoom
                   </TabsTrigger>
                 </TabsList>

@@ -64,7 +64,7 @@ export function SectionTwo({ data }: { data: DataType["section_2"] }) {
     <div className="py-8 lg:py-12">
       <div className="container max-auto space-y-8 lg:space-y-10">
         <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
-          <h3 className="text-text text-xl lg:text-2xl font-bold">
+          <h3 className="text-ring text-xl lg:text-2xl font-bold">
             {data.subtitle}
           </h3>
           <h2 className="text-2xl lg:text-3xl font-bold">{data.title}</h2>
@@ -80,7 +80,7 @@ export function SectionTwo({ data }: { data: DataType["section_2"] }) {
           </div>
           <div className="lg:col-span-2 flex flex-col items-center lg:items-start gap-6">
             {data.features.map((feature, index) => (
-              <div key={index} className="flex items-start gap-4 text-text">
+              <div key={index} className="flex items-start gap-4 text-ring">
                 <span className="flex-shrink-0">
                   {index === 0 && <BodyIcon size={32} />}
                   {index === 1 && <DumbbellIcon size={32} />}
@@ -132,7 +132,7 @@ export async function SectionThree({ data }: { data: DataType["section_3"] }) {
                   className={cn(
                     "group flex items-center gap-2 text-base lg:text-lg text-background font-medium rounded-md p-3",
                     mIndex === 0 && "bg-primary",
-                    mIndex === 1 && "bg-text",
+                    mIndex === 1 && "bg-ring",
                     mIndex === 2 && "bg-[#B60606]"
                   )}
                 >
@@ -164,7 +164,7 @@ export async function SectionThree({ data }: { data: DataType["section_3"] }) {
                             className={cn(
                               "absolute bottom-[15%] -left-[42px] -right-[42px] h-16 bg-gradient-to-t from-background to-transparent -rotate-12 text-background flex flex-col items-center justify-center",
                               mIndex === 0 && "bg-primary",
-                              mIndex === 1 && "bg-text",
+                              mIndex === 1 && "bg-ring",
                               mIndex === 2 && "bg-[#B60606]"
                             )}
                           >
@@ -247,7 +247,7 @@ export async function SectionSeven({ data }: { data: DataType["section_7"] }) {
     <div className="py-8 lg:py-12">
       <div className="container max-auto space-y-8 lg:space-y-10">
         <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
-          <h3 className="text-text text-xl lg:text-2xl font-bold">
+          <h3 className="text-ring text-xl lg:text-2xl font-bold">
             Ăn uống khoa học
           </h3>
           <h2 className="text-2xl lg:text-3xl font-bold">
@@ -311,7 +311,7 @@ export async function SectionEight({ data }: { data: DataType["section_8"] }) {
     <div className="py-8 lg:py-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
-          <h2 className="text-text text-2xl lg:text-3xl font-bold">
+          <h2 className="text-ring text-2xl lg:text-3xl font-bold">
             {data.title}
           </h2>
           <p className="text-neutral-500">{data.description}</p>

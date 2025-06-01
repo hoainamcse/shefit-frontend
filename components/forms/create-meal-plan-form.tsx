@@ -9,7 +9,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { toast } from 'sonner'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { MainButton } from '@/components/buttons/main-button'
-import { Trash2, Plus, Search } from 'lucide-react'
+import { Trash2, Plus, Search, HouseIcon, BoxIcon } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
@@ -35,6 +35,7 @@ import { FormImageInputField } from './fields/form-image-input-field'
 import { MealPlan } from '@/models/meal-plans'
 import { Calorie } from '@/models/calorie'
 import { getCalories } from '@/network/server/calorie'
+import { ScrollArea, ScrollBar } from '../ui/scroll-area'
 
 const dishFormSchema = z.object({
   id: z.coerce.number().optional(),
@@ -435,316 +436,327 @@ export default function CreateMealPlanForm({ isEdit = false, data }: { isEdit: b
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-        <Tabs defaultValue="basic" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="basic">Basic Information</TabsTrigger>
-            <TabsTrigger value="days">Days & Dishes</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="basic" className="space-y-6 mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
-                <CardDescription>Nhập thông tin cơ bản cho thực đơn</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <FormInputField
-                  form={form}
-                  name="title"
-                  label="Tên thực đơn"
-                  required
-                  placeholder="Nhập tên thực đơn"
+        <Tabs defaultValue="tab-1">
+          <ScrollArea>
+            <TabsList className="bg-background mb-3 h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse">
+              <TabsTrigger
+                value="tab-1"
+                className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e"
+              >
+                <HouseIcon
+                  className="-ms-0.5 me-1.5 opacity-60"
+                  size={16}
+                  aria-hidden="true"
                 />
-
-                <FormTextareaField
-                  form={form}
-                  name="subtitle"
-                  label="Thông tin tóm tắt"
-                  placeholder="Nhập thông tin tóm tắt"
+                Thông tin cơ bản
+              </TabsTrigger>
+              <TabsTrigger
+                value="tab-2"
+                className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e"
+              >
+                <BoxIcon
+                  className="-ms-0.5 me-1.5 opacity-60"
+                  size={16}
+                  aria-hidden="true"
                 />
+                Chi tiết thực đơn
+              </TabsTrigger>
+            </TabsList>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
 
-                <FormTextareaField
-                  form={form}
-                  name="description"
-                  label="Thông tin chi tiết"
-                  placeholder="Nhập thông tin chi tiết"
-                />
+          <TabsContent value="tab-1">
+            <div className="space-y-6">
+              <FormInputField
+                form={form}
+                name="title"
+                label="Tên thực đơn"
+                required
+                placeholder="Nhập tên thực đơn"
+              />
 
-                {/* <FormField
-                  control={form.control}
-                  name="image"
-                  render={({ field: imageField }) => (
-                    <FormItem>
-                      <FormLabel>Hình đại diện</FormLabel>
-                      <FormControl>
-                        <FileUploader
-                          value={imageField.value as File[]}
-                          onValueChange={imageField.onChange}
-                          maxFileCount={1}
-                          accept={{
-                            'image/*': [],
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
+              <FormTextareaField
+                form={form}
+                name="subtitle"
+                label="Thông tin tóm tắt"
+                placeholder="Nhập thông tin tóm tắt"
+              />
 
-                <FormImageInputField form={form} name="image" label="Hình đại diện" placeholder="Nhập hình đại diện" />
+              <FormTextareaField
+                form={form}
+                name="description"
+                label="Thông tin chi tiết"
+                placeholder="Nhập thông tin chi tiết"
+              />
 
-                <FormSelectField
-                  form={form}
-                  name="calorie_id"
-                  label="Calorie"
-                  data={AVAILABLE_CALORIES}
-                  placeholder="Chọn calory"
-                />
-
-                <FormSelectField
-                  form={form}
-                  name="diet_id"
-                  label="Chế độ ăn"
-                  data={AVAILABLE_DIETS}
-                  placeholder="Chọn chế độ ăn"
-                />
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium">Thành phần</h3>
-                    <Button type="button" variant="outline" onClick={addIngredient}>
-                      <Plus className="h-4 w-4 mr-2" /> Thêm thành phần
-                    </Button>
-                  </div>
-
-                  <div className="space-y-4">
-                    {ingredientFields.length === 0 ? (
-                      <p className="text-muted-foreground italic">Chưa có thành phần</p>
-                    ) : (
-                      <div className="space-y-4">
-                        {ingredientFields.map((ingredient, index) => (
-                          <div key={ingredient.id}>
-                            <FormItem className="p-4 border rounded-md">
-                              <div className="flex justify-between items-start mb-4">
-                                <h4 className="font-medium">Thành phần {index + 1}</h4>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => removeIngredient(index)}
-                                  disabled={ingredientFields.length === 1}
-                                  className="text-destructive hover:text-destructive"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                              <div className="space-y-4">
-                                <FormInputField
-                                  form={form}
-                                  name={`meal_ingredients.${index}.name`}
-                                  label="Tên thành phần"
-                                  placeholder="Nhập tên thành phần"
-                                />
-                                <FormImageInputField
-                                  form={form}
-                                  name={`meal_ingredients.${index}.image`}
-                                  label="Ảnh thành phần"
-                                  placeholder="Nhập ảnh thành phần"
-                                />
-
-                                {/* <div>
-                                    {field.value.image &&
-                                    Array.isArray(field.value.image) &&
-                                    field.value.image.length > 0 ? (
-                                      <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                          <img
-                                            src={URL.createObjectURL(field.value.image[0])}
-                                            alt="Ingredient preview"
-                                            className="w-24 h-24 object-cover rounded"
-                                          />
-                                          <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => removeIngredient(index)}
-                                            disabled={field.value.image.length === 0}
-                                          >
-                                            <Trash2 className="h-4 w-4" />
-                                          </Button>
-                                        </div>
-                                      </div>
-                                    ) : null}
-                                    <FormField
-                                      control={form.control}
-                                      name={`meal_ingredients.${index}.image`}
-                                      render={({ field: imageField }) => (
-                                        <FormItem>
-                                          <FormLabel>Ảnh thành phần</FormLabel>
-                                          <FormControl>
-                                            <FileUploader
-                                              value={imageField.value as File[]}
-                                              onValueChange={imageField.onChange}
-                                              maxFileCount={1}
-                                              accept={{
-                                                'image/*': [],
-                                              }}
-                                            />
-                                          </FormControl>
-                                          <FormMessage />
-                                        </FormItem>
-                                      )}
-                                    />
-                                  </div> */}
-                              </div>
-                            </FormItem>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormSwitchField
-                    form={form}
-                    name="is_public"
-                    label="Public"
-                    description="Make this meal plan visible to everyone"
-                  />
-                  <div className="flex items-start gap-4">
-                    <FormSwitchField
-                      form={form}
-                      name="is_free"
-                      label="Free"
-                      description="Make this meal plan free for all users"
-                    />
-                    {isFree && (
-                      <FormInputField
-                        form={form}
-                        name="free_days"
-                        label="Số ngày miễn phí"
-                        placeholder="Nhập số ngày miễn phí"
+              {/* <FormField
+                control={form.control}
+                name="image"
+                render={({ field: imageField }) => (
+                  <FormItem>
+                    <FormLabel>Hình đại diện</FormLabel>
+                    <FormControl>
+                      <FileUploader
+                        value={imageField.value as File[]}
+                        onValueChange={imageField.onChange}
+                        maxFileCount={1}
+                        accept={{
+                          'image/*': [],
+                        }}
                       />
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              /> */}
 
-          <TabsContent value="days" className="space-y-6 mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Days & Dishes</CardTitle>
-                <CardDescription>Thiết lập các ngày và các món ăn</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-medium">Danh sách ngày</h3>
-                  <Button type="button" variant="outline" onClick={addDay}>
-                    <Plus className="h-4 w-4 mr-2" /> Thêm ngày
+              <FormImageInputField form={form} name="image" label="Hình đại diện" placeholder="Nhập hình đại diện" />
+
+              <FormSelectField
+                form={form}
+                name="calorie_id"
+                label="Calorie"
+                data={AVAILABLE_CALORIES}
+                placeholder="Chọn calory"
+              />
+
+              <FormSelectField
+                form={form}
+                name="diet_id"
+                label="Chế độ ăn"
+                data={AVAILABLE_DIETS}
+                placeholder="Chọn chế độ ăn"
+              />
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-medium">Thành phần</h3>
+                  <Button type="button" variant="outline" onClick={addIngredient}>
+                    <Plus className="h-4 w-4 mr-2" /> Thêm thành phần
                   </Button>
                 </div>
 
                 <div className="space-y-4">
-                  {dayFields.length === 0 ? (
-                    <p className="text-muted-foreground italic">Chưa có ngày nào</p>
+                  {ingredientFields.length === 0 ? (
+                    <p className="text-muted-foreground italic">Chưa có thành phần</p>
                   ) : (
-                    <div className="space-y-6">
-                      {dayFields.map((day, dayIndex) => (
-                        <FormField
-                          key={day.id}
-                          control={form.control}
-                          name={`days.${dayIndex}`}
-                          render={({ field }) => {
-                            const dishes = form.watch(`days.${dayIndex}.dishes`) || []
-                            return (
-                              <div className="flex items-start gap-2">
-                                <div className="flex-1">
-                                  <Accordion
-                                    type="single"
-                                    collapsible
-                                    className="border rounded-md w-full"
-                                    defaultValue="day"
-                                  >
-                                    <AccordionItem value="day" className="border-none">
-                                      <AccordionTrigger className="p-4 hover:no-underline">
-                                        <div className="w-full">
-                                          <h4 className="font-medium text-left">Ngày {dayIndex + 1}</h4>
-                                        </div>
-                                      </AccordionTrigger>
-                                      <AccordionContent className="p-4 pt-0">
-                                        <div className="space-y-6 mt-6">
-                                          <FormImageInputField
-                                            form={form}
-                                            name={`days.${dayIndex}.image`}
-                                            label="Hình đại diện"
-                                            placeholder="Nhập hình đại diện"
+                    <div className="space-y-4">
+                      {ingredientFields.map((ingredient, index) => (
+                        <div key={ingredient.id}>
+                          <FormItem className="p-4 border rounded-md">
+                            <div className="flex justify-between items-start mb-4">
+                              <h4 className="font-medium">Thành phần {index + 1}</h4>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => removeIngredient(index)}
+                                disabled={ingredientFields.length === 1}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <div className="space-y-4">
+                              <FormInputField
+                                form={form}
+                                name={`meal_ingredients.${index}.name`}
+                                label="Tên thành phần"
+                                placeholder="Nhập tên thành phần"
+                              />
+                              <FormImageInputField
+                                form={form}
+                                name={`meal_ingredients.${index}.image`}
+                                label="Ảnh thành phần"
+                                placeholder="Nhập ảnh thành phần"
+                              />
+
+                              {/* <div>
+                                  {field.value.image &&
+                                  Array.isArray(field.value.image) &&
+                                  field.value.image.length > 0 ? (
+                                    <div className="space-y-2">
+                                      <div className="flex items-center gap-2">
+                                        <img
+                                          src={URL.createObjectURL(field.value.image[0])}
+                                          alt="Ingredient preview"
+                                          className="w-24 h-24 object-cover rounded"
+                                        />
+                                        <Button
+                                          variant="ghost"
+                                          size="icon"
+                                          onClick={() => removeIngredient(index)}
+                                          disabled={field.value.image.length === 0}
+                                        >
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ) : null}
+                                  <FormField
+                                    control={form.control}
+                                    name={`meal_ingredients.${index}.image`}
+                                    render={({ field: imageField }) => (
+                                      <FormItem>
+                                        <FormLabel>Ảnh thành phần</FormLabel>
+                                        <FormControl>
+                                          <FileUploader
+                                            value={imageField.value as File[]}
+                                            onValueChange={imageField.onChange}
+                                            maxFileCount={1}
+                                            accept={{
+                                              'image/*': [],
+                                            }}
                                           />
-                                          <h5 className="font-medium">Danh sách món ăn</h5>
-                                          {dishes.length === 0 ? (
-                                            <p className="text-muted-foreground text-sm italic">Chưa có món ăn nào</p>
-                                          ) : (
-                                            <div className="space-y-8">
-                                              {dishes.map((dish, dishIndex) => (
-                                                <div key={dishIndex} className="border rounded-md p-4 relative">
-                                                  <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => removeDish(dayIndex, dishIndex)}
-                                                    className="absolute top-2 right-2 text-destructive hover:text-destructive"
-                                                  >
-                                                    <Trash2 className="h-4 w-4" />
-                                                  </Button>
-
-                                                  <h6 className="font-medium mb-4">Món ăn {dishIndex + 1}</h6>
-
-                                                  <div className="space-y-8">
-                                                    <DishFormFields
-                                                      form={form}
-                                                      namePrefix={`days.${dayIndex}.dishes.${dishIndex}`}
-                                                      isDishMealPlan={true}
-                                                    />
-                                                  </div>
-                                                </div>
-                                              ))}
-                                            </div>
-                                          )}
-
-                                          <Button
-                                            type="button"
-                                            variant="outline"
-                                            onClick={() => addDish(dayIndex)}
-                                            className="mt-4 w-full"
-                                          >
-                                            <Plus className="h-4 w-4 mr-2" />
-                                            Thêm món ăn
-                                          </Button>
-                                        </div>
-                                      </AccordionContent>
-                                    </AccordionItem>
-                                  </Accordion>
-                                </div>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleRemoveDay(dayIndex)}
-                                  disabled={dayFields.length === 1}
-                                  className="text-destructive hover:text-destructive mt-3"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            )
-                          }}
-                        />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                </div> */}
+                            </div>
+                          </FormItem>
+                        </div>
                       ))}
                     </div>
                   )}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormSwitchField
+                  form={form}
+                  name="is_public"
+                  label="Public"
+                  description="Make this meal plan visible to everyone"
+                />
+                <div className="flex items-start gap-4">
+                  <FormSwitchField
+                    form={form}
+                    name="is_free"
+                    label="Free"
+                    description="Make this meal plan free for all users"
+                  />
+                  {isFree && (
+                    <FormInputField
+                      form={form}
+                      name="free_days"
+                      label="Số ngày miễn phí"
+                      placeholder="Nhập số ngày miễn phí"
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="tab-2">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium">Danh sách ngày</h3>
+                <Button type="button" variant="outline" onClick={addDay}>
+                  <Plus className="h-4 w-4 mr-2" /> Thêm ngày
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                {dayFields.length === 0 ? (
+                  <p className="text-muted-foreground italic">Chưa có ngày nào</p>
+                ) : (
+                  <div className="space-y-6">
+                    {dayFields.map((day, dayIndex) => (
+                      <FormField
+                        key={day.id}
+                        control={form.control}
+                        name={`days.${dayIndex}`}
+                        render={({ field }) => {
+                          const dishes = form.watch(`days.${dayIndex}.dishes`) || []
+                          return (
+                            <div className="flex items-start gap-2">
+                              <div className="flex-1">
+                                <Accordion
+                                  type="single"
+                                  collapsible
+                                  className="border rounded-md w-full"
+                                  defaultValue="day"
+                                >
+                                  <AccordionItem value="day" className="border-none">
+                                    <AccordionTrigger className="p-4 hover:no-underline">
+                                      <div className="w-full">
+                                        <h4 className="font-medium text-left">Ngày {dayIndex + 1}</h4>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="p-4 pt-0">
+                                      <div className="space-y-6 mt-6">
+                                        <FormImageInputField
+                                          form={form}
+                                          name={`days.${dayIndex}.image`}
+                                          label="Hình đại diện"
+                                          placeholder="Nhập hình đại diện"
+                                        />
+                                        <h5 className="font-medium">Danh sách món ăn</h5>
+                                        {dishes.length === 0 ? (
+                                          <p className="text-muted-foreground text-sm italic">Chưa có món ăn nào</p>
+                                        ) : (
+                                          <div className="space-y-8">
+                                            {dishes.map((dish, dishIndex) => (
+                                              <div key={dishIndex} className="border rounded-md p-4 relative">
+                                                <Button
+                                                  type="button"
+                                                  variant="ghost"
+                                                  size="icon"
+                                                  onClick={() => removeDish(dayIndex, dishIndex)}
+                                                  className="absolute top-2 right-2 text-destructive hover:text-destructive"
+                                                >
+                                                  <Trash2 className="h-4 w-4" />
+                                                </Button>
+
+                                                <h6 className="font-medium mb-4">Món ăn {dishIndex + 1}</h6>
+
+                                                <div className="space-y-8">
+                                                  <DishFormFields
+                                                    form={form}
+                                                    namePrefix={`days.${dayIndex}.dishes.${dishIndex}`}
+                                                    isDishMealPlan={true}
+                                                  />
+                                                </div>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        )}
+
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          onClick={() => addDish(dayIndex)}
+                                          className="mt-4 w-full"
+                                        >
+                                          <Plus className="h-4 w-4 mr-2" />
+                                          Thêm món ăn
+                                        </Button>
+                                      </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                </Accordion>
+                              </div>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleRemoveDay(dayIndex)}
+                                disabled={dayFields.length === 1}
+                                className="text-destructive hover:text-destructive mt-3"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          )
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
 

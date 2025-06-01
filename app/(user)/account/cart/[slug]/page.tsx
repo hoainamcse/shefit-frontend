@@ -1,5 +1,4 @@
 import Image from "next/image"
-import ShoppingImage from "@/assets/image/Shopping.png"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { BackIconBlack } from "@/components/icons/BackIconBlack"

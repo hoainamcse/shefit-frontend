@@ -34,7 +34,7 @@ export default async function ListExercises() {
             ))}
           </div>
           <Link href="/gallery">
-            <Button className="bg-button text-white text-xl w-full rounded-full h-14 mt-6">Thêm động tác</Button>
+            <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm động tác</Button>
           </Link>
         </div>
       )}

@@ -141,7 +141,7 @@ export function SectionFive({ data }: { data: DataType["section_5"] }) {
                               className={cn(
                                 "absolute bottom-[15%] -left-[42px] -right-[42px] h-16 bg-gradient-to-t from-background to-transparent -rotate-12 text-background flex flex-col items-center justify-center",
                                 mIndex === 1 && "bg-primary",
-                                mIndex === 2 && "bg-text",
+                                mIndex === 2 && "bg-ring",
                                 mIndex === 3 && "bg-[#B60606]"
                               )}
                             >

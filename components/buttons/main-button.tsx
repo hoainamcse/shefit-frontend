@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { Loader2, LucideIcon } from 'lucide-react'
+
 import { Button, ButtonProps } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -12,12 +13,12 @@ interface MainButtonProps extends ButtonProps {
 }
 
 const buttonVariant = {
-  default: "bg-button text-button-foreground hover:bg-button/90",
-  destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-  outline: "border border-input bg-background hover:bg-accent hover:text-button",
-  secondary: "bg-secondary text-button hover:bg-secondary/80",
-  ghost: "hover:bg-accent hover:text-button",
-  link: "text-button underline-offset-4 hover:underline",
+  default: 'bg-[#13D8A7] hover:bg-[#13D8A7]/90',
+  destructive: '',
+  outline: 'hover:text-[#13D8A7]',
+  secondary: 'text-[#13D8A7]',
+  ghost: 'hover:text-[#13D8A7]',
+  link: 'text-[#13D8A7]',
 }
 
 const MainButton = React.forwardRef<HTMLButtonElement, MainButtonProps>(

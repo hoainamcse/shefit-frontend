@@ -1,4 +1,4 @@
-import Layout from "@/components/common/Layout"
+import Layout from "@/app/(user)/_components/layout"
 
 export default async function BlogLayout({ children }: { children: React.ReactNode }) {
   return (

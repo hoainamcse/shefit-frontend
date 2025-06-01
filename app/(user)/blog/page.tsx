@@ -8,7 +8,7 @@ export default async function BlogPage() {
   return (
     <div>
       <div className="max-w-screen-md mx-auto">
-        <p className="font-[family-name:var(--font-coiny)] sm:text-center text-text text-2xl sm:text-3xl my-2 sm:my-4">
+        <p className="font-[family-name:var(--font-coiny)] sm:text-center text-ring text-2xl sm:text-3xl my-2 sm:my-4">
           Blog healthy
         </p>
         <p className="sm:text-center text-gray-500 text-base mb-20">Các lời khuyên hữu ích về tập luyện & ăn uống</p>
