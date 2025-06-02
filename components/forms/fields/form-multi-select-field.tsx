@@ -29,7 +29,7 @@ type MultiSelectOption = {
 interface FormMultiSelectFieldProps {
   form: UseFormReturn<any>;
   name: string;
-  data: MultiSelectOption[];
+  data?: MultiSelectOption[];
   label?: string;
   description?: string;
   withAsterisk?: boolean;
@@ -97,7 +97,7 @@ function FormMultiSelectField({
               <MultiSelectSearch />
               <MultiSelectList>
                 {renderMultiSelectOptions(options)}
-                <MultiSelectEmpty>{"No results found"}</MultiSelectEmpty>
+                <MultiSelectEmpty>{"Không tìm thấy kết quả"}</MultiSelectEmpty>
               </MultiSelectList>
             </MultiSelectContent>
           </MultiSelect>

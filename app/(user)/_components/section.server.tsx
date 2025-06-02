@@ -62,7 +62,7 @@ export function SectionOne({ data }: { data: DataType["section_1"] }) {
 export function SectionTwo({ data }: { data: DataType["section_2"] }) {
   return (
     <div className="py-8 lg:py-12">
-      <div className="container max-auto space-y-8 lg:space-y-10">
+      <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
           <h3 className="text-ring text-xl lg:text-2xl font-bold">
             {data.subtitle}
@@ -245,7 +245,7 @@ export async function SectionSeven({ data }: { data: DataType["section_7"] }) {
 
   return (
     <div className="py-8 lg:py-12">
-      <div className="container max-auto space-y-8 lg:space-y-10">
+      <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
           <h3 className="text-ring text-xl lg:text-2xl font-bold">
             Ăn uống khoa học

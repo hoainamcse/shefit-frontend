@@ -3,7 +3,7 @@
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { getCourse } from '@/network/server/courses'
 import { getEquipments } from '@/network/server/equipments'
-import { getMuscleGroups } from '@/network/server/muscle-group'
+import { getMuscleGroups } from '@/network/server/muscle-groups'
 import { getFormCategoryLabel, getDifficultyLevelLabel } from '@/lib/label'
 import { useState, useEffect, useRef } from 'react'
 import { FormCategory } from '@/models/course'

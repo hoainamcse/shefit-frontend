@@ -1,6 +1,6 @@
 import React from "react"
 import Image from "next/image"
-import { getExerciseById } from "@/network/server/exercise"
+import { getExerciseById } from "@/network/server/exercises"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import ActionButtons from "./ActionButtons"
 
@@ -33,7 +33,7 @@ export default async function MuscleDetail({
                 <figure key={`equipment-${equipment.id}-${index}`} className="shrink-0 w-[168px]">
                   <div className="overflow-hidden rounded-md">
                     <img
-                      src={equipment.image}
+                      src={equipment.image ?? undefined}
                       alt={equipment.name}
                       className="w-[168px] h-[175px] object-cover rounded-xl"
                     />
@@ -58,7 +58,7 @@ export default async function MuscleDetail({
                 <figure key={`muscleGroup-${muscleGroup.id}-${index}`} className="shrink-0 w-[168px]">
                   <div className="overflow-hidden rounded-md">
                     <img
-                      src={muscleGroup.image}
+                      src={muscleGroup.image ?? undefined}
                       alt={muscleGroup.name}
                       className="w-[168px] h-[175px] object-cover rounded-xl"
                     />

@@ -61,11 +61,11 @@ const data = [
   { value: "section_3", label: "Membership" },
   { value: "section_4", label: "CTA" },
   { value: "section_5", label: "Body Type" },
-  { value: "section_6", label: "Thực đơn" },
-  { value: "section_7", label: "Sản phẩm" },
-  { value: "section_8", label: "HLV" },
-  { value: "section_9", label: "FAQ" },
-  { value: "section_10", label: "Contact" },
+  { value: "section_7", label: "Thực đơn" },
+  { value: "section_8", label: "Sản phẩm" },
+  { value: "section_9", label: "HLV" },
+  { value: "section_10", label: "FAQ" },
+  { value: "section_11", label: "Contact" },
 ]
 
 function HomepageForm({ defaultData }: { defaultData: Configuration["data"] }) {

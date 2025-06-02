@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { getMuscleGroups } from "@/network/server/muscle-group"
+import { getMuscleGroups } from "@/network/server/muscle-groups"
 import { getDiets } from "@/network/server/diets"
 export const dynamic = "force-dynamic"
 
@@ -21,7 +21,7 @@ export default async function Gallery() {
               <div key={`menu-${muscleGroup.id}`} className="text-xl">
                 <div className="relative group">
                   <img
-                    src={muscleGroup.image}
+                    src={muscleGroup.image ?? undefined}
                     alt=""
                     className="aspect-[5/3] object-cover rounded-xl mb-4"
                     width={585}

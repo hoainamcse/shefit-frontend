@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils"
 import React from "react"
 import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getMuscleGroupExercises, getMuscleGroups } from "@/network/server/muscle-group"
+import { getMuscleGroupExercises, getMuscleGroups } from "@/network/server/muscle-groups"
 
 export default async function Muscle({ params }: { params: Promise<{ muscle_id: string }> }) {
   const resolvedParams = await params
@@ -42,7 +42,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                       <div key={`menu-${exercise.id}`} className="text-xl">
                         <div className="relative group">
                           <img
-                            src={exercise.image}
+                            src={exercise.cover_image ?? undefined}
                             alt={exercise.name}
                             className="aspect-[5/3] object-cover rounded-xl mb-4"
                             width={585}
@@ -65,7 +65,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                       <div key={`menu-${exercise.id}`} className="text-xl">
                         <div className="relative group">
                           <img
-                            src={exercise.image}
+                            src={exercise.cover_image ?? undefined}
                             alt={exercise.name}
                             className="aspect-[5/3] object-cover rounded-xl mb-4"
                             width={585}
