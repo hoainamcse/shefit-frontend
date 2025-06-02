@@ -6,6 +6,7 @@ import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 import { MainButton } from '@/components/buttons/main-button'
 import { ColumnDef, DataTable } from '@/components/data-table'
 import { CreateCourseForm } from '@/components/forms/create-course-form'
+import { useAuth } from '@/components/providers/auth-context'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -31,6 +32,7 @@ import { useDebounced } from '@/hooks/useDebounced'
 import { getFormCategoryLabel } from '@/lib/label'
 import { ListCourse } from '@/models/course-admin'
 import { deleteCourse, getCourses, updateCourse } from '@/network/server/courses-admin'
+import { getSubAdminCourses } from '@/network/server/sub-admin'
 import { Copy, Edit, Ellipsis, Eye, Import, Radio, Trash2, Video } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -70,9 +72,11 @@ function CreateCourseDialog({
 }
 
 const PublicSwitchCell = ({ row }: { row: ListCourse }) => {
+  const { accessToken } = useAuth()
   const [checked, setChecked] = useState(row.is_public)
   const debouncedUpdate = useDebounced(async (newVal: boolean) => {
-    const res = await updateCourse(row.id.toString(), { ...row, is_public: newVal })
+    if (!accessToken) return
+    const res = await updateCourse(row.id.toString(), { ...row, is_public: newVal }, accessToken)
     if (res.status === 'success') toast.success('Cập nhật hiển thị thành công')
     else toast.error('Cập nhật hiển thị thất bại')
   }, 700)
@@ -88,11 +92,17 @@ export default function OneOnOneClassesPage() {
   const router = useRouter()
   const [videoDialogOpen, setVideoDialogOpen] = useState(false)
   const [liveDialogOpen, setLiveDialogOpen] = useState(false)
+  const { role, accessToken } = useAuth()
 
   const [oneOnOneClasses, setOneOnOneClasses] = useState<ListCourse[]>([])
 
   const fetchOneOnOneClasses = async () => {
-    const oneOnOneResponse = await getCourses(undefined, true)
+    let oneOnOneResponse
+    if (role === 'sub_admin' && accessToken) {
+      oneOnOneResponse = await getSubAdminCourses(accessToken, undefined, true)
+    } else {
+      oneOnOneResponse = await getCourses(undefined, true)
+    }
     setOneOnOneClasses(oneOnOneResponse.data)
   }
 
@@ -101,7 +111,8 @@ export default function OneOnOneClassesPage() {
   }, [])
 
   const handleDelete = async (id: string) => {
-    const response = await deleteCourse(id)
+    if (!accessToken) return
+    const response = await deleteCourse(id, accessToken)
     if (response.status === 'success') {
       toast.success('Xoá khoá tập thành công')
       fetchOneOnOneClasses()
@@ -260,9 +271,9 @@ export default function OneOnOneClassesPage() {
   )
 
   return (
-    <ContentLayout title="Khoá tập Zoom">
+    <ContentLayout title="Khoá tập 1-1">
       <DataTable
-        headerExtraContent={headerExtraContent}
+        headerExtraContent={role === 'admin' ? headerExtraContent : null}
         searchPlaceholder="Tìm kiếm theo tên, ..."
         data={oneOnOneClasses}
         columns={columns}

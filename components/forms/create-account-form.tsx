@@ -46,6 +46,9 @@ import { UserDish } from '@/models/user-dishes'
 import PROVINCES from '@/app/(admin)/admin/account/provinceData'
 import { createUserCourse, deleteUserCourse, getUserCourses } from '@/network/server/user-courses'
 import { UserCourse } from '@/models/user-courses'
+import { useAuth } from '../providers/auth-context'
+import { ROLE_OPTIONS } from '@/lib/label'
+import { getSubAdminSubscriptions } from '@/network/server/sub-admin'
 
 const accountSchema = z.object({
   id: z.coerce.number().optional(),
@@ -61,6 +64,11 @@ const accountSchema = z.object({
   address: z.string().min(6, {
     message: 'Địa chỉ phải có ít nhất 6 ký tự.',
   }),
+  role: z
+    .enum([...ROLE_OPTIONS.map((role) => role.value)] as [string, ...string[]], {
+      message: 'Bạn phải chọn role',
+    })
+    .default('normal_user'),
   new_password: z.string().min(8, { message: 'New password must be at least 8 characters' }).optional(),
   subscriptions: z
     .array(
@@ -88,7 +96,7 @@ const accountSchema = z.object({
 
 type AccountFormData = z.infer<typeof accountSchema>
 interface CreateAccountFormProps {
-  data?: User
+  data: User
 }
 
 type selectOption = {
@@ -99,8 +107,10 @@ type UserSubscriptionField = UserSubscription & { fieldId: string }
 
 export default function CreateAccountForm({ data }: CreateAccountFormProps) {
   // const [isPending, startTransition] = useTransition()
+  const { role, accessToken } = useAuth()
   const [isLoading, setIsLoading] = useState(true)
   const [membershipList, setMembershipList] = useState<Subscription[]>([])
+
   const [courses, setCourses] = useState<selectOption[]>([])
   const [mealPlans, setMealPlans] = useState<selectOption[]>([])
   const [dishes, setDishes] = useState<selectOption[]>([])
@@ -115,6 +125,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
           username: data.username,
           province: data.province,
           address: data.address,
+          role: data.role,
           subscriptions: [],
           course_ids: [],
           meal_plan_ids: [],
@@ -127,6 +138,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
           username: '',
           province: '',
           address: '',
+          role: 'normal_user',
           subscriptions: [],
           course_ids: [],
           meal_plan_ids: [],
@@ -134,6 +146,8 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
           exercise_ids: [],
         },
   })
+
+  const userRole = form.watch('role')
 
   const {
     control,
@@ -148,15 +162,62 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     remove: removeSubscription,
   } = useFieldArray({ control, name: 'subscriptions', keyName: 'fieldId' })
 
+  const watchedSubscriptions = form.watch('subscriptions')
+
+  useEffect(() => {
+    const fetchFilteredCourses = async () => {
+      if (!watchedSubscriptions || watchedSubscriptions.length === 0) {
+        setCourses([]) // Clear courses if no subscriptions are selected
+        return
+      }
+
+      const selectedSubscriptionIds = watchedSubscriptions
+        .map((sub) => sub.subscription_id)
+        .filter((id): id is number => id !== undefined && id !== null) // Ensure valid IDs
+
+      if (selectedSubscriptionIds.length === 0) {
+        setCourses([])
+        return
+      }
+
+      try {
+        const coursePromises = selectedSubscriptionIds.map((id) => getCoursesBySubscriptionId(id.toString()))
+        const courseResponses = await Promise.all(coursePromises)
+
+        const allCourses = courseResponses.flatMap((res) => (Array.isArray(res.data) ? res.data : []))
+
+        const uniqueCourses = Array.from(
+          new Map(
+            allCourses.map((course) => [course.id, { value: String(course.id), label: course.course_name }])
+          ).values()
+        )
+        setCourses(uniqueCourses)
+      } catch (error) {
+        console.error('Error fetching filtered courses:', error)
+        toast.error('Failed to load courses for selected subscriptions.')
+        setCourses([]) // Clear courses on error
+      }
+    }
+
+    fetchFilteredCourses()
+  }, [watchedSubscriptions, setCourses])
+
   /**
    * Fetch all data needed for the form
    */
   const fetchAllData = async () => {
     setIsLoading(true)
+    // Guard against missing accessToken when fetching sub-admin subscriptions
+    if (role === 'sub_admin' && !accessToken) {
+      toast.error('Missing access token for sub-admin')
+      setIsLoading(false)
+      return
+    }
     try {
-      // Fetch data subscriptions, meal plans, dishes, exercises
+      // Fetch subscriptions based on role, ensuring accessToken is non-null
+      const subscriptionsPromise = role === 'sub_admin' ? getSubAdminSubscriptions(accessToken!) : getSubscriptions()
       const [subscriptionsResponse, mealPlansResponse, dishesResponse, exercisesResponse] = await Promise.all([
-        getSubscriptions(),
+        subscriptionsPromise,
         getMealPlans(),
         getListDishes(),
         getExercises(),
@@ -182,18 +243,6 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
         label: exercise.name,
       }))
       setExercises(formattedExercises)
-
-      // Fetch courses
-      const courseResponses = await Promise.all(memberships.map((m) => getCoursesBySubscriptionId(m.id.toString())))
-
-      const allCourses = courseResponses.flatMap((res) => (Array.isArray(res.data) ? res.data : []))
-
-      const uniqueCourses = Array.from(
-        new Map(
-          allCourses.map((course) => [course.id, { value: String(course.id), label: course.course_name }])
-        ).values()
-      )
-      setCourses(uniqueCourses)
 
       // Fetch user-courses, user-dishes, user-meal-plans, user-exercises
       if (data?.id) {
@@ -295,7 +344,6 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       return
     }
 
-    // startTransition(async () => {
     try {
       const toastId = toast.loading('Updating course structure...')
       if (!data?.id) {
@@ -308,6 +356,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       // 1. Update user basic information
       const userUpdateData = {
         ...data,
+        role: values.role,
         fullname: values.fullname,
         username: values.username,
         phone_number: values.phone_number,
@@ -318,7 +367,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       await updateUser(userId, userUpdateData)
 
       // 2. Handle subscriptions
-      if (values.subscriptions && values.subscriptions.length > 0) {
+      if (values.subscriptions && values.subscriptions.length > 0 && accessToken) {
         const currentSubscriptions = await getUserSubscriptions(userId)
         const formSubIds = values.subscriptions.filter((sub) => sub.id).map((sub) => sub.id)
         const deletedSubscriptions = currentSubscriptions.data.filter((sub) => !formSubIds.includes(sub.id))
@@ -327,11 +376,11 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
           await Promise.all(
             deletedSubscriptions
               .filter((sub) => sub.id)
-              .map((sub) => deleteUserSubscription(userId, sub.subscription_id.toString()))
+              .map((sub) => deleteUserSubscription(userId, sub.subscription_id.toString(), accessToken))
           )
-          await handleCreateUpdateUserSubscription(values.subscriptions, userId)
+          await handleCreateUpdateUserSubscription(values.subscriptions, userId, accessToken)
         } else {
-          await handleCreateUpdateUserSubscription(values.subscriptions, userId)
+          await handleCreateUpdateUserSubscription(values.subscriptions, userId, accessToken)
         }
       }
 
@@ -358,17 +407,19 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       toast.dismiss(toastId)
       toast.success('Cập nhật tài khoản thành công')
     } catch (error) {
-      toast.error('Có lỗi xảy ra khi cập nhật tài khoản')
+      toast.error('Cập nhật tài khoản thất bại')
     }
-    // })
   }
 
-  const handleCreateUpdateUserSubscription = async (subscriptionData: any, userId: string) => {
+  const handleCreateUpdateUserSubscription = async (subscriptionData: any, userId: string, accessToken: string) => {
     for (const subscription of subscriptionData) {
       const { id, plan_id, ...subscriptionData } = subscription
-
+      // If gift_id is zero, convert to null
+      if (subscriptionData.gift_id === 0) {
+        subscriptionData.gift_id = null
+      }
       if (subscription.id && subscription.subscription_id) {
-        await updateUserSubscription(userId, subscription.subscription_id?.toString(), subscriptionData)
+        await updateUserSubscription(userId, subscription.subscription_id?.toString(), subscriptionData, accessToken)
       } else {
         await createUserSubscription(subscriptionData, userId)
       }
@@ -806,6 +857,9 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                 placeholder="Chọn tỉnh/thành phố của bạn đang sống"
                 data={PROVINCES}
               />
+              {role === 'admin' && (
+                <FormSelectField form={form} name="role" label="Role" placeholder="Chọn role" data={ROLE_OPTIONS} />
+              )}
               <FormInputField form={form} name="address" label="Địa chỉ chi tiết" placeholder="Nhập địa chỉ của bạn" />
               <FormInputField form={form} name="username" label="Username" required placeholder="Nhập username" />
               <div className="flex flex-col sm:flex-row w-full gap-2">
@@ -859,46 +913,48 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
           </div>
 
           {/* Assigned Items */}
-          <div className="space-y-8">
-            <h2 className="text-lg font-semibold">Gán khóa học, thực đơn cho học viên</h2>
-            <div className="space-y-4">
-              <FormMultiSelectField
-                form={form}
-                name="course_ids"
-                label="Khóa học"
-                data={courses}
-                placeholder="Chọn khóa học"
-                key={`course-select-${form.watch('course_ids')?.length || 0}`}
-              />
+          {userRole !== 'sub_admin' && (
+            <div className="space-y-8">
+              <h2 className="text-lg font-semibold">Gán khóa học, thực đơn cho học viên</h2>
+              <div className="space-y-4">
+                <FormMultiSelectField
+                  form={form}
+                  name="course_ids"
+                  label="Khóa học"
+                  data={courses}
+                  placeholder="Chọn khóa học"
+                  key={`course-select-${form.watch('course_ids')?.length || 0}`}
+                />
 
-              <FormMultiSelectField
-                form={form}
-                name="meal_plan_ids"
-                label="Thực đơn"
-                data={mealPlans}
-                placeholder="Chọn thực đơn"
-                key={`meal-plan-select-${form.watch('meal_plan_ids')?.length || 0}`}
-              />
+                <FormMultiSelectField
+                  form={form}
+                  name="meal_plan_ids"
+                  label="Thực đơn"
+                  data={mealPlans}
+                  placeholder="Chọn thực đơn"
+                  key={`meal-plan-select-${form.watch('meal_plan_ids')?.length || 0}`}
+                />
 
-              <FormMultiSelectField
-                form={form}
-                name="exercise_ids"
-                label="Bài tập"
-                data={exercises}
-                placeholder="Chọn bài tập"
-                key={`exercise-select-${form.watch('exercise_ids')?.length || 0}`}
-              />
+                <FormMultiSelectField
+                  form={form}
+                  name="exercise_ids"
+                  label="Bài tập"
+                  data={exercises}
+                  placeholder="Chọn bài tập"
+                  key={`exercise-select-${form.watch('exercise_ids')?.length || 0}`}
+                />
 
-              <FormMultiSelectField
-                form={form}
-                name="dish_ids"
-                label="Món ăn"
-                data={dishes}
-                placeholder="Chọn món ăn"
-                key={`dish-select-${form.watch('dish_ids')?.length || 0}`}
-              />
+                <FormMultiSelectField
+                  form={form}
+                  name="dish_ids"
+                  label="Món ăn"
+                  data={dishes}
+                  placeholder="Chọn món ăn"
+                  key={`dish-select-${form.watch('dish_ids')?.length || 0}`}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           <MainButton text="Lưu" className="w-full" disabled={isSubmitting} />
         </form>

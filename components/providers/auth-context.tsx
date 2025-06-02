@@ -1,13 +1,14 @@
 'use client'
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
-import { login as loginApi } from '@/network/server/auth'
+import { login as loginApi, refreshToken as refreshApi } from '@/network/server/auth'
 import { getUserById } from '@/network/server/user'
 
 type Role = 'normal_user' | 'sub_admin' | 'admin'
 
 interface AuthContextType {
   userId: string | null
+  accessToken: string | null
   role: Role | null
   isLoading: boolean
   login: (username: string, password: string) => Promise<void>
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter()
   const [userId, setUserId] = useState<string | null>(null)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
   const [role, setRole] = useState<Role | null>(null)
   const [isLoading, setLoading] = useState(true)
 
@@ -28,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const uid = localStorage.getItem('user_id')
     if (access && uid) {
       setUserId(uid)
+      setAccessToken(access)
       void (async () => {
         const res = await getUserById(uid)
         setRole(res.data.role as Role)
@@ -63,7 +66,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.push(redirectPath || '/auth/login')
   }
 
-  return <AuthContext.Provider value={{ userId, role, isLoading, login, logout }}>{children}</AuthContext.Provider>
+  // Refresh access token before it expires
+  const refreshAuthToken = async () => {
+    const token = localStorage.getItem('refresh_token')
+    if (!token) {
+      logout()
+      return
+    }
+    try {
+      const resp = await refreshApi(token)
+      localStorage.setItem('access_token', resp.access_token)
+      localStorage.setItem('refresh_token', resp.refresh_token)
+      setAccessToken(resp.access_token)
+      console.log('Access token refreshed')
+    } catch (error) {
+      console.error('Failed to refresh token', error)
+      logout()
+    }
+  }
+
+  useEffect(() => {
+    if (!accessToken) return
+    let payload
+    try {
+      payload = JSON.parse(atob(accessToken.split('.')[1]))
+    } catch (error) {
+      console.error('Error parsing access token', error)
+      logout()
+      return
+    }
+    const exp = (payload as { exp: number }).exp
+    const now = Math.floor(Date.now() / 1000)
+    const msUntilExpiry = (exp - now - 60) * 1000 // refresh 1 minute before expiry
+    if (msUntilExpiry <= 0) {
+      refreshAuthToken()
+    } else {
+      const timeoutId = setTimeout(refreshAuthToken, msUntilExpiry)
+      return () => clearTimeout(timeoutId)
+    }
+  }, [accessToken])
+
+  return (
+    <AuthContext.Provider value={{ userId, role, accessToken, isLoading, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 export function useAuth() {

@@ -53,6 +53,17 @@ function getVisibleInLabel(visible_in: string) {
   }
 }
 
+function getRoleLabel(role: string) {
+  switch (role) {
+    case 'normal_user':
+      return 'User'
+    case 'admin':
+      return 'Admin'
+    case 'sub_admin':
+      return 'Sub Admin'
+  }
+}
+
 const DIFFICULTY_LEVEL_OPTIONS: { value: DifficultyLevel; label: string }[] = [
   {
     value: 'beginner',
@@ -201,11 +212,18 @@ const PROVINCES = [
   { value: 'Yên Bái', label: 'Yên Bái' },
 ]
 
+const ROLE_OPTIONS = [
+  { value: 'normal_user', label: 'User' },
+  { value: 'admin', label: 'Admin' },
+  { value: 'sub_admin', label: 'Sub Admin' },
+]
+
 export {
   getGoalLabel,
   getFormCategoryLabel,
   getDifficultyLevelLabel,
   getVisibleInLabel,
+  getRoleLabel,
   DIFFICULTY_LEVEL_OPTIONS,
   FORM_CATEGORY_OPTIONS,
   DIFFICULTY_LEVELS,
@@ -214,4 +232,5 @@ export {
   GOAL_OPTIONS,
   VISIBLE_IN_OPTIONS,
   PROVINCES,
+  ROLE_OPTIONS,
 }

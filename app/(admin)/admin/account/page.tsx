@@ -40,15 +40,26 @@ import { UserExercise } from '@/models/user-exercises'
 import { UserDish } from '@/models/user-dishes'
 import { Subscription } from '@/models/subscription-admin'
 import { UserSubscription } from '@/models/user-subscriptions'
+import { getSubAdminUsers } from '@/network/server/sub-admin'
+import { useAuth } from '@/components/providers/auth-context'
+import { getRoleLabel } from '@/lib/label'
+import { Badge } from '@/components/ui/badge'
 
 export default function AccountPage() {
   const router = useRouter()
   const [accountTable, setAccountTable] = useState<User[]>([])
   const [isExporting, setIsExporting] = useState(false)
+  const { userId, role, accessToken } = useAuth()
 
   const fetchAccounts = async () => {
-    const response = await getUsers()
-    const mapped = (response.data || []).map((item: any) => {
+    let userData
+    if (role === 'sub_admin' && accessToken) {
+      userData = (await getSubAdminUsers(accessToken)).data.filter((item) => item.id !== Number(userId))
+    } else {
+      userData = (await getUsers()).data
+    }
+
+    const mapped = (userData || []).map((item: any) => {
       return {
         ...item,
         created_at: formatDateString(item.created_at),
@@ -223,6 +234,15 @@ export default function AccountPage() {
       header: 'Ngày tạo',
     },
     {
+      accessorKey: 'role',
+      header: 'Role',
+      render: ({ row }) => (
+        <Badge variant="outline" className="capitalize">
+          {getRoleLabel(row.role)}
+        </Badge>
+      ),
+    },
+    {
       accessorKey: 'actions',
       render: ({ row }) => (
         <DropdownMenu>
@@ -272,7 +292,7 @@ export default function AccountPage() {
       )}
       <ContentLayout title="Danh sách tài khoản">
         <DataTable
-          headerExtraContent={headerExtraContent}
+          headerExtraContent={role === 'admin' ? headerExtraContent : null}
           searchPlaceholder="Tìm kiếm theo sdt"
           data={accountTable}
           columns={columns}

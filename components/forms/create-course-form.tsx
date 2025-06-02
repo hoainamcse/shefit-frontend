@@ -30,6 +30,7 @@ import { Subscription } from '@/models/subscription-admin'
 import { getSubscriptions } from '@/network/server/subscriptions-admin'
 import { CourseFormat, DetailCourse } from '@/models/course-admin'
 import { createCourse, updateCourse } from '@/network/server/courses-admin'
+import { useAuth } from '../providers/auth-context'
 
 const formSchema = z.object({
   id: z.number().int().optional(),
@@ -68,6 +69,7 @@ interface CreateCourseFormProps {
 }
 
 function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, onSuccess }: CreateCourseFormProps) {
+  const { accessToken } = useAuth()
   const [isPending, startTransition] = useTransition()
   const [equipments, setEquipments] = useState<Equipment[]>([])
   const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>([])
@@ -161,12 +163,15 @@ function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, on
           visible_in: values.is_public ? values.visible_in : [],
         }
         if (isEdit && data?.id) {
-          const response = await updateCourse(data.id.toString(), convertedValues)
+          if (!accessToken) return
+          const response = await updateCourse(data.id.toString(), convertedValues, accessToken)
           if (response.status === 'success') {
             toast.success('Cập nhật khoá tập thành công')
           }
         } else {
-          const response = await createCourse(convertedValues)
+          if (!accessToken) return
+          const response = await createCourse(convertedValues, accessToken)
+
           if (response.status === 'success') {
             toast.success('Tạo khoá tập thành công')
             onSuccess?.()

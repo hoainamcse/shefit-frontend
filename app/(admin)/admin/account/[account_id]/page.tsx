@@ -9,7 +9,7 @@ export default async function AccountPage({ params }: { params: Promise<{ accoun
 
   return (
     <ContentLayout title="Cập nhật tài khoản">
-      <CreateAccountForm data={account.data || {}} />
+      {account.data && <CreateAccountForm data={account.data} />}
     </ContentLayout>
   )
 }

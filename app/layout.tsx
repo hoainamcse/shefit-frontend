@@ -7,6 +7,49 @@ import { ThemeProvider } from '@/components/providers/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { AuthProvider } from '@/components/providers/auth-context'
 
+// const bdLifelessGrotesk = localFont({
+//   src: [
+//     {
+//       path: './fonts/BDLifelessGrotesk-Black.otf',
+//       weight: '900',
+//     },
+//     {
+//       path: './fonts/BDLifelessGrotesk-ExtraBold.otf',
+//       weight: '800',
+//     },
+//     {
+//       path: './fonts/BDLifelessGrotesk-Bold.otf',
+//       weight: '700',
+//     },
+//     {
+//       path: './fonts/BDLifelessGrotesk-SemiBold.otf',
+//       weight: '600',
+//     },
+//     {
+//       path: './fonts/BDLifelessGrotesk-Medium.otf',
+//       weight: '500',
+//     },
+//     {
+//       path: './fonts/BDLifelessGrotesk-Regular.otf',
+//       weight: '400',
+//     },
+//     {
+//       path: './fonts/BDLifelessGrotesk-Light.otf',
+//       weight: '300',
+//     },
+//     {
+//       path: './fonts/BDLifelessGrotesk-ExtraLight.otf',
+//       weight: '200',
+//     },
+//     {
+//       path: './fonts/BDLifelessGrotesk-Thin.otf',
+//       weight: '100',
+//     },
+//   ],
+//   display: 'swap',
+//   weight: '100 900',
+// })
+
 const yes = Signika_Negative({
   display: 'swap',
   variable: '--font-yes',

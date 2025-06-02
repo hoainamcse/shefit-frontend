@@ -37,11 +37,14 @@ import { ListCourse } from '@/models/course-admin'
 import { useDebounced } from '@/hooks/useDebounced'
 import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 import { useClipboard } from '@/hooks/use-clipboard'
+import { useAuth } from '@/components/providers/auth-context'
 
 const PublicSwitchCell = ({ row }: { row: ListCourse }) => {
   const [checked, setChecked] = useState(row.is_public)
   const debouncedUpdate = useDebounced(async (newVal: boolean) => {
-    const res = await updateCourse(row.id.toString(), { ...row, is_public: newVal })
+    const { accessToken } = useAuth()
+    if (!accessToken) return
+    const res = await updateCourse(row.id.toString(), { ...row, is_public: newVal }, accessToken)
     if (res.status === 'success') toast.success('Cập nhật hiển thị thành công')
     else toast.error('Cập nhật hiển thị thất bại')
   }, 700)
@@ -55,11 +58,14 @@ const PublicSwitchCell = ({ row }: { row: ListCourse }) => {
 export default function VideoClassesPageClient({ data }: { data: ListResponse<ListCourse> }) {
   const { copy } = useClipboard()
   const router = useRouter()
+  const { accessToken } = useAuth()
 
   const handleDelete = async (id: string) => {
-    const response = await deleteCourse(id)
+    if (!accessToken) return
+    const response = await deleteCourse(id, accessToken)
     if (response.status === 'success') {
       toast.success('Xoá khoá tập thành công')
+      router.refresh()
     } else {
       toast.error('Xoá khoá tập thất bại')
     }

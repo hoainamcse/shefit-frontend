@@ -31,11 +31,11 @@ export const register = async (data: Register) => {
 };
 
 export const refreshToken = async (refresh_token: string): Promise<TokenResponse> => {
-    const data: Login = {
+    const data: any = {
         grant_type: "refresh_token",
         refresh_token,
-        username: "",
-        password: "",
+        // username: "",
+        // password: "",
     };
 
     const response = await fetchData("/v1/auth/token", {
