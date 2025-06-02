@@ -21,8 +21,6 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { GalleryIcon } from '@/components/icons/GalleryIcon'
-import { StarIcon } from '@/components/icons/StarIcon'
-import { useState, useEffect } from 'react'
 import { MemberShipIcon } from '@/components/icons/MemberShipIcon'
 import { FacebookIcon } from '@/components/icons/FacebookIcon'
 import { useAuth } from '@/components/providers/auth-context'
@@ -79,11 +77,6 @@ export function Header() {
       label: 'Thư viện',
       icon: GalleryIcon,
       url: '/gallery',
-    },
-    {
-      label: 'HLV 24/7',
-      icon: StarIcon,
-      url: '#',
     },
     {
       label: 'Tài khoản',

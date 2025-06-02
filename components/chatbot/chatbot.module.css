@@ -1,0 +1,21 @@
+.messagesContainerScrollbar::-webkit-scrollbar {
+  width: 6px; /* chiều rộng scrollbar dọc */
+}
+
+/* Track (nền của thanh cuộn) */
+.messagesContainerScrollbar::-webkit-scrollbar-track {
+  background: none;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+/* Thumb (phần kéo) */
+.messagesContainerScrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+/* Khi hover vào thumb */
+.messagesContainerScrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
