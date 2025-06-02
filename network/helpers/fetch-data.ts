@@ -19,12 +19,20 @@ export async function fetchData(input: RequestInfo, init: RequestInit = {}, json
     throw new Error('Base URL is not set.')
   }
 
-  // Add json header if body is present
-  if (init.body) {
-    init.headers = {
-      ...init.headers,
-      ...(json && { 'Content-Type': 'application/json' }),
-    }
+  // Get access token (client-side only for now, since we're making API calls)
+  let accessToken: string | undefined
+  
+  // Check if we're in a browser context
+  if (typeof window !== 'undefined') {
+    // Client-side, get from localStorage
+    accessToken = localStorage.getItem('access_token') || undefined
+  }
+
+  // Add headers (json content-type and authorization)
+  init.headers = {
+    ...init.headers,
+    ...(json && { 'Content-Type': 'application/json' }),
+    ...(accessToken && { 'Authorization': `Bearer ${accessToken}` }),
   }
 
   // Fetch data from the server

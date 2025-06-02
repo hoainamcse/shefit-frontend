@@ -1,9 +1,13 @@
-import Image from "next/image"
+"use client"
 
+import Image from "next/image"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { getUserBodyQuizzesByUserId } from "@/network/server/user-body-quizz"
-
+import { useAuth } from "@/components/providers/auth-context"
+import type UserBodyQuizz from "@/models/user-body-quizz"
+import { ListResponse } from "@/models/response"
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
   return new Intl.DateTimeFormat("vi-VN", {
@@ -13,8 +17,33 @@ const formatDate = (dateString: string) => {
   }).format(date)
 }
 
-export default async function BodyQuiz() {
-  const userBodyQuizzes = await getUserBodyQuizzesByUserId("1")
+export default function BodyQuiz() {
+  const { userId } = useAuth()
+  const [userBodyQuizzes, setUserBodyQuizzes] = useState<ListResponse<UserBodyQuizz>>({
+    data: [],
+    paging: { page: 0, per_page: 0, total: 0 },
+    status: "success",
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchQuizzes() {
+      if (userId) {
+        try {
+          const quizzes = await getUserBodyQuizzesByUserId(userId)
+          setUserBodyQuizzes(quizzes)
+        } catch (error) {
+          console.error("Error fetching body quizzes:", error)
+        } finally {
+          setLoading(false)
+        }
+      } else {
+        setLoading(false)
+      }
+    }
+
+    fetchQuizzes()
+  }, [userId])
 
   return (
     <div>
@@ -41,15 +70,21 @@ export default async function BodyQuiz() {
       <div className="py-12 sm:py-16 lg:py-20 px-5 sm:px-9 lg:px-[60px]">
         <div className="text-[#FF7873] text-[30px] leading-[33px] font-[Coiny] mb-10">Kết quả</div>
         <div className="flex flex-col gap-[18px]">
-          {userBodyQuizzes.data.map((quiz) => (
-            <Link
-              key={quiz.id}
-              href={`/account/quiz/${quiz.id}`}
-              className="text-[#000000] text-[20px] leading-[30px] font-normal border border-[#E2E2E2] p-4 rounded-[10px]"
-            >
-              Kết quả ngày {formatDate(quiz.quiz_date)}
-            </Link>
-          ))}
+          {loading ? (
+            <div className="text-center py-4">Loading...</div>
+          ) : userBodyQuizzes.data && userBodyQuizzes.data.length > 0 ? (
+            userBodyQuizzes.data.map((quiz) => (
+              <Link
+                key={quiz.id}
+                href={`/account/quiz/${quiz.id}`}
+                className="text-[#000000] text-[20px] leading-[30px] font-normal border border-[#E2E2E2] p-4 rounded-[10px]"
+              >
+                Kết quả ngày {formatDate(quiz.quiz_date)}
+              </Link>
+            ))
+          ) : (
+            <div className="text-center py-4">No quizzes found</div>
+          )}
         </div>
       </div>
     </div>
