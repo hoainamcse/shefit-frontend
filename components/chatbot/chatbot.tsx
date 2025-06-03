@@ -1,7 +1,15 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { ArrowDown, ArrowRight, Loader2, RefreshCcw, Star, X } from 'lucide-react';
+import { format } from 'date-fns';
+import {
+  ArrowDown,
+  ArrowRight,
+  Loader2,
+  RefreshCcw,
+  Star,
+  X,
+} from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
 import { fetchData } from '@/network/helpers/fetch-data';
@@ -18,12 +26,7 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselApi,
-} from '@/components/ui/carousel';
+import { Separator } from '../ui/separator';
 
 import styles from './chatbot.module.css';
 import { useForm } from 'react-hook-form';
@@ -37,19 +40,9 @@ const formSchema = z.object({
 });
 
 const LIMIT_MESSAGES_PER_OFFSET = 10;
-const CHAT_OPTIONS = [
-  {
-    id: 1,
-    label: 'Tư vấn bài tập',
-  },
-  {
-    id: 2,
-    label: 'Tư vấn phom dáng',
-  },
-  {
-    id: 3,
-    label: 'Tư vấn phom dáng 2',
-  },
+const FOLLOW_UP_MESSAGES = [
+  'Chị muốn chọn giữa các thực đơn có sẵn của Shefit hay chị muốn em lên thực đơn mới? \n- Chọn thực đơn có sẵn\n- Tạo thực đơn theo ý chị\n',
+  'Chị muốn chọn khóa tập có sẵn hay tạo khóa tập mới?\n- Chọn khóa tập có sẵn\n- Tạo khóa tập mới\n',
 ];
 
 interface ChatBotFormValues {
@@ -61,16 +54,11 @@ interface ChatBotProps {
   onClose?: () => void;
 }
 
-export default function ChatBot({
-  isOpen,
-  onClose,
-}: ChatBotProps) {
+export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isFirstFetchDone, setIsFirstFetchDone] = useState(false);
   const [isTypingBot, setIsTypingBot] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [api, setApi] = React.useState<CarouselApi>();
-  const [current, setCurrent] = React.useState(0);
   const [userId, setUserId] = useState<string | null>(null);
   const [idOfMessageGotError, setIdOfMessageGotError] = useState<string>();
   const [flagMessageId, setFlagMessageId] = useState<string>();
@@ -88,6 +76,16 @@ export default function ChatBot({
       message: '',
     },
   });
+
+  const removeOptionsMessage = (text: string) => {
+    for (const msg of FOLLOW_UP_MESSAGES) {
+      if (text.includes(msg)) {
+        const trimmed = msg.split('\n')[0]; // Lấy phần trước \n
+        return text.replace(msg, trimmed); // Thay toàn bộ msg bằng phần đã rút gọn
+      }
+    }
+    return text;
+  };
 
   const getParams = () => {
     const params = [
@@ -116,7 +114,21 @@ export default function ChatBot({
         const res = await getConversationHistory(getParams());
 
         if (res && Array.isArray(res)) {
-          setMessages([...messages, ...res]);
+          const formattedMessages = res.map((message) => {
+            return {
+              ...message,
+              created_at: format(
+                new Date(message.created_at),
+                'dd/MM/yyyy HH:mm'
+              ),
+              updated_at: format(
+                new Date(message.created_at),
+                'dd/MM/yyyy HH:mm'
+              ),
+            };
+          });
+
+          setMessages([...messages, ...formattedMessages]);
           if (res.length > 0) {
             setFlagMessageId(res[res.length - 1].id); // Use this to set value for param after_id when calling API get more messages.
           } else {
@@ -132,18 +144,6 @@ export default function ChatBot({
       }
     }
   };
-
-  useEffect(() => {
-    if (!api) {
-      return;
-    }
-
-    setCurrent(api.selectedScrollSnap() + 1);
-
-    api.on('select', () => {
-      setCurrent(api.selectedScrollSnap() + 1);
-    });
-  }, [api]);
 
   const typeMessage = (message: string, messageId: string) => {
     let currentIndex = 0;
@@ -200,8 +200,8 @@ export default function ChatBot({
           role: 'user',
           content: message,
           content_type: 'text',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+          created_at: format(new Date(), 'dd/MM/yyyy HH:mm'),
+          updated_at: format(new Date(), 'dd/MM/yyyy HH:mm'),
         };
         setMessages([newMessage, ...messages]);
       }
@@ -261,8 +261,8 @@ export default function ChatBot({
           role: 'assistant',
           content: responseString,
           content_type: 'text',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+          created_at: format(new Date(), 'dd/MM/yyyy HH:mm'),
+          updated_at: format(new Date(), 'dd/MM/yyyy HH:mm'),
         };
 
         setMessages((prev) => [botResponse, ...prev]);
@@ -358,14 +358,21 @@ export default function ChatBot({
   return (
     <div
       className={cn(
-        isOpen ? 'fixed z-50 inset-0 lg:top-auto lg:left-auto lg:bottom-16 lg:right-4 lg:w-[400px] lg:h-[80vh]' : 'hidden',
+        isOpen
+          ? 'fixed z-50 inset-0 lg:top-auto lg:left-auto lg:bottom-16 lg:right-4 lg:w-[400px] lg:h-[80vh]'
+          : 'hidden'
       )}
     >
       <div className='w-full h-full max-h-full bg-primary rounded-xl shadow-md flex flex-col p-3'>
         {/* Header */}
         <div className='flex items-center justify-between'>
           <p className='text-background font-semibold'>Chat cùng HLV 24/7</p>
-          <Button variant='link' size='icon' onClick={onClose} className='text-background'>
+          <Button
+            variant='link'
+            size='icon'
+            onClick={onClose}
+            className='text-background'
+          >
             <X className='size-5' />
           </Button>
         </div>
@@ -395,17 +402,22 @@ export default function ChatBot({
                 </div>
               )}
 
-              {messages?.map((message) => (
+              {messages?.map((message, index) => (
                 <div key={message.id} className='flex items-start gap-3'>
                   {message.role === 'user' ? (
                     <div className='w-full flex flex-col'>
-                      <div className='flex justify-end w-full gap-3 mt-2'>
+                      <div className='flex justify-end w-full gap-3 mt-2 self-end max-w-[90%]'>
                         <div className='flex flex-col items-end'>
                           <div className='font-medium text-sm text-gray-900 mb-1'>
                             Nhân viên
                           </div>
-                          <div className='bg-blue-100 text-blue-900 px-3 py-2 rounded-lg text-sm inline-block w-fit'>
-                            {message.content}
+                          <div className='flex flex-col bg-blue-100 rounded-lg px-3 py-2 inline-block w-fit'>
+                            <div className='self-end text-blue-900 text-sm w-fit'>
+                              {message.content}
+                            </div>
+                            <p className='text-xs text-gray-500 mt-1 text-right'>
+                              {message.created_at}
+                            </p>
                           </div>
                         </div>
                         <Avatar className='w-8 h-8 mt-1'>
@@ -441,7 +453,7 @@ export default function ChatBot({
                           Shefit
                         </div>
 
-                        <div className='bg-gray-100 text-gray-800 px-3 py-2 rounded-lg text-sm w-fit'>
+                        <div className='bg-gray-100 text-gray-800 px-3 py-2 rounded-lg text-sm w-fit max-w-[90%]'>
                           <ReactMarkdown
                             components={{
                               ul: (props) => (
@@ -452,9 +464,19 @@ export default function ChatBot({
                               ),
                             }}
                           >
-                            {message.content}
+                            {removeOptionsMessage(message.content)}
                           </ReactMarkdown>
+                          <p className='text-xs mt-1 text-gray-500'>
+                            {message.created_at}
+                          </p>
                         </div>
+
+                        {index === 0 && !message.isTyping && (
+                          <FastMessageOptions
+                            message={message.content}
+                            sendMessage={sendMessage}
+                          />
+                        )}
                       </div>
                     </div>
                   )}
@@ -499,63 +521,13 @@ export default function ChatBot({
 
             {isShowingMoveDownButton && (
               <Button
-                className='absolute bottom-[90px] left-1/2 transform -translate-x-1/2 text-white rounded-full shadow-lg hover:bg-[#FFAEB0]/80'
+                className='absolute bottom-[20px] left-1/2 transform -translate-x-1/2 text-white rounded-full shadow-lg hover:bg-[#FFAEB0]/80'
                 onClick={scrollToBottom}
               >
                 <ArrowDown />
               </Button>
             )}
           </div>
-
-          {userId && (
-            <Carousel
-              className='px-4 py-3'
-              opts={{
-                slidesToScroll: 2,
-              }}
-              setApi={setApi}
-            >
-              <CarouselContent className='mb-5'>
-                {CHAT_OPTIONS.map((option) => (
-                  <CarouselItem
-                    key={option.id}
-                    className='basis-1/2 sm:basis-1/3 lg:basis-1/2'
-                  >
-                    <div className='flex items-center justify-center'>
-                      <Button
-                        className='bg-primary h-10 w-full sm:w-fit rounded-full text-center text-base text-white'
-                        onClick={() => sendMessage(option.label, true)}
-                      >
-                        {option.label}
-                      </Button>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-
-              <div className='flex sm:hidden lg:flex gap-1 justify-center'>
-                {Array.from({ length: CHAT_OPTIONS.length - 1 }).map(
-                  (_, index) =>
-                    current - 1 === index ? (
-                      <div key={index} className='w-10 h-1 bg-primary'></div>
-                    ) : (
-                      <div key={index} className='w-10 h-1 bg-[#FDDEDE]'></div>
-                    )
-                )}
-              </div>
-
-              <div className='hidden sm:flex lg:hidden justify-center'>
-                {Array.from({ length: CHAT_OPTIONS.length - 2 }).map(
-                  (_, index) =>
-                    current - 2 === index ? (
-                      <div key={index} className='w-10 h-1 bg-primary'></div>
-                    ) : (
-                      <div key={index} className='w-10 h-1 bg-[#FDDEDE]'></div>
-                    )
-                )}
-              </div>
-            </Carousel>
-          )}
         </div>
 
         <Form {...form}>
@@ -597,19 +569,22 @@ export default function ChatBot({
 }
 
 export function ChatBotButton() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <>
       <MainButton
         className={`fixed z-50 bottom-4 right-4 rounded-full`}
-        style={{ background: 'linear-gradient(45deg,rgba(255, 174, 176, 1) 40%, rgba(19, 216, 167, 1) 90%)' }}
+        style={{
+          background:
+            'linear-gradient(45deg,rgba(255, 174, 176, 1) 40%, rgba(19, 216, 167, 1) 90%)',
+        }}
         onClick={() => setIsOpen(!isOpen)}
         icon={Star}
-        text="HlV 24/7"
+        text='HLV 24/7'
       />
       <ChatBot isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
-  )
+  );
 }
 
 const TypingIndicator = () => {
@@ -630,5 +605,49 @@ const TypingIndicator = () => {
         ></div>
       </div>
     </div>
+  );
+};
+
+const FastMessageOptions = ({
+  message,
+  sendMessage,
+}: {
+  message: string;
+  sendMessage: (
+    messageValue?: string,
+    isUsingOption?: boolean,
+    isReSend?: boolean
+  ) => void;
+}) => {
+  const extractOptions = (text: string) => {
+    return text
+      .split('\n')
+      .filter((line) => line.startsWith('- '))
+      .map((line) => line.slice(2).trim());
+  };
+
+  const followUpMessage = FOLLOW_UP_MESSAGES.find((item) =>
+    message.includes(item)
+  );
+
+  const options = followUpMessage ? extractOptions(followUpMessage) : [];
+
+  return options.length > 0 ? (
+    <div className='flex flex-col gap-2 mt-3 mb-2'>
+      <Separator />
+
+      {options.map((option, index) => (
+        <Button
+          key={`option-${index}`}
+          className='whitespace-normal justify-start h-fit py-1.5 px-3 rounded-lg'
+          variant='outline'
+          onClick={() => sendMessage(option, true, false)}
+        >
+          {option}
+        </Button>
+      ))}
+    </div>
+  ) : (
+    <></>
   );
 };
