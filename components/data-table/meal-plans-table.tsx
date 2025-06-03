@@ -4,32 +4,31 @@ import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 
 import { toast } from 'sonner'
 import { useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { deleteDish, getDishes, queryKeyDishes } from '@/network/client/dishes'
+import { deleteMealPlan, getMealPlans, queryKeyMealPlans } from '@/network/client/meal-plans'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
-import { Dish } from '@/models/dish'
+import { MealPlan } from '@/models/meal-plan'
 
-import { EditDishForm } from '../forms/edit-dish-form'
 import { AddButton } from '../buttons/add-button'
-import { EditSheet } from './edit-sheet'
 
-export function DishesTable() {
+export function MealPlansTable() {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 5,
   })
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [queryKeyDishes, pagination],
-    queryFn: () => getDishes({ page: pagination.pageIndex, per_page: pagination.pageSize }),
+    queryKey: [queryKeyMealPlans, pagination],
+    queryFn: () => getMealPlans({ page: pagination.pageIndex, per_page: pagination.pageSize }),
     placeholderData: keepPreviousData,
   })
 
-  const columns = useMemo<ColumnDef<Dish>[]>(
+  const columns = useMemo<ColumnDef<MealPlan>[]>(
     () => [
       {
         id: 'select',
@@ -52,15 +51,25 @@ export function DishesTable() {
         enableHiding: false,
       },
       {
-        header: 'Tên món ăn',
-        accessorKey: 'name',
-        cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
+        header: 'Tên thực đơn',
+        accessorKey: 'title',
+        cell: ({ row }) => <div className="font-medium">{row.getValue('title')}</div>,
         size: 180,
         enableHiding: false,
       },
       {
+        header: 'Tóm tắt',
+        accessorKey: 'subtitle',
+        size: 180,
+      },
+      {
         header: 'Chế độ ăn',
         accessorFn: (originalRow) => originalRow.diet?.name,
+        size: 180,
+      },
+      {
+        header: 'Calorie',
+        accessorFn: (originalRow) => originalRow.calorie?.name,
         size: 180,
       },
       {
@@ -70,7 +79,7 @@ export function DishesTable() {
           <div>
             <img
               src={row.getValue('image')}
-              alt={`${row.getValue('name')} thumbnail`}
+              alt={`${row.getValue('title')} thumbnail`}
               className="h-16 w-28 rounded-md object-cover"
             />
           </div>
@@ -89,36 +98,27 @@ export function DishesTable() {
     []
   )
 
-  const [selectedRow, setSelectedRow] = useState<Dish | null>(null)
-  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false)
+  const router = useRouter()
 
   const onAddRow = () => {
-    setSelectedRow(null)
-    setIsEditSheetOpen(true)
+    router.push('/admin/meal-plans/create')
   }
 
-  const onEditRow = (row: Dish) => {
-    setSelectedRow(row)
-    setIsEditSheetOpen(true)
+  const onEditRow = (row: MealPlan) => {
+    router.push(`/admin/meal-plans/${row.id}`)
   }
 
-  const onDeleteRow = async (row: Dish) => {
-    const deletePromise = () => deleteDish(row.id)
+  const onDeleteRow = async (row: MealPlan) => {
+    const deletePromise = () => deleteMealPlan(row.id)
 
     toast.promise(deletePromise, {
       loading: 'Đang xoá...',
       success: (_) => {
         refetch()
-        return 'Xoá món ăn thành công'
+        return 'Xoá thực đơn thành công'
       },
       error: 'Đã có lỗi xảy ra',
     })
-  }
-
-  const onEditSuccess = () => {
-    setSelectedRow(null)
-    setIsEditSheetOpen(false)
-    refetch()
   }
 
   if (isLoading) {
@@ -137,26 +137,14 @@ export function DishesTable() {
     )
   }
 
-  const isEdit = !!selectedRow
-
   return (
-    <>
-      <DataTable
-        data={data?.data}
-        columns={columns}
-        state={{ pagination }}
-        rowCount={data?.paging.total}
-        onPaginationChange={setPagination}
-        rightSection={<AddButton text="Thêm món ăn" onClick={onAddRow} />}
-      />
-      <EditSheet
-        title={isEdit ? 'Chỉnh sửa món ăn' : 'Thêm món ăn'}
-        description="Make changes to your profile here. Click save when you're done."
-        open={isEditSheetOpen}
-        onOpenChange={setIsEditSheetOpen}
-      >
-        <EditDishForm data={selectedRow} onSuccess={onEditSuccess} />
-      </EditSheet>
-    </>
+    <DataTable
+      data={data?.data}
+      columns={columns}
+      state={{ pagination }}
+      rowCount={data?.paging.total}
+      onPaginationChange={setPagination}
+      rightSection={<AddButton text="Thêm thực đơn" onClick={onAddRow} />}
+    />
   )
 }

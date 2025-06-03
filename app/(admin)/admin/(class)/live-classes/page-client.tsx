@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Switch } from '@/components/ui/switch'
 import { ListResponse } from '@/models/response'
-import { getDifficultyLevelLabel, getFormCategoryLabel } from '@/lib/label'
+import { difficultyLevelLabel, formCategoryLabel } from '@/lib/label'
 import {
   Dialog,
   DialogContent,
@@ -87,7 +87,7 @@ export default function LiveClassesPageClient({ data }: { data: ListResponse<Lis
         <div className="flex flex-wrap gap-2">
           {row.form_categories.map((category) => (
             <Badge key={category} variant="secondary" className="text-foreground">
-              {getFormCategoryLabel(category)}
+              {formCategoryLabel[category]}
             </Badge>
           ))}
         </div>
@@ -98,7 +98,7 @@ export default function LiveClassesPageClient({ data }: { data: ListResponse<Lis
       header: 'Độ khó',
       render: ({ row }) => (
         <Badge variant="outline" className="capitalize">
-          {getDifficultyLevelLabel(row.difficulty_level)}
+          {difficultyLevelLabel[row.difficulty_level]}
         </Badge>
       ),
     },

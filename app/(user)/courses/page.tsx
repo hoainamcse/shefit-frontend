@@ -11,10 +11,10 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { getCoursesByType } from '@/network/server/courses'
 import { cn } from '@/lib/utils'
 import {
-  DIFFICULTY_LEVEL_OPTIONS,
-  FORM_CATEGORY_OPTIONS,
-  getFormCategoryLabel,
-  getDifficultyLevelLabel,
+  difficultyLevelLabel,
+  difficultyLevelLabelOptions,
+  formCategoryLabel,
+  formCategoryLabelOptions,
 } from '@/lib/label'
 import type { Course, FormCategory } from '@/models/course'
 import { getSubscriptions } from '@/network/server/subscriptions'
@@ -112,13 +112,13 @@ export default function CoursesPage() {
           <div className="flex gap-4">
             <SelectHero
               placeholder="Độ khó"
-              options={DIFFICULTY_LEVEL_OPTIONS}
+              options={difficultyLevelLabelOptions}
               value={difficulty}
               onChange={setDifficulty}
             />
             <SelectHero
               placeholder="Phom dáng"
-              options={FORM_CATEGORY_OPTIONS}
+              options={formCategoryLabelOptions}
               value={formCategory}
               onChange={setFormCategory}
             />
@@ -168,13 +168,13 @@ export default function CoursesPage() {
                       <div className="flex justify-between">
                         <div>
                           <p className="font-medium">{course.course_name}</p>
-                          <p className="text-[#737373]">{getDifficultyLevelLabel(course.difficulty_level)}</p>
+                          <p className="text-[#737373]">{difficultyLevelLabel[course.difficulty_level]}</p>
                           <p className="text-[#737373]">{course.trainer}</p>
                         </div>
                         <div className="text-gray-500">
                           {Array.isArray(course.form_categories)
-                            ? course.form_categories.map((cat) => getFormCategoryLabel(cat)).join(', ')
-                            : getFormCategoryLabel(course.form_categories)}
+                            ? course.form_categories.map((cat) => formCategoryLabel[cat]).join(', ')
+                            : formCategoryLabel[course.form_categories]}
                         </div>
                       </div>
                     </div>
@@ -206,13 +206,13 @@ export default function CoursesPage() {
                       <div className="flex justify-between">
                         <div>
                           <p className="font-medium">{course.course_name}</p>
-                          <p className="text-[#737373]">{getDifficultyLevelLabel(course.difficulty_level)}</p>
+                          <p className="text-[#737373]">{difficultyLevelLabel[course.difficulty_level]}</p>
                           <p className="text-[#737373]">{course.trainer}</p>
                         </div>
                         <div className="text-gray-500">
                           {Array.isArray(course.form_categories)
-                            ? course.form_categories.map((cat) => getFormCategoryLabel(cat)).join(', ')
-                            : getFormCategoryLabel(course.form_categories)}
+                            ? course.form_categories.map((cat) => formCategoryLabel[cat]).join(', ')
+                            : formCategoryLabel[course.form_categories]}
                         </div>
                       </div>
                     </div>

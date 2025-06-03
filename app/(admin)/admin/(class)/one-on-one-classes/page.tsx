@@ -29,7 +29,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Switch } from '@/components/ui/switch'
 import { useClipboard } from '@/hooks/use-clipboard'
 import { useDebounced } from '@/hooks/useDebounced'
-import { getFormCategoryLabel } from '@/lib/label'
+import { formCategoryLabel } from '@/lib/label'
 import { ListCourse } from '@/models/course-admin'
 import { deleteCourse, getCourses, updateCourse } from '@/network/server/courses-admin'
 import { getSubAdminCourses } from '@/network/server/sub-admin'
@@ -164,7 +164,7 @@ export default function OneOnOneClassesPage() {
         <div className="flex flex-wrap gap-2">
           {row.form_categories.map((category) => (
             <Badge key={category} variant="secondary" className="text-foreground">
-              {getFormCategoryLabel(category)}
+              {formCategoryLabel[category]}
             </Badge>
           ))}
         </div>

@@ -27,7 +27,7 @@ import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { useClipboard } from '@/hooks/use-clipboard'
 import { Badge } from '@/components/ui/badge'
-import { getDifficultyLevelLabel, getFormCategoryLabel } from '@/lib/label'
+import { difficultyLevelLabel, formCategoryLabel } from '@/lib/label'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -111,7 +111,7 @@ export default function VideoClassesPage() {
         <div className="flex flex-wrap gap-2">
           {row.form_categories.map((category) => (
             <Badge key={category} variant="secondary" className="text-foreground">
-              {getFormCategoryLabel(category)}
+              {formCategoryLabel[category]}
             </Badge>
           ))}
         </div>
@@ -122,7 +122,7 @@ export default function VideoClassesPage() {
       header: 'Độ khó',
       render: ({ row }) => (
         <Badge variant="outline" className="capitalize">
-          {getDifficultyLevelLabel(row.difficulty_level)}
+          {difficultyLevelLabel[row.difficulty_level]}
         </Badge>
       ),
     },

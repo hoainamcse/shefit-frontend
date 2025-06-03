@@ -1,5 +1,5 @@
-import { Equipment } from './equipment'
-import { MuscleGroup } from './muscle-group'
+import type { Equipment } from './equipment'
+import type { MuscleGroup } from './muscle-group'
 
 type Exercise = {
   id: string

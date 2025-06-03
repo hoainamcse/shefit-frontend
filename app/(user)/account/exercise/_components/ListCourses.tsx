@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { getUserCourses } from "@/network/server/user-courses"
-import { getFormCategoryLabel } from "@/lib/label"
+import { formCategoryLabel } from "@/lib/label"
 import { DeleteIcon } from "@/components/icons/DeleteIcon"
 
 export default async function ListCourses() {
@@ -40,7 +40,7 @@ export default async function ListCourses() {
                         </div>
                       </div>
                       <div className="flex gap-2 justify-end flex-col items-end">
-                        <p>{getFormCategoryLabel(course.course.form_categories[0])}</p>
+                        <p>{formCategoryLabel[course.course.form_categories[0]]}</p>
                         {/* <Link href={`/courses/${course.course.id}`} className="text-ring underline">
                           Bắt đầu
                         </Link> */}

@@ -5,7 +5,7 @@ import { Header } from "@/app/(user)/_components/header"
 import { BackIcon } from "@/components/icons/BackIcon"
 import { getMealPlanDetails } from "@/network/server/meal-plans"
 import { createUserMealPlan } from "@/network/server/user-meal-plans"
-import { getGoalLabel } from "@/lib/label"
+import { mealPlanGoalLabel } from "@/lib/label"
 import ActionButtons from "./ActionButtons"
 export default async function MealPlanPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   try {
@@ -38,7 +38,7 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
             />
           </div>
           <div className="mr-auto text-xl mt-8 max-lg:p-4">
-            <p className="font-bold">{getGoalLabel(mealPlan.goal)}</p>
+            <p className="font-bold">{mealPlanGoalLabel[mealPlan.goal]}</p>
             <p className="text-[#737373]">{mealPlan.title}</p>
             <p className="text-[#737373]">
               Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
@@ -49,7 +49,7 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
               <div className="xl:px-20 max-lg:w-full mx-auto text-white h-full flex flex-col items-center justify-center">
                 <ul className="text-[#F7F7F7] text-xl list-disc mr-auto max-lg:px-8">
                   {mealPlan.meal_ingredients.map((ingredient) => (
-                    <li key={ingredient.id}>{ingredient.name}</li>
+                    <li key={ingredient.name}>{ingredient.name}</li>
                   ))}
                 </ul>
               </div>
@@ -73,7 +73,7 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
             >
               <CarouselContent>
                 {mealPlan.meal_ingredients.map((ingredient) => (
-                  <CarouselItem key={ingredient.id} className="max-lg:basis-1/3 xl:basis-[11%]">
+                  <CarouselItem key={ingredient.name} className="max-lg:basis-1/3 xl:basis-[11%]">
                     <div className="w-[168px]">
                       <img
                         src={ingredient.image}

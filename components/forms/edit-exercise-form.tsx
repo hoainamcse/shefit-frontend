@@ -41,7 +41,7 @@ export function EditExerciseForm({ data, onSuccess }: EditExerciseFormProps) {
     thumbnail_image: 'https://placehold.co/600x400?text=example',
     muscle_group_ids: [],
     equipment_ids: [],
-  }
+  } as FormValue
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),

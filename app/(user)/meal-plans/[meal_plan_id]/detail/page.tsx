@@ -65,7 +65,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
               <div className="text-center text-[40px] font-bold mb-10">Kết quả</div>
               <ul className="text-[#F7F7F7] text-xl list-disc mr-auto max-lg:px-8">
                 {mealPlan.meal_ingredients.map((ingredient) => (
-                  <li key={ingredient.id}>{ingredient.name}</li>
+                  <li key={ingredient.name}>{ingredient.name}</li>
                 ))}
               </ul>
             </div>

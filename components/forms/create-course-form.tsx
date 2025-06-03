@@ -20,7 +20,7 @@ import {
 import { FileUploader } from '@/components/file-uploader'
 import { Label } from '@/components/ui/label'
 
-import { DIFFICULTY_LEVEL_OPTIONS, FORM_CATEGORY_OPTIONS, VISIBLE_IN_OPTIONS } from '@/lib/label'
+import { difficultyLevelLabelOptions, formCategoryLabelOptions, VISIBLE_IN_OPTIONS } from '@/lib/label'
 import { FormImageInputField } from './fields/form-image-input-field'
 import { Equipment } from '@/models/equipment'
 import { MuscleGroup } from '@/models/muscle-group'
@@ -273,14 +273,14 @@ function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, on
             name="form_categories"
             label="Dáng"
             withAsterisk
-            data={FORM_CATEGORY_OPTIONS}
+            data={formCategoryLabelOptions}
           />
           <FormRadioField
             form={form}
             name="difficulty_level"
             label="Độ khó"
             withAsterisk
-            data={DIFFICULTY_LEVEL_OPTIONS}
+            data={difficultyLevelLabelOptions}
           />
           <div className="flex items-start gap-10">
             <FormSwitchField form={form} name="is_public" label="Hiển thị" />

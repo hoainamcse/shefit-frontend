@@ -6,10 +6,10 @@ import { createUserMealPlan } from "@/network/server/user-meal-plans"
 import { toast } from "sonner"
 
 interface ActionButtonsProps {
-  mealPlanId: string
+  mealPlanId: number
 }
 
-const handleSaveMealPlan = async (mealPlanId: string) => {
+const handleSaveMealPlan = async (mealPlanId: number) => {
   try {
     await createUserMealPlan({ meal_plan_id: mealPlanId }, "1")
     toast.success("Đã lưu thực đơn thành công!")

@@ -4,9 +4,9 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { getCourse } from '@/network/server/courses'
 import { getEquipments } from '@/network/server/equipments'
 import { getMuscleGroups } from '@/network/server/muscle-groups'
-import { getFormCategoryLabel, getDifficultyLevelLabel } from '@/lib/label'
+import { formCategoryLabel, difficultyLevelLabel } from '@/lib/label'
 import { useState, useEffect, useRef } from 'react'
-import { FormCategory } from '@/models/course'
+import { DifficultyLevel, FormCategory } from '@/models/course'
 import LiveCourseDetail from './LiveCourseDetail'
 import VideoCourseDetail from './VideoCourseDetail'
 import { BackIcon } from '@/components/icons/BackIcon'
@@ -107,14 +107,14 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         <div className="flex justify-between">
           <div>
             <p className="font-medium">Easy Slim - Video</p>
-            <p className="text-[#737373]">{course?.data && getDifficultyLevelLabel(course.data.difficulty_level)}</p>
+            <p className="text-[#737373]">{course?.data && difficultyLevelLabel[course.data.difficulty_level as DifficultyLevel]}</p>
             <p className="text-[#737373]">{course?.data?.trainer}</p>
           </div>
           <div className="text-gray-500">
             {course?.data?.form_categories &&
               (Array.isArray(course.data.form_categories)
-                ? course.data.form_categories.map((cat: FormCategory) => getFormCategoryLabel(cat)).join(', ')
-                : getFormCategoryLabel(course.data.form_categories))}
+                ? course.data.form_categories.map((cat: FormCategory) => formCategoryLabel[cat]).join(', ')
+                : formCategoryLabel[course.data.form_categories as FormCategory])}
           </div>
         </div>
         <div className="bg-primary rounded-xl my-4 p-4">

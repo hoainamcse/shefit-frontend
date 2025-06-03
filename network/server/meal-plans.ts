@@ -1,6 +1,6 @@
 'use server'
 
-import type { MealPlan } from "@/models/meal-plans"
+import type { MealPlan } from "@/models/meal-plan"
 import { fetchData } from '../helpers/fetch-data'
 import { ApiResponse, ListResponse } from '@/models/response'
 import { fetchDataServer } from "../helpers/fetch-data-server"

@@ -1,4 +1,4 @@
-import { Diet } from './diet'
+import type { Diet } from './diet'
 
 type Dish = {
   id: string

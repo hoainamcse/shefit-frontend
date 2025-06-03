@@ -32,7 +32,7 @@ import {
   getMealPlanDishes,
 } from '@/network/server/meal-plans'
 import { FormImageInputField } from './fields/form-image-input-field'
-import { MealPlan } from '@/models/meal-plans'
+import { MealPlan } from '@/models/meal-plan'
 import { Calorie } from '@/models/calorie'
 import { getCalories } from '@/network/server/calorie'
 import { ScrollArea, ScrollBar } from '../ui/scroll-area'

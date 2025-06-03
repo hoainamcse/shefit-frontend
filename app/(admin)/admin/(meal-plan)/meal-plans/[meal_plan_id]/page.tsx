@@ -1,14 +1,44 @@
+import { BoxIcon, HouseIcon } from 'lucide-react'
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { EditMealPlanForm } from '@/components/forms/edit-meal-plan-form'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
-import CreateMealPlanForm from '@/components/forms/create-meal-plan-form'
-import { getMealPlanDetails } from '@/network/server/meal-plans'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { getMealPlan } from '@/network/client/meal-plans'
 
 export default async function EditMealPlanPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   const { meal_plan_id } = await params
-  const mealPlan = await getMealPlanDetails(meal_plan_id)
+  const data = await getMealPlan(Number(meal_plan_id))
 
   return (
     <ContentLayout title="Cập nhật thực đơn">
-      <CreateMealPlanForm isEdit={true} data={mealPlan.data} />
+      <Tabs defaultValue="tab-1">
+        <ScrollArea>
+          <TabsList className="bg-background mb-3 h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse">
+            <TabsTrigger
+              value="tab-1"
+              className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e"
+            >
+              <HouseIcon className="-ms-0.5 me-1.5 opacity-60" size={16} aria-hidden="true" />
+              Thông tin cơ bản
+            </TabsTrigger>
+            <TabsTrigger
+              value="tab-2"
+              className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e"
+            >
+              <BoxIcon className="-ms-0.5 me-1.5 opacity-60" size={16} aria-hidden="true" />
+              Chi tiết thực đơn
+            </TabsTrigger>
+          </TabsList>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+
+        <TabsContent value="tab-1">
+          <EditMealPlanForm data={data.data} />
+        </TabsContent>
+
+        <TabsContent value="tab-2">Hello world</TabsContent>
+      </Tabs>
     </ContentLayout>
   )
 }

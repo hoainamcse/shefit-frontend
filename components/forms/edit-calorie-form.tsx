@@ -28,7 +28,7 @@ interface EditCalorieFormProps {
 
 export function EditCalorieForm({ data, onSuccess }: EditCalorieFormProps) {
   const isEdit = !!data
-  const defaultValue = { name: '', description: '' }
+  const defaultValue = { name: '', description: '' } as FormValue
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),

@@ -29,7 +29,7 @@ interface EditDietFormProps {
 
 export function EditDietForm({ data, onSuccess }: EditDietFormProps) {
   const isEdit = !!data
-  const defaultValue = { name: '', image: 'https://placehold.co/600x400?text=example', description: '' }
+  const defaultValue = { name: '', image: 'https://placehold.co/600x400?text=example', description: '' } as FormValue
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),

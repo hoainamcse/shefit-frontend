@@ -6,8 +6,8 @@ import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import React, { useState, useEffect } from 'react'
 import { getMealPlans } from '@/network/server/meal-plans'
-import { GOAL_OPTIONS } from '@/lib/label'
-import type { MealPlan } from '@/models/meal-plans'
+import { mealPlanGoalOptions } from '@/lib/label'
+import type { MealPlan } from '@/models/meal-plan'
 
 const CALORIE_OPTIONS = [
   { value: 'low', label: '< 300 cal' },
@@ -68,7 +68,7 @@ export default function MealPlansPage() {
   const filteredMealPlans = mealPlans.filter((mealPlan) => {
     const matchesGoal = !goal || mealPlan.goal === goal
     const matchesCalorie =
-      !calorieCategory || getCalorieCategory(mealPlan.calories.max_calorie.toString()) === calorieCategory
+      !calorieCategory || getCalorieCategory((mealPlan.calorie?.max_calorie ?? 0).toString()) === calorieCategory
     return matchesGoal && matchesCalorie
   })
 
@@ -83,7 +83,7 @@ export default function MealPlansPage() {
           đảm bảo tăng cơ, giảm mỡ hiệu quả!
         </p>
         <div className="flex gap-4">
-          <SelectHero placeholder="Mục tiêu" options={GOAL_OPTIONS} value={goal} onChange={setGoal} />
+          <SelectHero placeholder="Mục tiêu" options={mealPlanGoalOptions} value={goal} onChange={setGoal} />
           <SelectHero
             placeholder="Lượng calo"
             options={CALORIE_OPTIONS}

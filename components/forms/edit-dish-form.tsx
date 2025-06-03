@@ -45,7 +45,7 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
     carb: 0,
     fat: 0,
     fiber: 0,
-  }
+  } as FormValue
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),
@@ -92,16 +92,12 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
             form={form}
             name="calories"
             label="Calories (kcal)"
-            type="number"
-            min="0"
             placeholder="e.g., 250"
           />
           <FormNumberField
             form={form}
             name="protein"
             label="Protein (g)"
-            type="number"
-            min="0"
             step="0.1"
             placeholder="e.g., 20"
           />
@@ -109,8 +105,6 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
             form={form}
             name="carb"
             label="Carbs (g)"
-            type="number"
-            min="0"
             step="0.1"
             placeholder="e.g., 30"
           />
@@ -118,8 +112,6 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
             form={form}
             name="fat"
             label="Fat (g)"
-            type="number"
-            min="0"
             step="0.1"
             placeholder="e.g., 10"
           />
@@ -127,8 +119,6 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
             form={form}
             name="fiber"
             label="Fiber (g)"
-            type="number"
-            min="0"
             step="0.1"
             placeholder="e.g., 5"
           />
