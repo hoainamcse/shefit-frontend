@@ -71,9 +71,9 @@ interface CreateCourseFormProps {
 function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, onSuccess }: CreateCourseFormProps) {
   const { accessToken } = useAuth()
   const [isPending, startTransition] = useTransition()
-  const [equipments, setEquipments] = useState<Equipment[]>([])
-  const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>([])
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
+  // const [equipments, setEquipments] = useState<Equipment[]>([])
+  // const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>([])
+  // const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
 
   // const [state, action, isPending] = useActionState(createCourse, null)
   const form = useForm<FormData>({
@@ -112,44 +112,44 @@ function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, on
         },
   })
 
-  const AVAILABLE_EQUIPMENTS = useMemo(
-    () => equipments.map((equipment) => ({ value: equipment.id.toString(), label: equipment.name })),
-    [equipments]
-  )
+  // const AVAILABLE_EQUIPMENTS = useMemo(
+  //   () => equipments.map((equipment) => ({ value: equipment.id.toString(), label: equipment.name })),
+  //   [equipments]
+  // )
 
-  const AVAILABLE_MUSCLE_GROUPS = useMemo(
-    () => muscleGroups.map((muscleGroup) => ({ value: muscleGroup.id.toString(), label: muscleGroup.name })),
-    [muscleGroups]
-  )
+  // const AVAILABLE_MUSCLE_GROUPS = useMemo(
+  //   () => muscleGroups.map((muscleGroup) => ({ value: muscleGroup.id.toString(), label: muscleGroup.name })),
+  //   [muscleGroups]
+  // )
 
-  const AVAILABLE_SUBSCRIPTIONS = useMemo(
-    () =>
-      subscriptions
-        .filter((subscription) => subscription.course_format === format || subscription.course_format === 'both')
-        .map((subscription) => ({ value: subscription.id.toString(), label: subscription.name })),
-    [subscriptions, format]
-  )
+  // const AVAILABLE_SUBSCRIPTIONS = useMemo(
+  //   () =>
+  //     subscriptions
+  //       .filter((subscription) => subscription.course_format === format || subscription.course_format === 'both')
+  //       .map((subscription) => ({ value: subscription.id.toString(), label: subscription.name })),
+  //   [subscriptions, format]
+  // )
 
-  const fetchEquipments = async () => {
-    const response = await getEquipments()
-    setEquipments(response.data || [])
-  }
+  // const fetchEquipments = async () => {
+  //   const response = await getEquipments()
+  //   setEquipments(response.data || [])
+  // }
 
-  const fetchMuscleGroups = async () => {
-    const response = await getMuscleGroups()
-    setMuscleGroups(response.data || [])
-  }
+  // const fetchMuscleGroups = async () => {
+  //   const response = await getMuscleGroups()
+  //   setMuscleGroups(response.data || [])
+  // }
 
-  const fetchSubscriptions = async () => {
-    const response = await getSubscriptions()
-    setSubscriptions(response.data || [])
-  }
+  // const fetchSubscriptions = async () => {
+  //   const response = await getSubscriptions()
+  //   setSubscriptions(response.data || [])
+  // }
 
-  useEffect(() => {
-    fetchEquipments()
-    fetchMuscleGroups()
-    fetchSubscriptions()
-  }, [])
+  // useEffect(() => {
+  //   fetchEquipments()
+  //   fetchMuscleGroups()
+  //   fetchSubscriptions()
+  // }, [])
 
   function onSubmit(values: FormData) {
     startTransition(async () => {
@@ -205,15 +205,15 @@ function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, on
         <FormMultiSelectField
           form={form}
           name="equipment_ids"
-          label="Dụng cụ"
-          data={AVAILABLE_EQUIPMENTS}
+          label="Dụng cụ IDs"
+          data={[]}
           placeholder="Chọn dụng cụ"
         />
         <FormMultiSelectField
           form={form}
           name="muscle_group_ids"
-          label="Nhóm cơ"
-          data={AVAILABLE_MUSCLE_GROUPS}
+          label="Nhóm cơ IDs"
+          data={[]}
           placeholder="Chọn nhóm cơ"
         />
 
@@ -262,8 +262,8 @@ function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, on
         <FormMultiSelectField
           form={form}
           name="subscription_ids"
-          label="Phân loại gói"
-          data={AVAILABLE_SUBSCRIPTIONS}
+          label="Membership IDs"
+          data={[]}
           placeholder="Chọn gói"
         />
 
