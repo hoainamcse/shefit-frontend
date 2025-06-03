@@ -9,15 +9,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { createEquipment, updateEquipment } from '@/network/client/equipments'
 import { Equipment } from '@/models/equipment'
 
-import { FormImageInputField } from './fields/form-image-input-field'
+import { FormImageInputField, FormInputField } from './fields'
 import { MainButton } from '../buttons/main-button'
-import { FormInputField } from './fields'
 import { Form } from '../ui/form'
 
 // ! Follow EquipmentPayload model in models/equipment.ts
 const formSchema = z.object({
   name: z.string().min(1),
-  image: z.string().nullable(),
+  image: z.string().url(),
 })
 
 type FormValue = z.infer<typeof formSchema>
@@ -29,7 +28,7 @@ interface EditEquipmentFormProps {
 
 export function EditEquipmentForm({ data, onSuccess }: EditEquipmentFormProps) {
   const isEdit = !!data
-  const defaultValue = { name: '', image: null }
+  const defaultValue = { name: '', image: 'https://placehold.co/600x400?text=example' }
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),
@@ -41,7 +40,7 @@ export function EditEquipmentForm({ data, onSuccess }: EditEquipmentFormProps) {
       : defaultValue,
   })
 
-  const muscleGroupMutation = useMutation({
+  const equipmentMutation = useMutation({
     mutationFn: (values: FormValue) => (isEdit ? updateEquipment(data.id, values) : createEquipment(values)),
     onSettled(data, error) {
       if (data?.status === 'success') {
@@ -54,7 +53,7 @@ export function EditEquipmentForm({ data, onSuccess }: EditEquipmentFormProps) {
   })
 
   const onSubmit = (values: FormValue) => {
-    muscleGroupMutation.mutate(values)
+    equipmentMutation.mutate(values)
   }
 
   return (
@@ -64,7 +63,7 @@ export function EditEquipmentForm({ data, onSuccess }: EditEquipmentFormProps) {
         <FormImageInputField form={form} name="image" label="Hình ảnh" />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
-            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={muscleGroupMutation.isPending} />
+            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={equipmentMutation.isPending} />
           )}
         </div>
       </form>

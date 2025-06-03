@@ -11,7 +11,7 @@ type SelectOption = {
 interface FormSelectFieldProps {
   form: UseFormReturn<any>
   name: string
-  data: SelectOption[]
+  data?: SelectOption[]
   label?: string
   description?: string
   withAsterisk?: boolean

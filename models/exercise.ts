@@ -4,17 +4,17 @@ import { MuscleGroup } from './muscle-group'
 type Exercise = {
   id: string
   name: string
-  description: string | null
+  description: string
   youtube_url: string
-  cover_image: string | null
-  thumbnail_image: string | null
+  cover_image: string
+  thumbnail_image: string
   muscle_groups: MuscleGroup[]
   equipments: Equipment[]
   created_at: string
   updated_at: string
 }
 
-type ExercisePayload = Pick<Exercise, 'name' | 'description' | 'youtube_url' | 'cover_image' | 'thumbnail_image'> & {
+type ExercisePayload = Omit<Exercise, 'id' | 'created_at' | 'updated_at' | 'muscle_groups' | 'equipments'> & {
   muscle_group_ids: MuscleGroup['id'][]
   equipment_ids: Equipment['id'][]
 }

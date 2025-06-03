@@ -1,7 +1,7 @@
 import React from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { getListDishes } from "@/network/server/dish"
+import { getListDishes } from "@/network/server/dishes"
 import { getDiets } from "@/network/server/diets"
 export default async function Food({ params }: { params: Promise<{ meal_id: string }> }) {
   const { meal_id } = await params
@@ -24,8 +24,8 @@ export default async function Food({ params }: { params: Promise<{ meal_id: stri
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
           {dish.data
-            ?.filter((item) => item.diet_id === Number(meal_id))
-            .map((item, index) => (
+            ?.filter((item) => item.diet && item.diet.id.toString() === meal_id)
+          .map((item, index) => (
               <Link href={`/gallery/meal/${meal_id}/${item.id}`} key={index}>
                 <div key={`menu-${index}`} className="text-xl">
                   <div className="relative group">

@@ -14,8 +14,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { FormInputField, FormSelectField, FormSwitchField, FormTextareaField } from './fields'
-import { DishFormFields, FormDishValues } from './create-dish-form'
-import { Diet } from '@/models/diets'
+// import { DishFormFields, FormValue } from './edit-dish-form'
+import { Diet } from '@/models/diet'
 import { getDiets } from '@/network/server/diets'
 import { useEffect, useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
@@ -713,11 +713,11 @@ export default function CreateMealPlanForm({ isEdit = false, data }: { isEdit: b
                                                 <h6 className="font-medium mb-4">Món ăn {dishIndex + 1}</h6>
 
                                                 <div className="space-y-8">
-                                                  <DishFormFields
+                                                  {/* <DishFormFields
                                                     form={form}
                                                     namePrefix={`days.${dayIndex}.dishes.${dishIndex}`}
                                                     isDishMealPlan={true}
-                                                  />
+                                                  /> */}
                                                 </div>
                                               </div>
                                             ))}

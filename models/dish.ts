@@ -1,18 +1,22 @@
-export type Dish = {
-  id: number
+import { Diet } from './diet'
+
+type Dish = {
+  id: string
   name: string
-  image: string
-  protein: number
-  fat: number
-  carb: number
-  fiber: number
-  calories: number
-  protein_source: string[]
-  vegetable: string[]
-  starch: string[]
-  spices: string[]
-  others: string[]
   description: string
-  diet_id: number
-  meal_time: string 
+  diet: Diet | null
+  image: string
+  calories: number
+  protein: number
+  carb: number
+  fat: number
+  fiber: number
+  created_at: string
+  updated_at: string
 }
+
+type DishPayload = Omit<Dish, 'id' | 'created_at' | 'updated_at' | 'diet'> & {
+  diet_id: Diet['id'] | null
+}
+
+export type { Dish, DishPayload }

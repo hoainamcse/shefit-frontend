@@ -83,7 +83,7 @@ export function getMenuList(pathname: string): Group[] {
               label: 'Thư viện bài tập',
             },
             {
-              href: '/admin/muscle-groups-and-equipments',
+              href: '/admin/muscle-groups-equipments',
               label: 'Nhóm cơ & dụng cụ',
             },
           ],

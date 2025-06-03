@@ -16,10 +16,10 @@ import { Form } from '../ui/form'
 // ! Follow ExercisePayload model in models/exercise.ts
 const formSchema = z.object({
   name: z.string().min(1),
-  description: z.string().nullable(),
+  description: z.string(),
   youtube_url: z.string().url(),
-  cover_image: z.string().url().nullable(),
-  thumbnail_image: z.string().url().nullable(),
+  cover_image: z.string().url(),
+  thumbnail_image: z.string().url(),
   muscle_group_ids: z.array(z.string()),
   equipment_ids: z.array(z.string()),
 })
@@ -35,10 +35,10 @@ export function EditExerciseForm({ data, onSuccess }: EditExerciseFormProps) {
   const isEdit = !!data
   const defaultValue = {
     name: '',
-    description: '', // ! Except textarea, if nullable, use empty string
+    description: '',
     youtube_url: '',
-    cover_image: null,
-    thumbnail_image: null,
+    cover_image: 'https://placehold.co/600x400?text=example',
+    thumbnail_image: 'https://placehold.co/600x400?text=example',
     muscle_group_ids: [],
     equipment_ids: [],
   }

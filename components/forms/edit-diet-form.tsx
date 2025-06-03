@@ -6,29 +6,30 @@ import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { createMuscleGroup, updateMuscleGroup } from '@/network/client/muscle-groups'
-import { MuscleGroup } from '@/models/muscle-group'
+import { createDiet, updateDiet } from '@/network/client/diets'
+import { Diet } from '@/models/diet'
 
-import { FormImageInputField, FormInputField } from './fields'
+import { FormImageInputField, FormInputField, FormTextareaField } from './fields'
 import { MainButton } from '../buttons/main-button'
 import { Form } from '../ui/form'
 
-// ! Follow MuscleGroupPayload model in models/muscle-group.ts
+// ! Follow DietPayload model in models/diet.ts
 const formSchema = z.object({
   name: z.string().min(1),
   image: z.string().url(),
+  description: z.string(),
 })
 
 type FormValue = z.infer<typeof formSchema>
 
-interface EditMuscleGroupFormProps {
-  data?: MuscleGroup | null
+interface EditDietFormProps {
+  data?: Diet | null
   onSuccess?: () => void
 }
 
-export function EditMuscleGroupForm({ data, onSuccess }: EditMuscleGroupFormProps) {
+export function EditDietForm({ data, onSuccess }: EditDietFormProps) {
   const isEdit = !!data
-  const defaultValue = { name: '', image: 'https://placehold.co/600x400?text=example' }
+  const defaultValue = { name: '', image: 'https://placehold.co/600x400?text=example', description: '' }
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),
@@ -36,15 +37,16 @@ export function EditMuscleGroupForm({ data, onSuccess }: EditMuscleGroupFormProp
       ? {
           name: data.name,
           image: data.image,
+          description: data.description,
         }
       : defaultValue,
   })
 
-  const muscleGroupMutation = useMutation({
-    mutationFn: (values: FormValue) => (isEdit ? updateMuscleGroup(data.id, values) : createMuscleGroup(values)),
+  const dietMutation = useMutation({
+    mutationFn: (values: FormValue) => (isEdit ? updateDiet(data.id, values) : createDiet(values)),
     onSettled(data, error) {
       if (data?.status === 'success') {
-        toast.success(isEdit ? 'Cập nhật nhóm cơ thành công' : 'Tạo nhóm cơ thành công')
+        toast.success(isEdit ? 'Cập nhật chế độ ăn thành công' : 'Tạo chế độ ăn thành công')
         onSuccess?.()
       } else {
         toast.error(error?.message || 'Đã có lỗi xảy ra')
@@ -53,17 +55,18 @@ export function EditMuscleGroupForm({ data, onSuccess }: EditMuscleGroupFormProp
   })
 
   const onSubmit = (values: FormValue) => {
-    muscleGroupMutation.mutate(values)
+    dietMutation.mutate(values)
   }
 
   return (
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-        <FormInputField form={form} name="name" label="Tên nhóm cơ" withAsterisk placeholder="Nhập tên nhóm cơ" />
+        <FormInputField form={form} name="name" label="Tên chế độ ăn" withAsterisk placeholder="Nhập tên chế độ ăn" />
+        <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
         <FormImageInputField form={form} name="image" label="Hình ảnh" />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
-            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={muscleGroupMutation.isPending} />
+            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={dietMutation.isPending} />
           )}
         </div>
       </form>

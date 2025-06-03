@@ -1,10 +1,13 @@
 type Calorie = {
-    id: number
-    name: string
-    description: string
-    created_at: string
-    updated_at: string
-    max_calorie: number
+  id: number
+  name: string
+  description: string
+  created_at: string
+  updated_at: string
+  // ? Need clarify
+  max_calorie: number
 }
 
-export type { Calorie }
+type CaloriePayload = Omit<Calorie, 'id' | 'created_at' | 'updated_at' | 'max_calorie'>
+
+export type { Calorie, CaloriePayload }

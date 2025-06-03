@@ -1,5 +1,5 @@
 import React from "react"
-import { getDetailDish } from "@/network/server/dish"
+import { getDetailDish } from "@/network/server/dishes"
 export default async function MealDetail({ params }: { params: Promise<{ dish_id: string; meal_id: string }> }) {
   const resolvedParams = await params
   const { dish_id } = resolvedParams

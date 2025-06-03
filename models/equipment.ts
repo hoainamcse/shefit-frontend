@@ -1,11 +1,11 @@
 type Equipment = {
   id: string
   name: string
-  image: string | null
+  image: string
   created_at: string
   updated_at: string
 }
 
-type EquipmentPayload = Pick<Equipment, 'name' | 'image'>
+type EquipmentPayload = Omit<Equipment, 'id' | 'created_at' | 'updated_at'>
 
 export type { Equipment, EquipmentPayload }
