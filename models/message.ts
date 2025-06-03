@@ -5,5 +5,5 @@ export type Message = {
   content_type: string;
   created_at: string;
   updated_at: string;
-  isTyping?: boolean;
+  status?: string;
 };

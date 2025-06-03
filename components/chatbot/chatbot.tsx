@@ -10,7 +10,6 @@ import {
   Star,
   X,
 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
 import { fetchData } from '@/network/helpers/fetch-data';
 import { getConversationHistory } from '@/network/server/chatbot';
@@ -34,16 +33,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { MainButton } from '../buttons/main-button';
 import { cn } from '@/lib/utils';
+import BotMessage from './bot-message';
 
 const formSchema = z.object({
   message: z.string(),
 });
 
 const LIMIT_MESSAGES_PER_OFFSET = 10;
-const FOLLOW_UP_MESSAGES = [
-  'Chị muốn chọn giữa các thực đơn có sẵn của Shefit hay chị muốn em lên thực đơn mới? \n- Chọn thực đơn có sẵn\n- Tạo thực đơn theo ý chị\n',
-  'Chị muốn chọn khóa tập có sẵn hay tạo khóa tập mới?\n- Chọn khóa tập có sẵn\n- Tạo khóa tập mới\n',
-];
 
 interface ChatBotFormValues {
   message: string;
@@ -76,16 +72,6 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
       message: '',
     },
   });
-
-  const removeOptionsMessage = (text: string) => {
-    for (const msg of FOLLOW_UP_MESSAGES) {
-      if (text.includes(msg)) {
-        const trimmed = msg.split('\n')[0]; // Lấy phần trước \n
-        return text.replace(msg, trimmed); // Thay toàn bộ msg bằng phần đã rút gọn
-      }
-    }
-    return text;
-  };
 
   const getParams = () => {
     const params = [
@@ -263,10 +249,11 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
           content_type: 'text',
           created_at: format(new Date(), 'dd/MM/yyyy HH:mm'),
           updated_at: format(new Date(), 'dd/MM/yyyy HH:mm'),
+          status: 'is_new',
         };
 
         setMessages((prev) => [botResponse, ...prev]);
-        typeMessage(responseString, botMessageId);
+        // typeMessage(responseString, botMessageId);
       } catch (err) {
         if (isReSend) {
           setIdOfMessageGotError(messages[0]?.id); // If re-send message failed again, show error message of the newest message
@@ -387,13 +374,13 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
               {isLoading && (
                 <div className='flex items-start gap-3 mt-2'>
                   <Avatar className='w-8 h-8 mt-1'>
-                    <AvatarFallback className='bg-black text-white text-xs font-semibold'>
+                    <AvatarFallback className='bg-primary text-white text-xs font-semibold'>
                       R
                     </AvatarFallback>
                   </Avatar>
                   <div className='flex-1'>
                     <div className='font-medium text-sm text-gray-900 mb-1'>
-                      Shefit
+                      Shefit.vn
                     </div>
                     <div className='bg-gray-100 text-gray-800 rounded-lg text-sm inline-block'>
                       <TypingIndicator />
@@ -403,13 +390,13 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
               )}
 
               {messages?.map((message, index) => (
-                <div key={message.id} className='flex items-start gap-3'>
+                <div key={index} className='flex items-start gap-3'>
                   {message.role === 'user' ? (
                     <div className='w-full flex flex-col'>
                       <div className='flex justify-end w-full gap-3 mt-2 self-end max-w-[90%]'>
                         <div className='flex flex-col items-end'>
                           <div className='font-medium text-sm text-gray-900 mb-1'>
-                            Nhân viên
+                            Bạn
                           </div>
                           <div className='flex flex-col bg-blue-100 rounded-lg px-3 py-2 inline-block w-fit'>
                             <div className='self-end text-blue-900 text-sm w-fit'>
@@ -444,39 +431,20 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
                   ) : (
                     <div className='flex justify-start w-full gap-3 mt-2'>
                       <Avatar className='w-8 h-8 mt-1'>
-                        <AvatarFallback className='bg-black text-white text-xs font-semibold'>
+                        <AvatarFallback className='bg-primary text-white text-xs font-semibold'>
                           S
                         </AvatarFallback>
                       </Avatar>
                       <div className='flex-1'>
                         <div className='font-medium text-sm text-gray-900 mb-1'>
-                          Shefit
+                          Shefit.vn
                         </div>
 
-                        <div className='bg-gray-100 text-gray-800 px-3 py-2 rounded-lg text-sm w-fit max-w-[90%]'>
-                          <ReactMarkdown
-                            components={{
-                              ul: (props) => (
-                                <ul className='list-disc pl-5' {...props} />
-                              ),
-                              ol: (props) => (
-                                <ol className='list-decimal pl-5' {...props} />
-                              ),
-                            }}
-                          >
-                            {removeOptionsMessage(message.content)}
-                          </ReactMarkdown>
-                          <p className='text-xs mt-1 text-gray-500'>
-                            {message.created_at}
-                          </p>
-                        </div>
-
-                        {index === 0 && !message.isTyping && (
-                          <FastMessageOptions
-                            message={message.content}
-                            sendMessage={sendMessage}
-                          />
-                        )}
+                        <BotMessage
+                          message={message}
+                          isNewestMessage={index === 0}
+                          sendMessage={sendMessage}
+                        />
                       </div>
                     </div>
                   )}
@@ -605,49 +573,5 @@ const TypingIndicator = () => {
         ></div>
       </div>
     </div>
-  );
-};
-
-const FastMessageOptions = ({
-  message,
-  sendMessage,
-}: {
-  message: string;
-  sendMessage: (
-    messageValue?: string,
-    isUsingOption?: boolean,
-    isReSend?: boolean
-  ) => void;
-}) => {
-  const extractOptions = (text: string) => {
-    return text
-      .split('\n')
-      .filter((line) => line.startsWith('- '))
-      .map((line) => line.slice(2).trim());
-  };
-
-  const followUpMessage = FOLLOW_UP_MESSAGES.find((item) =>
-    message.includes(item)
-  );
-
-  const options = followUpMessage ? extractOptions(followUpMessage) : [];
-
-  return options.length > 0 ? (
-    <div className='flex flex-col gap-2 mt-3 mb-2'>
-      <Separator />
-
-      {options.map((option, index) => (
-        <Button
-          key={`option-${index}`}
-          className='whitespace-normal justify-start h-fit py-1.5 px-3 rounded-lg'
-          variant='outline'
-          onClick={() => sendMessage(option, true, false)}
-        >
-          {option}
-        </Button>
-      ))}
-    </div>
-  ) : (
-    <></>
   );
 };
