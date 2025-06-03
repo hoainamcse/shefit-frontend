@@ -20,7 +20,7 @@ import { Card, CardContent } from '../ui/card'
 import { Subscription } from '@/models/subscription-admin'
 import { string } from 'zod'
 import { FormImageInputField } from './fields/form-image-input-field'
-import { FormMultiSelectField, FormSelectField } from './fields'
+import { FormInputField, FormMultiSelectField, FormSelectField } from './fields'
 import { useRouter } from 'next/navigation'
 import { createSubscription, updateSubscription } from '@/network/server/subscriptions-admin'
 import { createGift } from '@/network/server/gifts'
@@ -28,6 +28,7 @@ import { updateGift } from '@/network/server/gifts'
 import { updateSubscriptionPrice } from '@/network/server/subscriptions-admin'
 import { getCourses } from '@/network/server/courses-admin'
 import { useAuth } from '../providers/auth-context'
+import { RichTextEditor } from './fields/rich-text-editor'
 // Define the form schema
 const formSchema = z.object({
   name: z.string().min(3, {
@@ -37,12 +38,14 @@ const formSchema = z.object({
     required_error: 'Vui lòng chọn loại hình.',
   }),
   course_ids: z.array(z.string()).optional(),
+  meal_plan_ids: z.array(z.string()).optional(),
   description_1: z.string().min(10, {
     message: 'Mô tả phải có ít nhất 10 ký tự.',
   }),
   description_2: z.string().min(10, {
     message: 'Mô tả phải có ít nhất 10 ký tự.',
   }),
+  result_checkup: z.string().optional(),
   cover_image: z.string().optional(),
   thumbnail_image: z.string().optional(),
   gifts: z
@@ -240,18 +243,12 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
         <CardContent className="pt-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
+              <FormInputField
+                form={form}
                 name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tên gói</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Nhập tên gói thành viên" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Tên gói"
+                placeholder="Nhập tên gói thành viên"
+                withAsterisk
               />
 
               <FormSelectField
@@ -263,41 +260,46 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                 withAsterisk
               />
 
-              <FormMultiSelectField
+              <RichTextEditor
                 form={form}
-                name="course_ids"
-                label="Danh sách khoá tập"
-                data={AVAILABLE_COURSES}
-                placeholder="Chọn khoá tập"
+                name="description_1"
+                label="Thông tin tóm tắt gói"
+                placeholder="Nhập thông tin tóm tắt gói"
                 withAsterisk
               />
 
-              <FormField
-                control={form.control}
-                name="description_1"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mô tả 1</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Nhập mô tả đầu tiên" className="min-h-[100px]" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <RichTextEditor
+                form={form}
+                name="description_2"
+                label="Thông tin chi tiết gói"
+                placeholder="Nhập thông tin chi tiết gói"
+                withAsterisk
               />
 
-              <FormField
-                control={form.control}
-                name="description_2"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mô tả 2</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Nhập mô tả thứ hai" className="min-h-[100px]" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <FormMultiSelectField
+                form={form}
+                name="course_ids"
+                label="Khoá tập IDs"
+                data={[]}
+                placeholder="Khoá tập"
+                withAsterisk
+              />
+
+              <FormMultiSelectField
+                form={form}
+                name="meal_plan_ids"
+                label="Thực đơn IDs"
+                data={[]}
+                placeholder="Thực đơn"
+                withAsterisk
+              />
+
+              <RichTextEditor
+                form={form}
+                name="result_checkup"
+                label="Theo dõi kết quả"
+                placeholder="Nhập thông tin theo dõi kết quả"
+                withAsterisk
               />
 
               {/* {data?.cover_image && (

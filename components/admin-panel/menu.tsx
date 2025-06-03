@@ -28,7 +28,9 @@ export function Menu({ isOpen }: MenuProps) {
         (item.label !== 'Blog' &&
           item.label !== 'E-commerce' &&
           item.label !== 'Content Input' &&
-          item.label !== 'Body quiz')
+          item.label !== 'Body quiz' &&
+          item.label !== 'Bài viết' &&
+          item.label !== 'Huấn luyện viên')
     ),
   }))
 

@@ -3,10 +3,11 @@
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { ColumnDef, DataTable } from '@/components/data-table'
 import { Button } from '@/components/ui/button'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { FormInputField, FormMultiSelectField, FormSelectField } from '@/components/forms/fields'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Trash2 } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { AddButton } from '@/components/buttons/add-button'
 import { useTransition } from 'react'
@@ -85,6 +86,11 @@ const accountSchema = z.object({
         plan_id: z.coerce.number().optional(),
         order_number: z.string(),
         total_price: z.coerce.number(),
+        // Assigned items per subscription
+        // course_ids: z.array(z.coerce.string()).default([]),
+        // meal_plan_ids: z.array(z.coerce.string()).default([]),
+        // dish_ids: z.array(z.coerce.string()).default([]),
+        // exercise_ids: z.array(z.coerce.string()).default([]),
       })
     )
     .optional(),
@@ -163,6 +169,9 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
   } = useFieldArray({ control, name: 'subscriptions', keyName: 'fieldId' })
 
   const watchedSubscriptions = form.watch('subscriptions')
+
+  console.log('watchedSubscriptions', watchedSubscriptions)
+  console.log('membershipList', membershipList)
 
   useEffect(() => {
     const fetchFilteredCourses = async () => {
@@ -583,6 +592,11 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       subscription_end_at: '',
       order_number: '',
       total_price: 0,
+      // Initialize assigned items arrays
+      course_ids: [],
+      meal_plan_ids: [],
+      dish_ids: [],
+      exercise_ids: [],
     }
 
     appendSubscription(newPackage)
@@ -639,186 +653,186 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     return Math.round((diffDays + 1) / 35) // 35 days per month
   }
 
-  const accountMembershipColumns: ColumnDef<UserSubscriptionField>[] = useMemo(
-    () => [
-      {
-        accessorKey: 'subscription_id',
-        header: 'Tên gói membership',
-        render: ({ row }) => {
-          const isExistingRecord = Boolean(row.id) && row.id! > 0
+  // const accountMembershipColumns: ColumnDef<UserSubscriptionField>[] = useMemo(
+  //   () => [
+  //     {
+  //       accessorKey: 'subscription_id',
+  //       header: 'Tên gói membership',
+  //       render: ({ row }) => {
+  //         const isExistingRecord = Boolean(row.id) && row.id! > 0
 
-          return (
-            <Select
-              value={row.subscription_id?.toString() || ''}
-              disabled={isExistingRecord}
-              onValueChange={(value: string) => {
-                const idx = subscriptions.findIndex((s) => s.fieldId === row.fieldId)
-                const courseFormat = membershipList.find((m) => m.id === Number(value))?.course_format
-                if (idx !== -1)
-                  updateSubscription(idx, {
-                    ...row,
-                    subscription_id: Number(value),
-                    subscription_end_at: '',
-                    plan_id: undefined,
-                    course_format: courseFormat || '',
-                  })
-              }}
-            >
-              <SelectTrigger className={isExistingRecord ? 'cursor-not-allowed opacity-70' : ''}>
-                <SelectValue placeholder="Chọn gói membership" />
-              </SelectTrigger>
-              <SelectContent>
-                {membershipList.map((m) => {
-                  // Check if this membership is already selected in another row
-                  const isAlreadySelected = subscriptions.some((sub) => sub.subscription_id === m.id)
+  //         return (
+  //           <Select
+  //             value={row.subscription_id?.toString() || ''}
+  //             disabled={isExistingRecord}
+  //             onValueChange={(value: string) => {
+  //               const idx = subscriptions.findIndex((s) => s.fieldId === row.fieldId)
+  //               const courseFormat = membershipList.find((m) => m.id === Number(value))?.course_format
+  //               if (idx !== -1)
+  //                 updateSubscription(idx, {
+  //                   ...row,
+  //                   subscription_id: Number(value),
+  //                   subscription_end_at: '',
+  //                   plan_id: undefined,
+  //                   course_format: courseFormat || '',
+  //                 })
+  //             }}
+  //           >
+  //             <SelectTrigger className={isExistingRecord ? 'cursor-not-allowed opacity-70' : ''}>
+  //               <SelectValue placeholder="Chọn gói membership" />
+  //             </SelectTrigger>
+  //             <SelectContent>
+  //               {membershipList.map((m) => {
+  //                 // Check if this membership is already selected in another row
+  //                 const isAlreadySelected = subscriptions.some((sub) => sub.subscription_id === m.id)
 
-                  return (
-                    <SelectItem key={m.id} value={m.id.toString()} disabled={isAlreadySelected}>
-                      {m.name}
-                    </SelectItem>
-                  )
-                })}
-              </SelectContent>
-            </Select>
-          )
-        },
-      },
+  //                 return (
+  //                   <SelectItem key={m.id} value={m.id.toString()} disabled={isAlreadySelected}>
+  //                     {m.name}
+  //                   </SelectItem>
+  //                 )
+  //               })}
+  //             </SelectContent>
+  //           </Select>
+  //         )
+  //       },
+  //     },
 
-      {
-        accessorKey: 'plan_id',
-        header: 'Thời gian (tháng)',
-        render: ({ row }) => {
-          const membership = membershipList.find((m) => m.id === row.subscription_id)
-          const plans = membership?.prices || []
+  //     {
+  //       accessorKey: 'plan_id',
+  //       header: 'Thời gian (tháng)',
+  //       render: ({ row }) => {
+  //         const membership = membershipList.find((m) => m.id === row.subscription_id)
+  //         const plans = membership?.prices || []
 
-          return (
-            <Select
-              value={row.plan_id?.toString() || ''}
-              disabled={!row.subscription_id || !row.subscription_start_at}
-              onValueChange={(value: string) => {
-                const planId = value ? Number(value) : 0
-                const selectedPlan = plans.find((p) => p.id === planId)
+  //         return (
+  //           <Select
+  //             value={row.plan_id?.toString() || ''}
+  //             disabled={!row.subscription_id || !row.subscription_start_at}
+  //             onValueChange={(value: string) => {
+  //               const planId = value ? Number(value) : 0
+  //               const selectedPlan = plans.find((p) => p.id === planId)
 
-                if (selectedPlan && row.subscription_start_at) {
-                  const endDate = addDaysForMonths(new Date(row.subscription_start_at), selectedPlan.duration)
-                  const idx = subscriptions.findIndex((s) => s.fieldId === row.fieldId)
-                  if (idx !== -1)
-                    updateSubscription(idx, {
-                      ...row,
-                      plan_id: planId,
-                      subscription_end_at: formatDate(endDate),
-                    })
-                }
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Chọn thời gian gói" />
-              </SelectTrigger>
-              <SelectContent>
-                {plans.map((plan) => (
-                  <SelectItem key={plan.id} value={plan.id.toString()}>
-                    {plan.duration} tháng - {plan.price.toLocaleString('vi-VN')}đ
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )
-        },
-      },
-      {
-        accessorKey: 'subscription_start_at',
-        header: 'Ngày bắt đầu',
-        render: ({ row }) => {
-          const startDate = row.subscription_start_at ? formatDate(row.subscription_start_at) : ''
+  //               if (selectedPlan && row.subscription_start_at) {
+  //                 const endDate = addDaysForMonths(new Date(row.subscription_start_at), selectedPlan.duration)
+  //                 const idx = subscriptions.findIndex((s) => s.fieldId === row.fieldId)
+  //                 if (idx !== -1)
+  //                   updateSubscription(idx, {
+  //                     ...row,
+  //                     plan_id: planId,
+  //                     subscription_end_at: formatDate(endDate),
+  //                   })
+  //               }
+  //             }}
+  //           >
+  //             <SelectTrigger>
+  //               <SelectValue placeholder="Chọn thời gian gói" />
+  //             </SelectTrigger>
+  //             <SelectContent>
+  //               {plans.map((plan) => (
+  //                 <SelectItem key={plan.id} value={plan.id.toString()}>
+  //                   {plan.duration} tháng - {plan.price.toLocaleString('vi-VN')}đ
+  //                 </SelectItem>
+  //               ))}
+  //             </SelectContent>
+  //           </Select>
+  //         )
+  //       },
+  //     },
+  //     {
+  //       accessorKey: 'subscription_start_at',
+  //       header: 'Ngày bắt đầu',
+  //       render: ({ row }) => {
+  //         const startDate = row.subscription_start_at ? formatDate(row.subscription_start_at) : ''
 
-          return (
-            <input
-              type="date"
-              value={startDate}
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors"
-              onChange={(e) => {
-                const newStartDate = e.target.value
-                const idx = subscriptions.findIndex((s) => s.fieldId === row.fieldId)
-                if (idx !== -1) {
-                  const updatedRow: any = { ...row, subscription_start_at: newStartDate }
-                  if (row.plan_id) {
-                    const membership = membershipList.find((m) => m.id === row.subscription_id)
-                    const selectedPlan = membership?.prices.find((p) => p.id === row.plan_id)
-                    if (selectedPlan) {
-                      updatedRow.subscription_end_at = formatDate(
-                        addDaysForMonths(new Date(newStartDate), selectedPlan.duration)
-                      )
-                    }
-                  }
-                  updateSubscription(idx, updatedRow)
-                }
-              }}
-            />
-          )
-        },
-      },
-      {
-        accessorKey: 'subscription_end_at',
-        header: 'Ngày kết thúc',
-        render: ({ row }) => (
-          <input
-            type="date"
-            value={row.subscription_end_at || ''}
-            readOnly
-            disabled
-            className="flex h-9 w-full rounded-md border border-input bg-muted px-3 py-1 text-sm shadow-sm transition-colors cursor-not-allowed"
-          />
-        ),
-      },
-      {
-        accessorKey: 'gift_id',
-        header: 'Quà tặng',
-        render: ({ row }) => {
-          const gifts = membershipList.find((m) => m.id === row.subscription_id)?.gifts || []
+  //         return (
+  //           <input
+  //             type="date"
+  //             value={startDate}
+  //             className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors"
+  //             onChange={(e) => {
+  //               const newStartDate = e.target.value
+  //               const idx = subscriptions.findIndex((s) => s.fieldId === row.fieldId)
+  //               if (idx !== -1) {
+  //                 const updatedRow: any = { ...row, subscription_start_at: newStartDate }
+  //                 if (row.plan_id) {
+  //                   const membership = membershipList.find((m) => m.id === row.subscription_id)
+  //                   const selectedPlan = membership?.prices.find((p) => p.id === row.plan_id)
+  //                   if (selectedPlan) {
+  //                     updatedRow.subscription_end_at = formatDate(
+  //                       addDaysForMonths(new Date(newStartDate), selectedPlan.duration)
+  //                     )
+  //                   }
+  //                 }
+  //                 updateSubscription(idx, updatedRow)
+  //               }
+  //             }}
+  //           />
+  //         )
+  //       },
+  //     },
+  //     {
+  //       accessorKey: 'subscription_end_at',
+  //       header: 'Ngày kết thúc',
+  //       render: ({ row }) => (
+  //         <input
+  //           type="date"
+  //           value={row.subscription_end_at || ''}
+  //           readOnly
+  //           disabled
+  //           className="flex h-9 w-full rounded-md border border-input bg-muted px-3 py-1 text-sm shadow-sm transition-colors cursor-not-allowed"
+  //         />
+  //       ),
+  //     },
+  //     {
+  //       accessorKey: 'gift_id',
+  //       header: 'Quà tặng',
+  //       render: ({ row }) => {
+  //         const gifts = membershipList.find((m) => m.id === row.subscription_id)?.gifts || []
 
-          return (
-            <Select
-              value={row.gift_id?.toString() || ''}
-              disabled={!row.subscription_id}
-              onValueChange={(value: string) => {
-                const idx = subscriptions.findIndex((s) => s.fieldId === row.fieldId)
-                if (idx !== -1) updateSubscription(idx, { ...row, gift_id: value ? Number(value) : 0 })
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Chọn quà tặng" />
-              </SelectTrigger>
-              <SelectContent>
-                {gifts.map((g) => (
-                  <SelectItem key={g.id} value={g.id.toString()}>
-                    {g.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )
-        },
-      },
-      {
-        accessorKey: 'actions',
-        header: '',
-        render: ({ row }) => (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              const idx = subscriptions.findIndex((s) => s.fieldId === row.fieldId)
-              if (idx !== -1) removeSubscription(idx)
-            }}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        ),
-      },
-    ],
-    [membershipList, subscriptions]
-  )
+  //         return (
+  //           <Select
+  //             value={row.gift_id?.toString() || ''}
+  //             disabled={!row.subscription_id}
+  //             onValueChange={(value: string) => {
+  //               const idx = subscriptions.findIndex((s) => s.fieldId === row.fieldId)
+  //               if (idx !== -1) updateSubscription(idx, { ...row, gift_id: value ? Number(value) : 0 })
+  //             }}
+  //           >
+  //             <SelectTrigger>
+  //               <SelectValue placeholder="Chọn quà tặng" />
+  //             </SelectTrigger>
+  //             <SelectContent>
+  //               {gifts.map((g) => (
+  //                 <SelectItem key={g.id} value={g.id.toString()}>
+  //                   {g.name}
+  //                 </SelectItem>
+  //               ))}
+  //             </SelectContent>
+  //           </Select>
+  //         )
+  //       },
+  //     },
+  //     {
+  //       accessorKey: 'actions',
+  //       header: '',
+  //       render: ({ row }) => (
+  //         <Button
+  //           type="button"
+  //           variant="ghost"
+  //           size="icon"
+  //           onClick={() => {
+  //             const idx = subscriptions.findIndex((s) => s.fieldId === row.fieldId)
+  //             if (idx !== -1) removeSubscription(idx)
+  //           }}
+  //         >
+  //           <Trash2 className="h-4 w-4" />
+  //         </Button>
+  //       ),
+  //     },
+  //   ],
+  //   [membershipList, subscriptions]
+  // )
 
   if (isLoading) {
     return (
@@ -898,13 +912,294 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
 
           {/* Membership Packages */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Gói membership</h2>
-            <DataTable
-              data={subscriptions}
-              columns={accountMembershipColumns}
-              searchPlaceholder="Tìm kiếm gói membership"
-              headerExtraContent={membershipHeaderExtraContent}
-            />
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Gói membership</h2>
+              <AddButton
+                type="button"
+                disabled={subscriptions.some((sub) => !sub.subscription_id || !sub.plan_id)}
+                text="Thêm gói membership"
+                onClick={handleAddMembershipPackage}
+              />
+            </div>
+
+            {subscriptions.length === 0 ? (
+              <div className="rounded-md border flex flex-col items-center justify-center h-32 text-center p-4 text-muted-foreground">
+                <p>Chưa có gói membership nào được thêm</p>
+                <Button type="button" variant="outline" className="mt-2" onClick={handleAddMembershipPackage}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Thêm gói membership
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {subscriptions.map((subscription, idx) => {
+                  const isExistingRecord = Boolean(subscription.id) && subscription.id! > 0
+                  const membership = membershipList.find((m) => m.id === subscription.subscription_id)
+                  const plans = membership?.prices || []
+                  const gifts = membership?.gifts || []
+
+                  return (
+                    <div key={subscription.fieldId} className="rounded-md border p-4 bg-muted/10">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="font-medium">{membership?.name || `Gói membership #${idx + 1}`}</h3>
+                        <Button type="button" variant="ghost" size="icon" onClick={() => removeSubscription(idx)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      {/* Membership Details Section */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        {/* Subscription Select */}
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Tên gói membership</label>
+                          <Select
+                            value={subscription.subscription_id?.toString() || ''}
+                            disabled={isExistingRecord}
+                            onValueChange={(value: string) => {
+                              const courseFormat = membershipList.find((m) => m.id === Number(value))?.course_format
+                              updateSubscription(idx, {
+                                ...subscription,
+                                subscription_id: Number(value),
+                                subscription_end_at: '',
+                                plan_id: undefined,
+                                course_format: courseFormat || '',
+                              })
+                            }}
+                          >
+                            <SelectTrigger className={isExistingRecord ? 'cursor-not-allowed opacity-70' : ''}>
+                              <SelectValue placeholder="Chọn gói membership" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {membershipList.map((m) => {
+                                // Check if this membership is already selected in another row
+                                const isAlreadySelected = subscriptions.some(
+                                  (sub, subIdx) => subIdx !== idx && sub.subscription_id === m.id
+                                )
+
+                                return (
+                                  <SelectItem key={m.id} value={m.id.toString()} disabled={isAlreadySelected}>
+                                    {m.name}
+                                  </SelectItem>
+                                )
+                              })}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Plan Select */}
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Thời gian (tháng)</label>
+                          <Select
+                            value={subscription.plan_id?.toString() || ''}
+                            disabled={!subscription.subscription_id || !subscription.subscription_start_at}
+                            onValueChange={(value: string) => {
+                              const planId = value ? Number(value) : 0
+                              const selectedPlan = plans.find((p) => p.id === planId)
+
+                              if (selectedPlan && subscription.subscription_start_at) {
+                                const endDate = addDaysForMonths(
+                                  new Date(subscription.subscription_start_at),
+                                  selectedPlan.duration
+                                )
+                                updateSubscription(idx, {
+                                  ...subscription,
+                                  plan_id: planId,
+                                  subscription_end_at: formatDate(endDate),
+                                })
+                              }
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Chọn thời gian gói" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {plans.map((plan) => (
+                                <SelectItem key={plan.id} value={plan.id.toString()}>
+                                  {plan.duration} tháng - {plan.price.toLocaleString('vi-VN')}đ
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Start Date */}
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Ngày bắt đầu</label>
+                          <input
+                            type="date"
+                            value={
+                              subscription.subscription_start_at ? formatDate(subscription.subscription_start_at) : ''
+                            }
+                            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors"
+                            onChange={(e) => {
+                              const newStartDate = e.target.value
+                              const updatedRow: any = { ...subscription, subscription_start_at: newStartDate }
+
+                              if (subscription.plan_id) {
+                                const selectedPlan = plans.find((p) => p.id === subscription.plan_id)
+                                if (selectedPlan) {
+                                  updatedRow.subscription_end_at = formatDate(
+                                    addDaysForMonths(new Date(newStartDate), selectedPlan.duration)
+                                  )
+                                }
+                              }
+                              updateSubscription(idx, updatedRow)
+                            }}
+                          />
+                        </div>
+
+                        {/* End Date */}
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Ngày kết thúc</label>
+                          <input
+                            type="date"
+                            value={subscription.subscription_end_at || ''}
+                            readOnly
+                            disabled
+                            className="flex h-9 w-full rounded-md border border-input bg-muted px-3 py-1 text-sm shadow-sm transition-colors cursor-not-allowed"
+                          />
+                        </div>
+
+                        {/* Gift Select */}
+                        <div className="space-y-2 md:col-span-2">
+                          <label className="text-sm font-medium">Quà tặng</label>
+                          <Select
+                            value={subscription.gift_id?.toString() || ''}
+                            disabled={!subscription.subscription_id}
+                            onValueChange={(value: string) => {
+                              updateSubscription(idx, {
+                                ...subscription,
+                                gift_id: value ? Number(value) : undefined,
+                              })
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Chọn quà tặng" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {gifts.map((g) => (
+                                <SelectItem key={g.id} value={g.id.toString()}>
+                                  {g.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      {/* Assigned Items Section as Accordion */}
+                      {/* {userRole !== 'sub_admin' && (
+                        <div className="mt-6 border-t pt-4">
+                          <Accordion type="single" collapsible className="w-full">
+                            <AccordionItem value="assigned-items">
+                              <AccordionTrigger className="font-medium py-2">
+                                Gán khóa học, thực đơn cho gói membership này
+                              </AccordionTrigger>
+                              <AccordionContent>
+                                <div className="rounded-md bg-muted/20 p-4 space-y-6 mt-2">
+                                  <div className="space-y-2">
+                                    <h5 className="text-sm font-medium">Khóa học</h5>
+                                    <FormField
+                                      control={form.control}
+                                      name={`subscriptions.${idx}.course_ids`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormControl>
+                                            <FormMultiSelectField
+                                              form={form}
+                                              name={`subscriptions.${idx}.course_ids`}
+                                              label=""
+                                              data={[]}
+                                              placeholder="Chọn khóa học để gán cho gói membership này"
+                                              key={`course-select-${idx}-${field.value?.length || 0}`}
+                                            />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <h5 className="text-sm font-medium">Thực đơn</h5>
+                                    <FormField
+                                      control={form.control}
+                                      name={`subscriptions.${idx}.meal_plan_ids`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormControl>
+                                            <FormMultiSelectField
+                                              form={form}
+                                              name={`subscriptions.${idx}.meal_plan_ids`}
+                                              label=""
+                                              data={[]}
+                                              placeholder="Chọn thực đơn để gán cho gói membership này"
+                                              key={`meal-plan-select-${idx}-${field.value?.length || 0}`}
+                                            />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <h5 className="text-sm font-medium">Bài tập</h5>
+                                    <FormField
+                                      control={form.control}
+                                      name={`subscriptions.${idx}.exercise_ids`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormControl>
+                                            <FormMultiSelectField
+                                              form={form}
+                                              name={`subscriptions.${idx}.exercise_ids`}
+                                              label=""
+                                              data={[]}
+                                              placeholder="Chọn bài tập để gán cho gói membership này"
+                                              key={`exercise-select-${idx}-${field.value?.length || 0}`}
+                                            />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <h5 className="text-sm font-medium">Món ăn</h5>
+                                    <FormField
+                                      control={form.control}
+                                      name={`subscriptions.${idx}.dish_ids`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormControl>
+                                            <FormMultiSelectField
+                                              form={form}
+                                              name={`subscriptions.${idx}.dish_ids`}
+                                              label=""
+                                              data={[]}
+                                              placeholder="Chọn món ăn để gán cho gói membership này"
+                                              key={`dish-select-${idx}-${field.value?.length || 0}`}
+                                            />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                  </div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                        </div>
+                      )} */}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
             {errors.subscriptions && (
               <div className="text-sm text-red-500 space-y-1 mt-2 p-2 border border-red-200 rounded bg-red-50">
                 {errors.subscriptions?.message && <p className="font-medium"> {errors.subscriptions.message}</p>}
@@ -912,49 +1207,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
             )}
           </div>
 
-          {/* Assigned Items */}
-          {userRole !== 'sub_admin' && (
-            <div className="space-y-8">
-              <h2 className="text-lg font-semibold">Gán khóa học, thực đơn cho học viên</h2>
-              <div className="space-y-4">
-                <FormMultiSelectField
-                  form={form}
-                  name="course_ids"
-                  label="Khóa học"
-                  data={courses}
-                  placeholder="Chọn khóa học"
-                  key={`course-select-${form.watch('course_ids')?.length || 0}`}
-                />
-
-                <FormMultiSelectField
-                  form={form}
-                  name="meal_plan_ids"
-                  label="Thực đơn"
-                  data={mealPlans}
-                  placeholder="Chọn thực đơn"
-                  key={`meal-plan-select-${form.watch('meal_plan_ids')?.length || 0}`}
-                />
-
-                <FormMultiSelectField
-                  form={form}
-                  name="exercise_ids"
-                  label="Bài tập"
-                  data={exercises}
-                  placeholder="Chọn bài tập"
-                  key={`exercise-select-${form.watch('exercise_ids')?.length || 0}`}
-                />
-
-                <FormMultiSelectField
-                  form={form}
-                  name="dish_ids"
-                  label="Món ăn"
-                  data={dishes}
-                  placeholder="Chọn món ăn"
-                  key={`dish-select-${form.watch('dish_ids')?.length || 0}`}
-                />
-              </div>
-            </div>
-          )}
+          {/* Global assigned items section removed - now each membership has its own assigned items */}
 
           <MainButton text="Lưu" className="w-full" disabled={isSubmitting} />
         </form>

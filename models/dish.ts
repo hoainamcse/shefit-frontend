@@ -20,3 +20,4 @@ type DishPayload = Omit<Dish, 'id' | 'created_at' | 'updated_at' | 'diet'> & {
 }
 
 export type { Dish, DishPayload }
+

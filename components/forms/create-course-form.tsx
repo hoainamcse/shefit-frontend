@@ -202,20 +202,8 @@ function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, on
         </div>
         <FormTextareaField form={form} name="summary" label="Tóm tắt" withAsterisk placeholder="Nhập tóm tắt" />
         <FormTextareaField form={form} name="description" label="Thông tin" withAsterisk placeholder="Nhập thông tin" />
-        <FormMultiSelectField
-          form={form}
-          name="equipment_ids"
-          label="Dụng cụ IDs"
-          data={[]}
-          placeholder="Chọn dụng cụ"
-        />
-        <FormMultiSelectField
-          form={form}
-          name="muscle_group_ids"
-          label="Nhóm cơ IDs"
-          data={[]}
-          placeholder="Chọn nhóm cơ"
-        />
+        <FormMultiSelectField form={form} name="equipment_ids" label="Dụng cụ IDs" data={[]} placeholder="Dụng cụ" />
+        <FormMultiSelectField form={form} name="muscle_group_ids" label="Nhóm cơ IDs" data={[]} placeholder="Nhóm cơ" />
 
         {/* <FormInputField form={form} name="category" label="Thể loại tập" withAsterisk placeholder="Nhập thể loại tập" />
 
@@ -264,7 +252,7 @@ function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, on
           name="subscription_ids"
           label="Membership IDs"
           data={[]}
-          placeholder="Chọn gói"
+          placeholder="Membership"
         />
 
         <div className="grid grid-cols-3 gap-4">
