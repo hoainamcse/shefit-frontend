@@ -50,8 +50,7 @@ export default function BodyQuiz() {
       <div className="bg-[#FFAEB01A] py-[33px] px-5 sm:px-9 lg:px-[87px]">
         <div className="text-center text-[#000000] text-[30px] leading-[33px] font-[Coiny] mb-7">Body Quiz</div>
         <div className="text-center text-[#737373] text-base sm:text-[20px] leading-[30px] px-0 sm:px-8 lg:px-20 mb-7">
-          Làm bảng câu hỏi để Shefit giúp chị hiểu rõ mình thuộc loại nào trong 5 loại phom dáng, các chỉ số hình thể
-          cần cải thiện và lộ trình “độ dáng” phù hợp nhất
+          Làm các bảng câu hỏi về số đo, phom dáng, hay chế độ ăn uống để HLV có thể theo dõi tiến độ của bạn
         </div>
 
         <div className="relative w-full aspect-[2/1] sm:aspect-[3/1] lg:aspect-[9/2]">

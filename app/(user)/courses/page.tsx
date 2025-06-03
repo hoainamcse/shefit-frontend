@@ -1,15 +1,15 @@
-'use client'
+"use client"
 
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
-import Layout from '@/app/(user)/_components/layout'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ChevronRight } from 'lucide-react'
-import Link from 'next/link'
-import React, { useState, useEffect } from 'react'
-import Image from 'next/image'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { getCoursesByType } from '@/network/server/courses'
-import { cn } from '@/lib/utils'
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import Layout from "@/app/(user)/_components/layout"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ChevronRight } from "lucide-react"
+import Link from "next/link"
+import React, { useState, useEffect } from "react"
+import Image from "next/image"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { getCoursesByType } from "@/network/server/courses"
+import { cn } from "@/lib/utils"
 import {
   difficultyLevelLabel,
   difficultyLevelLabelOptions,
@@ -20,6 +20,7 @@ import type { Course, FormCategory } from '@/models/course'
 import { getSubscriptions } from '@/network/server/subscriptions'
 import type { Subscription } from '@/models/subscriptions'
 import PopularCoursesCarousel from './_components/PopularCoursesCarousel'
+import { Button } from '@/components/ui/button'
 
 function SelectHero({
   placeholder,
@@ -56,15 +57,15 @@ const NextButton = ({ className }: { className?: string }) => {
   )
 }
 
-export const fetchCache = 'default-no-store'
+export const fetchCache = "default-no-store"
 
 export default function CoursesPage() {
-  const [difficulty, setDifficulty] = useState('')
-  const [formCategory, setFormCategory] = useState('')
-  const [subscriptionId, setSubscriptionId] = useState<string | number>('')
+  const [difficulty, setDifficulty] = useState("")
+  const [formCategory, setFormCategory] = useState("")
+  const [subscriptionId, setSubscriptionId] = useState<string | number>("")
   const [courses, setCourses] = useState<Course[]>([])
   const [coursesZoom, setCoursesZoom] = useState<Course[]>([])
-  const [activeTab, setActiveTab] = useState('video')
+  const [activeTab, setActiveTab] = useState("video")
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
 
   useEffect(() => {
@@ -77,8 +78,8 @@ export default function CoursesPage() {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      const videoCourses = await getCoursesByType('video')
-      const zoomCourses = await getCoursesByType('live')
+      const videoCourses = await getCoursesByType("video")
+      const zoomCourses = await getCoursesByType("live")
       setCourses(videoCourses.data)
       setCoursesZoom(zoomCourses.data)
     }
@@ -136,10 +137,10 @@ export default function CoursesPage() {
             <Tabs defaultValue="video" onValueChange={setActiveTab}>
               <div className="flex justify-center gap-4 mb-10">
                 <TabsList className="bg-white">
-                  <TabsTrigger value="video" className={cn('underline text-ring bg-white !shadow-none')}>
+                  <TabsTrigger value="video" className={cn("underline text-ring bg-white !shadow-none")}>
                     Video
                   </TabsTrigger>
-                  <TabsTrigger value="live" className={cn('underline text-ring bg-white !shadow-none')}>
+                  <TabsTrigger value="live" className={cn("underline text-ring bg-white !shadow-none")}>
                     Zoom
                   </TabsTrigger>
                 </TabsList>
@@ -171,10 +172,19 @@ export default function CoursesPage() {
                           <p className="text-[#737373]">{difficultyLevelLabel[course.difficulty_level]}</p>
                           <p className="text-[#737373]">{course.trainer}</p>
                         </div>
-                        <div className="text-gray-500">
-                          {Array.isArray(course.form_categories)
-                            ? course.form_categories.map((cat) => formCategoryLabel[cat]).join(', ')
-                            : formCategoryLabel[course.form_categories]}
+                        <div>
+                          <div className="text-gray-500 flex justify-end">
+                            {Array.isArray(course.form_categories)
+                              ? course.form_categories.map((cat) => formCategoryLabel[cat]).join(", ")
+                              : formCategoryLabel[course.form_categories]}
+                          </div>
+                          <div className="flex justify-end">
+                            {course.is_free ? (
+                              <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                            ) : (
+                              <Button className="bg-[#737373] text-white w-[136px] rounded-full">+ Gói Member</Button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -209,10 +219,19 @@ export default function CoursesPage() {
                           <p className="text-[#737373]">{difficultyLevelLabel[course.difficulty_level]}</p>
                           <p className="text-[#737373]">{course.trainer}</p>
                         </div>
-                        <div className="text-gray-500">
-                          {Array.isArray(course.form_categories)
-                            ? course.form_categories.map((cat) => formCategoryLabel[cat]).join(', ')
-                            : formCategoryLabel[course.form_categories]}
+                        <div>
+                          <div className="text-gray-500 flex justify-end">
+                            {Array.isArray(course.form_categories)
+                              ? course.form_categories.map((cat) => formCategoryLabel[cat]).join(", ")
+                              : formCategoryLabel[course.form_categories]}
+                          </div>
+                          <div className="flex justify-end">
+                            {course.is_free ? (
+                              <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                            ) : (
+                              <Button className="bg-[#737373] text-white w-[136px] rounded-full">+ Gói Member</Button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>

@@ -21,10 +21,10 @@ const mealTimeMapping: { [key: string]: string } = {
   others: "Khác",
 }
 
-export default async function MealPlanDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
-  const { data: mealPlanByDay } = await getMealPlanByDay(id)
-  const { data: mealPlan } = await getMealPlanDetails(id)
+export default async function MealPlanDetailPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
+  const { meal_plan_id } = await params
+  const { data: mealPlanByDay } = await getMealPlanByDay(meal_plan_id)
+  const { data: mealPlan } = await getMealPlanDetails(meal_plan_id)
   console.log(mealPlanByDay)
 
   const sortedMealPlanByDay = Array.isArray(mealPlanByDay)
@@ -94,7 +94,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
           {await Promise.all(
             sortedMealPlanByDay.map(async (day: any) => {
               const dayId = day.id
-              const { data: dayDishes } = await getMealPlanDishes(id, dayId)
+              const { data: dayDishes } = await getMealPlanDishes(meal_plan_id, dayId)
               return (
                 <TabsContent key={day.id} value={`${day.day_number}`}>
                   {dayDishes.length === 0 ? (

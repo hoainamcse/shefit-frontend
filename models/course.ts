@@ -23,7 +23,9 @@ type Course = {
   subscriptions: Subscription[]
   cover_image: string
   created_at: string
+  is_free: boolean
   updated_at: string
+  subscription_ids: number[]
   equipment_ids: number[]
   muscle_group_ids: number[]
 }

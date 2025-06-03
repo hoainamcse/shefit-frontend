@@ -11,20 +11,24 @@ import { getValuable } from "@/lib/helpers"
 
 import { getUserById } from "@/network/server/user"
 import { PROVINCES } from "@/lib/label"
+import { useAuth } from "@/components/providers/auth-context"
 
 export default function AccountInformation() {
   const [showNewForm, setShowNewForm] = useState(false)
   const [data, setData] = useState<any>(null)
 
+  const { userId } = useAuth()
+
   useEffect(() => {
+    if (!userId) return
     async function fetchUser() {
-      const res = await getUserById("1")
+      const res = await getUserById(userId as string)
       if (res && res.data) {
         setData({
           username: res.data.username || "",
           fullname: res.data.fullname || "",
           phone_number: res.data.phone_number || "",
-          city: res.data.province || "",
+          province: res.data.province || "",
           address: res.data.address || "",
           password: "",
           new_password: "",
@@ -33,14 +37,14 @@ export default function AccountInformation() {
       }
     }
     fetchUser()
-  }, [])
+  }, [userId])
 
   const form = useForm({
     defaultValues: {
       username: data?.username || "",
       fullname: data?.fullname || "",
       phone_number: data?.phone_number || "",
-      city: data?.city || "",
+      province: data?.province || "",
       address: data?.address || "",
       password: "",
       new_password: "",
@@ -54,7 +58,7 @@ export default function AccountInformation() {
         username: data.username || "",
         fullname: data.fullname || "",
         phone_number: data.phone_number || "",
-        city: data.city || "",
+        province: data.province || "",
         address: data.address || "",
         password: "",
         new_password: "",
@@ -97,7 +101,7 @@ export default function AccountInformation() {
               />
               <FormSelectField
                 form={form}
-                name="city"
+                name="province"
                 label="Tỉnh / thành phố"
                 placeholder="Chọn tỉnh/thành phố của bạn đang sống"
                 data={PROVINCES}
@@ -140,7 +144,7 @@ export default function AccountInformation() {
 
               <FormInputField
                 form={form}
-                name="city"
+                name="province"
                 label="Tỉnh / thành phố"
                 placeholder="Chọn tỉnh/thành phố của bạn đang sống"
               />

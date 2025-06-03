@@ -1,18 +1,19 @@
-'use client'
+"use client"
 
-import Layout from '@/app/(user)/_components/layout'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ChevronRight } from 'lucide-react'
-import Link from 'next/link'
-import React, { useState, useEffect } from 'react'
-import { getMealPlans } from '@/network/server/meal-plans'
-import { mealPlanGoalOptions } from '@/lib/label'
-import type { MealPlan } from '@/models/meal-plan'
+import Layout from "@/app/(user)/_components/layout"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ChevronRight } from "lucide-react"
+import Link from "next/link"
+import React, { useState, useEffect } from "react"
+import { getMealPlans } from "@/network/server/meal-plans"
+import { mealPlanGoalOptions } from "@/lib/label"
+import type { MealPlan } from "@/models/meal-plan"
+import { Button } from "@/components/ui/button"
 
 const CALORIE_OPTIONS = [
-  { value: 'low', label: '< 300 cal' },
-  { value: 'medium', label: '300-400 cal' },
-  { value: 'high', label: '> 400 cal' },
+  { value: "low", label: "< 300 cal" },
+  { value: "medium", label: "300-400 cal" },
+  { value: "high", label: "> 400 cal" },
 ]
 
 function SelectHero({
@@ -53,8 +54,8 @@ const NextButton = ({ href, className }: { href: string; className?: string }) =
 }
 
 export default function MealPlansPage() {
-  const [goal, setGoal] = useState('')
-  const [calorieCategory, setCalorieCategory] = useState('')
+  const [goal, setGoal] = useState("")
+  const [calorieCategory, setCalorieCategory] = useState("")
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([])
 
   useEffect(() => {
@@ -103,11 +104,22 @@ export default function MealPlansPage() {
                 href={`/meal-plans/${mealPlan.id}`}
               />
             </div>
-            <p className="font-medium">{mealPlan.title}</p>
-            <p className="text-[#737373]">{mealPlan.subtitle}</p>
-            <p className="text-[#737373]">
-              Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
-            </p>
+            <div className="relative">
+              <div>
+                <p className="font-medium">{mealPlan.title}</p>
+                <p className="text-[#737373]">{mealPlan.subtitle}</p>
+                <p className="text-[#737373]">
+                  Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
+                </p>
+              </div>
+              <div className="absolute bottom-0 right-0">
+                {mealPlan.is_free ? (
+                  <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                ) : (
+                  <Button className="bg-[#737373] text-white w-[136px] rounded-full">+ Gói Member</Button>
+                )}
+              </div>
+            </div>
           </div>
         ))}
       </div>
@@ -117,7 +129,7 @@ export default function MealPlansPage() {
 
 function getCalorieCategory(calories: string): string {
   const cal = parseInt(calories)
-  if (cal < 300) return 'low'
-  if (cal > 400) return 'high'
-  return 'medium'
+  if (cal < 300) return "low"
+  if (cal > 400) return "high"
+  return "medium"
 }
