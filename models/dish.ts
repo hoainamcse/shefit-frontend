@@ -1,7 +1,7 @@
 import type { Diet } from './diet'
 
 type Dish = {
-  id: string
+  id: number
   name: string
   description: string
   diet: Diet | null

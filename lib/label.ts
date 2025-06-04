@@ -1,5 +1,5 @@
-import { DifficultyLevel, FormCategory } from '@/models/course'
-import { MealPlanGoal } from '@/models/meal-plan'
+import type { DifficultyLevel, FormCategory } from '@/models/course'
+import type { DishMealTime, MealPlanGoal } from '@/models/meal-plan'
 
 type Option<T> = {
   value: T
@@ -43,57 +43,38 @@ const difficultyLevelLabelOptions = Object.entries(difficultyLevelLabel).map(([v
   label,
 })) as Option<DifficultyLevel>[]
 
-function getVisibleInLabel(visible_in: string) {
-  switch (visible_in) {
-    case 'homepage_section_1':
-      return 'Trang homepage 1'
-    case 'homepage_section_2':
-      return 'Trang homepage 2'
-    case 'main_page':
-      return 'Trang chủ'
-  }
-}
+const dishMealTimeLabel: Record<DishMealTime, string> = {
+  breakfast: 'Bữa sáng',
+  lunch: 'Bữa trưa',
+  dinner: 'Bữa tối',
+  snack: 'Bữa phụ',
+} as const
 
-function getRoleLabel(role: string) {
-  switch (role) {
-    case 'normal_user':
-      return 'User'
-    case 'admin':
-      return 'Admin'
-    case 'sub_admin':
-      return 'Sub Admin'
-  }
-}
+const dishMealTimeLabelOptions = Object.entries(dishMealTimeLabel).map(([value, label]) => ({
+  value: value as DishMealTime,
+  label,
+})) as Option<DishMealTime>[]
 
-function getGiftTypeLabel(gift_type: string) {
-  switch (gift_type) {
-    case 'membership_month':
-      return 'MEMBERSHIP_MONTH'
-    case 'item':
-      return 'ITEM'
-  }
-}
+const giftTypeLabel: Record<string, string> = {
+  membership_month: 'MEMBERSHIP_MONTH',
+  item: 'ITEM',
+} as const
 
-const DIFFICULTY_LEVELS = ['beginner', 'intermediate', 'advanced'] as const
+const giftTypeLabelOptions = Object.entries(giftTypeLabel).map(([value, label]) => ({
+  value,
+  label,
+})) as Option<string>[]
 
-const FORM_CATEGORIES = ['pear', 'apple', 'rectangle', 'hourglass', 'inverted_triangle'] as const
+const roleLabel: Record<string, string> = {
+  normal_user: 'User',
+  admin: 'Admin',
+  sub_admin: 'Sub Admin',
+} as const
 
-const COURSE_FORMATS = ['video', 'live']
-
-const VISIBLE_IN_OPTIONS: { value: string; label: string }[] = [
-  {
-    value: 'homepage_section_1',
-    label: 'Trang homepage 1',
-  },
-  {
-    value: 'homepage_section_2',
-    label: 'Trang homepage 2',
-  },
-  {
-    value: 'main_page',
-    label: 'Trang chủ',
-  },
-]
+const roleLabelOptions = Object.entries(roleLabel).map(([value, label]) => ({
+  value,
+  label,
+})) as Option<string>[]
 
 const PROVINCES = [
   { value: 'An Giang', label: 'An Giang' },
@@ -161,29 +142,13 @@ const PROVINCES = [
   { value: 'Yên Bái', label: 'Yên Bái' },
 ]
 
-const ROLE_OPTIONS = [
-  { value: 'normal_user', label: 'User' },
-  { value: 'admin', label: 'Admin' },
-  { value: 'sub_admin', label: 'Sub Admin' },
-]
-
-const GIFT_TYPE_OPTIONS = [
-  { value: "membership_month", label: "MEMBERSHIP_MONTH" },
-  { value: "item", label: "ITEM" },
-]
-
-
-export { mealPlanGoalLabel, formCategoryLabel, difficultyLevelLabel }
-export { mealPlanGoalOptions, formCategoryLabelOptions, difficultyLevelLabelOptions }
+export { PROVINCES }
+export { mealPlanGoalLabel, formCategoryLabel, difficultyLevelLabel, dishMealTimeLabel, giftTypeLabel, roleLabel }
 export {
-  getVisibleInLabel,
-  getRoleLabel,
-  getGiftTypeLabel,
-  DIFFICULTY_LEVELS,
-  FORM_CATEGORIES,
-  COURSE_FORMATS,
-  VISIBLE_IN_OPTIONS,
-  PROVINCES,
-  ROLE_OPTIONS,
-  GIFT_TYPE_OPTIONS,
+  mealPlanGoalOptions,
+  formCategoryLabelOptions,
+  difficultyLevelLabelOptions,
+  dishMealTimeLabelOptions,
+  giftTypeLabelOptions,
+  roleLabelOptions,
 }

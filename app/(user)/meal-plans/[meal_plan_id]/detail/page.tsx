@@ -8,18 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getMealPlanDetails } from "@/network/server/meal-plans"
 import { getMealPlanDishes } from "@/network/server/meal-plans"
 import { getMealPlanByDay } from "@/network/server/meal-plans"
-
-const mealTimeMapping: { [key: string]: string } = {
-  breakfast: "Bữa sáng",
-  lunch: "Bữa trưa",
-  dinner: "Bữa tối",
-  snack: "Bữa phụ",
-  protein_source: "Thịt cá",
-  vegetable: "Rau củ",
-  starch: "Tinh bột",
-  spices: "Gia vị",
-  others: "Khác",
-}
+import { dishMealTimeLabel } from "@/lib/label"
+import type { MealPlanDish } from "@/models/meal-plan"
 
 export default async function MealPlanDetailPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   const { meal_plan_id } = await params
@@ -100,22 +90,17 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
                   {dayDishes.length === 0 ? (
                     <div>Chưa có món ăn cho ngày này.</div>
                   ) : (
-                    dayDishes.map((dish: any) => (
+                    dayDishes.map((dish: MealPlanDish) => (
                       <div
                         key={dish.id}
                         className="mb-10 flex flex-col xl:w-full xl:text-xl max-lg:text-base gap-8 max-lg:px-4"
                       >
-                        <img
-                          src={dish.image}
-                          alt="Menu detail image"
-                          className="w-full h-[680px] object-cover rounded-xl"
-                        />
                         <div>
                           <div className="font-medium">
-                            <span className="text-[#91EBD5]">{mealTimeMapping[dish.meal_time]}</span>: {dish.name}
+                            <span className="text-[#91EBD5]">{dishMealTimeLabel[dish.meal_time]}</span>: {dish.name}
                           </div>
                           <div className="text-[#737373]">
-                            KCAL {dish.calories} Pro {dish.protein} Fat {dish.fat} Carb {dish.carbs} Fiber {dish.fiber}
+                            KCAL {dish.calories} Pro {dish.protein} Fat {dish.fat} Carb {dish.carb} Fiber {dish.fiber}
                           </div>
                         </div>
                         {/* <Table className="w-[400px] text-center border border-collapse">

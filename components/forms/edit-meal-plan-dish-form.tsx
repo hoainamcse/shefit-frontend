@@ -1,6 +1,6 @@
 'use client'
 
-import type { Dish } from '@/models/dish'
+import type { MealPlan, MealPlanDay, MealPlanDish } from '@/models/meal-plan'
 
 import z from 'zod'
 import { toast } from 'sonner'
@@ -8,44 +8,45 @@ import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { createDish, updateDish } from '@/network/client/dishes'
+import { createMealPlanDish, updateMealPlanDish } from '@/network/client/meal-plans'
 import { MainButton } from '@/components/buttons/main-button'
+import { dishMealTimeLabelOptions } from '@/lib/label'
 import { Form } from '@/components/ui/form'
 
-import { FormImageInputField, FormInputField, FormNumberField, FormSelectField, FormTextareaField } from './fields'
+import { FormInputField, FormNumberField, FormSelectField, FormTextareaField } from './fields'
 
-// ! Follow DishPayload model in models/dish.ts
+// ! Follow MealPlanDishPayload model in models/meal-plan.ts
 export const formSchema = z.object({
   name: z.string().min(1),
   description: z.string(),
-  diet_id: z.number().nullable(),
-  image: z.string().url(),
   calories: z.number().min(0),
   protein: z.number().min(0),
   carb: z.number().min(0),
   fat: z.number().min(0),
   fiber: z.number().min(0),
+  meal_time: z.enum(['breakfast', 'lunch', 'dinner', 'snack']),
 })
 
 export type FormValue = z.infer<typeof formSchema>
 
-type EditDishFormProps = {
-  data?: Dish | null
+type EditMealPlanDishFormProps = {
+  data: MealPlanDish | null
+  dayID: MealPlanDay['id']
+  mealPlanID: MealPlan['id']
   onSuccess?: () => void
 }
 
-export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
+export function EditMealPlanDishForm({ data, mealPlanID, dayID, onSuccess }: EditMealPlanDishFormProps) {
   const isEdit = !!data
   const defaultValue = {
     name: '',
     description: '',
-    diet_id: null,
-    image: 'https://placehold.co/600x400?text=example',
     calories: 0,
     protein: 0,
     carb: 0,
     fat: 0,
     fiber: 0,
+    meal_time: 'breakfast',
   } as FormValue
 
   const form = useForm<FormValue>({
@@ -54,19 +55,19 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
       ? {
           name: data.name,
           description: data.description,
-          diet_id: data.diet?.id || null,
-          image: data.image,
           calories: data.calories,
           protein: data.protein,
           carb: data.carb,
           fat: data.fat,
           fiber: data.fiber,
+          meal_time: data.meal_time,
         }
       : defaultValue,
   })
 
-  const dishMutation = useMutation({
-    mutationFn: (values: FormValue) => (isEdit ? updateDish(data.id, values) : createDish(values)),
+  const mealPlanDishMutation = useMutation({
+    mutationFn: (values: FormValue) =>
+      isEdit ? updateMealPlanDish(mealPlanID, dayID, data.id, values) : createMealPlanDish(mealPlanID, dayID, values),
     onSettled(data, error) {
       if (data?.status === 'success') {
         toast.success(isEdit ? 'Cập nhật món ăn thành công' : 'Tạo món ăn thành công')
@@ -78,7 +79,7 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
   })
 
   const onSubmit = (values: FormValue) => {
-    dishMutation.mutate(values)
+    mealPlanDishMutation.mutate(values)
   }
 
   return (
@@ -86,8 +87,13 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
         <FormInputField form={form} name="name" label="Tên món ăn" withAsterisk placeholder="Nhập tên món ăn" />
         <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
-        <FormSelectField form={form} name="diet_id" label="Chế độ ăn" placeholder="Chọn chế độ ăn" />
-        <FormImageInputField form={form} name="image" label="Hình ảnh" />
+        <FormSelectField
+          form={form}
+          name="meal_time"
+          label="Thời gian ăn"
+          placeholder="Chọn thời gian ăn"
+          data={dishMealTimeLabelOptions}
+        />
         <div className="grid grid-cols-2 gap-4">
           <FormNumberField form={form} name="calories" label="Calories (kcal)" placeholder="e.g., 250" />
           <FormNumberField form={form} name="protein" label="Protein (g)" step="0.1" placeholder="e.g., 20" />
@@ -97,7 +103,7 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
         </div>
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
-            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={dishMutation.isPending} />
+            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={mealPlanDishMutation.isPending} />
           )}
         </div>
       </form>

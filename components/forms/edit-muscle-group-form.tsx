@@ -1,5 +1,7 @@
 'use client'
 
+import type { MuscleGroup } from '@/models/muscle-group'
+
 import z from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
@@ -7,7 +9,6 @@ import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createMuscleGroup, updateMuscleGroup } from '@/network/client/muscle-groups'
-import { MuscleGroup } from '@/models/muscle-group'
 
 import { FormImageInputField, FormInputField } from './fields'
 import { MainButton } from '../buttons/main-button'

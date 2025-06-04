@@ -20,7 +20,7 @@ import {
 import { FileUploader } from "@/components/file-uploader"
 import { Label } from "@/components/ui/label"
 
-import { difficultyLevelLabelOptions, formCategoryLabelOptions, VISIBLE_IN_OPTIONS } from "@/lib/label"
+import { difficultyLevelLabelOptions, formCategoryLabelOptions } from "@/lib/label"
 import { FormImageInputField } from "./fields/form-image-input-field"
 import { Equipment } from "@/models/equipment"
 import { MuscleGroup } from "@/models/muscle-group"
@@ -274,15 +274,6 @@ function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, on
           />
           <div className="flex items-start gap-10">
             <FormSwitchField form={form} name="is_public" label="Hiển thị" />
-            {isPublic && (
-              <FormCheckboxField
-                form={form}
-                name="visible_in"
-                label="Danh sách trang"
-                withAsterisk
-                data={VISIBLE_IN_OPTIONS}
-              />
-            )}
           </div>
         </div>
         <div className="space-y-4">

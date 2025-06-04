@@ -1,5 +1,7 @@
 'use client'
 
+import type { Calorie } from '@/models/calorie'
+
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
@@ -7,9 +9,8 @@ import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createCalorie, updateCalorie } from '@/network/client/calories'
-import { Calorie } from '@/models/calorie'
 
-import { FormInputField, FormMultiSelectField, FormTextareaField } from './fields'
+import { FormInputField, FormTextareaField } from './fields'
 import { MainButton } from '../buttons/main-button'
 import { Form } from '../ui/form'
 

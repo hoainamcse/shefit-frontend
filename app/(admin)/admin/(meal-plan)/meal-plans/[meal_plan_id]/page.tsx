@@ -6,6 +6,8 @@ import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { getMealPlan } from '@/network/client/meal-plans'
 
+import { MealPlanView } from './meal-plan-view'
+
 export default async function EditMealPlanPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   const { meal_plan_id } = await params
   const data = await getMealPlan(Number(meal_plan_id))
@@ -37,7 +39,9 @@ export default async function EditMealPlanPage({ params }: { params: Promise<{ m
           <EditMealPlanForm data={data.data} />
         </TabsContent>
 
-        <TabsContent value="tab-2">Hello world</TabsContent>
+        <TabsContent value="tab-2">
+          <MealPlanView mealPlanID={Number(meal_plan_id)} />
+        </TabsContent>
       </Tabs>
     </ContentLayout>
   )

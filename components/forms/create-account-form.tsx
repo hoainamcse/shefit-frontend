@@ -52,11 +52,11 @@ import { createUserMealPlan, deleteUserMealPlan, getUserMealPlans } from "@/netw
 import { UserMealPlan } from "@/models/user-meal-plans"
 import { createUserDish, deleteUserDish, getUserDishes } from "@/network/server/user-dishes"
 import { UserDish } from "@/models/user-dishes"
-import PROVINCES from "@/app/(admin)/admin/account/provinceData"
+import { PROVINCES } from "@/lib/label"
 import { createUserCourse, deleteUserCourse, getUserCourses } from "@/network/server/user-courses"
 import { UserCourse } from "@/models/user-courses"
 import { useAuth } from "../providers/auth-context"
-import { ROLE_OPTIONS } from "@/lib/label"
+import { roleLabelOptions } from "@/lib/label"
 import { getSubAdminSubscriptions } from "@/network/server/sub-admin"
 import { Gift } from "@/models/subscription-admin"
 
@@ -91,7 +91,7 @@ const accountSchema = z.object({
     message: "Địa chỉ phải có ít nhất 6 ký tự.",
   }),
   role: z
-    .enum([...ROLE_OPTIONS.map((role) => role.value)] as [string, ...string[]], {
+    .enum([...roleLabelOptions.map((role) => role.value)] as [string, ...string[]], {
       message: "Bạn phải chọn role",
     })
     .default("normal_user"),
@@ -738,7 +738,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                 data={PROVINCES}
               />
               {role === "admin" && (
-                <FormSelectField form={form} name="role" label="Role" placeholder="Chọn role" data={ROLE_OPTIONS} />
+                <FormSelectField form={form} name="role" label="Role" placeholder="Chọn role" data={roleLabelOptions} />
               )}
               <FormInputField form={form} name="address" label="Địa chỉ chi tiết" placeholder="Nhập địa chỉ của bạn" />
               <FormInputField form={form} name="username" label="Username" required placeholder="Nhập username" />

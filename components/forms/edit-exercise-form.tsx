@@ -1,5 +1,7 @@
 'use client'
 
+import type { Exercise } from '@/models/exercise'
+
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
@@ -7,7 +9,6 @@ import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createExercise, updateExercise } from '@/network/client/exercises'
-import { Exercise } from '@/models/exercise'
 
 import { FormInputField, FormMultiSelectField, FormTextareaField } from './fields'
 import { MainButton } from '../buttons/main-button'

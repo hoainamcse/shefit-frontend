@@ -25,7 +25,7 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { formatDateString, generateUsername, generatePassword } from '@/lib/helpers'
-import PROVINCES from './provinceData'
+import { PROVINCES } from '@/lib/label'
 import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 import { User } from '@/models/user'
 import { getUserSubscriptions } from '@/network/server/user-subscriptions'
@@ -42,7 +42,7 @@ import { Subscription } from '@/models/subscription-admin'
 import { UserSubscription } from '@/models/user-subscriptions'
 import { getSubAdminUsers } from '@/network/server/sub-admin'
 import { useAuth } from '@/components/providers/auth-context'
-import { getRoleLabel } from '@/lib/label'
+import { roleLabel } from '@/lib/label'
 import { Badge } from '@/components/ui/badge'
 
 export default function AccountPage() {
@@ -238,7 +238,7 @@ export default function AccountPage() {
       header: 'Role',
       render: ({ row }) => (
         <Badge variant="outline" className="capitalize">
-          {getRoleLabel(row.role)}
+          {roleLabel[row.role]}
         </Badge>
       ),
     },

@@ -1,14 +1,21 @@
 'use client'
 
+import type { MealPlan } from '@/models/meal-plan'
+
 import { z } from 'zod'
 import { toast } from 'sonner'
+import { Trash2Icon } from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createMealPlan, updateMealPlan } from '@/network/client/meal-plans'
-import { MealPlan } from '@/models/meal-plan'
+import { mealPlanGoalOptions } from '@/lib/label'
 
+import { MainButton } from '../buttons/main-button'
+import { AddButton } from '../buttons/add-button'
+import { Label } from '../ui/label'
+import { Form } from '../ui/form'
 import {
   FormImageInputField,
   FormInputField,
@@ -17,12 +24,6 @@ import {
   FormSwitchField,
   FormTextareaField,
 } from './fields'
-import { MainButton } from '../buttons/main-button'
-import { Form } from '../ui/form'
-import { mealPlanGoalOptions } from '@/lib/label'
-import { AddButton } from '../buttons/add-button'
-import { Label } from '../ui/label'
-import { Trash2Icon } from 'lucide-react'
 
 // ! Follow MealPlanPayload model in models/meal-plan.ts
 const formSchema = z.object({
@@ -165,11 +166,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
                     placeholder="Nhập tên nguyên liệu"
                     withAsterisk
                   />
-                  <FormImageInputField
-                    form={form}
-                    name={`meal_ingredients.${index}.image`}
-                    label={`Hình ảnh`}
-                  />
+                  <FormImageInputField form={form} name={`meal_ingredients.${index}.image`} label={`Hình ảnh`} />
                 </div>
               </div>
             ))}

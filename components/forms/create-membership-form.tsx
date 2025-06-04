@@ -29,7 +29,7 @@ import { updateSubscriptionPrice } from "@/network/server/subscriptions-admin"
 import { getCourses } from "@/network/server/courses-admin"
 import { useAuth } from "../providers/auth-context"
 import { RichTextEditor } from "./fields/rich-text-editor"
-import { GIFT_TYPE_OPTIONS } from "@/lib/label"
+import { giftTypeLabelOptions } from "@/lib/label"
 // Define the form schema
 const formSchema = z.object({
   name: z.string().min(3, {
@@ -431,7 +431,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                                         </FormControl>
                                         <SelectContent>
                                           <SelectGroup>
-                                            {GIFT_TYPE_OPTIONS.map((option) => (
+                                            {giftTypeLabelOptions.map((option) => (
                                               <SelectItem key={option.value} value={option.value}>
                                                 {option.label}
                                               </SelectItem>

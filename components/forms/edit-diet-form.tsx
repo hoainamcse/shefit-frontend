@@ -1,5 +1,7 @@
 'use client'
 
+import type { Diet } from '@/models/diet'
+
 import z from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
@@ -7,7 +9,6 @@ import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createDiet, updateDiet } from '@/network/client/diets'
-import { Diet } from '@/models/diet'
 
 import { FormImageInputField, FormInputField, FormTextareaField } from './fields'
 import { MainButton } from '../buttons/main-button'
