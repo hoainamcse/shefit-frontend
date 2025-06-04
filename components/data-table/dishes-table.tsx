@@ -3,18 +3,23 @@
 import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 
 import { toast } from 'sonner'
+import { ImportIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 
-import { deleteDish, getDishes, queryKeyDishes } from '@/network/client/dishes'
+import { createDish, deleteDish, getDishes, queryKeyDishes } from '@/network/client/dishes'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
+import { createDiet } from '@/network/client/diets'
 import { Spinner } from '@/components/spinner'
 import { Dish } from '@/models/dish'
 
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
 import { EditDishForm } from '../forms/edit-dish-form'
+import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
+import { ExcelReader } from '../excel-reader'
 import { EditSheet } from './edit-sheet'
 
 export function DishesTable() {
@@ -147,7 +152,12 @@ export function DishesTable() {
         state={{ pagination }}
         rowCount={data?.paging.total}
         onPaginationChange={setPagination}
-        rightSection={<AddButton text="Thêm món ăn" onClick={onAddRow} />}
+        rightSection={
+          <>
+            <AddButton text="Thêm món ăn" onClick={onAddRow} />
+            <ImportDialog onSuccess={refetch} />
+          </>
+        }
       />
       <EditSheet
         title={isEdit ? 'Chỉnh sửa món ăn' : 'Thêm món ăn'}
@@ -158,5 +168,72 @@ export function DishesTable() {
         <EditDishForm data={selectedRow} onSuccess={onEditSuccess} />
       </EditSheet>
     </>
+  )
+}
+
+function ImportDialog({ onSuccess }: { onSuccess?: () => void }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [data, setData] = useState<any[]>([])
+
+  const dishMutation = useMutation({
+    mutationFn: (data: any[]) => Promise.all(data.map((item) => createDish(item))),
+    onSuccess: () => {
+      toast.success('Nhập món ăn thành công')
+      onSuccess?.()
+      setIsOpen(false)
+    },
+    onError: (error) => {
+      toast.error(`Lỗi khi nhập món ăn: ${error.message}`)
+    },
+  })
+
+  const onSubmit = async () => {
+    const uniqueDietNames = Array.from(new Set(data.map((item) => item.diet))).filter(Boolean)
+    const diets = await Promise.all(
+      uniqueDietNames.map((diet) =>
+        createDiet({ diets: [{ name: diet, description: '', image: 'https://placehold.co/600x400?text=example' }] })
+      )
+    )
+
+    const dataWithDietId = data.map((item) => {
+      const _diet = diets.find((d) => d.data[0].name === item.diet)
+      const { diet, ...rest } = item
+      return {
+        ...rest,
+        diet_id: _diet ? _diet.data[0].id : null,
+        image: 'https://placehold.co/600x400?text=example',
+      }
+    })
+    dishMutation.mutateAsync(dataWithDietId)
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <MainButton text="Nhập món ăn" icon={ImportIcon} variant="outline" />
+      </DialogTrigger>
+      <DialogContent className="max-w-3xl" onInteractOutside={(e) => e.preventDefault()}>
+        <DialogHeader>
+          <DialogTitle>Nhập món ăn</DialogTitle>
+          <DialogDescription>Chức năng này sẽ cho phép nhập danh sách món ăn từ tệp Excel</DialogDescription>
+        </DialogHeader>
+        <ExcelReader
+          headers={{
+            name: 'text',
+            description: 'text',
+            diet: 'text',
+            calories: 'number',
+            protein: 'number',
+            fat: 'number',
+            carb: 'number',
+            fiber: 'number',
+          }}
+          onSuccess={setData}
+        />
+        {data.length > 0 && (
+          <MainButton text="Nhập món ăn" className="mt-4" onClick={onSubmit} loading={dishMutation.isPending} />
+        )}
+      </DialogContent>
+    </Dialog>
   )
 }

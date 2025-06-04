@@ -11,7 +11,7 @@ export async function getDiets(params?: any): Promise<ListResponse<Diet>> {
   return await response.json()
 }
 
-export async function createDiet(data: DietPayload): Promise<ApiResponse<Diet>> {
+export async function createDiet(data: { diets: DietPayload[] }): Promise<ApiResponse<Diet[]>> {
   const response = await fetchData('/v1/diets:bulkCreate', {
     method: 'POST',
     body: JSON.stringify(data),

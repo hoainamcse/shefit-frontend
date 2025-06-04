@@ -3,10 +3,11 @@
 import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 
 import { toast } from 'sonner'
+import { ImportIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 
-import { deleteExercise, getExercises, queryKeyExercises } from '@/network/client/exercises'
+import { createExercise, deleteExercise, getExercises, queryKeyExercises } from '@/network/client/exercises'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -14,10 +15,16 @@ import { getYoutubeThumbnail } from '@/lib/youtube'
 import { Spinner } from '@/components/spinner'
 import { Exercise } from '@/models/exercise'
 
+import { createMuscleGroup } from '@/network/client/muscle-groups'
 import { EditExerciseForm } from '../forms/edit-exercise-form'
+import { createEquipment } from '@/network/client/equipments'
 import { AddButton } from '../buttons/add-button'
 import { EditSheet } from './edit-sheet'
 import { Badge } from '../ui/badge'
+
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import { MainButton } from '../buttons/main-button'
+import { ExcelReader } from '../excel-reader'
 
 export function ExercisesTable() {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -178,7 +185,12 @@ export function ExercisesTable() {
         state={{ pagination }}
         rowCount={data?.paging.total}
         onPaginationChange={setPagination}
-        rightSection={<AddButton text="Thêm bài tập" onClick={onAddRow} />}
+        rightSection={
+          <>
+            <AddButton text="Thêm bài tập" onClick={onAddRow} />
+            <ImportDialog onSuccess={refetch} />
+          </>
+        }
       />
       <EditSheet
         title={isEdit ? 'Chỉnh sửa bài tập' : 'Thêm bài tập'}
@@ -189,5 +201,104 @@ export function ExercisesTable() {
         <EditExerciseForm data={selectedRow} onSuccess={onEditSuccess} />
       </EditSheet>
     </>
+  )
+}
+
+function ImportDialog({ onSuccess }: { onSuccess?: () => void }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [data, setData] = useState<any[]>([])
+
+  const exerciseMutation = useMutation({
+    mutationFn: (data: any[]) => Promise.all(data.map((item) => createExercise(item))),
+    onSuccess: () => {
+      toast.success('Nhập bài tập thành công')
+      onSuccess?.()
+      setIsOpen(false)
+    },
+    onError: (error) => {
+      toast.error(`Lỗi khi nhập bài tập: ${error.message}`)
+    },
+  })
+
+  const onSubmit = async () => {
+    const equipmentNames = data.flatMap((item) =>
+      (item.equipments || '')
+        .split(';')
+        .map((item: string) => item.trim())
+        .filter((item: string) => item !== '')
+    )
+    const muscleGroupNames = data.flatMap((item) =>
+      (item.muscle_groups || '')
+        .split(';')
+        .map((item: string) => item.trim())
+        .filter((item: string) => item !== '')
+    )
+
+    const uniqueEquipmentNames = Array.from(new Set(equipmentNames)).filter(Boolean)
+    const uniqueMuscleGroupNames = Array.from(new Set(muscleGroupNames)).filter(Boolean)
+
+    const equipmentsData = await Promise.all(
+      uniqueEquipmentNames.map((eq) =>
+        createEquipment({ name: eq, image: 'https://placehold.co/600x400?text=example' })
+      )
+    )
+    const muscleGroupsData = await Promise.all(
+      uniqueMuscleGroupNames.map((eq) =>
+        createMuscleGroup({ name: eq, image: 'https://placehold.co/600x400?text=example' })
+      )
+    )
+
+    const dataWithIds = data.map((item) => {
+      const equipmentsIds = (item.equipments || '')
+        .split(';')
+        .map((eq: string) => eq.trim())
+        .filter((eq: string) => eq !== '')
+        .map((eq: string) => equipmentsData.find((e) => e.data.name === eq)?.data.id)
+        .filter(Boolean)
+
+      const muscleGroupsIds = (item.muscle_groups || '')
+        .split(';')
+        .map((mg: string) => mg.trim())
+        .filter((mg: string) => mg !== '')
+        .map((mg: string) => muscleGroupsData.find((mgItem) => mgItem.data.name === mg)?.data.id)
+        .filter(Boolean)
+
+      const { equipments, muscle_groups, ...rest } = item
+
+      return {
+        ...rest,
+        equipment_ids: equipmentsIds,
+        muscle_group_ids: muscleGroupsIds,
+      }
+    })
+
+    exerciseMutation.mutateAsync(dataWithIds)
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <MainButton text="Nhập bài tập" icon={ImportIcon} variant="outline" />
+      </DialogTrigger>
+      <DialogContent className="max-w-3xl" onInteractOutside={(e) => e.preventDefault()}>
+        <DialogHeader>
+          <DialogTitle>Nhập món ăn</DialogTitle>
+          <DialogDescription>Chức năng này sẽ cho phép nhập danh sách bài tập từ tệp Excel</DialogDescription>
+        </DialogHeader>
+        <ExcelReader
+          headers={{
+            name: 'text',
+            description: 'text',
+            equipments: 'text',
+            muscle_groups: 'text',
+            youtube_url: 'text',
+          }}
+          onSuccess={setData}
+        />
+        {data.length > 0 && (
+          <MainButton text="Nhập bài tập" className="mt-4" onClick={onSubmit} loading={exerciseMutation.isPending} />
+        )}
+      </DialogContent>
+    </Dialog>
   )
 }

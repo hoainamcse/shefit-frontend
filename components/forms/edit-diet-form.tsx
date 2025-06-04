@@ -43,7 +43,17 @@ export function EditDietForm({ data, onSuccess }: EditDietFormProps) {
   })
 
   const dietMutation = useMutation({
-    mutationFn: (values: FormValue) => (isEdit ? updateDiet(data.id, values) : createDiet(values)),
+    mutationFn: async (values: FormValue) => {
+      if (isEdit) {
+        return updateDiet(data.id, values)
+      } else {
+        const response = await createDiet({ diets: [values] })
+        return {
+          ...response,
+          data: Array.isArray(response.data) ? response.data[0] : response.data,
+        }
+      }
+    },
     onSettled(data, error) {
       if (data?.status === 'success') {
         toast.success(isEdit ? 'Cập nhật chế độ ăn thành công' : 'Tạo chế độ ăn thành công')
