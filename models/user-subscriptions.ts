@@ -1,3 +1,4 @@
+import type { Gift } from '@/models/subscription-admin'
 
 type UserSubscription = {
     id?: number,
@@ -14,4 +15,8 @@ type UserSubscription = {
     total_price: number
 }
 
-export type { UserSubscription }
+ type UserSubscriptionWithGifts = Omit<UserSubscription, 'gift_id'> & {
+    id: number,
+    gifts: Gift
+}
+export type { UserSubscription, UserSubscriptionWithGifts }

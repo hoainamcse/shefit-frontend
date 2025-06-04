@@ -65,6 +65,15 @@ function getRoleLabel(role: string) {
   }
 }
 
+function getGiftTypeLabel(gift_type: string) {
+  switch (gift_type) {
+    case 'membership_month':
+      return 'MEMBERSHIP_MONTH'
+    case 'item':
+      return 'ITEM'
+  }
+}
+
 const DIFFICULTY_LEVELS = ['beginner', 'intermediate', 'advanced'] as const
 
 const FORM_CATEGORIES = ['pear', 'apple', 'rectangle', 'hourglass', 'inverted_triangle'] as const
@@ -158,15 +167,23 @@ const ROLE_OPTIONS = [
   { value: 'sub_admin', label: 'Sub Admin' },
 ]
 
+const GIFT_TYPE_OPTIONS = [
+  { value: "membership_month", label: "MEMBERSHIP_MONTH" },
+  { value: "item", label: "ITEM" },
+]
+
+
 export { mealPlanGoalLabel, formCategoryLabel, difficultyLevelLabel }
 export { mealPlanGoalOptions, formCategoryLabelOptions, difficultyLevelLabelOptions }
 export {
   getVisibleInLabel,
   getRoleLabel,
+  getGiftTypeLabel,
   DIFFICULTY_LEVELS,
   FORM_CATEGORIES,
   COURSE_FORMATS,
   VISIBLE_IN_OPTIONS,
   PROVINCES,
   ROLE_OPTIONS,
+  GIFT_TYPE_OPTIONS,
 }
