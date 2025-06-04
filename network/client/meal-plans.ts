@@ -1,4 +1,3 @@
-import type { ApiResponse, ListResponse } from '@/models/response'
 import type {
   MealPlan,
   MealPlanDay,
@@ -7,6 +6,7 @@ import type {
   MealPlanDish,
   MealPlanDishPayload,
 } from '@/models/meal-plan'
+import type { ApiResponse, ListResponse } from '@/models/response'
 
 import { fetchData } from '../helpers/fetch-data'
 

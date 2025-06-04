@@ -5,16 +5,16 @@ import Link from "next/link"
 import { BackIcon } from "@/components/icons/BackIcon"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getMealPlanDetails } from "@/network/server/meal-plans"
+import { getMealPlan } from "@/network/server/meal-plans"
 import { getMealPlanDishes } from "@/network/server/meal-plans"
-import { getMealPlanByDay } from "@/network/server/meal-plans"
+import { getMealPlanDays } from "@/network/server/meal-plans"
 import { dishMealTimeLabel } from "@/lib/label"
 import type { MealPlanDish } from "@/models/meal-plan"
 
 export default async function MealPlanDetailPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   const { meal_plan_id } = await params
-  const { data: mealPlanByDay } = await getMealPlanByDay(meal_plan_id)
-  const { data: mealPlan } = await getMealPlanDetails(meal_plan_id)
+  const { data: mealPlanByDay } = await getMealPlanDays(meal_plan_id)
+  const { data: mealPlan } = await getMealPlan(meal_plan_id)
   console.log(mealPlanByDay)
 
   const sortedMealPlanByDay = Array.isArray(mealPlanByDay)

@@ -41,7 +41,7 @@ import {
 import { Course } from "@/models/course"
 import { getCoursesBySubscriptionId } from "@/network/server/courses"
 import { getMealPlans } from "@/network/server/meal-plans"
-import { getListDishes } from "@/network/server/dishes"
+import { getDishes } from "@/network/server/dishes"
 import { MealPlan } from "@/models/meal-plan"
 import { Dish } from "@/models/dish"
 import { Exercise } from "@/models/exercise"
@@ -256,7 +256,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       const [subscriptionsResponse, mealPlansResponse, dishesResponse, exercisesResponse] = await Promise.all([
         subscriptionsPromise,
         getMealPlans(),
-        getListDishes(),
+        getDishes(),
         getExercises(),
       ])
 

@@ -1,20 +1,15 @@
-"use client"
+'use client'
 
-import Layout from "@/app/(user)/_components/layout"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ChevronRight } from "lucide-react"
-import Link from "next/link"
-import React, { useState, useEffect } from "react"
-import { getMealPlans } from "@/network/server/meal-plans"
-import { mealPlanGoalOptions } from "@/lib/label"
-import type { MealPlan } from "@/models/meal-plan"
-import { Button } from "@/components/ui/button"
-
-const CALORIE_OPTIONS = [
-  { value: "low", label: "< 300 cal" },
-  { value: "medium", label: "300-400 cal" },
-  { value: "high", label: "> 400 cal" },
-]
+import Layout from '@/app/(user)/_components/layout'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { ChevronRight } from 'lucide-react'
+import Link from 'next/link'
+import React, { useState, useEffect } from 'react'
+import { getMealPlans } from '@/network/server/meal-plans'
+import { mealPlanGoalOptions } from '@/lib/label'
+import type { MealPlan } from '@/models/meal-plan'
+import { Button } from '@/components/ui/button'
+import { Calorie } from '@/models/calorie'
 
 function SelectHero({
   placeholder,
@@ -54,22 +49,30 @@ const NextButton = ({ href, className }: { href: string; className?: string }) =
 }
 
 export default function MealPlansPage() {
-  const [goal, setGoal] = useState("")
-  const [calorieCategory, setCalorieCategory] = useState("")
+  const [calories, setCalories] = useState<Calorie[]>([])
+  const [filter, setFilter] = useState({
+    goal: '',
+    calorie: 0,
+  })
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([])
 
   useEffect(() => {
     const fetchMealPlans = async () => {
       const response = await getMealPlans()
       setMealPlans(response.data || [])
+
+      const uniqueCalories = Array.from(new Set(response.data?.map((mealPlan) => mealPlan.calorie?.id)))
+        .map((id) => response.data?.find((mealPlan) => mealPlan.calorie?.id === id)?.calorie)
+        .filter((calorie): calorie is Calorie => calorie !== null && calorie !== undefined)
+      setCalories(uniqueCalories)
+      // console.log('Unique Calories:', uniqueCalories)
     }
     fetchMealPlans()
   }, [])
 
   const filteredMealPlans = mealPlans.filter((mealPlan) => {
-    const matchesGoal = !goal || mealPlan.goal === goal
-    const matchesCalorie =
-      !calorieCategory || getCalorieCategory((mealPlan.calorie?.max_calorie ?? 0).toString()) === calorieCategory
+    const matchesGoal = filter.goal ? mealPlan.goal === filter.goal : true
+    const matchesCalorie = filter.calorie ? mealPlan.calorie?.id === filter.calorie : true
     return matchesGoal && matchesCalorie
   })
 
@@ -84,12 +87,20 @@ export default function MealPlansPage() {
           đảm bảo tăng cơ, giảm mỡ hiệu quả!
         </p>
         <div className="flex gap-4">
-          <SelectHero placeholder="Mục tiêu" options={mealPlanGoalOptions} value={goal} onChange={setGoal} />
+          <SelectHero
+            placeholder="Mục tiêu"
+            options={mealPlanGoalOptions}
+            value={filter.goal}
+            onChange={(goal) => setFilter((prev) => ({ ...prev, goal }))}
+          />
           <SelectHero
             placeholder="Lượng calo"
-            options={CALORIE_OPTIONS}
-            value={calorieCategory}
-            onChange={setCalorieCategory}
+            options={calories.map((calorie) => ({
+              value: calorie.id.toString(),
+              label: calorie.name,
+            }))}
+            value={filter.calorie.toString()}
+            onChange={(calorie) => setFilter((prev) => ({ ...prev, calorie: Number(calorie) }))}
           />
         </div>
       </div>
@@ -125,11 +136,4 @@ export default function MealPlansPage() {
       </div>
     </Layout>
   )
-}
-
-function getCalorieCategory(calories: string): string {
-  const cal = parseInt(calories)
-  if (cal < 300) return "low"
-  if (cal > 400) return "high"
-  return "medium"
 }

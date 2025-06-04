@@ -1,5 +1,5 @@
-import type { ApiResponse, ListResponse } from '@/models/response'
 import type { Dish, DishPayload } from '@/models/dish'
+import type { ApiResponse, ListResponse } from '@/models/response'
 
 import { fetchData } from '../helpers/fetch-data'
 

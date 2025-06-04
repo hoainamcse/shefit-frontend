@@ -1,11 +1,11 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getListDishes } from '@/network/server/dishes'
+import { getDishes } from '@/network/server/dishes'
 import { getDiets } from '@/network/server/diets'
 export default async function Food({ params }: { params: Promise<{ meal_id: string }> }) {
   const { meal_id } = await params
-  const dish = await getListDishes()
+  const dish = await getDishes()
   const diet = await getDiets()
 
   const selectedDiet = diet.data?.find((item) => item.id.toString() === meal_id)

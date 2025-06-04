@@ -18,7 +18,7 @@ type MealPlan = {
   image: string
   description: string
   meal_ingredients: MealPlanIngredient[]
-  number_of_days: number
+  number_of_days: number // ! not in schema
   is_public: boolean
   is_free: boolean
   free_days: number
@@ -26,7 +26,7 @@ type MealPlan = {
   calorie: Calorie | null
 }
 
-type MealPlanPayload = Omit<MealPlan, 'id' | 'diet' | 'calorie'> & {
+type MealPlanPayload = Omit<MealPlan, 'id' | 'diet' | 'calorie' | 'number_of_days'> & {
   diet_id: Diet['id'] | null
   calorie_id: Calorie['id'] | null
 }

@@ -13,6 +13,7 @@ import { MainButton } from '@/components/buttons/main-button'
 import { EditButton } from '@/components/buttons/edit-button'
 import { AddButton } from '@/components/buttons/add-button'
 import { Spinner } from '@/components/spinner'
+import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import {
   deleteMealPlanDay,
@@ -23,6 +24,7 @@ import {
   queryKeyMealPlanDishes,
 } from '@/network/client/meal-plans'
 import { EditMealPlanDayForm } from '@/components/forms/edit-meal-plan-day-form'
+import { dishMealTimeLabel } from '@/lib/label'
 
 interface MealPlanViewProps {
   mealPlanID: MealPlan['id']
@@ -106,7 +108,6 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
   }
 
   const onEditDaySuccess = () => {
-    setSelectedDay(null)
     setIsEditDayOpen(false)
     daysRefetch()
   }
@@ -155,7 +156,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
       {/* Days Navigation */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Danh sách ngày</h2>
+          <Label className="text-base">Danh sách ngày</Label>
           <div className="flex items-center gap-2">
             {selectedDay && <EditButton size="icon" variant="outline" onClick={() => onEditDay(selectedDay)} />}
             {selectedDay && (
@@ -167,7 +168,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
                 onClick={() => onDeleteDay(selectedDay!)}
               />
             )}
-            <AddButton size="sm" text="Thêm ngày" onClick={onAddDay} />
+            <AddButton text="Thêm ngày" onClick={onAddDay} />
           </div>
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2">
@@ -194,10 +195,10 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
       {selectedDay && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">
+            <Label className="text-base">
               Danh sách món ăn ngày {sortedDays.find((d: MealPlanDay) => d.id === selectedDay.id)?.day_number}
-            </h2>
-            <AddButton size="sm" text="Thêm món ăn" onClick={onAddDish} />
+            </Label>
+            <AddButton text="Thêm món ăn" onClick={onAddDish} />
           </div>
 
           {isDishesLoading ? (
@@ -217,9 +218,9 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
                   <div className="flex justify-between items-start">
                     <div className="space-y-2">
                       <Badge className={getMealTimeColor(dish.meal_time)} variant="outline">
-                        {dish.meal_time}
+                        {dishMealTimeLabel[dish.meal_time]}
                       </Badge>
-                      <h3 className="text-lg font-medium">{dish.name}</h3>
+                      <h3 className="font-medium">{dish.name}</h3>
                       <p className="text-gray-600">{dish.description}</p>
 
                       {/* Nutrition information */}
@@ -275,10 +276,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
         open={isEditDayOpen}
         onOpenChange={(open) => {
           setIsEditDayOpen(open)
-          if (!open) {
-            setSelectedDay(null)
-            setIsAddingDay(false)
-          }
+          if (!open) setIsAddingDay(false)
         }}
       >
         {isAddingDay ? (

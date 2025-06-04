@@ -1,5 +1,5 @@
-import type { ApiResponse, ListResponse } from '@/models/response'
 import type { Diet, DietPayload } from '@/models/diet'
+import type { ApiResponse, ListResponse } from '@/models/response'
 
 import { fetchData } from '../helpers/fetch-data'
 

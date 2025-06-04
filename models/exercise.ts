@@ -2,7 +2,7 @@ import type { Equipment } from './equipment'
 import type { MuscleGroup } from './muscle-group'
 
 type Exercise = {
-  id: string
+  id: number
   name: string
   description: string
   youtube_url: string

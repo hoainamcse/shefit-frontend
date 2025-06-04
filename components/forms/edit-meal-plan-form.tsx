@@ -39,7 +39,6 @@ const formSchema = z.object({
       image: z.string().url(),
     })
   ),
-  number_of_days: z.number().min(1),
   is_public: z.boolean(),
   is_free: z.boolean(),
   free_days: z.number().min(1),
@@ -51,7 +50,7 @@ type FormValue = z.infer<typeof formSchema>
 
 interface EditMealPlanFormProps {
   data?: MealPlan | null
-  onSuccess?: () => void
+  onSuccess?: (data: MealPlan) => void
 }
 
 export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
@@ -64,7 +63,6 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
     image: 'https://placehold.co/600x400?text=example',
     description: '',
     meal_ingredients: [],
-    number_of_days: 1,
     is_public: true,
     is_free: false,
     free_days: 1,
@@ -83,7 +81,6 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
           image: data.image,
           description: data.description,
           meal_ingredients: data.meal_ingredients,
-          number_of_days: data.number_of_days,
           is_public: data.is_public,
           is_free: data.is_free,
           free_days: data.free_days,
@@ -103,7 +100,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
     onSettled(data, error) {
       if (data?.status === 'success') {
         toast.success(isEdit ? 'Cập nhật thực đơn thành công' : 'Tạo thực đơn thành công')
-        onSuccess?.()
+        onSuccess?.(data.data)
       } else {
         toast.error(error?.message || 'Đã có lỗi xảy ra')
       }
@@ -120,9 +117,8 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
         <FormInputField form={form} name="title" label="Tên thực đơn" withAsterisk placeholder="Nhập tên thực đơn" />
         <FormTextareaField form={form} name="subtitle" label="Tóm tắt" placeholder="Nhập tóm tắt" />
         <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <FormInputField form={form} name="chef_name" label="Tên đầu bếp" placeholder="Nhập tên đầu bếp" />
-          <FormNumberField form={form} name="number_of_days" label="Số ngày" placeholder="e.g., 10" />
           <FormSelectField
             form={form}
             name="goal"
@@ -132,8 +128,10 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
           />
         </div>
         <FormImageInputField form={form} name="image" label="Hình ảnh" />
-        <FormSelectField form={form} name="diet_id" label="Chế độ ăn" placeholder="Chọn chế độ ăn" />
-        <FormSelectField form={form} name="calorie_id" label="Calorie" placeholder="Chọn calorie" />
+        <div className="grid grid-cols-2 gap-4">
+          <FormSelectField form={form} name="diet_id" label="Chế độ ăn" placeholder="Chọn chế độ ăn" />
+          <FormSelectField form={form} name="calorie_id" label="Calorie" placeholder="Chọn calorie" />
+        </div>
         <div className="border border-dashed p-4 rounded-md space-y-4">
           <div className="flex items-center justify-between">
             <Label className="text-base">Thành phần nguyên liệu</Label>

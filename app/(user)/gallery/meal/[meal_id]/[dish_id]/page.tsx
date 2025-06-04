@@ -1,9 +1,9 @@
 import React from "react"
-import { getDetailDish } from "@/network/server/dishes"
+import { getDish } from "@/network/server/dishes"
 export default async function MealDetail({ params }: { params: Promise<{ dish_id: string; meal_id: string }> }) {
   const resolvedParams = await params
   const { dish_id } = resolvedParams
-  const detailDish = await getDetailDish(dish_id)
+  const detailDish = await getDish(dish_id)
   return (
     <div className="flex flex-col gap-10 mt-10">
       <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] mb-5 text-center">

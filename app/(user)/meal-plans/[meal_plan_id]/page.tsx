@@ -3,14 +3,14 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/app/(user)/_components/header"
 import { BackIcon } from "@/components/icons/BackIcon"
-import { getMealPlanDetails } from "@/network/server/meal-plans"
+import { getMealPlan } from "@/network/server/meal-plans"
 import { createUserMealPlan } from "@/network/server/user-meal-plans"
 import { mealPlanGoalLabel } from "@/lib/label"
 import ActionButtons from "./ActionButtons"
 export default async function MealPlanPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   try {
     const { meal_plan_id } = await params
-    const { data: mealPlan } = await getMealPlanDetails(meal_plan_id)
+    const { data: mealPlan } = await getMealPlan(meal_plan_id)
 
     if (!mealPlan) {
       throw new Error("Không tìm thấy thông tin thực đơn")

@@ -11,7 +11,7 @@ export async function getMealPlans(query?: any): Promise<ListResponse<MealPlan>>
   return await response.json()
 }
 
-export async function getMealPlanDetails(meal_plan_id: string): Promise<ApiResponse<MealPlan>> {
+export async function getMealPlan(meal_plan_id: string): Promise<ApiResponse<MealPlan>> {
   const response = await fetchDataServer(`/v1/meal-plans/${meal_plan_id}`, {
     next: {
       revalidate: 0,
@@ -20,7 +20,7 @@ export async function getMealPlanDetails(meal_plan_id: string): Promise<ApiRespo
   return await response.json()
 }
 
-export async function getMealPlanByDay(meal_plan_id: string): Promise<ApiResponse<MealPlan>> {
+export async function getMealPlanDays(meal_plan_id: string): Promise<ApiResponse<MealPlan>> {
   const response = await fetchDataServer(`/v1/meal-plans/${meal_plan_id}/days`, {
     next: {
       revalidate: 0,

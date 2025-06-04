@@ -5,7 +5,7 @@ import type { ApiResponse, ListResponse } from '@/models/response'
 
 import { fetchDataServer } from '../helpers/fetch-data-server'
 
-export async function getListDishes(): Promise<ListResponse<Dish>> {
+export async function getDishes(): Promise<ListResponse<Dish>> {
   const response = await fetchDataServer('/v1/dishes', {
     method: 'GET',
     credentials: 'include',
@@ -13,7 +13,7 @@ export async function getListDishes(): Promise<ListResponse<Dish>> {
   return await response.json()
 }
 
-export async function getDetailDish(dish_id: string): Promise<ApiResponse<Dish>> {
+export async function getDish(dish_id: string): Promise<ApiResponse<Dish>> {
   const response = await fetchDataServer(`/v1/dishes/${dish_id}`, {
     method: 'GET',
     credentials: 'include',
