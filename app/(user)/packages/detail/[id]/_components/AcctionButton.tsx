@@ -1,0 +1,54 @@
+"use client"
+
+import { Button } from "@/components/ui/button"
+import { useAuth } from "@/components/providers/auth-context"
+import { getUserSubscriptions } from "@/network/server/user-subscriptions"
+import { useEffect, useState } from "react"
+import { useParams } from "next/navigation"
+
+export default function AcctionButton() {
+  const { userId } = useAuth()
+  const params = useParams()
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSubscribed, setIsSubscribed] = useState(false)
+
+  useEffect(() => {
+    async function fetchUserSubscriptions() {
+      if (!userId) {
+        setIsLoading(false)
+        return
+      }
+
+      try {
+        setIsLoading(true)
+        const subscriptionId = Number(params.id)
+        const response = await getUserSubscriptions(userId.toString())
+        const hasSubscription =
+          response.data?.some(
+            (subscription) => subscription.subscription_id === subscriptionId && subscription.status === "active"
+          ) ?? false
+
+        setIsSubscribed(hasSubscription)
+      } catch (error) {
+        console.error("Error fetching user subscriptions:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchUserSubscriptions()
+  }, [userId, params.id])
+
+  if (isLoading) {
+    return (
+      <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] w-full px-5 mx-auto" disabled>
+        Đang tải...
+      </Button>
+    )
+  }
+
+  if (isSubscribed) {
+    return <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] w-full px-5 mx-auto">Gia hạn gói</Button>
+  }
+  return <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] w-full px-5 mx-auto">Mua gói</Button>
+}

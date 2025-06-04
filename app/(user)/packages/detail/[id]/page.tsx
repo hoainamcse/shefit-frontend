@@ -1,0 +1,172 @@
+import { getSubscription } from "@/network/server/subscriptions"
+import { getCourses } from "@/network/server/courses"
+import { ChevronRight } from "lucide-react"
+import { difficultyLevelLabel, formCategoryLabel } from "@/lib/label"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { getMealPlans } from "@/network/server/meal-plans"
+import AcctionButton from "./_components/AcctionButton"
+
+export default async function PackageDetail({ params }: { params: Promise<{ id: string }> }) {
+  const subscription = await getSubscription(Number((await params).id))
+  const courses = await getCourses()
+  const mealPlans = await getMealPlans()
+  const NextButton = ({ className, href }: { className?: string; href?: string }) => {
+    return (
+      <button type="button" className={`bg-background p-2 rounded-3xl text-ring ${className}`}>
+        <ChevronRight className="w-4 h-4" />
+      </button>
+    )
+  }
+  type SubscriptionData = {
+    id: number
+    name: string
+    description_1?: string
+    description_2?: string
+    cover_image?: string
+    course_ids?: number[]
+    meal_plan_ids?: number[]
+    difficulty_level?: string
+    trainer?: string
+    form_categories?: string[] | string
+    is_free?: boolean
+  }
+
+  const subscriptionData = subscription?.data as SubscriptionData
+  console.log(subscription)
+  return (
+    <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full pb-24 relative">
+      <div className="p-6 mb-20 flex flex-col gap-10">
+        <img
+          src={subscriptionData?.cover_image}
+          alt={`${subscriptionData?.name}`}
+          className="rounded-xl mb-4 w-full h-[680px] object-cover"
+        />
+        <div className="flex justify-between text-lg">
+          <div className="flex flex-col gap-10">
+            <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
+              {subscriptionData?.name}
+            </div>
+            <div>
+              <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
+                Thông tin gói
+              </div>
+              <p>
+                Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis.
+                Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus
+                bibendum ad curae consequat.
+              </p>
+            </div>
+            <div>
+              <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
+                Khóa tập thuộc gói
+              </div>
+              <p>Các khóa tập bạn được truy cập khi mua gói member này</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                {subscriptionData?.course_ids?.map((courseId) => {
+                  const course = courses?.data?.find((course) => course.id === courseId)
+                  return course ? (
+                    <div key={`${courseId}`}>
+                      <div className="relative group">
+                        <img
+                          src={course.cover_image || subscriptionData?.cover_image}
+                          alt={course.course_name || courseId.toString()}
+                          className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
+                        />
+                        <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+
+                        <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
+                          <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
+                        </Link>
+                      </div>
+                      <div className="flex justify-between">
+                        <div>
+                          <p className="font-medium">{course.course_name}</p>
+                          <p className="text-[#737373]">{difficultyLevelLabel[course.difficulty_level]}</p>
+                          <p className="text-[#737373]">{course.trainer}</p>
+                        </div>
+                        <div>
+                          <div className="text-gray-500 flex justify-end">
+                            {Array.isArray(course.form_categories)
+                              ? course.form_categories.map((cat) => formCategoryLabel[cat]).join(", ")
+                              : formCategoryLabel[course.form_categories]}
+                          </div>
+                          <div className="flex justify-end">
+                            {course.is_free ? (
+                              <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                            ) : (
+                              <Button className="bg-[#737373] text-white w-[136px] rounded-full">+ Gói Member</Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null
+                })}
+              </div>
+            </div>
+            {subscriptionData?.meal_plan_ids && subscriptionData.meal_plan_ids.length > 0 && (
+              <div>
+                <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
+                  Thực đơn
+                </div>
+                <p>
+                  Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis.
+                  Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
+                  penatibus bibendum ad curae consequat.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  {subscriptionData.meal_plan_ids.map((mealPlanId) => {
+                    const mealPlan = mealPlans?.data?.find((plan: any) => plan.id === mealPlanId)
+                    return mealPlan ? (
+                      <div key={`menu-${mealPlanId}`}>
+                        <div className="relative group">
+                          <img
+                            src={mealPlan.image}
+                            alt={mealPlan.title}
+                            className="aspect-[5/3] object-cover rounded-xl mb-4"
+                          />
+                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                          <Link href={`/meal-plans/${mealPlanId}`}>
+                            <NextButton className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1" />
+                          </Link>
+                        </div>
+                        <div className="relative">
+                          <div>
+                            <p className="font-medium">{mealPlan.title}</p>
+                            <p className="text-[#737373]">{mealPlan.subtitle}</p>
+                            <p className="text-[#737373]">
+                              Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
+                            </p>
+                          </div>
+                          <div className="absolute bottom-0 right-0">
+                            {mealPlan.is_free ? (
+                              <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                            ) : (
+                              <Button className="bg-[#737373] text-white w-[136px] rounded-full">+ Gói Member</Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ) : null
+                  })}
+                </div>
+              </div>
+            )}
+            <div>
+              <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
+                Theo dõi kết quả
+              </div>
+              <p>
+                Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis.
+                Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus
+                bibendum ad curae consequat.
+              </p>
+            </div>
+            <AcctionButton />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
