@@ -1,16 +1,16 @@
-'use client'
+"use client"
 
-import Image from 'next/image'
-import { MainButton } from '@/components/buttons/main-button'
-import Link from 'next/link'
-import { ExerciseYogaIcon } from '@/components/icons/ExerciseYogaIcon'
-import { FoodGrainsIcon } from '@/components/icons/FoodGrainsIcon'
-import { GymIcon } from '@/components/icons/GymIcon'
-import { FitnessLineIcon } from '@/components/icons/FitnessLineIcon'
-import { BookIcon } from '@/components/icons/BookIcon'
-import { AboutIcon } from '@/components/icons/AboutIcon'
-import { AccountIcon } from '@/components/icons/AccountIcon'
-import { MenuIcon } from '@/components/icons/MenuIcon'
+import Image from "next/image"
+import { MainButton } from "@/components/buttons/main-button"
+import Link from "next/link"
+import { ExerciseYogaIcon } from "@/components/icons/ExerciseYogaIcon"
+import { FoodGrainsIcon } from "@/components/icons/FoodGrainsIcon"
+import { GymIcon } from "@/components/icons/GymIcon"
+import { FitnessLineIcon } from "@/components/icons/FitnessLineIcon"
+import { BookIcon } from "@/components/icons/BookIcon"
+import { AboutIcon } from "@/components/icons/AboutIcon"
+import { AccountIcon } from "@/components/icons/AccountIcon"
+import { MenuIcon } from "@/components/icons/MenuIcon"
 import {
   Sheet,
   SheetContent,
@@ -19,18 +19,18 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet'
-import { GalleryIcon } from '@/components/icons/GalleryIcon'
-import { MemberShipIcon } from '@/components/icons/MemberShipIcon'
-import { FacebookIcon } from '@/components/icons/FacebookIcon'
-import { useAuth } from '@/components/providers/auth-context'
+} from "@/components/ui/sheet"
+import { GalleryIcon } from "@/components/icons/GalleryIcon"
+import { MemberShipIcon } from "@/components/icons/MemberShipIcon"
+import { FacebookIcon } from "@/components/icons/FacebookIcon"
+import { useAuth } from "@/components/providers/auth-context"
 
 export function Header() {
   const { userId, logout } = useAuth()
   const isLoggedIn = !!userId
 
   const authButton = isLoggedIn ? (
-    <MainButton onClick={() => logout('/')} className="rounded-full w-44" text="Đăng xuất" variant="secondary" />
+    <MainButton onClick={() => logout("/")} className="rounded-full w-44" text="Đăng xuất" variant="secondary" />
   ) : (
     <Link href="/auth/login">
       <MainButton className="rounded-full w-44" text="Đăng nhập" />
@@ -39,49 +39,49 @@ export function Header() {
 
   const navItems = [
     {
-      label: 'Gói Member',
+      label: "Gói Member",
       icon: MemberShipIcon,
-      url: '/account?tab=buy-package',
+      url: "/account?tab=buy-package",
     },
     {
-      label: 'Khoá tập',
+      label: "Khoá tập",
       icon: ExerciseYogaIcon,
-      url: '/courses',
+      url: "/courses",
     },
     {
-      label: 'Thực đơn',
+      label: "Thực đơn",
       icon: FoodGrainsIcon,
-      url: '/meal-plans',
+      url: "/meal-plans",
     },
     {
-      label: 'Sản phẩm',
+      label: "Sản phẩm",
       icon: GymIcon,
-      url: '/products',
+      url: "/products",
     },
     {
-      label: 'Team HLV',
+      label: "Team HLV",
       icon: FitnessLineIcon,
-      url: '/coaches',
+      url: "/coaches",
     },
     {
-      label: 'Về Shefit',
+      label: "Về Shefit",
       icon: AboutIcon,
-      url: '/about',
+      url: "/about",
     },
     {
-      label: 'Blog healthy',
+      label: "Blog healthy",
       icon: BookIcon,
-      url: '/blog',
+      url: "/blog",
     },
     {
-      label: 'Thư viện',
+      label: "Thư viện",
       icon: GalleryIcon,
-      url: '/gallery',
+      url: "/gallery",
     },
     {
-      label: 'Tài khoản',
+      label: "Tài khoản",
       icon: AccountIcon,
-      url: '/account',
+      url: "/account",
     },
   ]
 
@@ -92,12 +92,23 @@ export function Header() {
           <Image src="/logo-mono-horizontal.png" alt="logo-mono-horizontal" width={136} height={40} />
         </Link>
         <div className="justify-center items-center gap-6 text-background hidden lg:flex">
-          {navItems.map((item, index) => (
-            <Link key={`navItem-${index}`} href={item.url} className="flex flex-col items-center gap-1">
-              <item.icon />
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item, index) =>
+            item.label === "Gói Member" ? (
+              <button
+                key={`navItem-${index}`}
+                onClick={() => (window.location.href = item.url)}
+                className="flex flex-col items-center gap-1 bg-transparent border-none text-white cursor-pointer"
+              >
+                <item.icon />
+                {item.label}
+              </button>
+            ) : (
+              <Link key={`navItem-${index}`} href={item.url} className="flex flex-col items-center gap-1">
+                <item.icon />
+                {item.label}
+              </Link>
+            )
+          )}
           {authButton}
         </div>
         <Sheet>
@@ -112,12 +123,23 @@ export function Header() {
               <SheetDescription />
             </SheetHeader>
             <div>
-              {navItems.map((item, index) => (
-                <Link key={`navItem-${index}`} href={item.url} className="flex items-center gap-1 mb-3">
-                  <item.icon />
-                  {item.label}
-                </Link>
-              ))}
+              {navItems.map((item, index) =>
+                item.label === "Gói Member" ? (
+                  <button
+                    key={`navItem-${index}`}
+                    onClick={() => (window.location.href = item.url)}
+                    className="flex items-center gap-1 mb-3 bg-transparent border-none text-foreground cursor-pointer w-full text-left"
+                  >
+                    <item.icon />
+                    {item.label}
+                  </button>
+                ) : (
+                  <Link key={`navItem-${index}`} href={item.url} className="flex items-center gap-1 mb-3">
+                    <item.icon />
+                    {item.label}
+                  </Link>
+                )
+              )}
             </div>
             <div className="flex flex-col items-center gap-8 absolute bottom-10 left-1/2 -translate-x-1/2">
               <SheetFooter className="mt-6">{authButton}</SheetFooter>

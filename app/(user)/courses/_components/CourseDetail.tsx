@@ -4,7 +4,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { getCourse } from "@/network/server/courses"
 import { getEquipments } from "@/network/server/equipments"
 import { getMuscleGroups } from "@/network/server/muscle-groups"
-import { formCategoryLabel, difficultyLevelLabel } from '@/lib/label'
+import { formCategoryLabel, difficultyLevelLabel } from "@/lib/label"
 import { useState, useEffect, useRef } from "react"
 import { DifficultyLevel, FormCategory } from "@/models/course"
 import LiveCourseDetail from "./LiveCourseDetail"
@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation"
 import ActionButtons from "./ActionButtons"
 import { Button } from "@/components/ui/button"
 import { getSubscriptions } from "@/network/server/subscriptions"
+import Link from "next/link"
 interface CourseDetailProps {
   courseId: string
   typeCourse: "video" | "live"
@@ -116,13 +117,15 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         <div className="flex justify-between text-lg">
           <div>
             <p className="font-medium">{course?.data?.course_name}</p>
-            <p className="text-[#737373]">{course?.data && difficultyLevelLabel[course.data.difficulty_level as DifficultyLevel]}</p>
+            <p className="text-[#737373]">
+              {course?.data && difficultyLevelLabel[course.data.difficulty_level as DifficultyLevel]}
+            </p>
             <p className="text-[#737373]">{course?.data?.trainer}</p>
           </div>
           <div className="text-gray-500">
             {course?.data?.form_categories &&
               (Array.isArray(course.data.form_categories)
-                ? course.data.form_categories.map((cat: FormCategory) => formCategoryLabel[cat]).join(', ')
+                ? course.data.form_categories.map((cat: FormCategory) => formCategoryLabel[cat]).join(", ")
                 : formCategoryLabel[course.data.form_categories as FormCategory])}
           </div>
         </div>
@@ -132,13 +135,19 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
             <div className="text-[#737373] text-lg">Bạn cần mua các Gói Member sau để truy cập khóa tập</div>
             <div className="flex flex-wrap gap-2 mt-4">
               {subscriptions?.data?.map((subscription: any) => (
-                <Button
+                <Link
                   key={subscription.id}
-                  variant="default"
+                  href={`/packages/detail/${subscription.id}`}
                   className="text-lg rounded-full hover:bg-primary/90 w-[136px] bg-[#319F43]"
                 >
-                  {subscription.name}
-                </Button>
+                  <Button
+                    key={subscription.id}
+                    variant="default"
+                    className="text-lg rounded-full hover:bg-primary/90 w-[136px] bg-[#319F43]"
+                  >
+                    {subscription.name}
+                  </Button>
+                </Link>
               ))}
             </div>
           </div>

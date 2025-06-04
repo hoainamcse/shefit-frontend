@@ -5,6 +5,7 @@ import { useAuth } from "@/components/providers/auth-context"
 import { getUserSubscriptions } from "@/network/server/user-subscriptions"
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
+import Link from "next/link"
 
 export default function AcctionButton() {
   const { userId } = useAuth()
@@ -48,7 +49,15 @@ export default function AcctionButton() {
   }
 
   if (isSubscribed) {
-    return <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] w-full px-5 mx-auto">Gia hạn gói</Button>
+    return (
+      <Link href={`/packages/${params.id}`} className="mx-auto">
+        <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] w-full px-5 text-lg">Gia hạn gói</Button>
+      </Link>
+    )
   }
-  return <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] w-full px-5 mx-auto">Mua gói</Button>
+  return (
+    <Link href={`/packages/${params.id}`} className="mx-auto">
+      <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] w-full px-5 text-lg">Mua gói</Button>
+    </Link>
+  )
 }

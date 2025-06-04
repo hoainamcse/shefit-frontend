@@ -1,7 +1,32 @@
+"use client"
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import CurrentCart from "./current-cart"
 import PurchasedOrder from "./purchased-order"
+import { useAuth } from "@/components/providers/auth-context"
+import { Button } from "@/components/ui/button"
+
 export default function Cart() {
+  const { userId } = useAuth()
+  const isLoggedIn = !!userId
+
+  if (!isLoggedIn) {
+    return (
+      <div className="flex flex-col items-center text-center gap-6">
+        <p className="text-lg">HÃY ĐĂNG NHẬP ĐỂ XEM GIỎ HÀNG</p>
+        <div className="flex gap-4 justify-center w-full px-10">
+          <Button
+            className="bg-[#13D8A7] rounded-full w-full text-lg max-w-[200px]"
+            onClick={() => {
+              window.location.href = "/auth/login"
+            }}
+          >
+            Đăng nhập
+          </Button>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="max-w-screen-3xl mx-auto px-14">
       <Tabs defaultValue="current-cart">

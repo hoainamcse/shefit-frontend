@@ -5,6 +5,9 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { QrCodeIcon } from "@/components/icons/qr-code-icon"
 import { Input } from "@/components/ui/input"
+import { useAuth } from "@/components/providers/auth-context"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 interface Price {
   id: number
@@ -19,8 +22,10 @@ interface PackagePaymentProps {
 }
 
 export function PackagePayment({ prices, defaultPrice, packageName }: PackagePaymentProps) {
+  const { userId } = useAuth()
   const [selectedPriceId, setSelectedPriceId] = useState<number | null>(null)
   const [totalPrice, setTotalPrice] = useState<number>(defaultPrice || 0)
+  const isLoggedIn = !!userId
 
   const handlePriceSelect = (priceId: number, price: number) => {
     if (selectedPriceId === priceId) return
@@ -63,27 +68,38 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
 
         <DialogContent className="px-7 py-12 md:px-20 md:py-10 max-w-[90%] lg:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle></DialogTitle>
+            <DialogTitle className="text-center text-2xl font-bold">
+              {isLoggedIn ? "" : "Yêu cầu đăng nhập"}
+            </DialogTitle>
           </DialogHeader>
 
-          <div className="flex flex-col items-center">
-            <QrCodeIcon className="w-[151px] h-[151px] md:w-[256px] md:h-[256px]" />
+          {isLoggedIn ? (
+            <div className="flex flex-col items-center">
+              <QrCodeIcon className="w-[151px] h-[151px] md:w-[256px] md:h-[256px]" />
 
-            <div className="text-[#000000] text-base md:text-xl font-bold mt-5 mb-7 text-center">
-              <div>Số Tiền: {(totalPrice || 0).toLocaleString()}đ</div>
-              <div>Stk: 00000000</div>
-              <div>Nội Dung: {packageName}</div>
-            </div>
-
-            <div className="text-[#737373] text-base md:text-xl">
-              <div className="mb-7 md:mb-8">
-                Vui lòng quét mã QR để thanh toán, chú ý đúng số tiền và nội dung thanh toán
+              <div className="text-[#000000] text-base md:text-xl font-bold mt-5 mb-7 text-center">
+                <div>Số Tiền: {(totalPrice || 0).toLocaleString()}đ</div>
+                <div>Stk: 00000000</div>
+                <div>Nội Dung: {packageName}</div>
               </div>
 
-              <div>Vui Lòng Đợi Trong 30p để hệ thống kích hoạt gói cho bạn</div>
-              <div>Hotline: 0852055516</div>
+              <div className="text-[#737373] text-base md:text-xl">
+                <div className="mb-7 md:mb-8">
+                  Vui lòng quét mã QR để thanh toán, chú ý đúng số tiền và nội dung thanh toán
+                </div>
+
+                <div>Vui Lòng Đợi Trong 30p để hệ thống kích hoạt gói cho bạn</div>
+                <div>Hotline: 0852055516</div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="flex flex-col items-center text-center gap-6">
+              <p className="text-lg">Bạn cần phải đăng nhập để thực hiện mua gói</p>
+              <Link href="/auth/login">
+                <Button className="bg-[#13D8A7] h-[56px] rounded-full px-10 text-lg">Đăng nhập</Button>
+              </Link>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </>

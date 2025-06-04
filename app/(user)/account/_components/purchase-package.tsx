@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -5,23 +7,55 @@ import { getSubscriptions } from "@/network/server/subscriptions"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import PurchasedPackage from "./purchased-package"
 import { cn } from "@/lib/utils"
-export default async function PurchasePackage() {
-  const subscriptions = await getSubscriptions()
+import { useAuth } from "@/components/providers/auth-context"
+import { useState, useEffect } from "react"
+import { ListResponse } from "@/models/response"
+import { Subscription } from "@/models/subscriptions"
+export default function PurchasePackage() {
+  const { userId } = useAuth()
+  const [subscriptions, setSubscriptions] = useState<ListResponse<Subscription>>({
+    status: "",
+    data: [],
+    paging: { page: 1, per_page: 10, total: 0 },
+  })
+  const [isLoading, setIsLoading] = useState(true)
+  const isLoggedIn = !!userId
+
+  useEffect(() => {
+    async function fetchSubscriptions() {
+      try {
+        setIsLoading(true)
+        const data = await getSubscriptions()
+        setSubscriptions(data)
+      } catch (error) {
+        console.error("Error fetching subscriptions:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchSubscriptions()
+  }, [])
 
   return (
     <div className="pb-16 md:pb-16 px-5 sm:px-9 lg:px-[56px] xl:px-[60px]">
       <Tabs defaultValue="all">
-        <TabsList className="bg-background gap-y-3 sm:gap-y-5 gap-x-7 pl-0 h-fit lg:h-9 mb-6">
-          <TabsTrigger value="all" className={cn("text-ring bg-white !shadow-none border-2 border-[#FF7873] text-lg ")}>
-            Tất cả
-          </TabsTrigger>
-          <TabsTrigger
-            value="purchased"
-            className={cn("text-ring bg-white !shadow-none border-2 border-[#FF7873] text-lg")}
-          >
-            Gói đã mua
-          </TabsTrigger>
-        </TabsList>
+        {isLoggedIn && (
+          <TabsList className="bg-background gap-y-3 sm:gap-y-5 gap-x-7 pl-0 h-fit lg:h-9 mb-6">
+            <TabsTrigger
+              value="all"
+              className={cn("text-ring bg-white !shadow-none border-2 border-[#FF7873] text-lg ")}
+            >
+              Tất cả
+            </TabsTrigger>
+            <TabsTrigger
+              value="purchased"
+              className={cn("text-ring bg-white !shadow-none border-2 border-[#FF7873] text-lg")}
+            >
+              Gói đã mua
+            </TabsTrigger>
+          </TabsList>
+        )}
         <TabsContent value="all">
           <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
             Mua Gói Độ Dáng

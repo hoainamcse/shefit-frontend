@@ -1,10 +1,14 @@
 "use client"
+
 import { ArrowPinkIcon } from "@/components/icons/ArrowPinkIcon"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { getWeeks } from "@/network/server/weeks"
 import { getDays } from "@/network/server/days"
 import Link from "next/link"
 import { useState, useEffect } from "react"
+import { useAuth } from "@/components/providers/auth-context"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 type CourseDay = {
   day: number
@@ -30,6 +34,9 @@ export default function VideoCourseDetail({ courseId }: { courseId: string }) {
   const [weeks, setWeeks] = useState<any>(null)
   const [days, setDays] = useState<any>(null)
   const [courseData, setCourseData] = useState<CourseWeek[]>([])
+  const { userId } = useAuth()
+  const isLoggedIn = !!userId
+  const [dialogOpen, setDialogOpen] = useState<string | false>(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,9 +83,56 @@ export default function VideoCourseDetail({ courseId }: { courseId: string }) {
                           <span className="text-gray-900 dark:text-gray-50">{index + 1}</span>
                           <p>{day.description}</p>
                         </div>
-                        <Link href={`/courses/${courseId}/video-classes/${weeks.data[weekIndex]?.id}/${day.id}`}>
-                          <ArrowPinkIcon />
-                        </Link>
+                        {isLoggedIn ? (
+                          <Link href={`/courses/${courseId}/video-classes/${weeks.data[weekIndex]?.id}/${day.id}`}>
+                            <ArrowPinkIcon />
+                          </Link>
+                        ) : (
+                          <Dialog
+                            open={dialogOpen === `day-${day.id}`}
+                            onOpenChange={(open) => {
+                              if (!open) setDialogOpen(false)
+                            }}
+                          >
+                            <DialogTrigger asChild>
+                              <div onClick={() => setDialogOpen(`day-${day.id}`)} className="cursor-pointer">
+                                <ArrowPinkIcon />
+                              </div>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+                              </DialogHeader>
+                              <div className="flex flex-col items-center text-center gap-6">
+                                <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
+                                <div className="flex gap-4 justify-center w-full px-10">
+                                  <div className="flex-1">
+                                    <Button
+                                      className="bg-[#13D8A7] rounded-full w-full text-lg"
+                                      onClick={() => {
+                                        setDialogOpen(false)
+                                        window.location.href = "/account?tab=buy-package"
+                                      }}
+                                    >
+                                      Mua gói Member
+                                    </Button>
+                                  </div>
+                                  <div className="flex-1">
+                                    <Button
+                                      className="bg-[#13D8A7] rounded-full w-full text-lg"
+                                      onClick={() => {
+                                        setDialogOpen(false)
+                                        window.location.href = "/auth/login"
+                                      }}
+                                    >
+                                      Đăng nhập
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        )}
                       </li>
                     )
                   })}

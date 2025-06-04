@@ -48,29 +48,33 @@ export default async function PackageDetail({ params }: { params: Promise<{ slug
         />
 
         <div>
-          <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[Coiny] mb-[14px]">
-            Chọn quà tặng
-          </div>
+          {subscription.data.gifts?.length > 0 && (
+            <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[Coiny] mb-[14px]">
+              Chọn quà tặng
+              <div className="text-base md:text-xl text-[#737373] mb-7">Được ship đến tận nhà!</div>
+              <div className="flex flex-col gap-7 mb-7">
+                {subscription.data.gifts?.map((gift) => (
+                  <div key={gift.id}>
+                    <div className="flex justify-between">
+                      <div className="flex gap-2">
+                        <img
+                          src={gift.image}
+                          alt="gift"
+                          className="rounded-[10px] aspect-square w-[85px] object-cover"
+                        />
 
-          <div className="text-base md:text-xl text-[#737373] mb-7">Được ship đến tận nhà!</div>
+                        <div>
+                          <div className="text-[#000000] text-base md:text-xl font-medium mb-2">{gift.name}</div>
+                        </div>
+                      </div>
 
-          <div className="flex flex-col gap-7 mb-7">
-            {subscription.data.gifts?.map((gift) => (
-              <div key={gift.id}>
-                <div className="flex justify-between">
-                  <div className="flex gap-2">
-                    <img src={gift.image} alt="gift" className="rounded-[10px] aspect-square w-[85px] object-cover" />
-
-                    <div>
-                      <div className="text-[#000000] text-base md:text-xl font-medium mb-2">{gift.name}</div>
+                      <Checkbox className="w-8 h-8 border-[#737373]" />
                     </div>
                   </div>
-
-                  <Checkbox className="w-8 h-8 border-[#737373]" />
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
 
           <div>
             <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[Coiny] mb-[14px]">

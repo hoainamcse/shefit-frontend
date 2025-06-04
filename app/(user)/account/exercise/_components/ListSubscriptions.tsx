@@ -13,10 +13,11 @@ export default function ListSubscriptions() {
   const [subscriptionNames, setSubscriptionNames] = useState<{ [key: number]: string }>({})
   const [isLoading, setIsLoading] = useState(true)
   const [selectedSubscription, setSelectedSubscription] = useState<any>(null)
+  const isLoggedIn = !!userId
 
   useEffect(() => {
     async function fetchData() {
-      if (!userId) return
+      if (!isLoggedIn) return
 
       try {
         const userSubsResponse = await getUserSubscriptions(userId)
@@ -51,7 +52,7 @@ export default function ListSubscriptions() {
     }
 
     fetchData()
-  }, [userId])
+  }, [isLoggedIn])
 
   const handleSubscriptionChange = (value: string) => {
     const subscriptionId = parseInt(value)
@@ -66,7 +67,7 @@ export default function ListSubscriptions() {
   const endDate = selectedSubscription?.subscription_end_at ? new Date(selectedSubscription.subscription_end_at) : null
   const isExpired = endDate ? currentDate > endDate : false
 
-  return (
+  return isLoggedIn ? (
     <div className="flex gap-5 mb-6">
       <Select
         disabled={isLoading}
@@ -110,5 +111,5 @@ export default function ListSubscriptions() {
         </div>
       </div>
     </div>
-  )
+  ) : null
 }

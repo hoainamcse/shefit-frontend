@@ -1,11 +1,61 @@
+"use client"
+
 import Link from "next/link"
 import { getMuscleGroups } from "@/network/server/muscle-groups"
 import { getDiets } from "@/network/server/diets"
+import { useState, useEffect } from "react"
+import { ListResponse } from "@/models/response"
+import { MuscleGroup } from "@/models/muscle-group"
+import { Diet } from "@/models/diet"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 export const dynamic = "force-dynamic"
+import { useAuth } from "@/components/providers/auth-context"
+export default function Gallery() {
+  const { userId } = useAuth()
+  const isLoggedIn = !!userId
+  const [dialogOpen, setDialogOpen] = useState<string | false>(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [muscleGroupsData, setMuscleGroupsData] = useState<ListResponse<MuscleGroup>>({
+    status: "",
+    data: [],
+    paging: { page: 1, per_page: 10, total: 0 },
+  })
+  const [dietsData, setDietsData] = useState<ListResponse<Diet>>({
+    status: "",
+    data: [],
+    paging: { page: 1, per_page: 10, total: 0 },
+  })
+  useEffect(() => {
+    async function fetchMuscleGroups() {
+      try {
+        setIsLoading(true)
+        const data = await getMuscleGroups()
+        setMuscleGroupsData(data)
+      } catch (error) {
+        console.error("Error fetching muscle groups:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
 
-export default async function Gallery() {
-  const muscleGroups = await getMuscleGroups()
-  const diets = await getDiets()
+    fetchMuscleGroups()
+  }, [])
+  useEffect(() => {
+    async function fetchDiets() {
+      try {
+        setIsLoading(true)
+        const data = await getDiets()
+        setDietsData(data)
+      } catch (error) {
+        console.error("Error fetching diets:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchDiets()
+  }, [])
   return (
     <div className="flex flex-col gap-10 mt-10">
       <div className="mb-20">
@@ -16,23 +66,86 @@ export default async function Gallery() {
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
-          {muscleGroups.data.map((muscleGroup) => (
-            <Link href={`/gallery/muscle/${muscleGroup.id}`} key={muscleGroup.id}>
-              <div key={`menu-${muscleGroup.id}`} className="text-xl">
-                <div className="relative group">
-                  <img
-                    src={muscleGroup.image ?? undefined}
-                    alt=""
-                    className="aspect-[5/3] object-cover rounded-xl mb-4"
-                    width={585}
-                    height={373}
-                  />
-                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+          {muscleGroupsData.data.map((muscleGroup) =>
+            isLoggedIn ? (
+              <Link href={`/gallery/muscle/${muscleGroup.id}`} key={muscleGroup.id}>
+                <div key={`menu-${muscleGroup.id}`} className="text-xl">
+                  <div className="relative group">
+                    <img
+                      src={muscleGroup.image ?? undefined}
+                      alt=""
+                      className="aspect-[5/3] object-cover rounded-xl mb-4"
+                      width={585}
+                      height={373}
+                    />
+                    <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                  </div>
+                  <p className="font-bold">{muscleGroup.name}</p>
                 </div>
-                <p className="font-bold">{muscleGroup.name}</p>
+              </Link>
+            ) : (
+              <div key={muscleGroup.id}>
+                <Dialog
+                  open={dialogOpen === `muscle-${muscleGroup.id}`}
+                  onOpenChange={(open) => {
+                    if (!open) setDialogOpen(false)
+                  }}
+                >
+                  <DialogTrigger asChild>
+                    <div
+                      key={`menu-${muscleGroup.id}`}
+                      className="text-xl cursor-pointer"
+                      onClick={() => setDialogOpen(`muscle-${muscleGroup.id}`)}
+                    >
+                      <div className="relative group">
+                        <img
+                          src={muscleGroup.image ?? undefined}
+                          alt=""
+                          className="aspect-[5/3] object-cover rounded-xl mb-4"
+                          width={585}
+                          height={373}
+                        />
+                        <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                      </div>
+                      <p className="font-bold">{muscleGroup.name}</p>
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+                    </DialogHeader>
+                    <div className="flex flex-col items-center text-center gap-6">
+                      <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN</p>
+                      <div className="flex gap-4 justify-center w-full px-10">
+                        <div className="flex-1">
+                          <Button
+                            className="bg-[#13D8A7] rounded-full w-full text-lg"
+                            onClick={() => {
+                              setDialogOpen(false)
+                              window.location.href = "/account?tab=buy-package"
+                            }}
+                          >
+                            Mua gói Member
+                          </Button>
+                        </div>
+                        <div className="flex-1">
+                          <Button
+                            className="bg-[#13D8A7] rounded-full w-full text-lg"
+                            onClick={() => {
+                              setDialogOpen(false)
+                              window.location.href = "/auth/login"
+                            }}
+                          >
+                            Đăng nhập
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
-            </Link>
-          ))}
+            )
+          )}
         </div>
       </div>
       <div className="mb-20">
@@ -43,23 +156,86 @@ export default async function Gallery() {
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
-          {diets.data.map((diet) => (
-            <Link href={`/gallery/meal/${diet.id}`} key={diet.id}>
-              <div key={`menu-${diet.id}`} className="text-xl">
-                <div className="relative group">
-                  <img
-                    src={diet.image}
-                    alt=""
-                    className="aspect-[5/3] object-cover rounded-xl mb-4"
-                    width={585}
-                    height={373}
-                  />
-                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+          {dietsData.data?.map((diet) =>
+            isLoggedIn ? (
+              <Link href={`/gallery/meal/${diet.id}`} key={diet.id}>
+                <div key={`menu-${diet.id}`} className="text-xl">
+                  <div className="relative group">
+                    <img
+                      src={diet.image}
+                      alt=""
+                      className="aspect-[5/3] object-cover rounded-xl mb-4"
+                      width={585}
+                      height={373}
+                    />
+                    <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                  </div>
+                  <p className="font-bold">{diet.name}</p>
                 </div>
-                <p className="font-bold">{diet.name}</p>
+              </Link>
+            ) : (
+              <div key={diet.id}>
+                <Dialog
+                  open={dialogOpen === `diet-${diet.id}`}
+                  onOpenChange={(open) => {
+                    if (!open) setDialogOpen(false)
+                  }}
+                >
+                  <DialogTrigger asChild>
+                    <div
+                      key={`menu-${diet.id}`}
+                      className="text-xl cursor-pointer"
+                      onClick={() => setDialogOpen(`diet-${diet.id}`)}
+                    >
+                      <div className="relative group">
+                        <img
+                          src={diet.image}
+                          alt=""
+                          className="aspect-[5/3] object-cover rounded-xl mb-4"
+                          width={585}
+                          height={373}
+                        />
+                        <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                      </div>
+                      <p className="font-bold">{diet.name}</p>
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+                    </DialogHeader>
+                    <div className="flex flex-col items-center text-center gap-6">
+                      <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN</p>
+                      <div className="flex gap-4 justify-center w-full px-10">
+                        <div className="flex-1">
+                          <Button
+                            className="bg-[#13D8A7] rounded-full w-full text-lg"
+                            onClick={() => {
+                              setDialogOpen(false)
+                              window.location.href = "/account?tab=buy-package"
+                            }}
+                          >
+                            Mua gói Member
+                          </Button>
+                        </div>
+                        <div className="flex-1">
+                          <Button
+                            className="bg-[#13D8A7] rounded-full w-full text-lg"
+                            onClick={() => {
+                              setDialogOpen(false)
+                              window.location.href = "/auth/login"
+                            }}
+                          >
+                            Đăng nhập
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
-            </Link>
-          ))}
+            )
+          )}
         </div>
       </div>
     </div>
