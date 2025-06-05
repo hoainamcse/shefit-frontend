@@ -31,7 +31,7 @@ import { calculateMonthsFromDates, generatePassword, generateUsername } from "@/
 import { getUsers, updatePassword, updateUser } from "@/network/server/user"
 import { getSubscriptions } from "@/network/server/subscriptions-admin"
 import { Subscription } from "@/models/subscription-admin"
-import { UserSubscription, UserSubscriptionWithGifts } from "@/models/user-subscriptions"
+import { UserSubscription, UserSubscriptionDetail } from "@/models/user-subscriptions"
 import {
   getUserSubscriptions,
   createUserSubscription,
@@ -111,18 +111,13 @@ const accountSchema = z.object({
         plan_id: z.coerce.number().optional(),
         order_number: z.string(),
         total_price: z.coerce.number(),
-        // Assigned items per subscription
-        // course_ids: z.array(z.coerce.string()).default([]),
-        // meal_plan_ids: z.array(z.coerce.string()).default([]),
-        // dish_ids: z.array(z.coerce.string()).default([]),
-        // exercise_ids: z.array(z.coerce.string()).default([]),
+        course_ids: z.array(z.coerce.string()).default([]),
+        meal_plan_ids: z.array(z.coerce.string()).default([]),
+        dish_ids: z.array(z.coerce.string()).default([]),
+        exercise_ids: z.array(z.coerce.string()).default([]),
       })
     )
     .optional(),
-  course_ids: z.array(z.coerce.string()).optional(),
-  meal_plan_ids: z.array(z.coerce.string()).optional(),
-  dish_ids: z.array(z.coerce.string()).optional(),
-  exercise_ids: z.array(z.coerce.string()).optional(),
 })
 
 type AccountFormData = z.infer<typeof accountSchema>
@@ -159,10 +154,6 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
           address: data.address,
           role: data.role,
           subscriptions: [],
-          course_ids: [],
-          meal_plan_ids: [],
-          dish_ids: [],
-          exercise_ids: [],
         }
       : {
           fullname: "",
@@ -172,10 +163,6 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
           address: "",
           role: "normal_user",
           subscriptions: [],
-          course_ids: [],
-          meal_plan_ids: [],
-          dish_ids: [],
-          exercise_ids: [],
         },
   })
 
@@ -285,25 +272,17 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       if (data?.id) {
         const userId = data.id.toString()
 
-        const [
-          userSubscriptionsResponse,
-          userCoursesResponse,
-          userMealPlansResponse,
-          userExercisesResponse,
-          userDishesResponse,
-        ] = await Promise.all([
-          getUserSubscriptions(userId),
-          getUserCourses(userId),
-          getUserMealPlans(userId),
-          getUserExercises(userId),
-          getUserDishes(userId),
-        ])
+        const userSubscriptionsResponse = await getUserSubscriptions(userId)
 
-        const subscriptionsWithPlanId = userSubscriptionsResponse.data.map((sub: UserSubscriptionWithGifts) => {
+        const subscriptionsWithPlanId = userSubscriptionsResponse.data.map((sub: UserSubscriptionDetail) => {
           // Format API dates
           const formattedSub = {
             ...sub,
             gift_id: sub.gifts?.id,
+            course_ids: sub.courses.map((course) => course.id.toString()),
+            meal_plan_ids: sub.meal_plans.map((mealPlan) => mealPlan.id.toString()),
+            dish_ids: sub.dishes.map((dish) => dish.id.toString()),
+            exercise_ids: sub.exercises.map((exercise) => exercise.id.toString()),
             subscription_start_at: sub.subscription_start_at ? formatDate(sub.subscription_start_at) : "",
             subscription_end_at: sub.subscription_end_at ? formatDate(sub.subscription_end_at) : "",
           }
@@ -338,33 +317,33 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
 
         console.log("subscriptionsWithPlanId", subscriptionsWithPlanId)
 
-        // Set user courses
-        if (userCoursesResponse?.data?.length > 0) {
-          const courseIds = userCoursesResponse.data.map((course: UserCourse) => course.course_id.toString())
-          form.setValue("course_ids", courseIds)
-        }
+        // // Set user courses
+        // if (userCoursesResponse?.data?.length > 0) {
+        //   const courseIds = userCoursesResponse.data.map((course: UserCourse) => course.course_id.toString())
+        //   form.setValue("course_ids", courseIds)
+        // }
 
-        // Set user meal plans
-        if (userMealPlansResponse?.data?.length > 0) {
-          const mealPlanIds = userMealPlansResponse.data.map((mealPlan: UserMealPlan) =>
-            mealPlan.meal_plan_id.toString()
-          )
-          form.setValue("meal_plan_ids", mealPlanIds)
-        }
+        // // Set user meal plans
+        // if (userMealPlansResponse?.data?.length > 0) {
+        //   const mealPlanIds = userMealPlansResponse.data.map((mealPlan: UserMealPlan) =>
+        //     mealPlan.meal_plan_id.toString()
+        //   )
+        //   form.setValue("meal_plan_ids", mealPlanIds)
+        // }
 
-        // Set user exercises
-        if (userExercisesResponse?.data?.length > 0) {
-          const exerciseIds = userExercisesResponse.data.map((exercise: UserExercise) =>
-            exercise.exercise_id.toString()
-          )
-          form.setValue("exercise_ids", exerciseIds)
-        }
+        // // Set user exercises
+        // if (userExercisesResponse?.data?.length > 0) {
+        //   const exerciseIds = userExercisesResponse.data.map((exercise: UserExercise) =>
+        //     exercise.exercise_id.toString()
+        //   )
+        //   form.setValue("exercise_ids", exerciseIds)
+        // }
 
-        // Set user dishes
-        if (userDishesResponse?.data?.length > 0) {
-          const dishIds = userDishesResponse.data.map((dish: UserDish) => dish.dish_id.toString())
-          form.setValue("dish_ids", dishIds)
-        }
+        // // Set user dishes
+        // if (userDishesResponse?.data?.length > 0) {
+        //   const dishIds = userDishesResponse.data.map((dish: UserDish) => dish.dish_id.toString())
+        //   form.setValue("dish_ids", dishIds)
+        //}
       }
     } catch (error) {
       console.error("Error fetching account data:", error)
@@ -438,26 +417,6 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
         } else {
           await handleCreateUpdateUserSubscription(values.subscriptions, userId, accessToken)
         }
-      }
-
-      // 3. Handle exercises
-      if (values.exercise_ids && values.exercise_ids.length > 0) {
-        await handleAssignUserExercise(values.exercise_ids, userId)
-      }
-
-      // 4. Handle dishes
-      if (values.dish_ids && values.dish_ids.length > 0) {
-        await handleAssignUserDish(values.dish_ids, userId)
-      }
-
-      // 5. Handle meal plans
-      if (values.meal_plan_ids && values.meal_plan_ids.length > 0) {
-        await handleAssignUserMealPlan(values.meal_plan_ids, userId)
-      }
-
-      // 6. Handle courses
-      if (values.course_ids && values.course_ids.length > 0) {
-        await handleAssignUserCourse(values.course_ids, userId)
       }
 
       toast.dismiss(toastId)
@@ -982,7 +941,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                       </div>
 
                       {/* Assigned Items Section as Accordion */}
-                      {/*{userRole !== "sub_admin" && (
+                      {userRole !== "sub_admin" && (
                         <div className="mt-6 border-t pt-4">
                           <Accordion type="single" collapsible className="w-full">
                             <AccordionItem value="assigned-items">
@@ -1005,7 +964,9 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                                               label=""
                                               data={[]}
                                               placeholder="Chọn khóa học để gán cho gói membership này"
-                                              key={`course-select-${idx}-${(field.value as string[] | undefined)?.length || 0}`}
+                                              key={`course-select-${idx}-${
+                                                (field.value as string[] | undefined)?.length || 0
+                                              }`}
                                             />
                                           </FormControl>
                                           <FormMessage />
@@ -1028,7 +989,9 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                                               label=""
                                               data={[]}
                                               placeholder="Chọn thực đơn để gán cho gói membership này"
-                                              key={`meal-plan-select-${idx}-${(field.value as string[] | undefined)?.length || 0}`}
+                                              key={`meal-plan-select-${idx}-${
+                                                (field.value as string[] | undefined)?.length || 0
+                                              }`}
                                             />
                                           </FormControl>
                                           <FormMessage />
@@ -1051,7 +1014,9 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                                               label=""
                                               data={[]}
                                               placeholder="Chọn bài tập để gán cho gói membership này"
-                                              key={`exercise-select-${idx}-${(field.value as string[] | undefined)?.length || 0}`}
+                                              key={`exercise-select-${idx}-${
+                                                (field.value as string[] | undefined)?.length || 0
+                                              }`}
                                             />
                                           </FormControl>
                                           <FormMessage />
@@ -1074,7 +1039,9 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                                               label=""
                                               data={[]}
                                               placeholder="Chọn món ăn để gán cho gói membership này"
-                                              key={`dish-select-${idx}-${(field.value as string[] | undefined)?.length || 0}`}
+                                              key={`dish-select-${idx}-${
+                                                (field.value as string[] | undefined)?.length || 0
+                                              }`}
                                             />
                                           </FormControl>
                                           <FormMessage />
@@ -1087,7 +1054,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                             </AccordionItem>
                           </Accordion>
                         </div>
-                      )}*/}
+                      )}
                     </div>
                   )
                 })}

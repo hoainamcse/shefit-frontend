@@ -3,9 +3,9 @@
 import { ApiResponse, ListResponse } from "@/models/response"
 import { fetchDataServer } from "../helpers/fetch-data-server"
 import { revalidateTag } from "next/cache"
-import { UserSubscription, UserSubscriptionWithGifts } from "@/models/user-subscriptions"
+import { UserSubscription, UserSubscriptionDetail } from "@/models/user-subscriptions"
 
-export async function getUserSubscriptions(user_id: string): Promise<ListResponse<UserSubscriptionWithGifts>> {
+export async function getUserSubscriptions(user_id: string): Promise<ListResponse<UserSubscriptionDetail>> {
     const response = await fetchDataServer(`/v1/users/${user_id}/subscriptions`, {
         method: 'GET',
         credentials: 'include',
@@ -13,7 +13,7 @@ export async function getUserSubscriptions(user_id: string): Promise<ListRespons
     return await response.json()
 }
 
-export async function createUserSubscription(data: any, user_id: string): Promise<ApiResponse<UserSubscriptionWithGifts>> {
+export async function createUserSubscription(data: any, user_id: string): Promise<ApiResponse<UserSubscriptionDetail>> {
     const response = await fetchDataServer(`/v1/users/${user_id}/subscriptions`, {
         method: 'POST',
         body: JSON.stringify(data),
@@ -23,7 +23,7 @@ export async function createUserSubscription(data: any, user_id: string): Promis
     return await response.json()
 }
 
-export async function updateUserSubscription(user_id: string, subscription_id: string, data: any, token: string): Promise<ApiResponse<UserSubscriptionWithGifts>> {
+export async function updateUserSubscription(user_id: string, subscription_id: string, data: any, token: string): Promise<ApiResponse<UserSubscriptionDetail>> {
     const response = await fetchDataServer(`/v1/users/${user_id}/subscriptions/${subscription_id}`, {
         headers: {
             Accept: "application/json",

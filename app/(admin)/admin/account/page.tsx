@@ -86,6 +86,8 @@ export default function AccountPage() {
         'Tỉnh/Thành phố',
         'Địa chỉ chi tiết',
         'Gói membership',
+        'Ngày bắt đầu',
+        'Ngày kết thúc',
         'Khoá tập',
         'Thực đơn',
         'Bài tập',
@@ -96,89 +98,84 @@ export default function AccountPage() {
 
       for (const account of accountTable) {
         const userId = account.id.toString()
-        let membershipNames = ''
-        let courseNames = ''
-        let mealPlanNames = ''
-        let exerciseNames = ''
-        let dishNames = ''
 
         try {
-          const [
-            userSubscriptionsResponse,
-            userCoursesResponse,
-            userMealPlansResponse,
-            userExercisesResponse,
-            userDishesResponse,
-          ] = await Promise.all([
-            getUserSubscriptions(userId),
-            getUserCourses(userId),
-            getUserMealPlans(userId),
-            getUserExercises(userId),
-            getUserDishes(userId),
-          ])
+          const userSubscriptionsResponse = await getUserSubscriptions(userId)
 
-          // Process Subscriptions
           if (userSubscriptionsResponse?.data && userSubscriptionsResponse.data.length > 0) {
-            const subscriptionDetails = await Promise.all(
-              userSubscriptionsResponse.data.map((sub: UserSubscription) => getSubscription(sub.subscription_id))
-            )
-            membershipNames = subscriptionDetails
-              .map((detail) => (detail.data as Subscription)?.name)
-              .filter(Boolean)
-              .join(', ')
-          }
+            for (const sub of userSubscriptionsResponse.data) {
+              const subscriptionDetail = await getSubscription(sub.subscription_id)
+              const membershipName = (subscriptionDetail.data as Subscription)?.name || ''
+              const startDate = sub.subscription_start_at ? formatDateString(sub.subscription_start_at) : ''
+              const endDate = sub.subscription_end_at ? formatDateString(sub.subscription_end_at) : ''
 
-          // Process Courses
-          if (userCoursesResponse?.data && userCoursesResponse.data.length > 0) {
-            courseNames = userCoursesResponse.data
-              .map((item: UserCourse) => item.course?.course_name)
-              .filter(Boolean)
-              .join(', ')
-          }
+              const courseNames = sub.courses.map((course) => course.course_name).join(', ')
+              const mealPlanNames = sub.meal_plans.map((meal) => meal.title).join(', ')
+              const exerciseNames = sub.exercises.map((exercise) => exercise.name).join(', ')
+              const dishNames = sub.dishes.map((dish) => dish.name).join(', ')
 
-          // Process Meal Plans
-          if (userMealPlansResponse?.data && userMealPlansResponse.data.length > 0) {
-            mealPlanNames = userMealPlansResponse.data
-              .map((item: UserMealPlan) => item.meal_plan?.title)
-              .filter(Boolean)
-              .join(', ')
-          }
-
-          // Process Exercises
-          if (userExercisesResponse?.data && userExercisesResponse.data.length > 0) {
-            exerciseNames = userExercisesResponse.data
-              .map((item: UserExercise) => item.exercise?.name)
-              .filter(Boolean)
-              .join(', ')
-          }
-
-          // Process Dishes
-          if (userDishesResponse?.data && userDishesResponse.data.length > 0) {
-            dishNames = userDishesResponse.data
-              .map((item: UserDish) => item.dish?.name)
-              .filter(Boolean)
-              .join(', ')
+              const row = [
+                account.id.toString(),
+                account.fullname,
+                account.username,
+                account.phone_number,
+                roleLabel[account.role],
+                account.created_at,
+                account.province || '',
+                account.address || '',
+                membershipName,
+                startDate,
+                endDate,
+                courseNames,
+                mealPlanNames,
+                exerciseNames,
+                dishNames,
+              ]
+              csvRows.push(row.map((field) => `"${field}"`).join(','))
+            }
+          } else {
+            // If no subscriptions, still add a row with user data and empty subscription fields
+            const row = [
+              account.id.toString(),
+              account.fullname,
+              account.username,
+              account.phone_number,
+              roleLabel[account.role],
+              account.created_at,
+              account.province || '',
+              account.address || '',
+              '', // Gói membership
+              '', // Ngày bắt đầu
+              '', // Ngày kết thúc
+              '', // Khoá tập
+              '', // Thực đơn
+              '', // Bài tập
+              '', // Món ăn
+            ]
+            csvRows.push(row.map((field) => `"${field}"`).join(','))
           }
         } catch (error) {
           console.error(`Error fetching detailed data for user ${userId}:`, error)
+          // If an error occurs, still add a row with user data and empty subscription fields
+          const row = [
+            account.id.toString(),
+            account.fullname,
+            account.username,
+            account.phone_number,
+            roleLabel[account.role],
+            account.created_at,
+            account.province || '',
+            account.address || '',
+            '', // Gói membership
+            '', // Ngày bắt đầu
+            '', // Ngày kết thúc
+            '', // Khoá tập
+            '', // Thực đơn
+            '', // Bài tập
+            '', // Món ăn
+          ]
+          csvRows.push(row.map((field) => `"${field}"`).join(','))
         }
-
-        const row = [
-          account.id.toString(),
-          account.fullname,
-          account.username,
-          account.phone_number,
-          account.role,
-          account.created_at,
-          account.province || '',
-          account.address || '',
-          membershipNames,
-          courseNames,
-          mealPlanNames,
-          exerciseNames,
-          dishNames,
-        ]
-        csvRows.push(row.map((field) => `"${field}"`).join(','))
       }
 
       const csvString = csvRows.join('\n')

@@ -7,9 +7,9 @@ import { useAuth } from "@/components/providers/auth-context"
 import { getUserSubscriptions } from "@/network/server/user-subscriptions"
 import { getSubscription } from "@/network/server/subscriptions"
 import { useEffect, useState } from "react"
-import { UserSubscription } from "@/models/user-subscriptions"
+import { UserSubscriptionDetail } from "@/models/user-subscriptions"
 
-type EnhancedSubscription = UserSubscription & {
+type EnhancedSubscription = UserSubscriptionDetail & {
   name?: string
   description_1?: string
   description_2?: string
