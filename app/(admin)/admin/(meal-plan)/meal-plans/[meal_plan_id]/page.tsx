@@ -1,3 +1,5 @@
+import type { MealPlan } from '@/models/meal-plan'
+
 import { BoxIcon, HouseIcon } from 'lucide-react'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -8,9 +10,9 @@ import { getMealPlan } from '@/network/client/meal-plans'
 
 import { MealPlanView } from './meal-plan-view'
 
-export default async function EditMealPlanPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
+export default async function EditMealPlanPage({ params }: { params: Promise<{ meal_plan_id: MealPlan['id'] }> }) {
   const { meal_plan_id } = await params
-  const data = await getMealPlan(Number(meal_plan_id))
+  const data = await getMealPlan(meal_plan_id)
 
   return (
     <ContentLayout title="Cập nhật thực đơn">
@@ -40,7 +42,7 @@ export default async function EditMealPlanPage({ params }: { params: Promise<{ m
         </TabsContent>
 
         <TabsContent value="tab-2">
-          <MealPlanView mealPlanID={Number(meal_plan_id)} />
+          <MealPlanView mealPlanID={meal_plan_id} />
         </TabsContent>
       </Tabs>
     </ContentLayout>

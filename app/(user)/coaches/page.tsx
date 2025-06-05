@@ -1,6 +1,6 @@
 import React from "react"
 import { getCoaches } from "@/network/server/coaches"
-import { Coach } from "@/models/coaches"
+import { Coach } from "@/models/coach"
 
 export const dynamic = "force-dynamic"
 

@@ -39,11 +39,12 @@ type MealPlanDay = {
   image: string
 }
 
+type MealPlanDayPayload = Omit<MealPlanDay, 'id'>
+
 type MealPlanDish = Omit<Dish, 'diet' | 'image'> & {
   meal_time: DishMealTime
 }
 
-type MealPlanDayPayload = Omit<MealPlanDay, 'id'>
 type MealPlanDishPayload = Omit<MealPlanDish, 'id' | 'created_at' | 'updated_at'>
 
 export type { MealPlanIngredient, MealPlan, MealPlanGoal, MealPlanPayload }

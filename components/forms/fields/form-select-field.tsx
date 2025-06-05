@@ -11,7 +11,7 @@ type SelectOption = {
 interface FormSelectFieldProps {
   form: UseFormReturn<any>
   name: string
-  data?: SelectOption[]
+  data?: SelectOption[] | string[]
   label?: string
   description?: string
   withAsterisk?: boolean
@@ -46,11 +46,15 @@ function FormSelectField({
             </FormControl>
             <SelectContent>
               <SelectGroup>
-                {data.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
+                {data.map((option) => {
+                  const _value = typeof option === 'string' ? option : option.value
+                  const _label = typeof option === 'string' ? option : option.label
+                  return (
+                    <SelectItem key={_value} value={_value}>
+                      {_label}
+                    </SelectItem>
+                  )
+                })}
                 {data.length === 0 && <div className="py-6 text-center text-sm">Không tìm thấy kết quả</div>}
               </SelectGroup>
             </SelectContent>

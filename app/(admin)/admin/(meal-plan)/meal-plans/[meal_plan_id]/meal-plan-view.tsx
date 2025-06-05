@@ -8,10 +8,12 @@ import { useQuery } from '@tanstack/react-query'
 import { Beef, Droplets, Leaf, Trash2, Wheat, Zap } from 'lucide-react'
 
 import { EditMealPlanDishForm } from '@/components/forms/edit-meal-plan-dish-form'
+import { EditMealPlanDayForm } from '@/components/forms/edit-meal-plan-day-form'
 import { EditSheet } from '@/components/data-table/edit-sheet'
 import { MainButton } from '@/components/buttons/main-button'
 import { EditButton } from '@/components/buttons/edit-button'
 import { AddButton } from '@/components/buttons/add-button'
+import { dishMealTimeLabel } from '@/lib/label'
 import { Spinner } from '@/components/spinner'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
@@ -23,8 +25,6 @@ import {
   queryKeyMealPlanDays,
   queryKeyMealPlanDishes,
 } from '@/network/client/meal-plans'
-import { EditMealPlanDayForm } from '@/components/forms/edit-meal-plan-day-form'
-import { dishMealTimeLabel } from '@/lib/label'
 
 interface MealPlanViewProps {
   mealPlanID: MealPlan['id']
@@ -108,6 +108,8 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
   }
 
   const onEditDaySuccess = () => {
+    if (isAddingDay) setIsAddingDay(false)
+    setSelectedDay(null)
     setIsEditDayOpen(false)
     daysRefetch()
   }
@@ -213,8 +215,8 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
             <div className="text-center text-muted-foreground">Không có món ăn trong ngày</div>
           ) : (
             <div className="space-y-4">
-              {sortedDishes.map((dish) => (
-                <div key={dish.id} className="border rounded-lg p-4">
+              {sortedDishes.map((dish, index) => (
+                <div key={`dish-${index}`} className="border rounded-lg p-4">
                   <div className="flex justify-between items-start">
                     <div className="space-y-2">
                       <Badge className={getMealTimeColor(dish.meal_time)} variant="outline">
@@ -279,11 +281,11 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
           if (!open) setIsAddingDay(false)
         }}
       >
-        {isAddingDay ? (
-          <EditMealPlanDayForm mealPlanID={mealPlanID} data={null} onSuccess={() => setIsAddingDay(false)} />
-        ) : (
-          <EditMealPlanDayForm mealPlanID={mealPlanID} data={selectedDay} onSuccess={onEditDaySuccess} />
-        )}
+        <EditMealPlanDayForm
+          mealPlanID={mealPlanID}
+          data={!isAddingDay ? selectedDay : null}
+          onSuccess={onEditDaySuccess}
+        />
       </EditSheet>
 
       <EditSheet
@@ -303,7 +305,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
   )
 }
 
-const getMealTimeColor = (mealTime: string) => {
+const getMealTimeColor = (mealTime: DishMealTime) => {
   switch (mealTime) {
     case 'breakfast':
       return 'bg-orange-100 text-orange-800 border-orange-200'

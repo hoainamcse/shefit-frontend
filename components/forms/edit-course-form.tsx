@@ -94,9 +94,9 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
           summary: data.summary,
           free_amount: data.free_amount,
           is_one_on_one: data.is_one_on_one,
-          muscle_group_ids: data.muscle_group_ids,
-          equipment_ids: data.equipment_ids,
-          subscription_ids: data.subscription_ids,
+          muscle_group_ids: data.muscle_group_ids.map((mg) => mg.toString()),
+          equipment_ids: data.muscle_group_ids.map((e) => e.toString()),
+          subscription_ids: data.subscription_ids.map((s) => s.toString()),
         }
       : defaultValue,
   })

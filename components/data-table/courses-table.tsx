@@ -27,7 +27,7 @@ interface CoursesTableProps {
 export function CoursesTable({ courseFormat, isOneOnOne = false }: CoursesTableProps) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 5,
   })
 
   const { data, isLoading, error, refetch } = useQuery({
@@ -190,7 +190,7 @@ const getFormColor = (courseForm: CourseForm) => {
     case 'rectangle':
       return 'bg-blue-100 text-blue-800 border-blue-200'
     case 'hourglass':
-      return 'bg-purple-100 text-purple-800 border-purple-200'
+      return 'bg-rose-100 text-rose-800 border-rose-200'
     case 'inverted_triangle':
       return 'bg-purple-100 text-purple-800 border-purple-200'
     default:
@@ -201,11 +201,11 @@ const getFormColor = (courseForm: CourseForm) => {
 const getLevelColor = (level: CourseLevel) => {
   switch (level) {
     case 'beginner':
-      return 'bg-green-100 text-green-800 border-green-200'
+      return 'bg-indigo-100 text-indigo-800 border-indigo-200'
     case 'intermediate':
       return 'bg-yellow-100 text-yellow-800 border-yellow-200'
     case 'advanced':
-      return 'bg-red-100 text-red-800 border-red-200'
+      return 'bg-pink-100 text-pink-800 border-pink-200'
     default:
       return 'bg-gray-100 text-gray-800 border-gray-200'
   }

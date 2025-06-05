@@ -10,7 +10,7 @@ import type { ApiResponse, ListResponse } from '@/models/response'
 
 import { fetchData } from '../helpers/fetch-data'
 
-// Meal Plans API
+// Meal Plan APIs
 export const queryKeyMealPlans = 'meal-plans'
 
 export async function getMealPlans(params?: any): Promise<ListResponse<MealPlan>> {
@@ -47,7 +47,7 @@ export async function deleteMealPlan(id: MealPlan['id']): Promise<ApiResponse<st
   return await response.json()
 }
 
-// Meal Plan Days API
+// Meal Plan Day APIs
 export const queryKeyMealPlanDays = 'meal-plan-days'
 
 export async function getMealPlanDays(meal_plan_id: MealPlan['id'], params?: any): Promise<ListResponse<MealPlanDay>> {
@@ -90,7 +90,7 @@ export async function deleteMealPlanDay(
   return await response.json()
 }
 
-// Day Dishes API
+// Meal Plan Dish APIs
 export const queryKeyMealPlanDishes = 'meal-plan-dishes'
 
 export async function getMealPlanDishes(

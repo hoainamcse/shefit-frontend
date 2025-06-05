@@ -3,8 +3,8 @@
 import { getCourse } from '@/network/server/courses'
 import { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { getLives } from '@/network/server/live'
-import { Live } from '@/models/live'
+import { getCourseLives } from '@/network/server/courses'
+import { CourseLive } from '@/models/course'
 import Link from 'next/link'
 
 const formatToVNTime = (time: string) => {
@@ -23,7 +23,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: string }) {
         const courseData = await getCourse(courseId)
         setCourse(courseData)
 
-        const liveData = await getLives(courseId)
+        const liveData = await getCourseLives(courseId)
         setLive(liveData)
       } catch (error) {
         console.error('Error fetching live detail data:', error)
@@ -44,14 +44,14 @@ export default function LiveCourseDetail({ courseId }: { courseId: string }) {
         className="[state=active]:bg-[#91EBD5] data-[state=active]:shadow-none"
       >
         <TabsList className="bg-white">
-          {Array.from(new Set(live.data.map((item: Live) => item.day_of_week)) as Set<string>).map((day) => (
+          {Array.from(new Set(live.data.map((item: CourseLive) => item.day_of_week)) as Set<string>).map((day) => (
             <TabsTrigger
               key={day}
               value={day}
               className="
-                    rounded-full mx-[10px] my-5 w-[63px] h-[64px] 
-                    flex flex-col items-center justify-center 
-                    font-medium text-xl cursor-pointer 
+                    rounded-full mx-[10px] my-5 w-[63px] h-[64px]
+                    flex flex-col items-center justify-center
+                    font-medium text-xl cursor-pointer
                     data-[state=active]:bg-[#91EBD5] data-[state=active]:text-white
                     bg-transparent hover:bg-[#91EBD5]/10
                     transition-colors duration-200"
@@ -74,12 +74,12 @@ export default function LiveCourseDetail({ courseId }: { courseId: string }) {
           ))}
         </TabsList>
 
-        {Array.from(new Set(live.data.map((item: Live) => item.day_of_week)) as Set<string>).map((day) => (
+        {Array.from(new Set(live.data.map((item: CourseLive) => item.day_of_week)) as Set<string>).map((day) => (
           <TabsContent key={day} value={day} className="ml-2 mt-10">
             <div className="space-y-2 text-sm leading-7 text-gray-600 dark:text-gray-500 flex flex-col gap-5">
               {live.data
-                .filter((item: Live) => item.day_of_week === day)
-                .map((item: Live, index: number) => (
+                .filter((item: CourseLive) => item.day_of_week === day)
+                .map((item: CourseLive, index: number) => (
                   <div key={item.id} className="flex justify-between">
                     <div>
                       <p className="font-[family-name:var(--font-coiny)] text-[30px] flex gap-2">

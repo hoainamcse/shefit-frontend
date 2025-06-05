@@ -32,6 +32,31 @@ type Course = {
 
 type CoursePayload = Omit<Course, 'id' | 'created_at' | 'updated_at' | 'subscriptions'>
 
-export type { CourseFormat, CourseForm, CourseLevel }
-export type { Course }
-export type { CoursePayload }
+type LiveSession = {
+  id: number
+  session_number: number
+  name: string
+  description: string
+  start_time: string
+  end_time: string
+  link_zoom: string
+}
+
+type LiveSessionPayload = Omit<LiveSession, 'id'>
+
+type CourseLiveDay = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday'
+
+type CourseLive = {
+  id: number
+  day_of_week: CourseLiveDay
+  start_time: string // ! needed?
+  end_time: string // ! needed?
+  description: string
+  sessions: LiveSession[]
+}
+
+type CourseLivePayload = Omit<CourseLive, 'id' | 'sessions'>
+
+export type { CourseFormat, CourseForm, CourseLevel, CourseLiveDay }
+export type { Course, CourseLive, LiveSession }
+export type { CoursePayload, LiveSessionPayload, CourseLivePayload }
