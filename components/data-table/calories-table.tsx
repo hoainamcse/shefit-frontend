@@ -1,6 +1,7 @@
 'use client'
 
 import type { ColumnDef, PaginationState } from '@tanstack/react-table'
+import type { Calorie } from '@/models/calorie'
 
 import { toast } from 'sonner'
 import { useMemo, useState } from 'react'
@@ -11,7 +12,6 @@ import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
-import { Calorie } from '@/models/calorie'
 
 import { EditCalorieForm } from '../forms/edit-calorie-form'
 import { AddButton } from '../buttons/add-button'

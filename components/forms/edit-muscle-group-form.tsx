@@ -23,7 +23,7 @@ const formSchema = z.object({
 type FormValue = z.infer<typeof formSchema>
 
 interface EditMuscleGroupFormProps {
-  data?: MuscleGroup | null
+  data: MuscleGroup | null
   onSuccess?: () => void
 }
 

@@ -1,3 +1,5 @@
+import type { MealPlan } from "./meal-plan"
+
 type Gift = {
     id: number
     name: string
@@ -7,7 +9,7 @@ type Gift = {
 }
 
 type Subscription = {
-    id: number
+    id: string
     name: string
     course_format: string
     course_ids: number[]
@@ -25,6 +27,7 @@ type Subscription = {
     description_2: string
     created_at: string
     updated_at: string
+    meal_plan_ids?: MealPlan['id'][]
 }
 
 export type { Subscription }

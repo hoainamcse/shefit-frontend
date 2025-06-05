@@ -1,6 +1,7 @@
 'use client'
 
 import type { ColumnDef, PaginationState } from '@tanstack/react-table'
+import type { Exercise } from '@/models/exercise'
 
 import { toast } from 'sonner'
 import { ImportIcon } from 'lucide-react'
@@ -13,7 +14,6 @@ import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { getYoutubeThumbnail } from '@/lib/youtube'
 import { Spinner } from '@/components/spinner'
-import { Exercise } from '@/models/exercise'
 
 import { createMuscleGroup } from '@/network/client/muscle-groups'
 import { EditExerciseForm } from '../forms/edit-exercise-form'

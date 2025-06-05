@@ -56,7 +56,7 @@ import { PROVINCES } from "@/lib/label"
 import { createUserCourse, deleteUserCourse, getUserCourses } from "@/network/server/user-courses"
 import { UserCourse } from "@/models/user-courses"
 import { useAuth } from "../providers/auth-context"
-import { roleLabelOptions } from "@/lib/label"
+import { roleOptions } from "@/lib/label"
 import { getSubAdminSubscriptions } from "@/network/server/sub-admin"
 import { Gift } from "@/models/subscription-admin"
 
@@ -91,7 +91,7 @@ const accountSchema = z.object({
     message: "Địa chỉ phải có ít nhất 6 ký tự.",
   }),
   role: z
-    .enum([...roleLabelOptions.map((role) => role.value)] as [string, ...string[]], {
+    .enum([...roleOptions.map((role) => role.value)] as [string, ...string[]], {
       message: "Bạn phải chọn role",
     })
     .default("normal_user"),
@@ -738,7 +738,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                 data={PROVINCES}
               />
               {role === "admin" && (
-                <FormSelectField form={form} name="role" label="Role" placeholder="Chọn role" data={roleLabelOptions} />
+                <FormSelectField form={form} name="role" label="Role" placeholder="Chọn role" data={roleOptions} />
               )}
               <FormInputField form={form} name="address" label="Địa chỉ chi tiết" placeholder="Nhập địa chỉ của bạn" />
               <FormInputField form={form} name="username" label="Username" required placeholder="Nhập username" />

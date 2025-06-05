@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import { getCoursesByType } from "@/network/server/courses"
 import type { Course } from "@/models/course"
 import Link from "next/link"
-import { formCategoryLabel } from "@/lib/label"
+import { courseFormLabel } from "@/lib/label"
 export default function PopularCoursesCarousel() {
   const [popularCourses, setPopularCourses] = useState<Course[]>([])
 
@@ -53,7 +53,7 @@ export default function PopularCoursesCarousel() {
                   </div>
                   <p className="font-medium">{course.course_name}</p>
                   <p className="text-[#737373]">
-                    {course.form_categories.map((cat) => formCategoryLabel[cat]).join(", ")}
+                    {course.form_categories.map((cat) => courseFormLabel[cat]).join(", ")}
                   </p>
                   <p className="text-[#737373]">{course.trainer}</p>
                 </div>

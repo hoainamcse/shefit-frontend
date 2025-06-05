@@ -30,7 +30,7 @@ export const formSchema = z.object({
 export type FormValue = z.infer<typeof formSchema>
 
 type EditDishFormProps = {
-  data?: Dish | null
+  data: Dish | null
   onSuccess?: () => void
 }
 

@@ -1,6 +1,7 @@
 'use client'
 
 import type { ColumnDef, PaginationState } from '@tanstack/react-table'
+import type { MealPlan } from '@/models/meal-plan'
 
 import { toast } from 'sonner'
 import { useMemo, useState } from 'react'
@@ -12,7 +13,6 @@ import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
-import { MealPlan } from '@/models/meal-plan'
 
 import { AddButton } from '../buttons/add-button'
 

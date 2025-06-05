@@ -23,7 +23,7 @@ const formSchema = z.object({
 type FormValue = z.infer<typeof formSchema>
 
 interface EditCalorieFormProps {
-  data?: Calorie | null
+  data: Calorie | null
   onSuccess?: () => void
 }
 

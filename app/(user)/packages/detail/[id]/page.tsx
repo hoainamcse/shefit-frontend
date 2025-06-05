@@ -1,7 +1,7 @@
 import { getSubscription } from "@/network/server/subscriptions"
 import { getCourses } from "@/network/server/courses"
 import { ChevronRight } from "lucide-react"
-import { difficultyLevelLabel, formCategoryLabel } from "@/lib/label"
+import { courseLevelLabel, courseFormLabel } from "@/lib/label"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { getMealPlans } from "@/network/server/meal-plans"
@@ -32,7 +32,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
     is_free?: boolean
   }
 
-  const subscriptionData = subscription?.data as SubscriptionData
+  const subscriptionData = subscription?.data
   console.log(subscription)
   return (
     <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full pb-24 relative">
@@ -82,14 +82,14 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                       <div className="flex justify-between">
                         <div>
                           <p className="font-medium">{course.course_name}</p>
-                          <p className="text-[#737373]">{difficultyLevelLabel[course.difficulty_level]}</p>
+                          <p className="text-[#737373]">{courseLevelLabel[course.difficulty_level]}</p>
                           <p className="text-[#737373]">{course.trainer}</p>
                         </div>
                         <div>
                           <div className="text-gray-500 flex justify-end">
                             {Array.isArray(course.form_categories)
-                              ? course.form_categories.map((cat) => formCategoryLabel[cat]).join(", ")
-                              : formCategoryLabel[course.form_categories]}
+                              ? course.form_categories.map((cat) => courseFormLabel[cat]).join(", ")
+                              : courseFormLabel[course.form_categories]}
                           </div>
                           <div className="flex justify-end">
                             {course.is_free ? (

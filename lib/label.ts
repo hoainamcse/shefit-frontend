@@ -1,4 +1,4 @@
-import type { DifficultyLevel, FormCategory } from '@/models/course'
+import type { CourseLevel, CourseForm } from '@/models/course'
 import type { DishMealTime, MealPlanGoal } from '@/models/meal-plan'
 
 type Option<T> = {
@@ -19,7 +19,7 @@ const mealPlanGoalOptions = Object.entries(mealPlanGoalLabel).map(([value, label
   label,
 })) as Option<MealPlanGoal>[]
 
-const formCategoryLabel: Record<FormCategory, string> = {
+const courseFormLabel: Record<CourseForm, string> = {
   pear: 'Dáng quả lê',
   apple: 'Dáng quả táo',
   rectangle: 'Dáng chữ nhật',
@@ -27,21 +27,21 @@ const formCategoryLabel: Record<FormCategory, string> = {
   inverted_triangle: 'Dáng tam giác ngược',
 } as const
 
-const formCategoryLabelOptions = Object.entries(formCategoryLabel).map(([value, label]) => ({
-  value: value as FormCategory,
+const courseFormOptions = Object.entries(courseFormLabel).map(([value, label]) => ({
+  value: value as CourseForm,
   label,
-})) as Option<FormCategory>[]
+})) as Option<CourseForm>[]
 
-const difficultyLevelLabel: Record<DifficultyLevel, string> = {
+const courseLevelLabel: Record<CourseLevel, string> = {
   beginner: 'Dễ',
   intermediate: 'Trung bình',
   advanced: 'Nâng cao',
 } as const
 
-const difficultyLevelLabelOptions = Object.entries(difficultyLevelLabel).map(([value, label]) => ({
-  value: value as DifficultyLevel,
+const courseLevelOptions = Object.entries(courseLevelLabel).map(([value, label]) => ({
+  value: value as CourseLevel,
   label,
-})) as Option<DifficultyLevel>[]
+})) as Option<CourseLevel>[]
 
 const dishMealTimeLabel: Record<DishMealTime, string> = {
   breakfast: 'Bữa sáng',
@@ -50,7 +50,7 @@ const dishMealTimeLabel: Record<DishMealTime, string> = {
   snack: 'Bữa phụ',
 } as const
 
-const dishMealTimeLabelOptions = Object.entries(dishMealTimeLabel).map(([value, label]) => ({
+const dishMealTimeOptions = Object.entries(dishMealTimeLabel).map(([value, label]) => ({
   value: value as DishMealTime,
   label,
 })) as Option<DishMealTime>[]
@@ -60,7 +60,7 @@ const giftTypeLabel: Record<string, string> = {
   item: 'ITEM',
 } as const
 
-const giftTypeLabelOptions = Object.entries(giftTypeLabel).map(([value, label]) => ({
+const giftTypeOptions = Object.entries(giftTypeLabel).map(([value, label]) => ({
   value,
   label,
 })) as Option<string>[]
@@ -71,7 +71,7 @@ const roleLabel: Record<string, string> = {
   sub_admin: 'Sub Admin',
 } as const
 
-const roleLabelOptions = Object.entries(roleLabel).map(([value, label]) => ({
+const roleOptions = Object.entries(roleLabel).map(([value, label]) => ({
   value,
   label,
 })) as Option<string>[]
@@ -143,12 +143,5 @@ const PROVINCES = [
 ]
 
 export { PROVINCES }
-export { mealPlanGoalLabel, formCategoryLabel, difficultyLevelLabel, dishMealTimeLabel, giftTypeLabel, roleLabel }
-export {
-  mealPlanGoalOptions,
-  formCategoryLabelOptions,
-  difficultyLevelLabelOptions,
-  dishMealTimeLabelOptions,
-  giftTypeLabelOptions,
-  roleLabelOptions,
-}
+export { mealPlanGoalLabel, courseFormLabel, courseLevelLabel, dishMealTimeLabel, giftTypeLabel, roleLabel }
+export { mealPlanGoalOptions, courseFormOptions, courseLevelOptions, dishMealTimeOptions, giftTypeOptions, roleOptions }

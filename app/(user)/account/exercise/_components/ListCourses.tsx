@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { getUserCourses } from "@/network/server/user-courses"
-import { formCategoryLabel } from "@/lib/label"
+import { courseFormLabel } from "@/lib/label"
 import { DeleteIcon } from "@/components/icons/DeleteIcon"
 import { useAuth } from "@/components/providers/auth-context"
 import { useState, useEffect } from "react"
@@ -138,7 +138,7 @@ export default function ListCourses() {
                         </div>
                       </div>
                       <div className="flex gap-2 justify-end flex-col items-end">
-                        <p>{formCategoryLabel[course.course.form_categories[0]]}</p>
+                        <p>{courseFormLabel[course.course.form_categories[0]]}</p>
                         {/* <Link href={`/courses/${course.course.id}`} className="text-ring underline">
                           Bắt đầu
                         </Link> */}

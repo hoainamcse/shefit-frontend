@@ -41,7 +41,7 @@ const formSchema = z.object({
   ),
   is_public: z.boolean(),
   is_free: z.boolean(),
-  free_days: z.number().min(1),
+  free_days: z.number().min(0),
   diet_id: z.number().nullable(),
   calorie_id: z.number().nullable(),
 })
@@ -49,7 +49,7 @@ const formSchema = z.object({
 type FormValue = z.infer<typeof formSchema>
 
 interface EditMealPlanFormProps {
-  data?: MealPlan | null
+  data?: MealPlan
   onSuccess?: (data: MealPlan) => void
 }
 
@@ -65,7 +65,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
     meal_ingredients: [],
     is_public: true,
     is_free: false,
-    free_days: 1,
+    free_days: 0,
     calorie_id: null,
     diet_id: null,
   } as FormValue
@@ -175,13 +175,13 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
             form={form}
             name="is_public"
             label="Công khai"
-            description="Tắt khi không muốn xuất hiện trên trang người dùng"
+            description="Bật khi muốn thực đơn này hiển thị công khai"
           />
           <FormSwitchField
             form={form}
             name="is_free"
             label="Miễn phí"
-            description="Bật khi muốn cho phép người dùng truy cập"
+            description="Bật khi muốn thực đơn này miễn phí cho người dùng"
           />
           <FormNumberField form={form} name="free_days" label="Số ngày miễn phí" placeholder="e.g., 10" />
         </div>

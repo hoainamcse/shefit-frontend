@@ -4,9 +4,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { getCourse } from "@/network/server/courses"
 import { getEquipments } from "@/network/server/equipments"
 import { getMuscleGroups } from "@/network/server/muscle-groups"
-import { formCategoryLabel, difficultyLevelLabel } from "@/lib/label"
+import { courseFormLabel, courseLevelLabel } from "@/lib/label"
 import { useState, useEffect, useRef } from "react"
-import { DifficultyLevel, FormCategory } from "@/models/course"
+import { CourseLevel, CourseForm } from "@/models/course"
 import LiveCourseDetail from "./LiveCourseDetail"
 import VideoCourseDetail from "./VideoCourseDetail"
 import { BackIcon } from "@/components/icons/BackIcon"
@@ -118,15 +118,15 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
           <div>
             <p className="font-medium">{course?.data?.course_name}</p>
             <p className="text-[#737373]">
-              {course?.data && difficultyLevelLabel[course.data.difficulty_level as DifficultyLevel]}
+              {course?.data && courseLevelLabel[course.data.difficulty_level as CourseLevel]}
             </p>
             <p className="text-[#737373]">{course?.data?.trainer}</p>
           </div>
           <div className="text-gray-500">
             {course?.data?.form_categories &&
               (Array.isArray(course.data.form_categories)
-                ? course.data.form_categories.map((cat: FormCategory) => formCategoryLabel[cat]).join(", ")
-                : formCategoryLabel[course.data.form_categories as FormCategory])}
+                ? course.data.form_categories.map((cat: CourseForm) => courseFormLabel[cat]).join(", ")
+                : courseFormLabel[course.data.form_categories as CourseForm])}
           </div>
         </div>
         {course?.data?.subscription_ids?.length > 0 && (

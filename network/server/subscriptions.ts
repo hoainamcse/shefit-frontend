@@ -3,7 +3,7 @@
 
 import { fetchData } from "../helpers/fetch-data"
 import { ApiResponse, ListResponse } from "@/models/response"
-import { Subscription } from "@/models/subscriptions"
+import { Subscription } from "@/models/subscription"
 import { revalidateTag } from "next/cache"
 
 export async function getSubscriptions(query?: any): Promise<ListResponse<Subscription>> {

@@ -1,6 +1,7 @@
 'use client'
 
 import type { ColumnDef, PaginationState } from '@tanstack/react-table'
+import type { MuscleGroup } from '@/models/muscle-group'
 
 import { toast } from 'sonner'
 import { useMemo, useState } from 'react'
@@ -9,7 +10,6 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { deleteMuscleGroup, getMuscleGroups, queryKeyMuscleGroups } from '@/network/client/muscle-groups'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
-import { MuscleGroup } from '@/models/muscle-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
 

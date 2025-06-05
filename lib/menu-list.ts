@@ -68,7 +68,7 @@ export function getMenuList(pathname: string): Group[] {
           submenus: [
             {
               href: '/admin/video-classes',
-              label: 'Khoá tập Video',
+              label: 'Khoá tập video',
             },
             {
               href: '/admin/live-classes',

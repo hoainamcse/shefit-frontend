@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
 import { useAuth } from "@/components/providers/auth-context"
 import { useState, useEffect } from "react"
 import { ListResponse } from "@/models/response"
-import { Subscription } from "@/models/subscriptions"
+import { Subscription } from "@/models/subscription"
 export default function PurchasePackage() {
   const { userId } = useAuth()
   const [subscriptions, setSubscriptions] = useState<ListResponse<Subscription>>({

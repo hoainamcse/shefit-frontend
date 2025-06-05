@@ -1,6 +1,7 @@
 'use client'
 
 import type { ColumnDef, PaginationState } from '@tanstack/react-table'
+import type { Equipment } from '@/models/equipment'
 
 import { toast } from 'sonner'
 import { useMemo, useState } from 'react'
@@ -10,7 +11,6 @@ import { deleteEquipment, getEquipments, queryKeyEquipments } from '@/network/cl
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Equipment } from '@/models/equipment'
 import { Spinner } from '@/components/spinner'
 
 import { EditEquipmentForm } from '../forms/edit-equipment-form'

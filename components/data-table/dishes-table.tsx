@@ -1,6 +1,7 @@
 'use client'
 
 import type { ColumnDef, PaginationState } from '@tanstack/react-table'
+import type { Dish } from '@/models/dish'
 
 import { toast } from 'sonner'
 import { ImportIcon } from 'lucide-react'
@@ -13,7 +14,6 @@ import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { createDiet } from '@/network/client/diets'
 import { Spinner } from '@/components/spinner'
-import { Dish } from '@/models/dish'
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
 import { EditDishForm } from '../forms/edit-dish-form'

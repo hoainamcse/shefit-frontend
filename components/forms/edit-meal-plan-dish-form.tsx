@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createMealPlanDish, updateMealPlanDish } from '@/network/client/meal-plans'
 import { MainButton } from '@/components/buttons/main-button'
-import { dishMealTimeLabelOptions } from '@/lib/label'
+import { dishMealTimeOptions } from '@/lib/label'
 import { Form } from '@/components/ui/form'
 
 import { FormInputField, FormNumberField, FormSelectField, FormTextareaField } from './fields'
@@ -92,7 +92,7 @@ export function EditMealPlanDishForm({ data, mealPlanID, dayID, onSuccess }: Edi
           name="meal_time"
           label="Thời gian ăn"
           placeholder="Chọn thời gian ăn"
-          data={dishMealTimeLabelOptions}
+          data={dishMealTimeOptions}
         />
         <div className="grid grid-cols-2 gap-4">
           <FormNumberField form={form} name="calories" label="Calories (kcal)" placeholder="e.g., 250" />
