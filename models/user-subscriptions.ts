@@ -4,7 +4,6 @@ type UserSubscription = {
     id?: number,
     user_id: number,
     subscription_id: number,
-    plan_id?: number,
     course_format: string,
     coupon_code: string,
     status: string,

@@ -12,7 +12,8 @@ import { createDish, updateDish } from '@/network/client/dishes'
 import { MainButton } from '@/components/buttons/main-button'
 import { Form } from '@/components/ui/form'
 
-import { FormImageInputField, FormInputField, FormNumberField, FormSelectField, FormTextareaField } from './fields'
+import { FormInputField, FormNumberField, FormSelectField, FormTextareaField } from './fields'
+import { ImageUploader } from '../image-uploader'
 
 // ! Follow DishPayload model in models/dish.ts
 export const formSchema = z.object({
@@ -87,7 +88,8 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
         <FormInputField form={form} name="name" label="Tên món ăn" withAsterisk placeholder="Nhập tên món ăn" />
         <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
         <FormSelectField form={form} name="diet_id" label="Chế độ ăn" placeholder="Chọn chế độ ăn" />
-        <FormImageInputField form={form} name="image" label="Hình ảnh" />
+        <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
+
         <div className="grid grid-cols-2 gap-4">
           <FormNumberField form={form} name="calories" label="Calories (kcal)" placeholder="e.g., 250" />
           <FormNumberField form={form} name="protein" label="Protein (g)" step="0.1" placeholder="e.g., 20" />

@@ -17,8 +17,8 @@ import { Plus, Trash2 } from 'lucide-react'
 import { QuizFormData, quizFormSchema } from './types'
 import { MainButton } from '@/components/buttons/main-button'
 import { FormInputField, FormSelectField, FormTextareaField } from './fields'
-import { FormImageInputField } from './fields/form-image-input-field'
 import { createQuestion, createQuiz, updateQuestion, updateQuiz } from '@/network/server/body-quiz'
+import { ImageUploader } from '../image-uploader'
 
 interface EditQuizFormProps {
   data?: QuizFormData
@@ -184,7 +184,13 @@ export function EditQuizForm({ data }: EditQuizFormProps) {
                       )}
                     />
 
-                    <FormImageInputField form={form} name={`questions.${index}.image`} label="Hình ảnh câu hỏi" />
+                    <ImageUploader
+                      form={form}
+                      name={`questions.${index}.image`}
+                      label="Hình ảnh câu hỏi"
+                      accept={{ 'image/*': [] }}
+                      maxFileCount={1}
+                    />
 
                     {(form.watch(`questions.${index}.question_type`) === 'single_choice' ||
                       form.watch(`questions.${index}.question_type`) === 'multiple_choice') && (

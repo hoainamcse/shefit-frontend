@@ -16,14 +16,8 @@ import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
 import { Label } from '../ui/label'
 import { Form } from '../ui/form'
-import {
-  FormImageInputField,
-  FormInputField,
-  FormNumberField,
-  FormSelectField,
-  FormSwitchField,
-  FormTextareaField,
-} from './fields'
+import { FormInputField, FormNumberField, FormSelectField, FormSwitchField, FormTextareaField } from './fields'
+import { ImageUploader } from '../image-uploader'
 
 // ! Follow MealPlanPayload model in models/meal-plan.ts
 const formSchema = z.object({
@@ -127,7 +121,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
             data={mealPlanGoalOptions}
           />
         </div>
-        <FormImageInputField form={form} name="image" label="Hình ảnh" />
+        <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
         <div className="grid grid-cols-2 gap-4">
           <FormSelectField form={form} name="diet_id" label="Chế độ ăn" placeholder="Chọn chế độ ăn" />
           <FormSelectField form={form} name="calorie_id" label="Calorie" placeholder="Chọn calorie" />
@@ -164,7 +158,14 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
                     placeholder="Nhập tên nguyên liệu"
                     withAsterisk
                   />
-                  <FormImageInputField form={form} name={`meal_ingredients.${index}.image`} label={`Hình ảnh`} />
+
+                  <ImageUploader
+                    form={form}
+                    name={`meal_ingredients.${index}.image`}
+                    label={`Hình ảnh`}
+                    accept={{ 'image/*': [] }}
+                    maxFileCount={1}
+                  />
                 </div>
               </div>
             ))}

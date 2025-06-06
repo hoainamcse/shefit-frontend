@@ -87,7 +87,13 @@ export default function AboutUsPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="space-y-6">
-            <ImageUploader form={form} name="thumbnail image" accept={{ 'image/*': [] }} maxFileCount={1} />
+            <ImageUploader
+              form={form}
+              name="thumbnail image"
+              label="Hình ảnh"
+              accept={{ 'image/*': [] }}
+              maxFileCount={1}
+            />
             <RichTextEditor form={form} name="description" label="Về Shefit" withAsterisk placeholder="Nhập nội dung" />
             <MainButton text="Lưu" type="submit" className="mt-6" />
           </div>

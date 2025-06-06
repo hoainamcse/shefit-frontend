@@ -4,13 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { Button } from '@/components/ui/button'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { FileUploader } from '@/components/file-uploader'
 import { MainButton } from '@/components/buttons/main-button'
-import { ChevronsLeftRightEllipsisIcon, Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState, useTransition } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Switch } from '@/components/ui/switch'
@@ -19,8 +16,6 @@ import { Check, X } from 'lucide-react'
 import { FormInputField, FormMultiSelectField, FormNumberField, FormSelectField, FormTextareaField } from './fields'
 import { ImageUploader } from '@/components/image-uploader'
 import { useAuth } from '@/components/providers/auth-context'
-import { getS3FileUrl, uploadImageApi } from '@/network/server/upload'
-import { FormImageInputField } from './fields/form-image-input-field'
 import { Product, ProductCategory, ProductColor, ProductSize } from '@/models/products'
 import { createProduct, getCategories, getColors, getSizes, updateProduct } from '@/network/server/products'
 import { toast } from 'sonner'
@@ -309,40 +304,6 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
                 withAsterisk
               />
 
-              {/* <FormField
-                control={form.control}
-                name="images"
-                render={({ field }) => {
-                  // State to track the actual File objects for display
-                  const [fileObjects, setFileObjects] = useState<File[]>([])
-
-                  // Create file values based on mode (edit or create)
-                  const fileValues = useFileValues(isEdit, field.value, fileObjects)
-
-                  return (
-                    <FormItem>
-                      <FormLabel>Hình ảnh sản phẩm</FormLabel>
-                      <FormControl>
-                        <FileUploader
-                          multiple
-                          maxSize={1024 * 1024 * 10}
-                          maxFileCount={10}
-                          value={fileValues}
-                          onValueChange={(files) => {
-                            // Save the File objects for display
-                            setFileObjects(files)
-                            // Extract preview URLs and update form
-                            const urls = extractPreviewUrls(files)
-                            field.onChange(urls)
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )
-                }}
-              /> */}
-
               <ImageUploader form={form} name="image_urls" accept={{ 'image/*': [] }} maxFileCount={10} />
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -358,81 +319,6 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
                 </div>
 
                 {form.watch('features')?.map((feature, index) => (
-                  // <div key={index} className="flex flex-col w-full gap-4">
-                  //   <div className="flex items-start gap-2 w-full">
-                  //     <div className="flex-1 w-full">
-                  //       <FormInputField
-                  //         form={form}
-                  //         name={`features.${index}.name`}
-                  //         label="Tính năng"
-                  //         placeholder="Nhập tính năng"
-                  //       />
-                  //     </div>
-
-                  //     <MainButton
-                  //       type="button"
-                  //       variant="secondary"
-                  //       size="sm"
-                  //       icon={Trash2}
-                  //       className="text-destructive mt-8 shrink-0"
-                  //       onClick={() => removeFeature(index)}
-                  //     />
-                  //   </div>
-
-                  //   <FormImageInputField
-                  //     form={form}
-                  //     name={`features.${index}.image_url`}
-                  //     label="Tính năng"
-                  //     multiple
-                  //     placeholder="Nhập URL hình ảnh"
-                  //   />
-
-                  //   {/* <FormField
-                  //     control={form.control}
-                  //     name={`features.${index}.name`}
-                  //     render={({ field }) => (
-                  //       <FormItem className="flex-1">
-                  //         <FormControl>
-                  //           <Input placeholder="Tên tính năng" {...field} />
-                  //         </FormControl>
-                  //         <FormMessage />
-                  //       </FormItem>
-                  //     )}
-                  //   />
-
-                  //   <FormField
-                  //     control={form.control}
-                  //     name={`features.${index}.image`}
-                  //     render={({ field }) => {
-                  //       // State to track the actual File objects for display
-                  //       const [fileObjects, setFileObjects] = useState<File[]>([])
-
-                  //       // Create file values based on mode (edit or create)
-                  //       const fileValue = useFileValues(isEdit, field.value ? [field.value] : [], fileObjects)
-
-                  //       return (
-                  //         <FormItem className="flex-1">
-                  //           <FormControl>
-                  //             <FileUploader
-                  //               value={fileValue}
-                  //               onValueChange={(files) => {
-                  //                 // Save the File objects for display
-                  //                 setFileObjects(files)
-
-                  //                 // Extract preview URL from File object and update form
-                  //                 const urls = extractPreviewUrls(files)
-                  //                 field.onChange(urls.length > 0 ? urls[0] : '')
-                  //               }}
-                  //               maxFileCount={1}
-                  //             />
-                  //           </FormControl>
-                  //           <FormMessage />
-                  //         </FormItem>
-                  //       )
-                  //     }}
-                  //   /> */}
-                  // </div>
-
                   <div key={index}>
                     <FormItem className="p-4 border rounded-md">
                       <div className="flex justify-between items-start mb-4">
@@ -453,11 +339,13 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
                           label="Tên tính năng"
                           placeholder="Nhập tên tính năng"
                         />
-                        <FormImageInputField
+
+                        <ImageUploader
                           form={form}
                           name={`features.${index}.image_url`}
-                          label="Ảnh tính năng"
-                          placeholder="Nhập ảnh tính năng"
+                          label="Hình ảnh tính năng"
+                          accept={{ 'image/*': [] }}
+                          maxFileCount={1}
                         />
                       </div>
                     </FormItem>

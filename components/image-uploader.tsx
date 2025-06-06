@@ -35,6 +35,7 @@ interface ImageUploaderProps<TFieldValues extends FieldValues>
    * - undefined if no change to the form value should occur.
    */
 
+  label?: string
   progresses?: Record<string, number>
   accept?: DropzoneProps['accept']
   maxSize?: DropzoneProps['maxSize']
@@ -46,6 +47,7 @@ export function ImageUploader<TFieldValues extends FieldValues>(props: ImageUplo
   const {
     form,
     name,
+    label,
     progresses,
     accept = { 'image/*': [] },
     maxSize = 1024 * 1024 * 4, // 4MB default
@@ -289,6 +291,7 @@ export function ImageUploader<TFieldValues extends FieldValues>(props: ImageUplo
 
   return (
     <div className="relative flex flex-col gap-6 overflow-hidden">
+      {label && <label className="text-sm font-medium">{label}</label>}
       <Dropzone
         onDrop={handleOnDrop}
         accept={accept}

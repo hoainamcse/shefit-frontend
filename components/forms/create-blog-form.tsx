@@ -6,29 +6,16 @@ import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { useTransition } from 'react'
 
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { FileUploader } from '@/components/file-uploader'
 import { toast } from 'sonner'
 import { MainButton } from '@/components/buttons/main-button'
-import { FormImageInputField } from './fields/form-image-input-field'
 import { Blog } from '@/models/blog'
 import { createBlog, updateBlog } from '@/network/server/blog'
 import { useRouter } from 'next/navigation'
 import { RichTextEditor } from './fields/rich-text-editor'
+import { ImageUploader } from '../image-uploader'
 
-// // Define the Blog interface
-// export interface Blog {
-//   id?: string
-//   title: string
-//   content: string
-//   image?: string | File[]
-//   createdAt?: Date
-//   updatedAt?: Date
-// }
-
-// Define the form schema
 const formSchema = z.object({
   title: z.string().min(5, {
     message: 'Title must be at least 5 characters.',
@@ -104,55 +91,9 @@ export function CreateBlogForm({ isEdit, data }: BlogFormProps) {
           )}
         />
 
-        {/* <FormField
-          control={form.control}
-          name="content"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nội dung</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Nhập nội dung bài viết"
-                  className="min-h-[300px]"
-                  {...field}
-                  disabled={isPending}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
-
         <RichTextEditor form={form} name="content" label="Nội dung" withAsterisk placeholder="Nhập nội dung" />
 
-        {/* <FormField
-          control={form.control}
-          name="image"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Hình ảnh</FormLabel>
-              <FormControl>
-                <FileUploader
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  maxFileCount={1}
-                  accept={{
-                    'image/*': [],
-                  }}
-                  disabled={isPending}
-                />
-              </FormControl>
-              <FormDescription>Tải lên hình ảnh minh họa cho bài viết</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
-        <FormImageInputField
-          form={form}
-          name="cover_image"
-          label="Hình ảnh"
-          placeholder="Tải lên hình ảnh minh họa cho bài viết"
-        />
+        <ImageUploader form={form} name="cover_image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
 
         <MainButton text={!isEdit ? 'Tạo bài viết' : 'Cập nhật bài viết'} type="submit" loading={isPending} />
       </form>

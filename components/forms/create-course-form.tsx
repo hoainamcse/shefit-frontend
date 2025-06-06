@@ -1,13 +1,13 @@
-"use client"
+'use client'
 
-import z from "zod"
-import { toast } from "sonner"
-import { useForm } from "react-hook-form"
-import { useActionState, useEffect, useMemo, useState, useTransition } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
+import z from 'zod'
+import { toast } from 'sonner'
+import { useForm } from 'react-hook-form'
+import { useActionState, useEffect, useMemo, useState, useTransition } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
 
-import { Form } from "@/components/ui/form"
-import { MainButton } from "@/components/buttons/main-button"
+import { Form } from '@/components/ui/form'
+import { MainButton } from '@/components/buttons/main-button'
 import {
   FormInputField,
   FormTextareaField,
@@ -16,37 +16,34 @@ import {
   FormCheckboxField,
   FormRadioField,
   FormMultiSelectField,
-} from "@/components/forms/fields"
-import { FileUploader } from "@/components/file-uploader"
-import { Label } from "@/components/ui/label"
-
-import { courseLevelOptions, courseFormOptions } from "@/lib/label"
-import { FormImageInputField } from "./fields/form-image-input-field"
-import { Equipment } from "@/models/equipment"
-import { MuscleGroup } from "@/models/muscle-group"
-import { getEquipments } from "@/network/server/equipments"
-import { getMuscleGroups } from "@/network/server/muscle-groups"
-import { Subscription } from "@/models/subscription-admin"
-import { getSubscriptions } from "@/network/server/subscriptions-admin"
-import { CourseFormat, DetailCourse } from "@/models/course-admin"
-import { createCourse, updateCourse } from "@/network/server/courses-admin"
-import { useAuth } from "../providers/auth-context"
+} from '@/components/forms/fields'
+import { courseLevelOptions, courseFormOptions } from '@/lib/label'
+import { Equipment } from '@/models/equipment'
+import { MuscleGroup } from '@/models/muscle-group'
+import { getEquipments } from '@/network/server/equipments'
+import { getMuscleGroups } from '@/network/server/muscle-groups'
+import { Subscription } from '@/models/subscription-admin'
+import { getSubscriptions } from '@/network/server/subscriptions-admin'
+import { CourseFormat, DetailCourse } from '@/models/course-admin'
+import { createCourse, updateCourse } from '@/network/server/courses-admin'
+import { useAuth } from '../providers/auth-context'
+import { ImageUploader } from '../image-uploader'
 
 const formSchema = z.object({
   id: z.number().int().optional(),
-  course_name: z.string().min(1, { message: "Vui lòng nhập tên khoá h" }),
+  course_name: z.string().min(1, { message: 'Vui lòng nhập tên khoá h' }),
   course_format: z.string(),
-  summary: z.string().min(30, { message: "Tóm tắt phải có ít nhất 30 ký tự" }),
-  description: z.string().min(30, { message: "Mô tả phải có ít nhất 30 ký tự" }),
-  trainer: z.string().min(1, { message: "Vui lòng nhập huấn luyện viên" }),
-  form_categories: z.array(z.string()).nonempty({ message: "Vui lòng chọn ít nhất một danh mục" }),
-  difficulty_level: z.string().min(1, { message: "Vui lòng chọn cấp độ" }),
+  summary: z.string().min(30, { message: 'Tóm tắt phải có ít nhất 30 ký tự' }),
+  description: z.string().min(30, { message: 'Mô tả phải có ít nhất 30 ký tự' }),
+  trainer: z.string().min(1, { message: 'Vui lòng nhập huấn luyện viên' }),
+  form_categories: z.array(z.string()).nonempty({ message: 'Vui lòng chọn ít nhất một danh mục' }),
+  difficulty_level: z.string().min(1, { message: 'Vui lòng chọn cấp độ' }),
   visible_in: z.array(z.string()).optional(),
   cover_image: z.string().optional(),
   thumbnail_image: z.string().optional(),
-  equipment_ids: z.array(z.string()).nonempty({ message: "Vui lòng chọn ít nhất một thiết bị" }),
-  muscle_group_ids: z.array(z.string()).nonempty({ message: "Vui lòng chọn ít nhất một nhóm cơ" }),
-  subscription_ids: z.array(z.string()).nonempty({ message: "Vui lòng chọn ít nhất một gói đăng ký" }),
+  equipment_ids: z.array(z.string()).nonempty({ message: 'Vui lòng chọn ít nhất một thiết bị' }),
+  muscle_group_ids: z.array(z.string()).nonempty({ message: 'Vui lòng chọn ít nhất một nhóm cơ' }),
+  subscription_ids: z.array(z.string()).nonempty({ message: 'Vui lòng chọn ít nhất một gói đăng ký' }),
   is_public: z.boolean().default(true),
   category: z.string().nullable().optional(),
   duration_weeks: z.coerce.number().nullable().optional(),
@@ -87,16 +84,16 @@ function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, on
           subscription_ids: data.subscription_ids.map((subscription) => subscription.toString()),
         }
       : {
-          course_name: "",
+          course_name: '',
           course_format: format,
-          summary: "",
-          description: "",
-          trainer: "",
+          summary: '',
+          description: '',
+          trainer: '',
           form_categories: [],
-          difficulty_level: "beginner",
+          difficulty_level: 'beginner',
           visible_in: [],
-          cover_image: "",
-          thumbnail_image: "",
+          cover_image: '',
+          thumbnail_image: '',
           equipment_ids: [],
           muscle_group_ids: [],
           subscription_ids: [],
@@ -105,10 +102,10 @@ function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, on
           is_free: false,
           free_amount: 0,
           is_one_on_one: isOneOnOne,
-          category: "",
+          category: '',
           duration_weeks: 0,
-          goal: "",
-          suitable_for: "",
+          goal: '',
+          suitable_for: '',
           days_per_week: 0,
           minutes_per_session: 0,
         },
@@ -167,27 +164,27 @@ function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, on
         if (isEdit && data?.id) {
           if (!accessToken) return
           const response = await updateCourse(data.id.toString(), convertedValues, accessToken)
-          if (response.status === "success") {
-            toast.success("Cập nhật khoá tập thành công")
+          if (response.status === 'success') {
+            toast.success('Cập nhật khoá tập thành công')
           }
         } else {
           if (!accessToken) return
           const response = await createCourse(convertedValues, accessToken)
 
-          if (response.status === "success") {
-            toast.success("Tạo khoá tập thành công")
+          if (response.status === 'success') {
+            toast.success('Tạo khoá tập thành công')
             onSuccess?.()
           }
         }
       } catch (error) {
-        toast.error("Tạo khoá tập thất bại")
+        toast.error('Tạo khoá tập thất bại')
       }
     })
   }
 
-  const isFree = form.watch("is_free")
+  const isFree = form.watch('is_free')
 
-  const isPublic = form.watch("is_public")
+  const isPublic = form.watch('is_public')
 
   return (
     <Form {...form}>
@@ -258,37 +255,22 @@ function CreateCourseForm({ isEdit = false, data, format, isOneOnOne = false, on
         />
 
         <div className="grid grid-cols-3 gap-4">
-          <FormCheckboxField
-            form={form}
-            name="form_categories"
-            label="Dáng"
-            withAsterisk
-            data={courseFormOptions}
-          />
-          <FormRadioField
-            form={form}
-            name="difficulty_level"
-            label="Độ khó"
-            withAsterisk
-            data={courseLevelOptions}
-          />
+          <FormCheckboxField form={form} name="form_categories" label="Dáng" withAsterisk data={courseFormOptions} />
+          <FormRadioField form={form} name="difficulty_level" label="Độ khó" withAsterisk data={courseLevelOptions} />
           <div className="flex items-start gap-10">
             <FormSwitchField form={form} name="is_public" label="Hiển thị" />
           </div>
         </div>
         <div className="space-y-4">
-          {/* <Label>Hình khoá</Label>
-          <FileUploader /> */}
-          <FormImageInputField form={form} name="cover_image" label="Hình khoá" placeholder="Tải lên hình ảnh khoá" />
+          <ImageUploader form={form} name="cover_image" label="Hình khoá" accept={{ 'image/*': [] }} maxFileCount={1} />
         </div>
         <div className="space-y-4">
-          {/* <Label>Hình đại diện khoá</Label>
-          <FileUploader /> */}
-          <FormImageInputField
+          <ImageUploader
             form={form}
             name="thumbnail_image"
             label="Hình đại diện khoá"
-            placeholder="Tải lên hình ảnh minh họa cho bài viết"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
           />
         </div>
         <div className="flex items-start gap-4">

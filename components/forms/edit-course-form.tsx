@@ -15,7 +15,6 @@ import { MainButton } from '../buttons/main-button'
 import { Form } from '../ui/form'
 import {
   FormCheckboxField,
-  FormImageInputField,
   FormInputField,
   FormMultiSelectField,
   FormNumberField,
@@ -23,6 +22,7 @@ import {
   FormSwitchField,
   FormTextareaField,
 } from './fields'
+import { ImageUploader } from '../image-uploader'
 
 // ! Follow CoursePayload model in models/course.ts
 const formSchema = z.object({
@@ -133,8 +133,20 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
         <FormTextareaField form={form} name="summary" label="Tóm tắt" placeholder="Nhập tóm tắt" />
         <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
         <div className="grid grid-cols-2 gap-4">
-          <FormImageInputField form={form} name="thumbnail_image" label="Hình ảnh đại diện" />
-          <FormImageInputField form={form} name="cover_image" label="Hình ảnh bìa" />
+          <ImageUploader
+            form={form}
+            name="thumbnail_image"
+            label="Hình ảnh đại diện"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
+          />
+          <ImageUploader
+            form={form}
+            name="cover_image"
+            label="Hình ảnh bìa"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
+          />
         </div>
         <FormMultiSelectField
           form={form}

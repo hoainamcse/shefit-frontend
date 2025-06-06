@@ -10,9 +10,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createDiet, updateDiet } from '@/network/client/diets'
 
-import { FormImageInputField, FormInputField, FormTextareaField } from './fields'
+import { FormInputField, FormTextareaField } from './fields'
 import { MainButton } from '../buttons/main-button'
 import { Form } from '../ui/form'
+import { ImageUploader } from '../image-uploader'
 
 // ! Follow DietPayload model in models/diet.ts
 const formSchema = z.object({
@@ -74,7 +75,7 @@ export function EditDietForm({ data, onSuccess }: EditDietFormProps) {
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
         <FormInputField form={form} name="name" label="Tên chế độ ăn" withAsterisk placeholder="Nhập tên chế độ ăn" />
         <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
-        <FormImageInputField form={form} name="image" label="Hình ảnh" />
+        <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
             <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={dietMutation.isPending} />

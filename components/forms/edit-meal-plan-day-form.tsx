@@ -12,7 +12,8 @@ import { createMealPlanDay, updateMealPlanDay } from '@/network/client/meal-plan
 import { MainButton } from '@/components/buttons/main-button'
 import { Form } from '@/components/ui/form'
 
-import { FormImageInputField, FormNumberField } from './fields'
+import { FormNumberField } from './fields'
+import { ImageUploader } from '../image-uploader'
 
 // ! Follow MealPlanDayPayload model in models/meal-plan.ts
 export const formSchema = z.object({
@@ -72,7 +73,8 @@ export function EditMealPlanDayForm({ data, mealPlanID, onSuccess }: EditMealPla
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
         <FormNumberField form={form} name="day_number" label="Thứ tự ngày" placeholder="Nhập thứ tự ngày" />
-        <FormImageInputField form={form} name="image" label="Hình ảnh" />
+        <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
+
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
             <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={mealPlanDayMutation.isPending} />

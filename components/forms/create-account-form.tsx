@@ -1,11 +1,9 @@
-"use client"
+'use client'
 
-import { ContentLayout } from "@/components/admin-panel/content-layout"
-import { ColumnDef, DataTable } from "@/components/data-table"
-import { Button } from "@/components/ui/button"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
-import { FormInputField, FormMultiSelectField, FormSelectField } from "@/components/forms/fields"
+import { Button } from '@/components/ui/button'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
+import { FormInputField, FormMultiSelectField, FormSelectField } from '@/components/forms/fields'
 import {
   Select,
   SelectContent,
@@ -14,93 +12,65 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Plus, Trash2 } from "lucide-react"
-import { useForm, useFieldArray } from "react-hook-form"
-import { AddButton } from "@/components/buttons/add-button"
-import { useTransition } from "react"
-import { MainButton } from "../buttons/main-button"
-import { z } from "zod"
-import { Account } from "@/models/auth"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
-import { useState, useEffect, useMemo } from "react"
+} from '@/components/ui/select'
+import { Plus, Trash2 } from 'lucide-react'
+import { useForm, useFieldArray } from 'react-hook-form'
+import { AddButton } from '@/components/buttons/add-button'
+import { MainButton } from '../buttons/main-button'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { toast } from 'sonner'
+import { useState, useEffect } from 'react'
 // import { memberships } from '@/data'
-import { User } from "@/models/user"
-import { calculateMonthsFromDates, generatePassword, generateUsername } from "@/lib/helpers"
-import { getUsers, updatePassword, updateUser } from "@/network/server/user"
-import { getSubscriptions } from "@/network/server/subscriptions-admin"
-import { Subscription } from "@/models/subscription-admin"
-import { UserSubscription, UserSubscriptionDetail } from "@/models/user-subscriptions"
+import { User } from '@/models/user'
+import { generatePassword, generateUsername } from '@/lib/helpers'
+import { updatePassword, updateUser } from '@/network/server/user'
+import { getSubscriptions } from '@/network/server/subscriptions-admin'
+import { Subscription } from '@/models/subscription-admin'
+import { UserSubscriptionDetail } from '@/models/user-subscriptions'
 import {
   getUserSubscriptions,
   createUserSubscription,
   updateUserSubscription,
   deleteUserSubscription,
-} from "@/network/server/user-subscriptions"
-import { Course } from "@/models/course"
-import { getCoursesBySubscriptionId } from "@/network/server/courses"
-import { getMealPlans } from "@/network/server/meal-plans"
-import { getDishes } from "@/network/server/dishes"
-import { MealPlan } from "@/models/meal-plan"
-import { Dish } from "@/models/dish"
-import { Exercise } from "@/models/exercise"
-import { getExercises } from "@/network/server/exercises"
-import { getUserExercises, createUserExercise, deleteUserExercise } from "@/network/server/user-exercises"
-import { UserExercise } from "@/models/user-exercises"
-import { createUserMealPlan, deleteUserMealPlan, getUserMealPlans } from "@/network/server/user-meal-plans"
-import { UserMealPlan } from "@/models/user-meal-plans"
-import { createUserDish, deleteUserDish, getUserDishes } from "@/network/server/user-dishes"
-import { UserDish } from "@/models/user-dishes"
-import { PROVINCES } from "@/lib/label"
-import { createUserCourse, deleteUserCourse, getUserCourses } from "@/network/server/user-courses"
-import { UserCourse } from "@/models/user-courses"
-import { useAuth } from "../providers/auth-context"
-import { roleOptions } from "@/lib/label"
-import { getSubAdminSubscriptions } from "@/network/server/sub-admin"
-import { Gift } from "@/models/subscription-admin"
-
-const subscriptionSchemaItem = z.object({
-  id: z.coerce.number().optional(),
-  user_id: z.coerce.number().min(1, { message: "User is required" }),
-  subscription_id: z.coerce.number().optional(),
-  plan_id: z.coerce.number().optional(),
-  course_format: z.string(),
-  subscription_start_at: z.string().optional(),
-  subscription_end_at: z.string().optional(),
-  status: z.string().optional(),
-  gift_id: z.coerce.number().optional(),
-  course_ids: z.array(z.coerce.string()).optional(),
-  meal_plan_ids: z.array(z.coerce.string()).optional(),
-  dish_ids: z.array(z.coerce.string()).optional(),
-  exercise_ids: z.array(z.coerce.string()).optional(),
-})
+} from '@/network/server/user-subscriptions'
+import { getCoursesBySubscriptionId } from '@/network/server/courses'
+import { getMealPlans } from '@/network/server/meal-plans'
+import { getDishes } from '@/network/server/dishes'
+import { MealPlan } from '@/models/meal-plan'
+import { Dish } from '@/models/dish'
+import { Exercise } from '@/models/exercise'
+import { getExercises } from '@/network/server/exercises'
+import { PROVINCES } from '@/lib/label'
+import { useAuth } from '../providers/auth-context'
+import { roleOptions } from '@/lib/label'
+import { getSubAdminSubscriptions } from '@/network/server/sub-admin'
 
 const accountSchema = z.object({
   id: z.coerce.number().optional(),
-  fullname: z.string().min(3, { message: "Họ và tên phải có ít nhất 3 ký tự." }),
+  fullname: z.string().min(3, { message: 'Họ và tên phải có ít nhất 3 ký tự.' }),
   phone_number: z
     .string()
-    .min(10, { message: "Số điện thoại phải có ít nhất 10 ký tự." })
-    .regex(/^0[0-9]{9,10}$/, { message: "Số điện thoại không hợp lệ." }),
-  username: z.string().min(3, { message: "Username phải có ít nhất 3 ký tự." }),
+    .min(10, { message: 'Số điện thoại phải có ít nhất 10 ký tự.' })
+    .regex(/^0[0-9]{9,10}$/, { message: 'Số điện thoại không hợp lệ.' }),
+  username: z.string().min(3, { message: 'Username phải có ít nhất 3 ký tự.' }),
   province: z.enum([...PROVINCES.map((province) => province.value)] as [string, ...string[]], {
-    message: "Bạn phải chọn tỉnh/thành phố",
+    message: 'Bạn phải chọn tỉnh/thành phố',
   }),
   address: z.string().min(6, {
-    message: "Địa chỉ phải có ít nhất 6 ký tự.",
+    message: 'Địa chỉ phải có ít nhất 6 ký tự.',
   }),
   role: z
     .enum([...roleOptions.map((role) => role.value)] as [string, ...string[]], {
-      message: "Bạn phải chọn role",
+      message: 'Bạn phải chọn role',
     })
-    .default("normal_user"),
-  new_password: z.string().min(8, { message: "New password must be at least 8 characters" }).optional(),
+    .default('normal_user'),
+  new_password: z.string().min(8, { message: 'New password must be at least 8 characters' }).optional(),
   subscriptions: z
     .array(
       z.object({
         id: z.coerce.number().optional(),
-        user_id: z.coerce.number().min(1, { message: "User is required" }),
+        user_id: z.coerce.number().min(1, { message: 'User is required' }),
         subscription_id: z.coerce.number().optional(),
         course_format: z.string(),
         coupon_code: z.string(),
@@ -108,7 +78,6 @@ const accountSchema = z.object({
         subscription_start_at: z.string(),
         subscription_end_at: z.string(),
         gift_id: z.coerce.number().optional(),
-        plan_id: z.coerce.number().optional(),
         order_number: z.string(),
         total_price: z.coerce.number(),
         course_ids: z.array(z.coerce.string()).default([]),
@@ -129,8 +98,6 @@ type selectOption = {
   value: string
   label: string
 }
-
-type UserSubscriptionField = z.infer<typeof subscriptionSchemaItem> & { fieldId: string }
 
 export default function CreateAccountForm({ data }: CreateAccountFormProps) {
   // const [isPending, startTransition] = useTransition()
@@ -156,17 +123,17 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
           subscriptions: [],
         }
       : {
-          fullname: "",
-          phone_number: "",
-          username: "",
-          province: "",
-          address: "",
-          role: "normal_user",
+          fullname: '',
+          phone_number: '',
+          username: '',
+          province: '',
+          address: '',
+          role: 'normal_user',
           subscriptions: [],
         },
   })
 
-  const userRole = form.watch("role")
+  const userRole = form.watch('role')
 
   const {
     control,
@@ -179,14 +146,9 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     append: appendSubscription,
     update: updateSubscription,
     remove: removeSubscription,
-  } = useFieldArray({ control, name: "subscriptions", keyName: "fieldId" })
+  } = useFieldArray({ control, name: 'subscriptions', keyName: 'fieldId' })
 
-  const watchedSubscriptions = form.watch("subscriptions")
-
-  console.log("watchedSubscriptions", watchedSubscriptions)
-
-  console.log("watchedSubscriptions", watchedSubscriptions)
-  console.log("membershipList", membershipList)
+  const watchedSubscriptions = form.watch('subscriptions')
 
   useEffect(() => {
     const fetchFilteredCourses = async () => {
@@ -217,8 +179,8 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
         )
         setCourses(uniqueCourses)
       } catch (error) {
-        console.error("Error fetching filtered courses:", error)
-        toast.error("Failed to load courses for selected subscriptions.")
+        console.error('Error fetching filtered courses:', error)
+        toast.error('Failed to load courses for selected subscriptions.')
         setCourses([]) // Clear courses on error
       }
     }
@@ -232,14 +194,14 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
   const fetchAllData = async () => {
     setIsLoading(true)
     // Guard against missing accessToken when fetching sub-admin subscriptions
-    if (role === "sub_admin" && !accessToken) {
-      toast.error("Missing access token for sub-admin")
+    if (role === 'sub_admin' && !accessToken) {
+      toast.error('Missing access token for sub-admin')
       setIsLoading(false)
       return
     }
     try {
       // Fetch subscriptions based on role, ensuring accessToken is non-null
-      const subscriptionsPromise = role === "sub_admin" ? getSubAdminSubscriptions(accessToken!) : getSubscriptions()
+      const subscriptionsPromise = role === 'sub_admin' ? getSubAdminSubscriptions(accessToken!) : getSubscriptions()
       const [subscriptionsResponse, mealPlansResponse, dishesResponse, exercisesResponse] = await Promise.all([
         subscriptionsPromise,
         getMealPlans(),
@@ -283,39 +245,39 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
             meal_plan_ids: sub.meal_plans.map((mealPlan) => mealPlan.id.toString()),
             dish_ids: sub.dishes.map((dish) => dish.id.toString()),
             exercise_ids: sub.exercises.map((exercise) => exercise.id.toString()),
-            subscription_start_at: sub.subscription_start_at ? formatDate(sub.subscription_start_at) : "",
-            subscription_end_at: sub.subscription_end_at ? formatDate(sub.subscription_end_at) : "",
+            subscription_start_at: sub.subscription_start_at ? formatDate(sub.subscription_start_at) : '',
+            subscription_end_at: sub.subscription_end_at ? formatDate(sub.subscription_end_at) : '',
           }
 
-          if (formattedSub.subscription_start_at && formattedSub.subscription_end_at) {
-            // Total duration including gift extension
-            const totalDuration = calculateMonthsFromDays(
-              formattedSub.subscription_start_at,
-              formattedSub.subscription_end_at
-            )
-            // Subtract gift months for accurate plan duration
-            let giftMonths = 0
-            if (sub.gifts) {
-              const membership = memberships.find((m) => m.id === sub.subscription_id)
-              const gift = membership?.gifts.find((g) => g.id === sub.gifts.id)
-              if (gift && gift.type === "membership_month") {
-                giftMonths = gift.month_count
-              }
-            }
-            console.log("totalDuration", totalDuration)
-            console.log("giftMonths", giftMonths)
-            const planDuration = totalDuration - giftMonths
-            const membership = memberships.find((m) => m.id === sub.subscription_id)
-            const plan = membership?.prices.find((p) => p.duration === planDuration)
-            if (plan) {
-              return { ...formattedSub, plan_id: plan.id }
-            }
-          }
+          // if (formattedSub.subscription_start_at && formattedSub.subscription_end_at) {
+          //   // Total duration including gift extension
+          //   const totalDuration = calculateMonthsFromDays(
+          //     formattedSub.subscription_start_at,
+          //     formattedSub.subscription_end_at
+          //   )
+          //   // Subtract gift months for accurate plan duration
+          //   let giftMonths = 0
+          //   if (sub.gifts) {
+          //     const membership = memberships.find((m) => m.id === sub.subscription_id)
+          //     const gift = membership?.gifts.find((g) => g.id === sub.gifts.id)
+          //     if (gift && gift.type === 'membership_month') {
+          //       giftMonths = gift.month_count
+          //     }
+          //   }
+          //   console.log('totalDuration', totalDuration)
+          //   console.log('giftMonths', giftMonths)
+          //   const planDuration = totalDuration - giftMonths
+          //   const membership = memberships.find((m) => m.id === sub.subscription_id)
+          //   const plan = membership?.prices.find((p) => p.duration === planDuration)
+          //   if (plan) {
+          //     return { ...formattedSub, plan_id: plan.id }
+          //   }
+          // }
           return formattedSub
         })
-        setValue("subscriptions", subscriptionsWithPlanId)
+        setValue('subscriptions', subscriptionsWithPlanId)
 
-        console.log("subscriptionsWithPlanId", subscriptionsWithPlanId)
+        console.log('subscriptionsWithPlanId', subscriptionsWithPlanId)
 
         // // Set user courses
         // if (userCoursesResponse?.data?.length > 0) {
@@ -330,24 +292,10 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
         //   )
         //   form.setValue("meal_plan_ids", mealPlanIds)
         // }
-
-        // // Set user exercises
-        // if (userExercisesResponse?.data?.length > 0) {
-        //   const exerciseIds = userExercisesResponse.data.map((exercise: UserExercise) =>
-        //     exercise.exercise_id.toString()
-        //   )
-        //   form.setValue("exercise_ids", exerciseIds)
-        // }
-
-        // // Set user dishes
-        // if (userDishesResponse?.data?.length > 0) {
-        //   const dishIds = userDishesResponse.data.map((dish: UserDish) => dish.dish_id.toString())
-        //   form.setValue("dish_ids", dishIds)
-        //}
       }
     } catch (error) {
-      console.error("Error fetching account data:", error)
-      toast.error("Failed to load account data")
+      console.error('Error fetching account data:', error)
+      toast.error('Failed to load account data')
     } finally {
       setIsLoading(false)
     }
@@ -359,9 +307,9 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
-      if (name === "fullname" && value.fullname) {
+      if (name === 'fullname' && value.fullname) {
         const username = generateUsername(value.fullname)
-        form.setValue("username", username)
+        form.setValue('username', username)
       }
     })
 
@@ -369,20 +317,20 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
   }, [form])
 
   async function onSubmit(values: AccountFormData) {
-    if (values.subscriptions?.some((sub) => !sub.subscription_id || !sub.subscription_start_at || !sub.plan_id)) {
-      form.setError("subscriptions", {
-        type: "custom",
-        message: "Vui lòng điền đầy đủ thông tin cho tất cả các gói membership",
+    if (values.subscriptions?.some((sub) => !sub.subscription_id || !sub.subscription_start_at)) {
+      form.setError('subscriptions', {
+        type: 'custom',
+        message: 'Vui lòng điền đầy đủ thông tin cho tất cả các gói membership',
       })
       return
     }
 
-    console.log("values", values)
+    console.log('values', values)
 
     try {
-      const toastId = toast.loading("Updating course structure...")
+      const toastId = toast.loading('Updating course structure...')
       if (!data?.id) {
-        toast.error("Không tìm thấy thông tin người dùng")
+        toast.error('Không tìm thấy thông tin người dùng')
         return
       }
 
@@ -420,9 +368,9 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       }
 
       toast.dismiss(toastId)
-      toast.success("Cập nhật tài khoản thành công")
+      toast.success('Cập nhật tài khoản thành công')
     } catch (error) {
-      toast.error("Cập nhật tài khoản thất bại")
+      toast.error('Cập nhật tài khoản thất bại')
     }
   }
 
@@ -441,142 +389,6 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     }
   }
 
-  const handleAssignUserExercise = async (
-    exerciseIds: string[],
-    userId: string
-  ): Promise<{
-    success: boolean
-    error?: string
-  }> => {
-    try {
-      const currentExercises = await getUserExercises(userId)
-      const currentExerciseIds = currentExercises.data.map((ex: UserExercise) => ex.exercise_id.toString())
-      //Exercise to add
-      const exercisesToAdd = exerciseIds.filter((id) => !currentExerciseIds.includes(id))
-
-      //Exercise to remove
-      const exercisesToRemove = currentExerciseIds.filter((id) => !exerciseIds.includes(id))
-
-      if (exercisesToAdd.length > 0) {
-        await Promise.all(exercisesToAdd.map((exercise_id) => createUserExercise({ exercise_id }, userId)))
-      }
-
-      if (exercisesToRemove.length > 0) {
-        await Promise.all(exercisesToRemove.map((exercise_id) => deleteUserExercise(userId, exercise_id)))
-      }
-
-      return { success: true }
-    } catch (error) {
-      console.error("Error assigning exercises:", error)
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to assign exercises",
-      }
-    }
-  }
-
-  const handleAssignUserMealPlan = async (
-    mealPlanIds: string[],
-    userId: string
-  ): Promise<{
-    success: boolean
-    error?: string
-  }> => {
-    try {
-      const currentMealPlans = await getUserMealPlans(userId)
-      const currentMealPlanIds = currentMealPlans.data.map((mp: UserMealPlan) => mp.meal_plan_id.toString())
-      //Meal plan to add
-      const mealPlansToAdd = mealPlanIds.filter((id) => !currentMealPlanIds.includes(id))
-
-      //Meal plan to remove
-      const mealPlansToRemove = currentMealPlanIds.filter((id) => !mealPlanIds.includes(id))
-
-      if (mealPlansToAdd.length > 0) {
-        await Promise.all(mealPlansToAdd.map((meal_plan_id) => createUserMealPlan({ meal_plan_id }, userId)))
-      }
-
-      if (mealPlansToRemove.length > 0) {
-        await Promise.all(mealPlansToRemove.map((meal_plan_id) => deleteUserMealPlan(userId, meal_plan_id)))
-      }
-
-      return { success: true }
-    } catch (error) {
-      console.error("Error assigning meal plans:", error)
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to assign meal plans",
-      }
-    }
-  }
-
-  const handleAssignUserDish = async (
-    dishIds: string[],
-    userId: string
-  ): Promise<{
-    success: boolean
-    error?: string
-  }> => {
-    try {
-      const currentDishes = await getUserDishes(userId)
-      const currentDishIds = currentDishes.data.map((dish: UserDish) => dish.dish_id.toString())
-      //Dish to add
-      const dishesToAdd = dishIds.filter((id) => !currentDishIds.includes(id))
-
-      //Dish to remove
-      const dishesToRemove = currentDishIds.filter((id) => !dishIds.includes(id))
-
-      if (dishesToAdd.length > 0) {
-        await Promise.all(dishesToAdd.map((dish_id) => createUserDish({ dish_id }, userId)))
-      }
-
-      if (dishesToRemove.length > 0) {
-        await Promise.all(dishesToRemove.map((dish_id) => deleteUserDish(userId, dish_id)))
-      }
-
-      return { success: true }
-    } catch (error) {
-      console.error("Error assigning dishes:", error)
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to assign dishes",
-      }
-    }
-  }
-
-  const handleAssignUserCourse = async (
-    courseIds: string[],
-    userId: string
-  ): Promise<{
-    success: boolean
-    error?: string
-  }> => {
-    try {
-      const currentCourses = await getUserCourses(userId)
-      const currentCourseIds = currentCourses.data.map((course: UserCourse) => course.course_id.toString())
-      //Course to add
-      const coursesToAdd = courseIds.filter((id) => !currentCourseIds.includes(id))
-
-      //Course to remove
-      const coursesToRemove = currentCourseIds.filter((id) => !courseIds.includes(id))
-
-      if (coursesToAdd.length > 0) {
-        await Promise.all(coursesToAdd.map((course_id) => createUserCourse({ course_id }, userId)))
-      }
-
-      if (coursesToRemove.length > 0) {
-        await Promise.all(coursesToRemove.map((course_id) => deleteUserCourse(userId, course_id)))
-      }
-
-      return { success: true }
-    } catch (error) {
-      console.error("Error assigning courses:", error)
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to assign courses",
-      }
-    }
-  }
-
   const getAvailableSubscriptions = () =>
     membershipList.filter((membership) => !subscriptions.some((sub) => sub.subscription_id === membership.id))
 
@@ -584,19 +396,19 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     const availableSubscriptions = getAvailableSubscriptions()
 
     if (availableSubscriptions.length === 0) {
-      toast.error("Tất cả gói membership đã được chọn")
+      toast.error('Tất cả gói membership đã được chọn')
       return
     }
 
     // Create new package with empty values
     const newPackage: any = {
       user_id: data?.id || 0,
-      course_format: "video",
-      coupon_code: "",
-      status: "active",
+      course_format: 'video',
+      coupon_code: '',
+      status: 'active',
       subscription_start_at: formatDate(new Date()),
-      subscription_end_at: "",
-      order_number: "",
+      subscription_end_at: '',
+      order_number: '',
       total_price: 0,
       // Initialize assigned items arrays
       course_ids: [],
@@ -608,15 +420,6 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     appendSubscription(newPackage)
   }
 
-  const membershipHeaderExtraContent = (
-    <AddButton
-      type="button"
-      disabled={subscriptions.some((sub) => !sub.subscription_id || !sub.plan_id)}
-      text="Thêm gói membership"
-      onClick={handleAddMembershipPackage}
-    />
-  )
-
   const [isApplyingPassword, setIsApplyingPassword] = useState(false)
 
   const handleApplyPassword = async () => {
@@ -624,24 +427,24 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     try {
       const formData = form.getValues()
       const updateData = {
-        role: "admin",
+        role: 'admin',
         username: formData.username,
         new_password: formData.new_password,
       }
 
       await updatePassword(updateData)
-      toast.success("Mật khẩu đã được cập nhật thành công")
+      toast.success('Mật khẩu đã được cập nhật thành công')
     } catch (error) {
-      toast.error("Có lỗi xảy ra khi cập nhật mật khẩu")
+      toast.error('Có lỗi xảy ra khi cập nhật mật khẩu')
     } finally {
       setIsApplyingPassword(false)
     }
   }
 
   const formatDate = (date: Date | string): string => {
-    if (!date) return ""
+    if (!date) return ''
     const d = date instanceof Date ? date : new Date(date)
-    return d.toISOString().split("T")[0]
+    return d.toISOString().split('T')[0]
   }
 
   const addDaysForMonths = (date: Date, months: number): Date => {
@@ -650,14 +453,14 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     return newDate
   }
 
-  const calculateMonthsFromDays = (startDateStr: string, endDateStr: string): number => {
-    if (!startDateStr || !endDateStr) return 0
-    const start = new Date(startDateStr)
-    const end = new Date(endDateStr)
-    const diffTime = Math.abs(end.getTime() - start.getTime())
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    return Math.round((diffDays + 1) / 35) // 35 days per month
-  }
+  // const calculateMonthsFromDays = (startDateStr: string, endDateStr: string): number => {
+  //   if (!startDateStr || !endDateStr) return 0
+  //   const start = new Date(startDateStr)
+  //   const end = new Date(endDateStr)
+  //   const diffTime = Math.abs(end.getTime() - start.getTime())
+  //   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  //   return Math.round((diffDays + 1) / 35) // 35 days per month
+  // }
 
   if (isLoading) {
     return (
@@ -696,7 +499,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                 placeholder="Chọn tỉnh/thành phố của bạn đang sống"
                 data={PROVINCES}
               />
-              {role === "admin" && (
+              {role === 'admin' && (
                 <FormSelectField form={form} name="role" label="Role" placeholder="Chọn role" data={roleOptions} />
               )}
               <FormInputField form={form} name="address" label="Địa chỉ chi tiết" placeholder="Nhập địa chỉ của bạn" />
@@ -716,7 +519,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                     className="w-full sm:w-auto flex-1"
                     onClick={() => {
                       const pwd = generatePassword()
-                      form.setValue("new_password", pwd)
+                      form.setValue('new_password', pwd)
                     }}
                   >
                     Tạo mật khẩu
@@ -741,7 +544,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
               <h2 className="text-lg font-semibold">Gói membership</h2>
               <AddButton
                 type="button"
-                disabled={subscriptions.some((sub) => !sub.subscription_id || !sub.plan_id)}
+                disabled={subscriptions.some((sub) => !sub.subscription_id)}
                 text="Thêm gói membership"
                 onClick={handleAddMembershipPackage}
               />
@@ -756,28 +559,30 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                 </Button>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 {subscriptions.map((subscription, idx) => {
                   const isExistingRecord = Boolean(subscription.id) && subscription.id! > 0
                   const membership = membershipList.find((m) => m.id === subscription.subscription_id)
-                  const plans = membership?.prices || []
                   const gifts = membership?.gifts || []
 
-                  const computeEndDate = (startAt?: string, planId?: number, giftId?: number): string => {
-                    if (!startAt || !planId) return ""
-                    const startDate = new Date(startAt)
-                    const plan = plans.find((p) => p.id === planId)
-                    if (!plan) return ""
-                    let date = addDaysForMonths(startDate, plan.duration)
-                    const gift = gifts.find((g) => g.id === giftId)
-                    if (gift && gift.type === "membership_month" && gift.month_count) {
-                      date = addDaysForMonths(date, gift.month_count)
-                    }
-                    return formatDate(date)
-                  }
+                  // const computeEndDate = (startAt?: string, planId?: number, giftId?: number): string => {
+                  //   if (!startAt || !planId) return ''
+                  //   const startDate = new Date(startAt)
+                  //   const plan = plans.find((p) => p.id === planId)
+                  //   if (!plan) return ''
+                  //   let date = addDaysForMonths(startDate, plan.duration)
+                  //   const gift = gifts.find((g) => g.id === giftId)
+                  //   if (gift && gift.type === 'membership_month' && gift.month_count) {
+                  //     date = addDaysForMonths(date, gift.month_count)
+                  //   }
+                  //   return formatDate(date)
+                  // }
 
                   return (
-                    <div key={subscription.fieldId} className="rounded-md border p-4 bg-muted/10">
+                    <div
+                      key={subscription.fieldId}
+                      className="rounded-md border p-4 bg-muted/10 flex flex-col isolate overflow-hidden"
+                    >
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="font-medium">{membership?.name || `Gói membership #${idx + 1}`}</h3>
                         <Button type="button" variant="ghost" size="icon" onClick={() => removeSubscription(idx)}>
@@ -786,25 +591,24 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                       </div>
 
                       {/* Membership Details Section */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                      <div className="flex flex-col space-y-4 flex-grow">
                         {/* Subscription Select */}
                         <div className="space-y-2">
                           <label className="text-sm font-medium">Tên gói membership</label>
                           <Select
-                            value={subscription.subscription_id?.toString() || ""}
+                            value={subscription.subscription_id?.toString() || ''}
                             disabled={isExistingRecord}
                             onValueChange={(value: string) => {
                               const courseFormat = membershipList.find((m) => m.id === Number(value))?.course_format
                               updateSubscription(idx, {
                                 ...subscription,
                                 subscription_id: Number(value),
-                                subscription_end_at: "",
-                                plan_id: undefined,
-                                course_format: courseFormat || "",
+                                subscription_end_at: '',
+                                course_format: courseFormat || '',
                               })
                             }}
                           >
-                            <SelectTrigger className={isExistingRecord ? "cursor-not-allowed opacity-70" : ""}>
+                            <SelectTrigger className={isExistingRecord ? 'cursor-not-allowed opacity-70' : ''}>
                               <SelectValue placeholder="Chọn gói membership" />
                             </SelectTrigger>
                             <SelectContent>
@@ -825,7 +629,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                         </div>
 
                         {/* Plan Select */}
-                        <div className="space-y-2">
+                        {/* <div className="space-y-2">
                           <label className="text-sm font-medium">Thời gian (tháng)</label>
                           <Select
                             value={subscription.plan_id?.toString() || ""}
@@ -855,22 +659,20 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                               ))}
                             </SelectContent>
                           </Select>
-                        </div>
+                        </div> */}
 
                         {/* Start Date */}
                         <div className="space-y-2">
                           <label className="text-sm font-medium">Ngày bắt đầu</label>
                           <input
                             type="date"
-                            value={subscription.subscription_start_at ? subscription.subscription_start_at : ""}
+                            value={subscription.subscription_start_at ? subscription.subscription_start_at : ''}
                             className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors"
                             onChange={(e) => {
                               const newStart = e.target.value
-                              const newEnd = computeEndDate(newStart, subscription.plan_id, subscription.gift_id)
                               updateSubscription(idx, {
                                 ...subscription,
                                 subscription_start_at: newStart,
-                                subscription_end_at: newEnd,
                               })
                             }}
                           />
@@ -881,30 +683,42 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                           <label className="text-sm font-medium">Ngày kết thúc</label>
                           <input
                             type="date"
-                            value={subscription.subscription_end_at || ""}
-                            readOnly
-                            disabled
-                            className="flex h-9 w-full rounded-md border border-input bg-muted px-3 py-1 text-sm shadow-sm transition-colors cursor-not-allowed"
+                            value={subscription.subscription_end_at || ''}
+                            onChange={(e) => {
+                              const newEnd = e.target.value
+                              updateSubscription(idx, {
+                                ...subscription,
+                                subscription_end_at: newEnd,
+                                gift_id: undefined,
+                              })
+                            }}
+                            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors"
                           />
                         </div>
 
                         {/* Gift Select */}
-                        <div className="space-y-2 md:col-span-2">
+                        <div className="space-y-2">
                           <label className="text-sm font-medium">Quà tặng</label>
                           <Select
-                            value={subscription.gift_id?.toString() || ""}
+                            value={subscription.gift_id?.toString() || ''}
                             disabled={!subscription.subscription_id}
                             onValueChange={(value: string) => {
                               const newGiftId = value ? Number(value) : undefined
-                              const newEnd = computeEndDate(
-                                subscription.subscription_start_at,
-                                subscription.plan_id,
-                                newGiftId
-                              )
+                              let newEndAt = subscription.subscription_end_at || ''
+                              const selectedGift = gifts.find((g) => g.id === newGiftId)
+                              if (
+                                selectedGift &&
+                                selectedGift.type === 'membership_month' &&
+                                selectedGift.month_count &&
+                                subscription.subscription_end_at
+                              ) {
+                                const endDate = new Date(subscription.subscription_end_at)
+                                newEndAt = formatDate(addDaysForMonths(endDate, selectedGift.month_count))
+                              }
                               updateSubscription(idx, {
                                 ...subscription,
                                 gift_id: newGiftId,
-                                subscription_end_at: newEnd,
+                                subscription_end_at: newEndAt,
                               })
                             }}
                           >
@@ -916,7 +730,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                               <SelectGroup>
                                 <SelectLabel>Quà tặng</SelectLabel>
                                 {gifts
-                                  .filter((g) => g.type === "item")
+                                  .filter((g) => g.type === 'item')
                                   .map((g) => (
                                     <SelectItem key={g.id} value={g.id.toString()}>
                                       {g.name}
@@ -928,7 +742,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                               <SelectGroup>
                                 <SelectLabel>Tháng thành viên</SelectLabel>
                                 {gifts
-                                  .filter((g) => g.type === "membership_month")
+                                  .filter((g) => g.type === 'membership_month')
                                   .map((g) => (
                                     <SelectItem key={g.id} value={g.id.toString()}>
                                       {g.month_count} tháng
@@ -941,8 +755,8 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                       </div>
 
                       {/* Assigned Items Section as Accordion */}
-                      {userRole !== "sub_admin" && (
-                        <div className="mt-6 border-t pt-4">
+                      {userRole !== 'sub_admin' && (
+                        <div className="mt-6 border-t pt-4 flex-shrink-0">
                           <Accordion type="single" collapsible className="w-full">
                             <AccordionItem value="assigned-items">
                               <AccordionTrigger className="font-medium py-2">

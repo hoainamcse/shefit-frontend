@@ -1,68 +1,67 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm, useFieldArray } from "react-hook-form"
-import * as z from "zod"
-import { useEffect, useMemo, useState, useTransition } from "react"
+import * as React from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm, useFieldArray } from 'react-hook-form'
+import * as z from 'zod'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { FileUploader } from "@/components/file-uploader"
-import { toast } from "sonner"
-import { MainButton } from "@/components/buttons/main-button"
-import { AddButton } from "@/components/buttons/add-button"
-import { Button } from "@/components/ui/button"
-import { Trash2, Plus } from "lucide-react"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent } from "../ui/card"
-import { Subscription } from "@/models/subscription-admin"
-import { string } from "zod"
-import { FormImageInputField } from "./fields/form-image-input-field"
-import { FormInputField, FormMultiSelectField, FormSelectField } from "./fields"
-import { useRouter } from "next/navigation"
-import { createSubscription, updateSubscription } from "@/network/server/subscriptions-admin"
-import { createGift } from "@/network/server/gifts"
-import { updateGift } from "@/network/server/gifts"
-import { updateSubscriptionPrice } from "@/network/server/subscriptions-admin"
-import { getCourses } from "@/network/server/courses-admin"
-import { useAuth } from "../providers/auth-context"
-import { RichTextEditor } from "./fields/rich-text-editor"
-import { giftTypeOptions } from "@/lib/label"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { FileUploader } from '@/components/file-uploader'
+import { toast } from 'sonner'
+import { MainButton } from '@/components/buttons/main-button'
+import { AddButton } from '@/components/buttons/add-button'
+import { Button } from '@/components/ui/button'
+import { Trash2, Plus } from 'lucide-react'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Card, CardContent } from '../ui/card'
+import { Subscription } from '@/models/subscription-admin'
+import { FormInputField, FormMultiSelectField, FormSelectField } from './fields'
+import { useRouter } from 'next/navigation'
+import { createSubscription, updateSubscription } from '@/network/server/subscriptions-admin'
+import { createGift } from '@/network/server/gifts'
+import { updateGift } from '@/network/server/gifts'
+import { updateSubscriptionPrice } from '@/network/server/subscriptions-admin'
+import { getCourses } from '@/network/server/courses-admin'
+import { useAuth } from '../providers/auth-context'
+import { RichTextEditor } from './fields/rich-text-editor'
+import { giftTypeOptions } from '@/lib/label'
+import { ImageUploader } from '../image-uploader'
 // Define the form schema
 const formSchema = z.object({
   name: z.string().min(3, {
-    message: "Tên gói phải có ít nhất 3 ký tự.",
+    message: 'Tên gói phải có ít nhất 3 ký tự.',
   }),
-  course_format: z.enum(["video", "live", "both"], {
-    required_error: "Vui lòng chọn loại hình.",
+  course_format: z.enum(['video', 'live', 'both'], {
+    required_error: 'Vui lòng chọn loại hình.',
   }),
   course_ids: z.array(z.string()).optional(),
   meal_plan_ids: z.array(z.string()).optional(),
   description_1: z.string().min(10, {
-    message: "Mô tả phải có ít nhất 10 ký tự.",
+    message: 'Mô tả phải có ít nhất 10 ký tự.',
   }),
   description_2: z.string().min(10, {
-    message: "Mô tả phải có ít nhất 10 ký tự.",
+    message: 'Mô tả phải có ít nhất 10 ký tự.',
   }),
   result_checkup: z.string().min(10, {
-    message: "Mô tả phải có ít nhất 10 ký tự.",
+    message: 'Mô tả phải có ít nhất 10 ký tự.',
   }),
   cover_image: z.string().optional(),
   thumbnail_image: z.string().optional(),
   gifts: z
     .array(
-      z.discriminatedUnion("type", [
+      z.discriminatedUnion('type', [
         z.object({
           id: z.number().optional(),
-          type: z.literal("membership_month"),
-          month_count: z.coerce.number().min(1, { message: "Số tháng phải lớn hơn 0" }),
+          type: z.literal('membership_month'),
+          month_count: z.coerce.number().min(1, { message: 'Số tháng phải lớn hơn 0' }),
         }),
         z.object({
           id: z.number().optional(),
-          type: z.literal("item"),
-          name: z.string().min(1, { message: "Tên quà tặng không được để trống" }),
+          type: z.literal('item'),
+          name: z.string().min(1, { message: 'Tên quà tặng không được để trống' }),
           image: z.string().optional(),
         }),
       ])
@@ -72,8 +71,8 @@ const formSchema = z.object({
     .array(
       z.object({
         id: z.number().optional(),
-        price: z.number().min(0, { message: "Giá tiền không được âm" }),
-        duration: z.number().min(1, { message: "Thời gian phải lớn hơn 0" }),
+        price: z.number().min(0, { message: 'Giá tiền không được âm' }),
+        duration: z.number().min(1, { message: 'Thời gian phải lớn hơn 0' }),
       })
     )
     .optional(),
@@ -87,9 +86,9 @@ type MembershipFormProps = {
 }
 
 const AVAILABLE_COURSE_FORMATS = [
-  { value: "video", label: "Video" },
-  { value: "live", label: "Zoom" },
-  { value: "both", label: "Video & Zoom" },
+  { value: 'video', label: 'Video' },
+  { value: 'live', label: 'Zoom' },
+  { value: 'both', label: 'Video & Zoom' },
 ]
 
 export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
@@ -104,8 +103,8 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
     [courseList]
   )
 
-  const fetchCourses = async (format?: "video" | "live" | "both") => {
-    if (format === "both") {
+  const fetchCourses = async (format?: 'video' | 'live' | 'both') => {
+    if (format === 'both') {
       const response = await getCourses()
       setCourseList(response.data || [])
     } else {
@@ -124,15 +123,15 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
           course_ids: data.course_ids.map((courseId) => courseId.toString()),
         }
       : {
-          name: "",
-          course_format: "video",
+          name: '',
+          course_format: 'video',
           course_ids: [],
           prices: [],
           gifts: [],
-          cover_image: "",
-          thumbnail_image: "",
-          description_1: "",
-          description_2: "",
+          cover_image: '',
+          thumbnail_image: '',
+          description_1: '',
+          description_2: '',
         },
   })
 
@@ -143,7 +142,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
     remove: removeGift,
   } = useFieldArray({
     control: form.control,
-    name: "gifts",
+    name: 'gifts',
   })
 
   const {
@@ -152,39 +151,39 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
     remove: removePrice,
   } = useFieldArray({
     control: form.control,
-    name: "prices",
+    name: 'prices',
   })
 
   // Add a new gift
   const addGift = () => {
     appendGift({
-      type: "item",
-      name: "",
-      image: "",
+      type: 'item',
+      name: '',
+      image: '',
     })
   }
 
   // Handle gift type change
   const handleGiftTypeChange = (value: string, index: number) => {
-    const currentGifts = form.getValues("gifts") || []
+    const currentGifts = form.getValues('gifts') || []
     const updatedGifts = [...currentGifts]
 
-    if (value === "membership_month") {
+    if (value === 'membership_month') {
       updatedGifts[index] = {
-        type: "membership_month",
+        type: 'membership_month',
         month_count: 1,
         id: updatedGifts[index].id,
       }
     } else {
       updatedGifts[index] = {
-        type: "item",
-        name: "",
-        image: "",
+        type: 'item',
+        name: '',
+        image: '',
         id: updatedGifts[index].id,
       }
     }
 
-    form.setValue("gifts", updatedGifts, { shouldValidate: true })
+    form.setValue('gifts', updatedGifts, { shouldValidate: true })
   }
 
   // Add a new price
@@ -195,7 +194,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
     })
   }
 
-  const courseFormat = form.watch("course_format")
+  const courseFormat = form.watch('course_format')
 
   useEffect(() => {
     fetchCourses(courseFormat)
@@ -205,18 +204,18 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
     startTransition(async () => {
       try {
         if (!accessToken) {
-          throw new Error("Access token is required")
+          throw new Error('Access token is required')
         }
-        console.log("values", values)
+        console.log('values', values)
         if (isEdit) {
           await handleEditMembership(values, accessToken, data)
         } else {
           await handleCreateMembership(values, accessToken)
-          router.push("/admin/membership")
+          router.push('/admin/membership')
         }
       } catch (error) {
-        console.error("Error:", error)
-        toast.error(isEdit ? "Cập nhật gói thành viên thất bại" : "Tạo gói thành viên thất bại")
+        console.error('Error:', error)
+        toast.error(isEdit ? 'Cập nhật gói thành viên thất bại' : 'Tạo gói thành viên thất bại')
       }
     })
   }
@@ -225,7 +224,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
     let giftIds: number[] = []
     if (values.gifts && values.gifts.length > 0) {
       const createdGifts = await Promise.all(values.gifts.map((gift) => createGift(gift, accessToken)))
-      giftIds = createdGifts.filter((gift) => gift.status === "success" && gift.data).map((gift) => gift.data.id)
+      giftIds = createdGifts.filter((gift) => gift.status === 'success' && gift.data).map((gift) => gift.data.id)
     }
     const { gifts, ...rest } = values
     const subscriptionData = {
@@ -233,11 +232,11 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
       gift_ids: giftIds,
     }
     if (!accessToken) {
-      throw new Error("Access token is required")
+      throw new Error('Access token is required')
     }
 
     await createSubscription(subscriptionData, accessToken)
-    toast.success("Tạo gói thành viên thành công")
+    toast.success('Tạo gói thành viên thành công')
   }
 
   const handleEditMembership = async (values: FormValues, accessToken: string, data?: Subscription) => {
@@ -252,12 +251,12 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
 
     const updatedGiftIds = giftsWithId.map((gift) => gift.id)
     const createdGiftIds = createdGifts
-      .filter((gift) => gift.status === "success" && gift.data)
+      .filter((gift) => gift.status === 'success' && gift.data)
       .map((gift) => gift.data.id)
     const giftIds = [...updatedGiftIds, ...createdGiftIds]
 
     if (!accessToken) {
-      throw new Error("Access token is required")
+      throw new Error('Access token is required')
     }
     await updateSubscriptionPrice(data!.id!, values.prices, accessToken)
 
@@ -268,10 +267,10 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
     }
 
     if (!accessToken) {
-      throw new Error("Access token is required")
+      throw new Error('Access token is required')
     }
     await updateSubscription(data!.id!, subscriptionData, accessToken)
-    toast.success("Cập nhật gói thành viên thành công")
+    toast.success('Cập nhật gói thành viên thành công')
   }
 
   return (
@@ -369,11 +368,12 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                 />
               )} */}
 
-              <FormImageInputField
+              <ImageUploader
                 form={form}
                 name="cover_image"
                 label="Hình ảnh minh họa"
-                placeholder="Nhập hình ảnh minh họa cho gói thành viên"
+                accept={{ 'image/*': [] }}
+                maxFileCount={1}
               />
 
               {/* Gifts section */}
@@ -444,20 +444,21 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                                   )}
                                 />
 
-                                {field.value.type === "item" && (
+                                {field.value.type === 'item' && (
                                   <>
                                     <FormInputField form={form} name={`gifts.${index}.name`} label="Tên quà tặng" />
 
-                                    <FormImageInputField
+                                    <ImageUploader
                                       form={form}
                                       name={`gifts.${index}.image`}
                                       label="Hình ảnh quà tặng"
-                                      placeholder="Nhập hình ảnh quà tặng"
+                                      accept={{ 'image/*': [] }}
+                                      maxFileCount={1}
                                     />
                                   </>
                                 )}
 
-                                {field.value.type === "membership_month" && (
+                                {field.value.type === 'membership_month' && (
                                   <FormInputField
                                     form={form}
                                     name={`gifts.${index}.month_count`}
@@ -591,14 +592,14 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                                           type="text"
                                           value={
                                             amountField.value
-                                              ? new Intl.NumberFormat("vi-VN").format(amountField.value)
-                                              : ""
+                                              ? new Intl.NumberFormat('vi-VN').format(amountField.value)
+                                              : ''
                                           }
                                           onChange={(e) => {
-                                            const value = e.target.value.replace(/[^\d]/g, "")
+                                            const value = e.target.value.replace(/[^\d]/g, '')
                                             const formattedValue = value
-                                              ? new Intl.NumberFormat("vi-VN").format(parseInt(value))
-                                              : ""
+                                              ? new Intl.NumberFormat('vi-VN').format(parseInt(value))
+                                              : ''
                                             e.target.value = formattedValue
                                             amountField.onChange(parseInt(value) || 0)
                                           }}
@@ -621,7 +622,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
               </div>
 
               <MainButton
-                text={isEdit ? "Cập nhật gói thành viên" : "Tạo gói thành viên"}
+                text={isEdit ? 'Cập nhật gói thành viên' : 'Tạo gói thành viên'}
                 type="submit"
                 loading={isPending}
               />
