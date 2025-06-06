@@ -4,8 +4,8 @@ import type { Course, CourseLive, LiveSession, CourseLiveDay } from '@/models/co
 
 import { toast } from 'sonner'
 import { useState, useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { Clock, Hourglass, Link, Trash2 } from 'lucide-react'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
 import { deleteCourseLive, deleteLiveSession, getCourseLives, queryKeyCourseLives } from '@/network/client/courses'
 import { EditLiveSessionForm } from '@/components/forms/edit-live-session-form'
@@ -41,6 +41,7 @@ export function CourseView({ courseID: courseID }: CourseViewProps) {
   } = useQuery({
     queryKey: [queryKeyCourseLives, courseID],
     queryFn: () => getCourseLives(courseID),
+    placeholderData: keepPreviousData,
   })
 
   // useEffect(() => {

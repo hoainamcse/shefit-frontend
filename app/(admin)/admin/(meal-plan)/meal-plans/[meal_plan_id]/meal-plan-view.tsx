@@ -4,7 +4,7 @@ import type { MealPlan, MealPlanDay, MealPlanDish, DishMealTime } from '@/models
 
 import { toast } from 'sonner'
 import { useState, useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { Beef, Droplets, Leaf, Trash2, Wheat, Zap } from 'lucide-react'
 
 import { EditMealPlanDishForm } from '@/components/forms/edit-meal-plan-dish-form'
@@ -48,6 +48,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
   } = useQuery({
     queryKey: [queryKeyMealPlanDays, mealPlanID],
     queryFn: () => getMealPlanDays(mealPlanID),
+    placeholderData: keepPreviousData,
   })
 
   // useEffect(() => {

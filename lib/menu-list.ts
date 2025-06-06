@@ -76,7 +76,7 @@ export function getMenuList(pathname: string): Group[] {
             },
             {
               href: '/admin/one-on-one-classes',
-              label: 'Khoá tập 1-on-1',
+              label: 'Khoá tập 1:1',
             },
             {
               href: '/admin/exercises',
@@ -133,11 +133,11 @@ export function getMenuList(pathname: string): Group[] {
           submenus: [
             {
               href: '/admin/quizzes',
-              label: 'Danh sách khảo sát',
+              label: 'Danh sách quiz',
             },
             {
-              href: '/admin/quizzes/results',
-              label: 'Kết quả khảo sát',
+              href: '/admin/users/quizzes',
+              label: 'Kết quả quiz',
             },
           ],
         },

@@ -4,6 +4,7 @@ import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import type { Equipment } from '@/models/equipment'
 
 import { toast } from 'sonner'
+import { format } from 'date-fns'
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
@@ -76,23 +77,13 @@ export function EquipmentsTable() {
       {
         header: 'Ngày tạo',
         accessorKey: 'created_at',
-        cell: ({ row }) =>
-          new Date(row.getValue('created_at')).toLocaleDateString('vi-VN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-          }),
+        cell: ({ row }) => format(row.getValue('created_at'), 'Pp'),
         size: 180,
       },
       {
         header: 'Ngày cập nhật',
         accessorKey: 'updated_at',
-        cell: ({ row }) =>
-          new Date(row.getValue('updated_at')).toLocaleDateString('vi-VN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-          }),
+        cell: ({ row }) => format(row.getValue('updated_at'), 'Pp'),
         size: 180,
       },
       {
