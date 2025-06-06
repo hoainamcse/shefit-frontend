@@ -51,7 +51,7 @@ export function getMenuList(pathname: string): Group[] {
             {
               href: '#',
               label: 'Chính sách',
-            }
+            },
           ],
         },
       ],
@@ -65,15 +65,15 @@ export function getMenuList(pathname: string): Group[] {
           icon: BookTextIcon,
           submenus: [
             {
-              href: '/admin/video-classes',
+              href: '/admin/courses?course_format=video',
               label: 'Khoá tập video',
             },
             {
-              href: '/admin/live-classes',
+              href: '/admin/courses?course_format=live',
               label: 'Khoá tập Zoom',
             },
             {
-              href: '/admin/one-on-one-classes',
+              href: '/admin/courses?is_one_on_one=true',
               label: 'Khoá tập 1:1',
             },
             {

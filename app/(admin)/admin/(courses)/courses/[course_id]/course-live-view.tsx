@@ -23,7 +23,7 @@ interface CourseViewProps {
   courseID: Course['id']
 }
 
-export function CourseView({ courseID: courseID }: CourseViewProps) {
+export function CourseLiveView({ courseID: courseID }: CourseViewProps) {
   const [isEditCourseLiveOpen, setIsEditCourseLiveOpen] = useState(false)
   const [isEditLiveSessionOpen, setIsEditLiveSessionOpen] = useState(false)
   const [selectedCourseLive, setSelectedCourseLive] = useState<CourseLive | null>(null)

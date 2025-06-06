@@ -8,14 +8,15 @@ import { EditCourseForm } from '@/components/forms/edit-course-form'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { getCourse } from '@/network/client/courses'
 
-import { CourseView } from './course-view'
+import { CourseVideoView } from './course-video-view'
+import { CourseLiveView } from './course-live-view'
 
-export default async function EditMealPlanPage({ params }: { params: Promise<{ class_id: Course['id'] }> }) {
-  const { class_id } = await params
-  const data = await getCourse(class_id)
+export default async function EditMealPlanPage({ params }: { params: Promise<{ course_id: Course['id'] }> }) {
+  const { course_id } = await params
+  const data = await getCourse(course_id)
 
   return (
-    <ContentLayout title="Cập nhật thực đơn">
+    <ContentLayout title="Cập nhật khoá tập">
       <Tabs defaultValue="tab-1">
         <ScrollArea>
           <TabsList className="bg-background mb-3 h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse">
@@ -46,7 +47,8 @@ export default async function EditMealPlanPage({ params }: { params: Promise<{ c
         </TabsContent>
 
         <TabsContent value="tab-2">
-          <CourseView courseID={class_id} />
+          {data.data.course_format === 'video' && <CourseVideoView />}
+          {data.data.course_format === 'live' && <CourseLiveView courseID={course_id} />}
         </TabsContent>
       </Tabs>
     </ContentLayout>

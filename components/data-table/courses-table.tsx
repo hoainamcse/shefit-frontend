@@ -5,7 +5,7 @@ import type { Course, CourseForm, CourseFormat, CourseLevel } from '@/models/cou
 
 import { toast } from 'sonner'
 import { useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
 import { deleteCourse, getCourses, queryKeyCourses } from '@/network/client/courses'
@@ -25,6 +25,8 @@ interface CoursesTableProps {
 }
 
 export function CoursesTable({ courseFormat, isOneOnOne = false }: CoursesTableProps) {
+  const searchParams = useSearchParams()
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 5,
@@ -131,13 +133,11 @@ export function CoursesTable({ courseFormat, isOneOnOne = false }: CoursesTableP
   const router = useRouter()
 
   const onAddRow = () => {
-    router.push(
-      `/admin/courses/create?${courseFormat ? `course_format=${courseFormat}&` : ''}is_one_on_one=${isOneOnOne}`
-    )
+    router.push(`/admin/courses/create?${searchParams.toString()}`)
   }
 
   const onEditRow = (row: Course) => {
-    router.push(`/admin/${row.course_format}-classes/${row.id}`)
+    router.push(`/admin/courses/${row.id}`)
   }
 
   const onDeleteRow = async (row: Course) => {
