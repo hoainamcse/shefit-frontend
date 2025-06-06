@@ -7,6 +7,38 @@ import { Product, ProductColor, ProductSize } from "@/models/products"
 import { revalidateTag } from "next/cache"
 import { fetchDataServer } from "../helpers/fetch-data-server"
 
+export async function createCart(): Promise<Cart> {
+    const emptyCartData = {
+        "user_name": "string",
+        "username": "string",
+        "is_signed_up": false,
+        "telephone_number": "string",
+        "city": "string",
+        "address": "string",
+        "total_weight": 1,
+        "shipping_fee": 1,
+        "total": 1,
+        "payment_method": "not_decided",
+        "status": "pending",
+        "notes": "string",
+        "product_variant_ids": []
+    }
+    
+    const response = await fetchDataServer(
+        `/v1/carts`,
+        {
+            method: "POST",
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(emptyCartData)
+        }
+    )
+    revalidateTag("cart")
+    return await response.json()
+}
+
 export async function getCarts(): Promise<ListResponse<Cart>> {
     const response = await fetchData("/v1/carts", { next: { tags: ["cart"] } })
     return await response.json()
@@ -17,24 +49,22 @@ export async function getCart(id: number): Promise<Cart> {
 }
 
 export async function addCart(cartId: number, productVariantId: number, quantity: number = 1): Promise<Cart> {
-    // Ensure quantity is a number and at least 1
     const validQuantity = Math.max(1, Number(quantity) || 1);
-    
-    // Log the request details
-    console.log('addCart request:', { 
-        cartId, 
+
+    console.log('addCart request:', {
+        cartId,
         productVariantId,
         originalQuantity: quantity,
         validQuantity
     });
-    
+
     const requestBody = {
         product_variant_id: productVariantId,
         quantity: validQuantity
     };
-    
+
     console.log('Request body:', JSON.stringify(requestBody));
-    
+
     const response = await fetchData(
         `/v1/carts/${cartId}:addProductVariant`,
         {
@@ -46,7 +76,7 @@ export async function addCart(cartId: number, productVariantId: number, quantity
             next: { tags: ["cart"] },
         }
     )
-    
+
     const result = await response.json();
     console.log('addCart response:', result);
     return result;
@@ -125,5 +155,4 @@ export async function deleteCart(id: number): Promise<ApiResponse<any>> {
     revalidateTag("cart")
     return await response.json()
 }
-    
-    
+

@@ -10,7 +10,7 @@ export default async function CartDetail({ params }: { params: Promise<{ slug: n
   const { slug } = await params
   const cart = await getCart(slug)
   const productVariants = cart.data.product_variants || []
-  const products = await Promise.all(productVariants.map((variant: any) => getProduct(variant.id.toString())))
+  const products = await Promise.all(productVariants.map((variant: any) => getProduct(variant.product_id.toString())))
 
   return (
     <div className="max-w-screen-3xl mx-auto px-14">

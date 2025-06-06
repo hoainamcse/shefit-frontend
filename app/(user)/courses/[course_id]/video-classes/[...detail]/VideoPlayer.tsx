@@ -2,8 +2,16 @@
 
 import { useEffect, useState } from "react"
 import ReactPlayer from "react-player"
-import type { Exercise } from "./page"
 import { Button } from "@/components/ui/button"
+
+// Define Exercise type locally based on how it's used
+export interface Exercise {
+  id: string
+  name: string
+  description: string
+  url: string
+  auto_replay_count: number
+}
 
 interface VideoPlayerProps {
   exerciseVideoList: Exercise[]

@@ -6,11 +6,28 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getCourseLives } from '@/network/server/courses'
 import { CourseLive } from '@/models/course'
 import Link from 'next/link'
+import { cn } from '@/lib/utils'
 
 const formatToVNTime = (time: string) => {
   const [hours] = time.split(':')
   const vnHour = (parseInt(hours) + 7) % 24
   return `${vnHour} giờ`
+}
+
+const isClassAvailable = (startTime: string) => {
+  const now = new Date()
+  const currentHour = now.getHours()
+  const currentMinute = now.getMinutes()
+
+  const [startHour, startMinute] = startTime.split(':').map(Number)
+  const vnStartHour = (startHour + 7) % 24
+
+  if (currentHour > vnStartHour) {
+    return true
+  } else if (currentHour === vnStartHour) {
+    return currentMinute >= startMinute
+  }
+  return false
 }
 
 export default function LiveCourseDetail({ courseId }: { courseId: string }) {
@@ -90,12 +107,22 @@ export default function LiveCourseDetail({ courseId }: { courseId: string }) {
                         {item.description} / {formatToVNTime(item.start_time)} - {formatToVNTime(item.end_time)}
                       </p>
                     </div>
-                    <Link
-                      href={`https://us05web.zoom.us/j/85444899811?pwd=PQMxNmwIEaB2cEkQs7i6847VXaiozO.1`}
-                      target="_blank"
-                    >
-                      <div className="text-primary text-xl">Vào lớp</div>
-                    </Link>
+                    {isClassAvailable(item.start_time) ? (
+                      <Link
+                        href={`https://us05web.zoom.us/j/85444899811?pwd=PQMxNmwIEaB2cEkQs7i6847VXaiozO.1`}
+                        target="_blank"
+                        className="cursor-pointer"
+                      >
+                        <div className="text-primary text-xl">Vào lớp</div>
+                      </Link>
+                    ) : (
+                      <div className={cn('text-gray-400 text-xl cursor-not-allowed', 'relative group')}>
+                        Vào lớp
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                          Lớp học chưa bắt đầu
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
             </div>

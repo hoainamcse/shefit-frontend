@@ -1,12 +1,15 @@
-"use client"
-import { BinIcon } from "@/components/icons/BinIcon"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import FormDelivery from "./FormDelivery"
-import { removeCart } from "@/network/server/cart"
-import { getUserCart } from "@/network/server/user-cart"
-import { toast } from "sonner"
-import { useEffect, useState } from "react"
+'use client'
+import { BinIcon } from '@/components/icons/BinIcon'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import FormDelivery from './FormDelivery'
+import { removeCart } from '@/network/server/cart'
+import { getUserCart } from '@/network/server/user-cart'
+import { toast } from 'sonner'
+import { useAuth } from '@/components/providers/auth-context'
+import { useEffect, useState } from 'react'
+import { UserCart } from '@/models/user-cart'
 import {
   Dialog,
   DialogTrigger,
@@ -16,51 +19,86 @@ import {
   DialogTitle,
   DialogDescription,
   DialogClose,
-} from "@/components/ui/dialog"
+} from '@/components/ui/dialog'
 
 export default function CurrentCart() {
-  const [carts, setCarts] = useState<any>(null)
+  const [pendingCarts, setPendingCarts] = useState<UserCart[]>([])
   const [loading, setLoading] = useState(true)
+  const [processing, setProcessing] = useState(false)
+  const { userId } = useAuth()
+  const router = useRouter()
+
   useEffect(() => {
     async function fetchCartData() {
-      const cartsRes = await getUserCart(1)
-      console.log("cartsRes", cartsRes)
-      setCarts(cartsRes)
-      setLoading(false)
+      if (!userId) {
+        setLoading(false)
+        return
+      }
+      try {
+        const cartsRes = await getUserCart(Number(userId))
+        
+        // Explicitly type the response data as an array of UserCart objects
+        const userCarts = cartsRes?.data as UserCart[] || []
+        
+        const pending = userCarts.filter(
+          (item) => item?.cart?.status === 'pending' || item?.cart?.status === 'not_decided'
+        )
+        
+        setPendingCarts(pending)
+      } catch (error) {
+        toast.error('Không thể tải giỏ hàng. Vui lòng thử lại!')
+      } finally {
+        setLoading(false)
+      }
     }
     fetchCartData()
-  }, [])
+  }, [userId])
+
+  const handleBuyNow = () => {
+    router.push('/products')
+  }
 
   if (loading) return <div>Loading...</div>
-  if (!carts?.data?.length || !carts?.data[0]?.cart?.product_variants?.length) {
+  if (!pendingCarts.length || !pendingCarts[0]?.cart?.product_variants?.length) {
     return (
       <div className="flex flex-col items-center justify-center mt-20 w-full">
-        <p className="text-2xl mb-6 text-center">Bạn chưa có sản phẩm nào, xem sản phẩm của chúng tôi</p>
-        <Link href="/products">
-          <Button className=" h-[60px] w-[586px] bg-[#13D8A7] text-white px-6 py-2 rounded-full text-lg transition-colors">
-            Mua ngay
-          </Button>
-        </Link>
+        <p className="text-2xl mb-6 text-center">Bạn chưa có sản phẩm nào trong giỏ hàng</p>
+        <Button
+          onClick={handleBuyNow}
+          disabled={processing}
+          className="h-[60px] w-[586px] bg-[#13D8A7] text-white px-6 py-2 rounded-full text-lg transition-colors"
+        >
+          {processing ? 'Đang xử lý...' : 'Mua ngay'}
+        </Button>
       </div>
     )
   }
 
-  const cartData = carts?.data[0]?.cart
+  const cartData = pendingCarts[0]?.cart
   const totalPrice = (cartData?.total - cartData?.shipping_fee).toLocaleString()
 
   const handleRemove = async (variantId: number) => {
+    if (!userId) {
+      toast.error('Vui lòng đăng nhập để thực hiện thao tác này')
+      return
+    }
+
     try {
       setLoading(true)
-      console.log(`Removing product variant ${variantId} from cart ${cartData?.id}`)
       await removeCart(cartData?.id, variantId)
-      toast.success("Đã xóa sản phẩm khỏi giỏ hàng!")
+      toast.success('Đã xóa sản phẩm khỏi giỏ hàng!')
 
-      const cartsRes = await getUserCart(1)
-      setCarts(cartsRes)
-      setLoading(false)
-    } catch (error: any) {
-      console.error("Error removing item from cart:", error)
-      toast.error("Không thể xóa sản phẩm khỏi giỏ hàng. Vui lòng thử lại!")
+      const cartsRes = await getUserCart(Number(userId))
+
+      const pending =
+        cartsRes?.data?.filter(
+          (item: UserCart) => item?.cart?.status === 'pending' || item?.cart?.status === 'not_decided'
+        ) || []
+
+      setPendingCarts(pending)
+    } catch (error) {
+      toast.error('Không thể xóa sản phẩm khỏi giỏ hàng. Vui lòng thử lại!')
+    } finally {
       setLoading(false)
     }
   }
@@ -72,11 +110,11 @@ export default function CurrentCart() {
           <div key={`menu-${index}`} className="flex justify-between items-center mb-5">
             <img
               src={variant.image_urls?.[0]}
-              alt={variant.name || ""}
+              alt={variant.name || ''}
               className="size-[148px] rounded-lg max-lg:w-[100px] mr-5"
             />
             <div className="w-full text-xl lg:text-md">
-              <div className="font-medium">{variant.name || "Sản phẩm"}</div>
+              <div className="font-medium">{variant.name || 'Sản phẩm'}</div>
               <div className="text-[#737373]">Size: {variant.size?.size}</div>
               <div className="text-[#737373]">Số lượng: {variant.quantity}</div>
             </div>

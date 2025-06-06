@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import { use, useEffect, useState, useRef } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { use, useEffect, useState, useRef } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -11,21 +11,24 @@ import {
   AlertDialogTitle,
   AlertDialogCancel,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { CloseIcon } from "@/components/icons/CloseIcon"
-import { AddIcon } from "@/components/icons/AddIcon"
-import { MinusIcon } from "@/components/icons/MinusIcon"
-import { getProduct, getColors, getSizes } from "@/network/server/products"
-import { getMuscleGroups } from "@/network/server/muscle-groups"
-import { addCart, getCarts } from "@/network/server/cart"
-import { toast } from "sonner"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-import { generateQrToken, createQr, generateToken, syncTransaction } from "@/network/server/payment"
-import { getUserById } from "@/network/server/user"
-import { useQRCode } from "next-qrcode"
+} from '@/components/ui/alert-dialog'
+import { CloseIcon } from '@/components/icons/CloseIcon'
+import { AddIcon } from '@/components/icons/AddIcon'
+import { MinusIcon } from '@/components/icons/MinusIcon'
+import { getProduct, getColors, getSizes } from '@/network/server/products'
+import { getMuscleGroups } from '@/network/server/muscle-groups'
+import { addCart, getCarts, createCart } from '@/network/server/cart'
+import { getUserCart, createUserCart } from '@/network/server/user-cart'
+import { toast } from 'sonner'
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
+import { generateQrToken, createQr, generateToken, syncTransaction } from '@/network/server/payment'
+import { getUserById } from '@/network/server/user'
+import { useQRCode } from 'next-qrcode'
+import { useAuth } from '@/components/providers/auth-context'
 export default function ProductPage({ params }: { params: Promise<{ product_id: string }> }) {
   const { product_id } = use(params)
   const { Canvas } = useQRCode()
+  const { userId } = useAuth()
   const [accessToken, setAccessToken] = useState<string | null>(null)
   const [qrData, setQrData] = useState<any>(null)
   const [isLoadingPayment, setIsLoadingPayment] = useState(false)
@@ -40,10 +43,10 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
   const [cartId, setCartId] = useState<number | null>(null)
   const [isAdding, setIsAdding] = useState(false)
   const [quantity, setQuantity] = useState(1)
-  const [orderId, setOrderId] = useState<string>("")
-  const [qrToken, setQrToken] = useState<string>("")
-  const [generatedAccessToken, setGeneratedAccessToken] = useState<string>("")
-  const [paymentContent, setPaymentContent] = useState<string>("")
+  const [orderId, setOrderId] = useState<string>('')
+  const [qrToken, setQrToken] = useState<string>('')
+  const [generatedAccessToken, setGeneratedAccessToken] = useState<string>('')
+  const [paymentContent, setPaymentContent] = useState<string>('')
   const [isTransactionSuccess, setIsTransactionSuccess] = useState(false)
   const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
@@ -87,7 +90,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
           setCartId(carts.data[0].id)
         }
       } catch (error) {
-        console.error("Error fetching data:", error)
+        console.error('Error fetching data:', error)
       }
     }
     fetchData()
@@ -99,10 +102,10 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
     const syncTransactionPeriodically = async () => {
       try {
         const syncResponse = await syncTransaction(generatedAccessToken, orderId, paymentContent)
-        console.log("Sync Transaction Response:", syncResponse)
+        console.log('Sync Transaction Response:', syncResponse)
 
         if (syncResponse && syncResponse.error === false) {
-          console.log("Transaction successful!", syncResponse)
+          console.log('Transaction successful!', syncResponse)
           setIsTransactionSuccess(true)
           setIsOrderDialogOpen(false)
 
@@ -112,7 +115,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
           }
         }
       } catch (error) {
-        console.error("Error calling syncTransaction API:", error)
+        console.error('Error calling syncTransaction API:', error)
       }
     }
 
@@ -156,14 +159,14 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
       const tokenResponse = await generateQrToken()
 
       if (!tokenResponse.access_token) {
-        throw new Error("Không thể lấy mã xác thực thanh toán")
+        throw new Error('Không thể lấy mã xác thực thanh toán')
       }
 
       const token = tokenResponse.access_token
       setAccessToken(token)
       setQrToken(token)
 
-      const userResponse = await getUserById(localStorage.getItem("user_id") || "")
+      const userResponse = await getUserById(localStorage.getItem('user_id') || '')
       const username = userResponse.data.username
       const content = `${username}_${newOrderId}`
       setPaymentContent(content)
@@ -172,7 +175,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
       const qrResponse = await createQr(token, amount, newOrderId, content)
 
       if (!qrResponse.data) {
-        throw new Error("Không thể tạo mã QR thanh toán")
+        throw new Error('Không thể tạo mã QR thanh toán')
       }
 
       setQrData(qrResponse.data)
@@ -180,26 +183,31 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
       await new Promise((resolve) => setTimeout(resolve, 10000))
 
       const generatedTokenResponse = await generateToken(token)
-      console.log("Generate Token Response:", generatedTokenResponse)
+      console.log('Generate Token Response:', generatedTokenResponse)
 
       if (generatedTokenResponse && generatedTokenResponse.access_token) {
         setGeneratedAccessToken(generatedTokenResponse.access_token)
       } else {
-        console.error("No access_token found in generateToken response")
+        console.error('No access_token found in generateToken response')
       }
     } catch (error: any) {
-      console.error("Payment error:", error)
-      setPaymentError(error.message || "Không thể tạo đơn hàng. Vui lòng thử lại sau.")
+      console.error('Payment error:', error)
+      setPaymentError(error.message || 'Không thể tạo đơn hàng. Vui lòng thử lại sau.')
     } finally {
       setIsLoadingPayment(false)
     }
   }
 
   const handleAddToCart = async () => {
-    if (isTransactionSuccess || !cartId || !selectedVariantId) return
+    if (isTransactionSuccess || !selectedVariantId) return
+
+    if (!userId) {
+      toast.error('Vui lòng đăng nhập để thực hiện thao tác này')
+      return
+    }
 
     const currentQuantity = Math.max(1, Number(quantity))
-    console.log("Current state values:", {
+    console.log('Current state values:', {
       cartId,
       selectedVariantId,
       quantity,
@@ -209,17 +217,61 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
 
     setIsAdding(true)
     try {
-      console.log(`Adding product variant ${selectedVariantId} to cart ${cartId} with quantity ${currentQuantity}`)
-      const result = await addCart(cartId, selectedVariantId, currentQuantity)
-      console.log("Add to cart result:", result)
+      const cartsRes = await getUserCart(Number(userId))
+
+      let currentCartId = cartId
+      let pendingCart = Array.isArray(cartsRes?.data)
+        ? cartsRes.data.find((item) => item?.cart?.status === 'pending' || item?.cart?.status === 'not_decided')
+        : null
+
+      if (!pendingCart) {
+        console.log('No pending cart found, creating a new one')
+
+        const emptyCartResponse = await createCart()
+        console.log('Empty cart response:', emptyCartResponse)
+
+        if (!emptyCartResponse?.data?.id) {
+          console.error('Invalid empty cart response structure:', emptyCartResponse)
+          throw new Error('Không thể tạo giỏ hàng mới')
+        }
+
+        const newCartId = emptyCartResponse.data.id
+        console.log('Successfully created empty cart with ID:', newCartId)
+
+        await new Promise((resolve) => setTimeout(resolve, 500))
+
+        const userCartResponse = await createUserCart(Number(userId), newCartId)
+        console.log('User cart response:', userCartResponse)
+
+        if (userCartResponse?.cart?.id) {
+          currentCartId = userCartResponse.cart.id
+          setCartId(currentCartId)
+        } else {
+          console.error('Cannot extract cart ID from response:', userCartResponse)
+          throw new Error('Không thể liên kết giỏ hàng với người dùng')
+        }
+      } else {
+        currentCartId = pendingCart.cart.id
+        setCartId(currentCartId)
+      }
+
+      if (!currentCartId) {
+        throw new Error('Không có giỏ hàng hợp lệ')
+      }
+
+      console.log(
+        `Adding product variant ${selectedVariantId} to cart ${currentCartId} with quantity ${currentQuantity}`
+      )
+      const result = await addCart(currentCartId, selectedVariantId, currentQuantity)
+      console.log('Add to cart result:', result)
       toast.success(`Đã thêm ${currentQuantity} sản phẩm vào giỏ hàng!`)
     } catch (error: any) {
-      console.error("Add to cart error:", error)
-      let message = "Không thể thêm vào giỏ hàng. Vui lòng thử lại!"
+      console.error('Add to cart error:', error)
+      let message = 'Không thể thêm vào giỏ hàng. Vui lòng thử lại!'
       if (error?.response?.data?.message) {
         message = error.response.data.message
-      } else if (error?.message?.includes("422")) {
-        message = "Sản phẩm đã có trong giỏ hàng hoặc dữ liệu không hợp lệ."
+      } else if (error?.message?.includes('422')) {
+        message = 'Sản phẩm đã có trong giỏ hàng hoặc dữ liệu không hợp lệ.'
       }
       toast.error(message)
     } finally {
@@ -236,10 +288,10 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
           if (!open) {
             setQrData(null)
             setAccessToken(null)
-            setQrToken("")
-            setGeneratedAccessToken("")
-            setPaymentContent("")
-            setOrderId("")
+            setQrToken('')
+            setGeneratedAccessToken('')
+            setPaymentContent('')
+            setOrderId('')
             setPaymentError(null)
             setIsOrderDialogOpen(false)
           }
@@ -264,7 +316,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
           <div className="xl:w-3/4 max-lg:w-full px-8">
             <Carousel
               opts={{
-                align: "center",
+                align: 'center',
               }}
             >
               <CarouselContent>
@@ -287,7 +339,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
               <div className="flex gap-2">
                 {Array.from(new Set(product.variants.map((variant: any) => variant.color_id))).map((colorId: any) => {
                   const color = colors.find((c: any) => c.id === colorId)
-                  const hex = color?.hex_code || "#fff"
+                  const hex = color?.hex_code || '#fff'
                   const isSelected = selectedColorId === colorId
                   const hasInStockVariants = product.variants.some(
                     (variant: any) => variant.color_id === colorId && variant.in_stock
@@ -298,7 +350,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
                       key={colorId}
                       style={{
                         backgroundColor: hex,
-                        border: isSelected ? "2px solid #00C7BE" : "1px solid #ddd",
+                        border: isSelected ? '2px solid #00C7BE' : '1px solid #ddd',
                       }}
                       className="rounded-full w-10 h-10 relative"
                       disabled={!hasInStockVariants}
@@ -320,7 +372,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
 
             <p className="font-medium xl:text-[30px] max-lg:text-xl">{product.name}</p>
             <p className="text-[#737373] text-xl mt-1">
-              {selectedColorId ? colors.find((color) => color.id === selectedColorId)?.name : ""}
+              {selectedColorId ? colors.find((color) => color.id === selectedColorId)?.name : ''}
             </p>
             <p className="text-[#00C7BE] text-2xl font-semibold">{product.price.toLocaleString()} vnđ</p>
 
@@ -355,8 +407,8 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
                         }
                       }}
                       style={{
-                        border: selectedVariantId === variant?.id ? "2px solid #00C7BE" : "1px solid #ddd",
-                        color: selectedVariantId === variant?.id ? "#fff" : "#fff",
+                        border: selectedVariantId === variant?.id ? '2px solid #00C7BE' : '1px solid #ddd',
+                        color: selectedVariantId === variant?.id ? '#fff' : '#fff',
                       }}
                     >
                       {size}
@@ -398,7 +450,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
                     onClick={() => handleBuyNow()}
                     disabled={!selectedVariantId || isLoadingPayment}
                   >
-                    {isLoadingPayment ? "Đang xử lý..." : "Mua ngay"}
+                    {isLoadingPayment ? 'Đang xử lý...' : 'Mua ngay'}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="max-w-md">
@@ -416,7 +468,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
                             <Canvas
                               text={qrData.qrCode}
                               options={{
-                                errorCorrectionLevel: "M",
+                                errorCorrectionLevel: 'M',
                                 margin: 3,
                                 scale: 4,
                                 width: 300,
@@ -483,7 +535,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
                 disabled={!selectedVariantId || !cartId || isAdding}
                 onClick={handleAddToCart}
               >
-                {isAdding ? "Đang thêm..." : "Lưu"}
+                {isAdding ? 'Đang thêm...' : 'Lưu'}
               </Button>
             </div>
           </div>

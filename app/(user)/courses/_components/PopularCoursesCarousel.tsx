@@ -42,7 +42,7 @@ export default function PopularCoursesCarousel() {
               <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                 <div className="text-center">
                   <div className="relative group">
-                    <Image
+                    <img
                       src={course.cover_image}
                       alt={course.course_name}
                       className="aspect-[2/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"

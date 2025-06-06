@@ -1,14 +1,25 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { QrCodeIcon } from "@/components/icons/qr-code-icon"
-import { Input } from "@/components/ui/input"
-import { useAuth } from "@/components/providers/auth-context"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-
+import { useState, useEffect, useCallback } from 'react'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { QrCodeIcon } from '@/components/icons/qr-code-icon'
+import { Input } from '@/components/ui/input'
+import { useAuth } from '@/components/providers/auth-context'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import { generateQrToken, createQr, generateToken, syncTransaction } from '@/network/server/payment'
+import { useQRCode } from 'next-qrcode'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogCancel,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { CloseIcon } from '@/components/icons/CloseIcon'
 interface Price {
   id: number
   duration: number
@@ -23,9 +34,171 @@ interface PackagePaymentProps {
 
 export function PackagePayment({ prices, defaultPrice, packageName }: PackagePaymentProps) {
   const { userId } = useAuth()
+  const { Canvas } = useQRCode()
   const [selectedPriceId, setSelectedPriceId] = useState<number | null>(null)
   const [totalPrice, setTotalPrice] = useState<number>(defaultPrice || 0)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
   const isLoggedIn = !!userId
+
+  const [qrData, setQrData] = useState<any>(null)
+  const [orderId, setOrderId] = useState<string>('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false)
+  const [paymentError, setPaymentError] = useState<string | null>(null)
+  const [purchaseSuccess, setPurchaseSuccess] = useState(false)
+
+  // For the Save button (placeholder for now)
+  const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null)
+  const [cartId, setCartId] = useState<number | null>(null)
+  const [isAdding, setIsAdding] = useState(false)
+
+  const generateOrderId = () => {
+    return Math.floor(Math.random() * 900 + 100).toString()
+  }
+
+  const handleBuyNow = () => {
+    if (!isLoggedIn) {
+      return
+    }
+    setQrData(null)
+    setAccessToken(null)
+    setOrderId('')
+    setPaymentError(null)
+    setIsOrderDialogOpen(true)
+    getQrTokenAndCreateQr()
+  }
+
+  const getQrTokenAndCreateQr = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      setErrorMessage(null)
+      setPaymentError(null)
+
+      const response = await fetch('https://shefit-stg.rockship.co/api/v1/vietqr/generate-qr-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Basic Y3VzdG9tZXItc2hlZml0LXVzZXIyNTMwNjpZM1Z6ZEc5dFpYSXRjMmhsWm1sMExYVnpaWEl5TlRNd05nPT0=',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to generate QR token: ${response.status} ${response.statusText}`)
+      }
+
+      const tokenData = await response.json()
+      const token = tokenData.access_token
+      console.log('QR Token Access Token:', token)
+      setAccessToken(token)
+
+      console.log('Full token before createQr:', token)
+
+      const newOrderId = generateOrderId()
+      setOrderId(newOrderId)
+
+      const username = userId || 'guest'
+      const content = `${username} ${newOrderId}`
+
+      const directQrResponse = await fetch('https://shefit-stg.rockship.co/api/v1/vietqr/create-qr', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          amount: totalPrice,
+          content: content,
+          order_id: newOrderId,
+        }),
+      })
+
+      if (!directQrResponse.ok) {
+        throw new Error(`Failed to create QR: ${directQrResponse.status} ${directQrResponse.statusText}`)
+      }
+
+      const qrResponse = await directQrResponse.json()
+
+      console.log('QR Creation Response:', qrResponse)
+
+      const responseData = qrResponse.data || qrResponse
+      const qrCode = responseData.qrCode || null
+
+      setQrData({
+        ...responseData,
+        qrCode: qrCode,
+      })
+
+      if (qrCode) {
+        console.log('Received QR Code string for rendering:', qrCode)
+
+        try {
+          // Generate token for transaction sync
+          // Create base64 encoded auth credentials - using Buffer for compatibility with both client and server
+          const credentials = 'shefit-vietqr:IlhtYFpFkh1ztl2hkJXuRgTpr+Ef9BZbL9Z9oYXk'
+          // In client components we need to handle this encoding safely
+          const encodedCredentials =
+            typeof window !== 'undefined' ? btoa(credentials) : Buffer.from(credentials).toString('base64')
+
+          const tokenResponse = await fetch('https://shefit-stg.rockship.co/api/v1/vietqr/api/token_generate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Basic ${encodedCredentials}`,
+            },
+            body: JSON.stringify({ qrToken: qrCode }),
+          })
+
+          if (!tokenResponse.ok) {
+            throw new Error('Failed to generate transaction token')
+          }
+
+          const tokenData = await tokenResponse.json()
+          console.log('Token generate response:', tokenData)
+
+          const syncToken = tokenData.access_token || tokenData.data?.access_token
+
+          if (syncToken) {
+            // Sync transaction with generated token
+            const syncResponse = await fetch('https://shefit-stg.rockship.co/api/v1/vietqr/bank/api/transaction-sync', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${syncToken}`,
+              },
+              body: JSON.stringify({
+                bankaccount: responseData.bankAccount || 'string',
+                amount: totalPrice,
+                transType: 'string',
+                content: `${userId} ${orderId}`,
+                orderId: orderId,
+              }),
+            })
+
+            if (!syncResponse.ok) {
+              console.warn('Transaction sync warning:', await syncResponse.text())
+            } else {
+              const syncData = await syncResponse.json()
+              console.log('Transaction sync response:', syncData)
+
+              // Check if the response indicates success (error: false)
+              if (syncData.error === false || (syncData.data && syncData.data.error === false)) {
+                // Set purchase success state to show success dialog
+                setPurchaseSuccess(true)
+              }
+            }
+          }
+        } catch (syncError) {
+          console.error('Error in transaction sync process:', syncError)
+        }
+      }
+    } catch (error: any) {
+      console.error('Error in QR process:', error)
+      setErrorMessage(error.message || 'Failed to generate QR code')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [userId, totalPrice])
 
   const handlePriceSelect = (priceId: number, price: number) => {
     if (selectedPriceId === priceId) return
@@ -61,47 +234,113 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
         <div className="text-[#00C7BE] font-semibold text-2xl">{(totalPrice || 0).toLocaleString()} vnđ</div>
       </div>
 
-      <Dialog>
-        <DialogTrigger className="w-full h-[38px] rounded-[26px] text-base md:text-xl font-normal text-[#FFFFFF] bg-[#13D8A7] mb-8">
-          Mua gói
-        </DialogTrigger>
-
-        <DialogContent className="px-7 py-12 md:px-20 md:py-10 max-w-[90%] lg:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle className="text-center text-2xl font-bold">
-              {isLoggedIn ? "" : "Yêu cầu đăng nhập"}
-            </DialogTitle>
-          </DialogHeader>
-
-          {isLoggedIn ? (
-            <div className="flex flex-col items-center">
-              <QrCodeIcon className="w-[151px] h-[151px] md:w-[256px] md:h-[256px]" />
-
-              <div className="text-[#000000] text-base md:text-xl font-bold mt-5 mb-7 text-center">
-                <div>Số Tiền: {(totalPrice || 0).toLocaleString()}đ</div>
-                <div>Stk: 00000000</div>
-                <div>Nội Dung: {packageName}</div>
-              </div>
-
-              <div className="text-[#737373] text-base md:text-xl">
-                <div className="mb-7 md:mb-8">
-                  Vui lòng quét mã QR để thanh toán, chú ý đúng số tiền và nội dung thanh toán
+      <div className="w-full flex gap-3 justify-center mb-10">
+        <AlertDialog open={isOrderDialogOpen} onOpenChange={setIsOrderDialogOpen}>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="outline"
+              className="text-lg w-full rounded-full bg-[#13D8A7] hover:bg-[#11c296] text-white hover:text-white"
+              onClick={() => handleBuyNow()}
+              disabled={!selectedPriceId || isLoading}
+            >
+              {isLoading ? 'Đang xử lý...' : 'Mua gói'}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="max-w-md">
+            <AlertDialogHeader>
+              <AlertDialogCancel className="absolute top-4 right-4 border-none hover:bg-white shadow-none active:bg-none">
+                <CloseIcon />
+              </AlertDialogCancel>
+              {purchaseSuccess ? (
+                <div className="flex flex-col items-center py-6">
+                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] text-xl">
+                    ĐÃ MUA GÓI THÀNH CÔNG
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center text-base">
+                    Hãy vào trang tài khoản của bạn để bắt đầu làm bảng khảo sát số đo, các khóa tập & thực đơn
+                  </AlertDialogDescription>
+                  <Link href="/account">
+                    <Button
+                      onClick={() => {
+                        setIsOrderDialogOpen(false)
+                      }}
+                      className="mt-6 bg-[#13D8A7] hover:bg-[#11c296] text-white rounded-full px-8"
+                    >
+                      Tài khoản
+                    </Button>
+                  </Link>
                 </div>
-
-                <div>Vui Lòng Đợi Trong 30p để hệ thống kích hoạt gói cho bạn</div>
-                <div>Hotline: 0852055516</div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center text-center gap-6">
-              <p className="text-lg">Bạn cần phải đăng nhập để thực hiện mua gói</p>
-              <Link href="/auth/login">
-                <Button className="bg-[#13D8A7] h-[56px] rounded-full px-10 text-lg">Đăng nhập</Button>
-              </Link>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+              ) : qrData ? (
+                <div className="flex flex-col items-center gap-4 py-4">
+                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] text-2xl">
+                    Thanh toán đơn hàng
+                  </AlertDialogTitle>
+                  <div className="border rounded-md p-4 w-full flex justify-center">
+                    {qrData.qrCode ? (
+                      <Canvas
+                        text={qrData.qrCode}
+                        options={{
+                          errorCorrectionLevel: 'M',
+                          margin: 3,
+                          scale: 4,
+                          width: 300,
+                        }}
+                      />
+                    ) : (
+                      <div className="p-8 text-center text-gray-500">QR code không khả dụng</div>
+                    )}
+                  </div>
+                  <div className="w-full space-y-3 text-left">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Ngân hàng:</span>
+                      <span className="font-medium">{qrData.bankName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Số tài khoản:</span>
+                      <span className="font-medium">{qrData.bankAccount}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Chủ tài khoản:</span>
+                      <span className="font-medium">{qrData.userBankName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Số tiền:</span>
+                      <span className="font-medium text-[#00C7BE]">{Number(qrData.amount).toLocaleString()} VNĐ</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Mã đơn hàng:</span>
+                      <span className="font-medium">{qrData.orderId}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Nội dung:</span>
+                      <span className="font-medium">{qrData.content}</span>
+                    </div>
+                  </div>
+                  <AlertDialogDescription className="text-center mt-4">
+                    Quét mã QR để thanh toán đơn hàng của bạn.
+                  </AlertDialogDescription>
+                </div>
+              ) : paymentError ? (
+                <div className="flex flex-col items-center py-6">
+                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] text-xl text-red-500">
+                    Lỗi thanh toán
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center mt-4">{paymentError}</AlertDialogDescription>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center py-6">
+                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] text-xl">
+                    Đang tạo đơn hàng
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center mt-4">
+                    Vui lòng đợi trong giây lát...
+                  </AlertDialogDescription>
+                </div>
+              )}
+            </AlertDialogHeader>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </>
   )
 }
