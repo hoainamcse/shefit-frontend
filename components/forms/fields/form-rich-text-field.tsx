@@ -5,7 +5,7 @@ import 'quill/dist/quill.snow.css'
 import { type UseFormReturn, type FieldValues, type Path } from 'react-hook-form'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 
-type RichTextEditorProps<
+type FormRichTextFieldProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues extends FieldValues | undefined = undefined
@@ -19,7 +19,7 @@ type RichTextEditorProps<
   className?: string
 } & Omit<React.HTMLAttributes<HTMLDivElement>, 'form' | 'name'>
 
-function RichTextEditor<
+function FormRichTextField<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues extends FieldValues | undefined = undefined
@@ -32,7 +32,7 @@ function RichTextEditor<
   placeholder = '',
   className = '',
   ...divProps
-}: RichTextEditorProps<TFieldValues, TContext, TTransformedValues>) {
+}: FormRichTextFieldProps<TFieldValues, TContext, TTransformedValues>) {
   return (
     <FormField
       control={form.control as any}
@@ -104,4 +104,4 @@ function RichTextEditor<
   )
 }
 
-export { RichTextEditor }
+export { FormRichTextField }

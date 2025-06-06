@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 export default function CreateMealPlanPage() {
   const router = useRouter()
   return (
-    <ContentLayout title="Tạo thực đơn">
+    <ContentLayout title="Thêm thực đơn">
       <EditMealPlanForm onSuccess={(data) => router.push(`/admin/meal-plans/${data.id}`)} />
     </ContentLayout>
   )

@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
-import { getBlogs } from '@/network/server/blog'
+import { getBlogs } from '@/network/server/blogs'
 import type { Blog } from '@/models/blog'
 import { HtmlContent } from '@/components/html-content'
 export default async function BlogPage() {

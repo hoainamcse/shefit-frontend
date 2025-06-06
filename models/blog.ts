@@ -1,9 +1,11 @@
 type Blog = {
-    id: number
-    title: string
-    content: string
-    cover_image: string
-    thumbnail_image: string
+  id: number
+  title: string
+  content: string
+  cover_image: string
+  thumbnail_image: string
 }
 
-export type { Blog }
+type BlogPayload = Omit<Blog, 'id'>
+
+export type { Blog, BlogPayload }

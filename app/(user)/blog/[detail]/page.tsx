@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { getBlog } from '@/network/server/blog'
+import { getBlog } from '@/network/server/blogs'
 import { HtmlContent } from '@/components/html-content'
 
 export default async function BlogDetail({ params }: { params: Promise<{ detail: string }> }) {

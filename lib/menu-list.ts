@@ -145,7 +145,7 @@ export function getMenuList(pathname: string): Group[] {
           icon: CreditCardIcon,
         },
         {
-          href: '/admin/blog',
+          href: '/admin/blogs',
           label: 'Bài viết',
           icon: RssIcon,
         },

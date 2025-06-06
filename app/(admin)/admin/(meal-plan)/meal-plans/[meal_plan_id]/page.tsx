@@ -15,7 +15,7 @@ export default async function EditMealPlanPage({ params }: { params: Promise<{ m
   const data = await getMealPlan(meal_plan_id)
 
   return (
-    <ContentLayout title="Cập nhật thực đơn">
+    <ContentLayout title="Chỉnh sửa thực đơn">
       <Tabs defaultValue="tab-1">
         <ScrollArea>
           <TabsList className="bg-background mb-3 h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse">

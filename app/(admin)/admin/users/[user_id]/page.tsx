@@ -7,7 +7,7 @@ export default async function UserPage({ params }: { params: Promise<{ user_id: 
   const data = await getUserById(user_id)
 
   return (
-    <ContentLayout title="Cập nhật tài khoản">
+    <ContentLayout title="Chỉnh sửa tài khoản">
       {data.data && <CreateAccountForm data={data.data} />}
     </ContentLayout>
   )

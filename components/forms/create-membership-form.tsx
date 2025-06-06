@@ -18,7 +18,7 @@ import { Trash2, Plus } from 'lucide-react'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent } from '../ui/card'
 import { Subscription } from '@/models/subscription-admin'
-import { FormInputField, FormMultiSelectField, FormSelectField } from './fields'
+import { FormInputField, FormMultiSelectField, FormSelectField, FormRichTextField } from './fields'
 import { useRouter } from 'next/navigation'
 import { createSubscription, updateSubscription } from '@/network/server/subscriptions-admin'
 import { createGift } from '@/network/server/gifts'
@@ -26,7 +26,6 @@ import { updateGift } from '@/network/server/gifts'
 import { updateSubscriptionPrice } from '@/network/server/subscriptions-admin'
 import { getCourses } from '@/network/server/courses-admin'
 import { useAuth } from '../providers/auth-context'
-import { RichTextEditor } from './fields/rich-text-editor'
 import { giftTypeOptions } from '@/lib/label'
 import { ImageUploader } from '../image-uploader'
 // Define the form schema
@@ -296,7 +295,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                 withAsterisk
               />
 
-              <RichTextEditor
+              <FormRichTextField
                 form={form}
                 name="description_1"
                 label="Thông tin tóm tắt gói"
@@ -304,7 +303,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                 withAsterisk
               />
 
-              <RichTextEditor
+              <FormRichTextField
                 form={form}
                 name="description_2"
                 label="Thông tin chi tiết gói"
@@ -330,7 +329,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                 withAsterisk
               />
 
-              <RichTextEditor
+              <FormRichTextField
                 form={form}
                 name="result_checkup"
                 label="Theo dõi kết quả"

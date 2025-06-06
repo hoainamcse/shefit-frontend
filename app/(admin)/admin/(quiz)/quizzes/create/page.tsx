@@ -3,7 +3,7 @@ import { EditQuizForm } from '@/components/forms/edit-quiz-form'
 
 export default function CreateQuizPage() {
   return (
-    <ContentLayout title="Tạo Quiz">
+    <ContentLayout title="Thêm quiz">
       <EditQuizForm />
     </ContentLayout>
   )

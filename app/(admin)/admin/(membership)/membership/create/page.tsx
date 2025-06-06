@@ -4,7 +4,7 @@ import { CreateMembershipForm } from '@/components/forms/create-membership-form'
 
 export default function CreateMembershipPage() {
   return (
-    <ContentLayout title="Tạo gói thành viên">
+    <ContentLayout title="Thêm gói tập">
       <CreateMembershipForm isEdit={false} />
     </ContentLayout>
   )

@@ -3,7 +3,7 @@
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { MainButton } from '@/components/buttons/main-button'
 import { FileUploader } from '@/components/file-uploader'
-import { RichTextEditor } from '@/components/forms/fields/rich-text-editor'
+import { FormRichTextField } from '@/components/forms/fields'
 import { useAuth } from '@/components/providers/auth-context'
 import { ImageUploader } from '@/components/image-uploader'
 
@@ -94,7 +94,7 @@ export default function AboutUsPage() {
               accept={{ 'image/*': [] }}
               maxFileCount={1}
             />
-            <RichTextEditor form={form} name="description" label="Về Shefit" withAsterisk placeholder="Nhập nội dung" />
+            <FormRichTextField form={form} name="description" label="Về Shefit" withAsterisk placeholder="Nhập nội dung" />
             <MainButton text="Lưu" type="submit" className="mt-6" />
           </div>
         </form>

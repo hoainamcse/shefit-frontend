@@ -16,7 +16,7 @@ export default async function EditMealPlanPage({ params }: { params: Promise<{ c
   const data = await getCourse(course_id)
 
   return (
-    <ContentLayout title="Cập nhật khoá tập">
+    <ContentLayout title="Chỉnh sửa khoá tập">
       <Tabs defaultValue="tab-1">
         <ScrollArea>
           <TabsList className="bg-background mb-3 h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse">

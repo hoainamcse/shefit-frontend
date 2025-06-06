@@ -24,7 +24,7 @@ export default function QuizDetailPage() {
   }
 
   return (
-    <ContentLayout title="Quiz Detail">
+    <ContentLayout title="Chỉnh sửa quiz">
       <EditQuizForm data={data?.data} />
     </ContentLayout>
   )
