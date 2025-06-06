@@ -45,7 +45,7 @@ import { useAuth } from '@/components/providers/auth-context'
 import { roleLabel } from '@/lib/label'
 import { Badge } from '@/components/ui/badge'
 
-export default function AccountPage() {
+export default function UsersPage() {
   const router = useRouter()
   const [accountTable, setAccountTable] = useState<User[]>([])
   const [isExporting, setIsExporting] = useState(false)

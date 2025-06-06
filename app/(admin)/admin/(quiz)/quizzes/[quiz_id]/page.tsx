@@ -9,9 +9,9 @@ import { useQuery } from '@/hooks/use-query'
 import { getQuiz } from '@/network/server/body-quiz'
 
 export default function QuizDetailPage() {
-  const { quizId } = useParams()
+  const { quiz_id } = useParams()
 
-  const _quizId = (Array.isArray(quizId) ? quizId[0] : quizId) as string
+  const _quizId = (Array.isArray(quiz_id) ? quiz_id[0] : quiz_id) as string
 
   const { data, isLoading, error } = useQuery(() => getQuiz(_quizId))
 

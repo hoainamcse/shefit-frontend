@@ -1,5 +1,4 @@
 import {
-  Users,
   Settings,
   LayoutGrid,
   LucideIcon,
@@ -9,7 +8,6 @@ import {
   CreditCardIcon,
   ChartPieIcon,
   RssIcon,
-  Dumbbell,
   User2Icon,
 } from 'lucide-react'
 
@@ -161,13 +159,8 @@ export function getMenuList(pathname: string): Group[] {
     {
       groupLabel: 'Chung',
       menus: [
-        // {
-        //   href: '#',
-        //   label: 'Users',
-        //   icon: Users,
-        // },
         {
-          href: '/admin/account',
+          href: '/admin/users',
           label: 'Tài khoản',
           icon: Settings,
         },

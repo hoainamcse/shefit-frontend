@@ -65,7 +65,7 @@ export function UserBodyQuizzesTable({ userID }: BodyQuizViewProps) {
         cell: ({ row }) => (
           <div className="font-medium">
             <a
-              href={`/admin/account/${row.original.user_id}`}
+              href={`/admin/users/${row.original.user_id}`}
               className="hover:underline underline-offset-2"
               target="_blank"
             >
