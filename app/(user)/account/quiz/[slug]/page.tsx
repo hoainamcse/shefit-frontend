@@ -1,16 +1,16 @@
-"use client"
+'use client'
 
-import React, { useEffect, useState, use } from "react"
-import { getUserBodyQuizzById } from "@/network/server/user-body-quizz"
-import { useAuth } from "@/components/providers/auth-context"
-import type UserBodyQuizz from "@/models/user-body-quizz"
-import { ApiResponse } from "@/models/response"
+import React, { useEffect, useState, use } from 'react'
+import { getUserBodyQuizzById } from '@/network/server/user-body-quizz'
+import { useAuth } from '@/components/providers/auth-context'
+import { UserBodyQuizz } from '@/models/user-body-quizz'
+import { ApiResponse } from '@/models/response'
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
-  return new Intl.DateTimeFormat("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
+  return new Intl.DateTimeFormat('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
   }).format(date)
 }
 export default function QuizDetail({ params }: { params: Promise<{ slug: string }> }) {
@@ -24,14 +24,14 @@ export default function QuizDetail({ params }: { params: Promise<{ slug: string 
     async function fetchQuizData() {
       try {
         const response = await getUserBodyQuizzById(slug)
-        if (response.status === "success" && response.data) {
+        if (response.status === 'success' && response.data) {
           setQuizData(response.data)
         } else {
-          setError("Không tìm thấy kết quả")
+          setError('Không tìm thấy kết quả')
         }
       } catch (err) {
-        console.error("Error fetching quiz data:", err)
-        setError("Có lỗi xảy ra khi tải dữ liệu")
+        console.error('Error fetching quiz data:', err)
+        setError('Có lỗi xảy ra khi tải dữ liệu')
       } finally {
         setLoading(false)
       }
@@ -47,7 +47,7 @@ export default function QuizDetail({ params }: { params: Promise<{ slug: string 
   }
 
   if (error || !quizData) {
-    return <div className="flex justify-center items-center min-h-[400px]">{error || "Không tìm thấy kết quả"}</div>
+    return <div className="flex justify-center items-center min-h-[400px]">{error || 'Không tìm thấy kết quả'}</div>
   }
 
   return (

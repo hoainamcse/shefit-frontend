@@ -1,4 +1,4 @@
-import type UserBodyQuizz from "../../models/user-body-quizz"
+import { UserBodyQuizSummary, UserBodyQuizz } from "../../models/user-body-quizz"
 import { fetchData } from "../helpers/fetch-data"
 import { ApiResponse, ListResponse } from "../../models/response"
 
@@ -24,4 +24,25 @@ export const updateUserBodyQuizz = async (id: string, userBodyQuizz: UserBodyQui
     })
     return await response.json()
 }
+
+
+/* User Body Quiz */
+
+export async function getListUserBodyQuizzes(): Promise<ListResponse<UserBodyQuizSummary>> {
+    const response = await fetchData(`/v1/users/body-quizzes-summary`, {
+      method: 'GET',
+    })
+    return await response.json()
+  }
+  
+  export async function getListUserBodyQuizById(id: string, token: string): Promise<ListResponse<UserBodyQuizz>> {
+      const response = await fetchData(`/v1/users/${id}/body-quizzes`, {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+      },
+          method: 'GET',
+      })
+      return await response.json()
+  }
     

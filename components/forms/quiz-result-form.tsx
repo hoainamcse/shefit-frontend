@@ -19,7 +19,7 @@ import { useRouter } from 'next/navigation'
 import { RichTextEditor } from './fields/rich-text-editor'
 import { FormTextareaField } from './fields/form-textarea-field'
 import { updateUserBodyQuizz } from '@/network/server/user-body-quizz'
-import UserBodyQuizz from '@/models/user-body-quizz'
+import { UserBodyQuizz } from '@/models/user-body-quizz'
 import { formatDateString } from '@/lib/helpers'
 
 // Define the form schema

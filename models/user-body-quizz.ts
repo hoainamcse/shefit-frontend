@@ -11,4 +11,14 @@ type UserBodyQuizz = {
     updated_at: string
 }
 
-export default UserBodyQuizz
+type UserBodyQuizSummary = {
+    id: number
+    user_name: string
+    fullname: string
+    telephone_number: string
+    num_quizzes_commented: number
+    num_quizzes_done: number
+}
+
+
+export type { UserBodyQuizz, UserBodyQuizSummary }

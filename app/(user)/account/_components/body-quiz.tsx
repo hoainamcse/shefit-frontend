@@ -1,13 +1,13 @@
-"use client"
+'use client'
 
-import Image from "next/image"
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { getUserBodyQuizzesByUserId } from "@/network/server/user-body-quizz"
-import { useAuth } from "@/components/providers/auth-context"
-import type UserBodyQuizz from "@/models/user-body-quizz"
-import { ListResponse } from "@/models/response"
+import Image from 'next/image'
+import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import { getUserBodyQuizzesByUserId } from '@/network/server/user-body-quizz'
+import { useAuth } from '@/components/providers/auth-context'
+import { UserBodyQuizz } from '@/models/user-body-quizz'
+import { ListResponse } from '@/models/response'
 import {
   Dialog,
   DialogContent,
@@ -15,13 +15,13 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from '@/components/ui/dialog'
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
-  return new Intl.DateTimeFormat("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
+  return new Intl.DateTimeFormat('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
   }).format(date)
 }
 
@@ -31,7 +31,7 @@ export default function BodyQuiz() {
   const [userBodyQuizzes, setUserBodyQuizzes] = useState<ListResponse<UserBodyQuizz>>({
     data: [],
     paging: { page: 0, per_page: 0, total: 0 },
-    status: "success",
+    status: 'success',
   })
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -42,7 +42,7 @@ export default function BodyQuiz() {
           const quizzes = await getUserBodyQuizzesByUserId(userId)
           setUserBodyQuizzes(quizzes)
         } catch (error) {
-          console.error("Error fetching body quizzes:", error)
+          console.error('Error fetching body quizzes:', error)
         } finally {
           setLoading(false)
         }
@@ -87,11 +87,11 @@ export default function BodyQuiz() {
                       className="bg-[#13D8A7] rounded-full w-full text-lg"
                       onClick={() => {
                         setDialogOpen(false)
-                        window.location.href = "/auth/login"
-                        }}
-                      >
-                        Đăng nhập
-                      </Button>
+                        window.location.href = '/auth/login'
+                      }}
+                    >
+                      Đăng nhập
+                    </Button>
                   </div>
                 </div>
               </DialogContent>

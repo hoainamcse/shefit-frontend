@@ -4,31 +4,34 @@ import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { MainButton } from '@/components/buttons/main-button'
 import { FileUploader } from '@/components/file-uploader'
 import { RichTextEditor } from '@/components/forms/fields/rich-text-editor'
+import { useAuth } from '@/components/providers/auth-context'
+import { ImageUploader } from '@/components/image-uploader'
 
 import { Form } from '@/components/ui/form'
 import { Configuration } from '@/models/configuration'
 import { getConfiguration, updateConfiguration } from '@/network/server/configurations'
-import { getPresignedUrl, uploadFileToS3 } from '@/network/server/upload'
+import { getS3FileUrl, uploadImageApi } from '@/network/server/upload'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
 
-const formSchema = z.object({
-  'thumbnail image': z.string().url('Please enter a valid URL'),
+const AboutUsSchema = z.object({
+  'thumbnail image': z.string().url({ message: 'Please enter a valid URL for the image, or leave it empty.' }),
   description: z.string().min(1, 'Description is required'),
 })
 
-type FormValues = z.infer<typeof formSchema>
+type AboutUsFormValues = z.infer<typeof AboutUsSchema>
 
 const aboutUsID = 1
 
 export default function AboutUsPage() {
+  const { accessToken } = useAuth()
   const [aboutUsData, setAboutUsData] = useState<Configuration>()
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<AboutUsFormValues>({
+    resolver: zodResolver(AboutUsSchema),
     defaultValues: aboutUsData?.data || {
       'thumbnail image': '',
       description: '',
@@ -46,17 +49,17 @@ export default function AboutUsPage() {
         form.reset(result.data.data)
       } catch (error) {
         console.error('Error fetching about us data:', error)
-        // Optionally handle the error state here
       }
     }
 
     fetchData()
   }, [])
 
-  async function updateAboutUs(id: number, values: FormValues) {
+  async function updateAboutUs(id: number, values: AboutUsFormValues) {
     if (!aboutUsData?.data) {
       throw new Error('About Us data not found')
     }
+
     const updateData: Configuration = {
       ...aboutUsData,
       data: values,
@@ -65,7 +68,7 @@ export default function AboutUsPage() {
     return res
   }
 
-  async function onSubmit(values: FormValues) {
+  async function onSubmit(values: AboutUsFormValues) {
     try {
       if (!aboutUsData?.id) {
         throw new Error('About Us ID not found')
@@ -77,23 +80,14 @@ export default function AboutUsPage() {
     }
   }
 
-  async function handleFileUpload(files: File[]) {
-    const file = files[0]
-    console.log('file', file)
-    if (!file) return
-    const response = await getPresignedUrl(file.name, file.type)
-    console.log('response', response)
-    const res = await uploadFileToS3(response.upload_url, file)
-    console.log('res', res)
-    form.setValue('thumbnail image', response.file_url)
-  }
+  console.log('form.getValues()', form.getValues())
 
   return (
     <ContentLayout title="About Us">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="space-y-6">
-            <FileUploader onUpload={handleFileUpload} accept={{ 'image/*': [] }} maxFileCount={1} />
+            <ImageUploader form={form} name="thumbnail image" accept={{ 'image/*': [] }} maxFileCount={1} />
             <RichTextEditor form={form} name="description" label="Về Shefit" withAsterisk placeholder="Nhập nội dung" />
             <MainButton text="Lưu" type="submit" className="mt-6" />
           </div>

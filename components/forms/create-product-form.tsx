@@ -17,6 +17,9 @@ import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Check, X } from 'lucide-react'
 import { FormInputField, FormMultiSelectField, FormNumberField, FormSelectField, FormTextareaField } from './fields'
+import { ImageUploader } from '@/components/image-uploader'
+import { useAuth } from '@/components/providers/auth-context'
+import { getS3FileUrl, uploadImageApi } from '@/network/server/upload'
 import { FormImageInputField } from './fields/form-image-input-field'
 import { Product, ProductCategory, ProductColor, ProductSize } from '@/models/products'
 import { createProduct, getCategories, getColors, getSizes, updateProduct } from '@/network/server/products'
@@ -109,6 +112,7 @@ interface ProductFormProps {
 export default function CreateProductForm({ isEdit = false, data }: ProductFormProps) {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
+  const { accessToken } = useAuth()
 
   const [sizeList, setSizeList] = useState<ProductSize[]>([])
   const [colorList, setColorList] = useState<ProductColor[]>([])
@@ -339,13 +343,7 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
                 }}
               /> */}
 
-              <FormImageInputField
-                form={form}
-                name="image_urls"
-                label="Hình ảnh sản phẩm"
-                multipleLink
-                placeholder="Nhập URL hình ảnh"
-              />
+              <ImageUploader form={form} name="image_urls" accept={{ 'image/*': [] }} maxFileCount={10} />
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <FormLabel>Tính năng</FormLabel>
