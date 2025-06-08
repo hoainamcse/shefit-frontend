@@ -134,6 +134,11 @@ export default function LoginForm() {
         <Label htmlFor="password">Mật khẩu</Label>
         <Input placeholder="Nhập mật khẩu của bạn" id="password" name="password" type="password" />
       </div>
+      <div className="w-full flex justify-end">
+        <Link href="/auth/forgot-password" className="text-text underline text-[#FF7873] text-sm">
+          Quên mật khẩu?
+        </Link>
+      </div>
       <MainButton type="submit" className="w-full p-3 rounded-3xl" text="Đăng nhập" />
       <Button variant="ghost" className="w-full p-3 rounded-3xl" asChild>
         <Link href="/auth/register">Đăng ký</Link>
