@@ -25,6 +25,7 @@ export default function CurrentCart() {
   const [pendingCarts, setPendingCarts] = useState<UserCart[]>([])
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState(false)
+  const [selectedCart, setSelectedCart] = useState<any>(null)
   const { userId } = useAuth()
   const router = useRouter()
 
@@ -36,15 +37,15 @@ export default function CurrentCart() {
       }
       try {
         const cartsRes = await getUserCart(Number(userId))
-        
-        // Explicitly type the response data as an array of UserCart objects
-        const userCarts = cartsRes?.data as UserCart[] || []
-        
+        const userCarts = (cartsRes?.data as UserCart[]) || []
         const pending = userCarts.filter(
           (item) => item?.cart?.status === 'pending' || item?.cart?.status === 'not_decided'
         )
-        
+
         setPendingCarts(pending)
+        if (pending.length > 0 && pending[0]?.cart) {
+          setSelectedCart(pending[0]?.cart)
+        }
       } catch (error) {
         toast.error('Không thể tải giỏ hàng. Vui lòng thử lại!')
       } finally {
@@ -157,7 +158,11 @@ export default function CurrentCart() {
           <div className="text-[#00C7BE] font-semibold">{totalPrice} VNĐ</div>
         </div>
       </div>
-      <FormDelivery />
+      {selectedCart ? (
+        <FormDelivery cartData={selectedCart} />
+      ) : (
+        <div className="mt-6 text-center text-gray-500">Đang tải thông tin...</div>
+      )}
     </div>
   )
 }

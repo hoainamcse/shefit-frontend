@@ -8,22 +8,23 @@ import { revalidateTag } from "next/cache"
 import { fetchDataServer } from "../helpers/fetch-data-server"
 
 export async function createCart(): Promise<Cart> {
-    const emptyCartData = {
-        "user_name": "string",
-        "username": "string",
-        "is_signed_up": false,
-        "telephone_number": "string",
-        "city": "string",
-        "address": "string",
-        "total_weight": 1,
-        "shipping_fee": 1,
-        "total": 1,
-        "payment_method": "not_decided",
-        "status": "pending",
-        "notes": "string",
-        "product_variant_ids": []
-    }
-    
+    const defaultCartPayload = {
+        user_name: "",
+        username: "",
+        is_signed_up: false,
+        telephone_number: "",
+        city: "",
+        is_hcm: false,
+        address: "",
+        total_weight: 0,
+        shipping_fee: 0,
+        total: 0,
+        payment_method: "not_decided",
+        status: "pending",
+        notes: "",
+        product_variant_ids: []
+    };
+
     const response = await fetchDataServer(
         `/v1/carts`,
         {
@@ -32,7 +33,7 @@ export async function createCart(): Promise<Cart> {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(emptyCartData)
+            body: JSON.stringify(defaultCartPayload),
         }
     )
     revalidateTag("cart")

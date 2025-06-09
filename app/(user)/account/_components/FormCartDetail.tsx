@@ -1,5 +1,5 @@
-import { Input } from "@/components/ui/input"
-import { getCart } from "@/network/server/cart"
+import { Input } from '@/components/ui/input'
+import { getCart } from '@/network/server/cart'
 
 export default async function FormCartDetail({ params }: { params: { slug: string } }) {
   const { slug } = params
@@ -13,6 +13,7 @@ export default async function FormCartDetail({ params }: { params: { slug: strin
       <Input value={cartData.telephone_number} disabled className="mb-2" />
       <Input value={cartData.city} disabled className="mb-2" />
       <Input value={cartData.address} disabled className="mb-2" />
+      <Input value={cartData.notes} disabled className="mb-2" />
     </div>
   )
 }

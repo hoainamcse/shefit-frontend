@@ -6,6 +6,8 @@ export interface Cart {
     user_name: string
     telephone_number: string
     city: string
+    is_hcm: boolean
+    total_weight: number
     address: string
     shipping_fee: number
     total: number
