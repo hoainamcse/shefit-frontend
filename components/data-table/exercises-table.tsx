@@ -285,16 +285,7 @@ function ImportDialog({ onSuccess }: { onSuccess?: () => void }) {
           <DialogTitle>Nhập món ăn</DialogTitle>
           <DialogDescription>Chức năng này sẽ cho phép nhập danh sách bài tập từ tệp Excel</DialogDescription>
         </DialogHeader>
-        <ExcelReader
-          headers={{
-            name: 'text',
-            description: 'text',
-            equipments: 'text',
-            muscle_groups: 'text',
-            youtube_url: 'text',
-          }}
-          onSuccess={setData}
-        />
+        <ExcelReader onSuccess={setData} />
         {data.length > 0 && (
           <MainButton text="Nhập bài tập" className="mt-4" onClick={onSubmit} loading={exerciseMutation.isPending} />
         )}

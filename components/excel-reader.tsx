@@ -4,16 +4,17 @@ import React, { ChangeEvent, useState, DragEvent } from 'react'
 import * as XLSX from 'xlsx'
 
 interface ExcelReaderProps {
-  headers: Record<string, 'text' | 'number'>
+  specificHeaders?: string[]
   onSuccess: (data: Record<string, string | number>[]) => void
 }
 
-export const ExcelReader = ({ headers, onSuccess }: ExcelReaderProps) => {
+export const ExcelReader = ({ specificHeaders = [], onSuccess }: ExcelReaderProps) => {
   const [isDragging, setIsDragging] = useState(false)
   const [fileName, setFileName] = useState<string>('')
   const [isProcessing, setIsProcessing] = useState(false)
   const [previewData, setPreviewData] = useState<any[]>([])
   const [totalRows, setTotalRows] = useState<number>(0)
+  const [headers, setHeaders] = useState<Record<string, 'number' | 'text'>>({})
 
   const processFile = async (file: File) => {
     if (!file) return
@@ -42,6 +43,17 @@ export const ExcelReader = ({ headers, onSuccess }: ExcelReaderProps) => {
           value !== undefined && value !== null ? String(value).trim() : ''
         )
         const row: Record<string, string | number> = {}
+
+        // Determine headers and types: use specificHeaders if provided, else default all to 'text'
+        const headers: Record<string, 'number' | 'text'> = {}
+        excelHeaders.forEach((header) => {
+          if (specificHeaders && specificHeaders.includes(header)) {
+            headers[header] = 'number'
+          } else {
+            headers[header] = 'text'
+          }
+        })
+        setHeaders(headers)
 
         Object.entries(headers).forEach(([key, type]) => {
           const headerIndex = excelHeaders.indexOf(key)

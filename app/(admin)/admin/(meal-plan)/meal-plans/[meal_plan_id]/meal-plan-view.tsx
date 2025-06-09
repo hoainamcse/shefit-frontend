@@ -5,7 +5,7 @@ import type { MealPlan, MealPlanDay, MealPlanDish, DishMealTime } from '@/models
 import { toast } from 'sonner'
 import { useState, useEffect } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { Beef, Droplets, Leaf, Trash2, Wheat, Zap } from 'lucide-react'
+import { Beef, Droplets, ImportIcon, Leaf, Trash2, Wheat, Zap } from 'lucide-react'
 
 import { EditMealPlanDishForm } from '@/components/forms/edit-meal-plan-dish-form'
 import { EditMealPlanDayForm } from '@/components/forms/edit-meal-plan-day-form'
@@ -18,6 +18,8 @@ import { Spinner } from '@/components/spinner'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import {
+  createMealPlanDay,
+  createMealPlanDish,
   deleteMealPlanDay,
   deleteMealPlanDish,
   getMealPlanDays,
@@ -25,6 +27,16 @@ import {
   queryKeyMealPlanDays,
   queryKeyMealPlanDishes,
 } from '@/network/client/meal-plans'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { transformDishes } from '@/lib/xlsx'
+import { ExcelReader } from '@/components/excel-reader'
 
 interface MealPlanViewProps {
   mealPlanID: MealPlan['id']
@@ -156,6 +168,10 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
 
   return (
     <div className="space-y-4">
+      <div className="flex justify-end">
+        <ImportDialog mealPlanID={mealPlanID} onSuccess={() => daysRefetch()} />
+      </div>
+
       {/* Days Navigation */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
@@ -180,7 +196,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
               type="button"
               key={day.id}
               style={{ backgroundImage: `url(${day.image})` }}
-              className={`bg-cover h-20 w-40 bg-center rounded-md whitespace-nowrap text-white ${
+              className={`bg-cover h-20 w-40 bg-center rounded-md whitespace-nowrap text-white flex-shrink-0 ${
                 selectedDay?.id !== day.id && 'opacity-60 hover:opacity-100'
               }`}
               onClick={() => setSelectedDay(day)}
@@ -319,4 +335,67 @@ const getMealTimeColor = (mealTime: DishMealTime) => {
     default:
       return 'bg-gray-100 text-gray-800 border-gray-200'
   }
+}
+
+function ImportDialog({ mealPlanID, onSuccess }: { mealPlanID: MealPlan['id']; onSuccess?: () => void }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [data, setData] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+
+  const onSubmit = async () => {
+    try {
+      const _data = transformDishes(data)
+      setIsLoading(true)
+
+      for (const d of _data.days) {
+        try {
+          const dayResponse = await createMealPlanDay(mealPlanID, {
+            day_number: d.day_number,
+            image: 'https://placehold.co/600x400?text=example',
+          })
+
+          const dayId = dayResponse.data[0].id
+
+          for (const dish of d.dishes) {
+            await createMealPlanDish(mealPlanID, dayId, {
+              ...dish,
+              meal_time: 'breakfast',
+            })
+          }
+        } catch (error) {
+          console.error(`Error processing day ${d.day_number}:`, error)
+          throw error
+        }
+      }
+
+      setData([])
+      toast.success('Nhập thực đơn thành công')
+      onSuccess?.()
+      setIsOpen(false)
+    } catch (error) {
+      console.error('Error creating meal plan dishes:', error)
+      toast.error('Đã có lỗi xảy ra khi nhập thực đơn')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <MainButton text="Nhập thực đơn" icon={ImportIcon} variant="outline" />
+      </DialogTrigger>
+      <DialogContent className="max-w-3xl" onInteractOutside={(e) => e.preventDefault()}>
+        <DialogHeader>
+          <DialogTitle>Nhập món ăn</DialogTitle>
+          <DialogDescription>Chức năng này sẽ cho phép nhập danh sách món ăn từ tệp Excel</DialogDescription>
+        </DialogHeader>
+        <ExcelReader
+          specificHeaders={['day_number', 'dish_calories', 'dish_protein', 'dish_carb', 'dish_fat', 'dish_fiber']}
+          onSuccess={setData}
+        />
+        {data.length > 0 && <MainButton text="Nhập thực đơn" className="mt-4" onClick={onSubmit} loading={isLoading} />}
+      </DialogContent>
+    </Dialog>
+  )
 }

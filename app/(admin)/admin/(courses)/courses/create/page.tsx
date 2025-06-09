@@ -35,7 +35,7 @@ export default function CreateCoursePage() {
   return (
     <ContentLayout title="Thêm khoá tập">
       <EditCourseForm
-        onSuccess={(data) => router.push(`/admin/${data.course_format}-classes/${data.id}`)}
+        onSuccess={(data) => router.push(`/admin/courses/${data.id}`)}
         courseFormat={courseFormat}
         isOneOnOne={isOneOnOne}
       />
