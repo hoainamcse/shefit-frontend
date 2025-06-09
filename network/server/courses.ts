@@ -22,7 +22,7 @@ export async function getCoursesByType(format: 'video' | 'live'): Promise<ListRe
   return await response.json()
 }
 
-export async function getCourse(course_id: string): Promise<ApiResponse<Course>> {
+export async function getCourse(course_id: Course['id']): Promise<ApiResponse<Course>> {
   const response = await fetchDataServer(`/v1/courses/${course_id}`, {
     next: {
       revalidate: 0,
@@ -42,7 +42,7 @@ export async function getCoursesBySubscriptionId(subscription_id: string): Promi
   return await response.json()
 }
 
-export async function getCourseLives(courseId: string): Promise<ListResponse<CourseLive>> {
+export async function getCourseLives(courseId: Course['id']): Promise<ListResponse<CourseLive>> {
   const response = await fetchDataServer(`/v1/courses/${courseId}/live-classes/`, {
     next: {
       revalidate: 0,

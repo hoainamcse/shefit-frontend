@@ -3,8 +3,9 @@ import { getWeeks } from '@/network/server/weeks'
 import { getDays } from '@/network/server/days'
 import { notFound } from 'next/navigation'
 import { VideoClientComponent } from './VideoClientComponent'
+import { Course } from '@/models/course'
 
-export default async function Video({ params }: { params: Promise<{ course_id: string; detail: string[] }> }) {
+export default async function Video({ params }: { params: Promise<{ course_id: Course['id']; detail: string[] }> }) {
   const { course_id, detail } = await params
 
   try {
@@ -15,14 +16,14 @@ export default async function Video({ params }: { params: Promise<{ course_id: s
       notFound()
     }
 
-    const days = await getDays(course_id, currentWeek.id.toString())
+    const days = await getDays(course_id, currentWeek.id)
     const currentDay = days.data.find((day) => day.id.toString() === detail[1]) || days.data[0]
 
     if (!currentDay) {
       notFound()
     }
 
-    const circuits = await getCircuits(course_id, currentWeek.id.toString(), currentDay.id.toString())
+    const circuits = await getCircuits(course_id, currentWeek.id, currentDay.id)
 
     return <VideoClientComponent circuits={circuits} />
   } catch (error) {

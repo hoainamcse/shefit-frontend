@@ -32,6 +32,11 @@ import { CreateCourseForm } from '@/components/forms/create-course-form'
 import { ApiResponse } from '@/models/response'
 import { Course } from '@/models/course'
 import { DetailCourse } from '@/models/course-admin'
+import { ImportIcon } from 'lucide-react'
+import { transformExercise } from '@/lib/xlsx'
+import { createEquipment } from '@/network/client/equipments'
+import { createMuscleGroup } from '@/network/client/muscle-groups'
+import { ExcelReader } from '@/components/excel-reader'
 
 // Import API functions for weeks, days, and circuits
 import { getWeeks, createWeek, updateWeek, deleteWeek } from '@/network/server/weeks'
@@ -84,7 +89,11 @@ const courseStructureSchema = z.object({
 
 type CourseStructureFormData = z.infer<typeof courseStructureSchema>
 
-export function CourseVideoView() {
+interface CourseVideoViewProps {
+  courseID: Course['id']
+}
+
+export function CourseVideoView({ courseID }: CourseVideoViewProps) {
   const params = useParams()
   const router = useRouter()
   const [isExerciseDialogOpen, setIsExerciseDialogOpen] = useState(false)
@@ -118,10 +127,9 @@ export function CourseVideoView() {
     const fetchCourseStructure = async () => {
       try {
         setIsLoading(true)
-        const courseId = params.course_id as string
 
         // Fetch weeks
-        const weeksResponse = await getWeeks(courseId)
+        const weeksResponse = await getWeeks(courseID)
         const weeks = weeksResponse.data || []
 
         // Create a structure to hold all the data
@@ -129,16 +137,16 @@ export function CourseVideoView() {
 
         // For each week, fetch its days
         for (const week of weeks) {
-          const weekId = week.id.toString()
-          const daysResponse = await getDays(courseId, weekId)
+          const weekId = week.id
+          const daysResponse = await getDays(courseID, weekId)
           const days = daysResponse.data || []
 
           const formattedDays = []
 
           // For each day, fetch its circuits
           for (const day of days) {
-            const dayId = day.id.toString()
-            const circuitsResponse = await getCircuits(courseId, weekId, dayId)
+            const dayId = day.id
+            const circuitsResponse = await getCircuits(courseID, weekId, dayId)
             const circuits = circuitsResponse.data || []
 
             // Format the day with its circuits
@@ -258,13 +266,12 @@ export function CourseVideoView() {
   // Function to handle form submission
   const onSubmit = async (formData: CourseStructureFormData) => {
     try {
-      const courseId = params.course_id as string
       const toastId = toast.loading('Updating course structure...')
 
       // Get existing weeks to compare with form data
       let existingWeeksResponse
       try {
-        existingWeeksResponse = await getWeeks(courseId)
+        existingWeeksResponse = await getWeeks(courseID)
       } catch (error) {
         console.error('Error fetching existing weeks:', error)
         existingWeeksResponse = { data: [] }
@@ -285,10 +292,10 @@ export function CourseVideoView() {
         let weekResult
         if (!week.id) {
           // Create new week
-          weekResult = await createWeek(courseId, weekData)
+          weekResult = await createWeek(courseID, weekData)
         } else if (existingWeek) {
           // Update existing week
-          weekResult = await updateWeek(courseId, week.id.toString(), weekData)
+          weekResult = await updateWeek(courseID, week.id.toString(), weekData)
         } else {
           // Skip this week as it doesn't exist and doesn't need to be created
           continue
@@ -299,12 +306,12 @@ export function CourseVideoView() {
           continue
         }
 
-        const weekId = weekResult.data.id.toString()
+        const weekId = weekResult.data.id
 
         // Get existing days for this week
         let existingDaysResponse
         try {
-          existingDaysResponse = await getDays(courseId, weekId)
+          existingDaysResponse = await getDays(courseID, weekId)
         } catch (error) {
           console.error(`Error fetching days for week ${weekId}:`, error)
           existingDaysResponse = { data: [] }
@@ -328,11 +335,11 @@ export function CourseVideoView() {
           let dayResult
           if (!day.id) {
             // Create new day
-            dayResult = await createDay(courseId, weekId, dayData)
+            dayResult = await createDay(courseID, weekId, dayData)
           } else if (existingDay) {
             // Update existing day
             processedDayIds.add(day.id)
-            dayResult = await updateDay(courseId, weekId, day.id.toString(), dayData)
+            dayResult = await updateDay(courseID, weekId, day.id.toString(), dayData)
           } else {
             // Skip this day as it doesn't exist and doesn't need to be created
             continue
@@ -343,12 +350,12 @@ export function CourseVideoView() {
             continue
           }
 
-          const dayId = dayResult.data.id.toString()
+          const dayId = dayResult.data.id
 
           // Get existing circuits for this day
           let existingCircuitsResponse
           try {
-            existingCircuitsResponse = await getCircuits(courseId, weekId, dayId)
+            existingCircuitsResponse = await getCircuits(courseID, weekId, dayId)
           } catch (error) {
             console.error(`Error fetching circuits for day ${dayId}:`, error)
             existingCircuitsResponse = { data: [] }
@@ -373,18 +380,18 @@ export function CourseVideoView() {
 
             if (!circuit.id) {
               // Create new circuit
-              await createCircuit(courseId, weekId, dayId, circuitData)
+              await createCircuit(courseID, weekId, dayId, circuitData)
             } else if (existingCircuit) {
               // Update existing circuit
               processedCircuitIds.add(circuit.id)
-              const response = await updateCircuit(courseId, weekId, dayId, circuit.id.toString(), circuitData)
+              const response = await updateCircuit(courseID, weekId, dayId, circuit.id.toString(), circuitData)
             }
           }
 
           // Delete circuits that were removed
           for (const existingCircuit of existingCircuits) {
             if (!processedCircuitIds.has(existingCircuit.id)) {
-              await deleteCircuit(courseId, weekId, dayId, existingCircuit.id.toString())
+              await deleteCircuit(courseID, weekId, dayId, existingCircuit.id.toString())
             }
           }
         }
@@ -392,7 +399,7 @@ export function CourseVideoView() {
         // Delete days that were removed
         for (const existingDay of existingDays) {
           if (!processedDayIds.has(existingDay.id)) {
-            await deleteDay(courseId, weekId, existingDay.id.toString())
+            await deleteDay(courseID, weekId, existingDay.id.toString())
           }
         }
       }
@@ -401,7 +408,7 @@ export function CourseVideoView() {
       for (const existingWeek of existingWeeks) {
         const stillExists = formData.weeks.some((week) => week.id === existingWeek.id)
         if (!stillExists) {
-          await deleteWeek(courseId, existingWeek.id.toString())
+          await deleteWeek(courseID, existingWeek.id.toString())
         }
       }
 
@@ -644,6 +651,9 @@ export function CourseVideoView() {
 
   return (
     <>
+      <div className="flex justify-end mb-4">
+        <ImportDialog courseID={courseID} onSuccess={() => window.location.reload()} />
+      </div>
       {isSubmitting && <div className="fixed inset-0 bg-white/50 backdrop-blur-sm z-50" />}
 
       {isLoading ? (
@@ -672,9 +682,7 @@ export function CourseVideoView() {
                     <div
                       key={week.id}
                       className={`flex justify-between items-center p-2 rounded-md cursor-pointer ${
-                        selectedWeekIndex === weekIndex
-                          ? 'bg-primary text-primary-foreground'
-                          : 'hover:bg-muted/50'
+                        selectedWeekIndex === weekIndex ? 'bg-primary text-primary-foreground' : 'hover:bg-muted/50'
                       }`}
                       onClick={() => selectWeek(weekIndex)}
                     >
@@ -720,9 +728,7 @@ export function CourseVideoView() {
                         <div
                           key={`day-${selectedWeekIndex}-${dayIndex}`}
                           className={`flex justify-between items-center p-2 rounded-md cursor-pointer ${
-                            selectedDayIndex === dayIndex
-                              ? 'bg-primary text-primary-foreground'
-                              : 'hover:bg-muted/50'
+                            selectedDayIndex === dayIndex ? 'bg-primary text-primary-foreground' : 'hover:bg-muted/50'
                           }`}
                           onClick={() => selectDay(dayIndex)}
                         >
@@ -873,8 +879,7 @@ export function CourseVideoView() {
                                                           {exercise.circuit_exercise_title}
                                                         </CardTitle>
                                                         <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                                                          {exercise.circuit_exercise_description ||
-                                                            'Chưa có mô tả'}
+                                                          {exercise.circuit_exercise_description || 'Chưa có mô tả'}
                                                         </p>
                                                       </div>
                                                       <div className="flex gap-2">
@@ -945,9 +950,7 @@ export function CourseVideoView() {
                                                           Link video youtube
                                                         </a>
                                                       ) : (
-                                                        <span className="text-muted-foreground">
-                                                          Chưa có video
-                                                        </span>
+                                                        <span className="text-muted-foreground">Chưa có video</span>
                                                       )}
                                                     </div>
                                                     <div className="flex items-center gap-2 text-sm">
@@ -1093,5 +1096,72 @@ export function CourseVideoView() {
         </DialogContent>
       </Dialog>
     </>
+  )
+}
+
+function ImportDialog({ courseID, onSuccess }: { courseID: Course['id']; onSuccess?: () => void }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [data, setData] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+
+  const onSubmit = async () => {
+    try {
+      setIsLoading(true)
+      const _data = transformExercise(data)
+
+      for (const w of _data.weeks) {
+        try {
+          const weekResponse = await createWeek(courseID, { week_number: w.week_number })
+
+          for (const d of w.days) {
+            const dayResponse = await createDay(courseID, weekResponse.data.id, {
+              day_number: d.day_number,
+              description: '',
+            })
+
+            for (const c of d.circuits) {
+              await createCircuit(courseID, weekResponse.data.id, dayResponse.data.id, {
+                name: c.name,
+                description: c.description,
+                auto_replay_count: c.auto_replay_count,
+                circuit_exercises: c.circuit_exercises,
+              })
+            }
+          }
+        } catch (error) {
+          console.error(`Error processing week ${w.week_number}:`, error)
+          throw error
+        }
+      }
+
+      setData([])
+      toast.success('Nhập khoá tập thành công')
+      onSuccess?.()
+      setIsOpen(false)
+    } catch (error) {
+      console.error('Error importing data:', error)
+      toast.error('Đã có lỗi xảy ra khi nhập khoá tập')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <MainButton text="Nhập khoá tập" icon={ImportIcon} variant="outline" />
+      </DialogTrigger>
+      <DialogContent className="max-w-3xl" onInteractOutside={(e) => e.preventDefault()}>
+        <DialogHeader>
+          <DialogTitle>Nhập món ăn</DialogTitle>
+          <DialogDescription>Chức năng này sẽ cho phép nhập danh sách món ăn từ tệp Excel</DialogDescription>
+        </DialogHeader>
+        <ExcelReader
+          specificHeaders={['exercise_no', 'circuit_auto_replay_count', 'week_number', 'day_number']}
+          onSuccess={setData}
+        />
+        {data.length > 0 && <MainButton text="Nhập khoá tập" className="mt-4" onClick={onSubmit} />}
+      </DialogContent>
+    </Dialog>
   )
 }

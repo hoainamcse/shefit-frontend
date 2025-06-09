@@ -9,6 +9,7 @@ import { useState, useEffect } from "react"
 import { useAuth } from "@/components/providers/auth-context"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Course } from "@/models/course"
 
 type CourseDay = {
   day: number
@@ -30,7 +31,7 @@ export const mapCourseData = (totalWeeks: number): CourseWeek[] => {
   }))
 }
 
-export default function VideoCourseDetail({ courseId }: { courseId: string }) {
+export default function VideoCourseDetail({ courseId }: { courseId: Course['id'] }) {
   const [weeks, setWeeks] = useState<any>(null)
   const [days, setDays] = useState<any>(null)
   const [courseData, setCourseData] = useState<CourseWeek[]>([])
@@ -45,7 +46,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: string }) {
         setWeeks(weeksData)
 
         if (weeksData.data && weeksData.data.length > 0) {
-          const daysData = await getDays(courseId, weeksData.data[0]?.id.toString())
+          const daysData = await getDays(courseId, weeksData.data[0]?.id)
           setDays(daysData)
 
           const totalWeeks = weeksData.data.length

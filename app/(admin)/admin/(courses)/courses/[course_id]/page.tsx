@@ -47,7 +47,7 @@ export default async function EditMealPlanPage({ params }: { params: Promise<{ c
         </TabsContent>
 
         <TabsContent value="tab-2">
-          {data.data.course_format === 'video' && <CourseVideoView />}
+          {data.data.course_format === 'video' && <CourseVideoView courseID={course_id} />}
           {data.data.course_format === 'live' && <CourseLiveView courseID={course_id} />}
         </TabsContent>
       </Tabs>

@@ -10,7 +10,7 @@ type RawExercise = {
   exercise_no: number
 }
 
-type Transformed = {
+type TransformedExercise = {
   weeks: {
     week_number: number
     days: {
@@ -30,8 +30,8 @@ type Transformed = {
   }[]
 }
 
-export function transformData(rawData: RawExercise[]): Transformed {
-  const result: Transformed = { weeks: [] }
+export function transformExercise(rawData: RawExercise[]): TransformedExercise {
+  const result: TransformedExercise = { weeks: [] }
 
   for (const item of rawData) {
     // Week

@@ -4,7 +4,7 @@ import { getCourse } from '@/network/server/courses'
 import { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getCourseLives } from '@/network/server/courses'
-import { CourseLive } from '@/models/course'
+import { Course, CourseLive } from '@/models/course'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
@@ -30,7 +30,7 @@ const isClassAvailable = (startTime: string) => {
   return false
 }
 
-export default function LiveCourseDetail({ courseId }: { courseId: string }) {
+export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] }) {
   const [course, setCourse] = useState<any>(null)
   const [live, setLive] = useState<any>(null)
 

@@ -6,7 +6,7 @@ import { getEquipments } from "@/network/server/equipments"
 import { getMuscleGroups } from "@/network/server/muscle-groups"
 import { courseFormLabel, courseLevelLabel } from "@/lib/label"
 import { useState, useEffect, useRef } from "react"
-import { CourseLevel, CourseForm } from "@/models/course"
+import { CourseLevel, CourseForm, Course } from "@/models/course"
 import LiveCourseDetail from "./LiveCourseDetail"
 import VideoCourseDetail from "./VideoCourseDetail"
 import { BackIcon } from "@/components/icons/BackIcon"
@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button"
 import { getSubscriptions } from "@/network/server/subscriptions"
 import Link from "next/link"
 interface CourseDetailProps {
-  courseId: string
+  courseId: Course['id']
   typeCourse: "video" | "live"
 }
 

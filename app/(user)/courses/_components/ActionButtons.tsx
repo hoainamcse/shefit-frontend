@@ -4,14 +4,15 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { createUserCourse } from '@/network/server/user-courses'
 import { toast } from 'sonner'
+import { Course } from '@/models/course'
 
 interface ActionButtonsProps {
-  courseId: string
+  courseId: Course['id']
   showDetails: boolean
   handleToggleDetails: () => void
 }
 
-const handleSaveCourse = async (courseId: string) => {
+const handleSaveCourse = async (courseId: Course['id']) => {
   try {
     await createUserCourse({ course_id: courseId }, '1')
     toast.success('Đã lưu khóa tập thành công!')
