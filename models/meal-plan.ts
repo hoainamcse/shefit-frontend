@@ -16,6 +16,7 @@ type MealPlan = {
   chef_name: string
   goal: MealPlanGoal
   image: string
+  youtube_url: string
   description: string
   meal_ingredients: MealPlanIngredient[]
   number_of_days: number // ! not in schema
@@ -41,7 +42,7 @@ type MealPlanDay = {
 
 type MealPlanDayPayload = Omit<MealPlanDay, 'id'>
 
-type MealPlanDish = Omit<Dish, 'diet' | 'image'> & {
+type MealPlanDish = Omit<Dish, 'diet' | 'image' | 'youtube_url'> & {
   meal_time: DishMealTime
 }
 

@@ -26,6 +26,7 @@ const formSchema = z.object({
   chef_name: z.string(),
   goal: z.enum(['weight_loss', 'energy', 'recovery', 'hormonal_balance', 'muscle_tone']),
   image: z.string().url(),
+  youtube_url: z.string().url(),
   description: z.string(),
   meal_ingredients: z.array(
     z.object({
@@ -55,6 +56,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
     chef_name: '',
     goal: 'weight_loss',
     image: 'https://placehold.co/600x400?text=example',
+    youtube_url: '',
     description: '',
     meal_ingredients: [],
     is_public: true,
@@ -73,6 +75,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
           chef_name: data.chef_name,
           goal: data.goal,
           image: data.image,
+          youtube_url: data.youtube_url,
           description: data.description,
           meal_ingredients: data.meal_ingredients,
           is_public: data.is_public,
@@ -122,6 +125,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
           />
         </div>
         <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
+        <FormInputField form={form} name="youtube_url" label="Video" placeholder="Nhập video" />
         <div className="grid grid-cols-2 gap-4">
           <FormSelectField form={form} name="diet_id" label="Chế độ ăn" placeholder="Chọn chế độ ăn" />
           <FormSelectField form={form} name="calorie_id" label="Calorie" placeholder="Chọn calorie" />

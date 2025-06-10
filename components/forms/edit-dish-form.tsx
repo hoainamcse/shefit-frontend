@@ -21,6 +21,7 @@ export const formSchema = z.object({
   description: z.string(),
   diet_id: z.number().nullable(),
   image: z.string().url(),
+  youtube_url: z.string().url(),
   calories: z.number().min(0),
   protein: z.number().min(0),
   carb: z.number().min(0),
@@ -42,6 +43,7 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
     description: '',
     diet_id: null,
     image: 'https://placehold.co/600x400?text=example',
+    youtube_url: '',
     calories: 0,
     protein: 0,
     carb: 0,
@@ -57,6 +59,7 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
           description: data.description,
           diet_id: data.diet?.id || null,
           image: data.image,
+          youtube_url: data.youtube_url,
           calories: data.calories,
           protein: data.protein,
           carb: data.carb,
@@ -89,6 +92,7 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
         <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
         <FormSelectField form={form} name="diet_id" label="Chế độ ăn" placeholder="Chọn chế độ ăn" />
         <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
+        <FormInputField form={form} name="youtube_url" label="Video" placeholder="Nhập video" />
 
         <div className="grid grid-cols-2 gap-4">
           <FormNumberField form={form} name="calories" label="Calories (kcal)" placeholder="e.g., 250" />

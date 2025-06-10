@@ -81,6 +81,7 @@ export default function UsersPage() {
         'Họ & tên',
         'Username',
         'Số điện thoại',
+        'Email',
         'Role',
         'Ngày tạo',
         'Tỉnh/Thành phố',
@@ -88,6 +89,7 @@ export default function UsersPage() {
         'Gói membership',
         'Ngày bắt đầu',
         'Ngày kết thúc',
+        'Code khuyến mãi',
         'Khoá tập',
         'Thực đơn',
         'Bài tập',
@@ -119,6 +121,7 @@ export default function UsersPage() {
                 account.fullname,
                 account.username,
                 account.phone_number,
+                account.email,
                 roleLabel[account.role],
                 account.created_at,
                 account.province || '',
@@ -126,6 +129,7 @@ export default function UsersPage() {
                 membershipName,
                 startDate,
                 endDate,
+                sub.coupon_code || '',
                 courseNames,
                 mealPlanNames,
                 exerciseNames,
@@ -140,6 +144,7 @@ export default function UsersPage() {
               account.fullname,
               account.username,
               account.phone_number,
+              account.email,
               roleLabel[account.role],
               account.created_at,
               account.province || '',
@@ -147,6 +152,7 @@ export default function UsersPage() {
               '', // Gói membership
               '', // Ngày bắt đầu
               '', // Ngày kết thúc
+              '', // Code khuyến mãi
               '', // Khoá tập
               '', // Thực đơn
               '', // Bài tập
@@ -162,6 +168,7 @@ export default function UsersPage() {
             account.fullname,
             account.username,
             account.phone_number,
+            account.email,
             roleLabel[account.role],
             account.created_at,
             account.province || '',
@@ -169,6 +176,7 @@ export default function UsersPage() {
             '', // Gói membership
             '', // Ngày bắt đầu
             '', // Ngày kết thúc
+            '', // Code khuyến mãi
             '', // Khoá tập
             '', // Thực đơn
             '', // Bài tập
@@ -227,6 +235,10 @@ export default function UsersPage() {
       header: 'SDT',
     },
     {
+      accessorKey: 'email',
+      header: 'Email',
+    },
+    {
       accessorKey: 'created_at',
       header: 'Ngày tạo',
     },
@@ -254,7 +266,7 @@ export default function UsersPage() {
               <Copy /> Sao chép tài khoản ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.push(`/admin/account/${row.id}`)}>
+            <DropdownMenuItem onClick={() => router.push(`/admin/users/${row.id}`)}>
               <Edit /> Cập nhật
             </DropdownMenuItem>
             <DeleteMenuItem onConfirm={() => handleDeleteAccount(row.id)} />

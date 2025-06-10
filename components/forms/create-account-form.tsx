@@ -3,7 +3,14 @@
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
-import { FormInputField, FormMultiSelectField, FormSelectField } from '@/components/forms/fields'
+import {
+  FormInputField,
+  FormMultiSelectField,
+  FormSelectField,
+  FormMultiSelectPaginatedField,
+} from '@/components/forms/fields'
+
+import { Course } from '@/models/course'
 import {
   Select,
   SelectContent,
@@ -34,17 +41,19 @@ import {
   updateUserSubscription,
   deleteUserSubscription,
 } from '@/network/server/user-subscriptions'
-import { getCoursesBySubscriptionId } from '@/network/server/courses'
-import { getMealPlans } from '@/network/server/meal-plans'
-import { getDishes } from '@/network/server/dishes'
+
 import { MealPlan } from '@/models/meal-plan'
-import { Dish } from '@/models/dish'
 import { Exercise } from '@/models/exercise'
-import { getExercises } from '@/network/server/exercises'
+
 import { PROVINCES } from '@/lib/label'
 import { useAuth } from '../providers/auth-context'
 import { roleOptions } from '@/lib/label'
 import { getSubAdminSubscriptions } from '@/network/server/sub-admin'
+import { getCourses } from '@/network/client/courses'
+import { getDishes } from '@/network/client/dishes'
+import { Dish } from '@/models/dish'
+import { getExercises } from '@/network/client/exercises'
+import { getMealPlans } from '@/network/client/meal-plans'
 
 const accountSchema = z.object({
   id: z.coerce.number().optional(),
@@ -53,6 +62,7 @@ const accountSchema = z.object({
     .string()
     .min(10, { message: 'Số điện thoại phải có ít nhất 10 ký tự.' })
     .regex(/^0[0-9]{9,10}$/, { message: 'Số điện thoại không hợp lệ.' }),
+  email: z.string().email({ message: 'Email không hợp lệ.' }),
   username: z.string().min(3, { message: 'Username phải có ít nhất 3 ký tự.' }),
   province: z.enum([...PROVINCES.map((province) => province.value)] as [string, ...string[]], {
     message: 'Bạn phải chọn tỉnh/thành phố',
@@ -105,17 +115,13 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [membershipList, setMembershipList] = useState<Subscription[]>([])
 
-  const [courses, setCourses] = useState<selectOption[]>([])
-  const [mealPlans, setMealPlans] = useState<selectOption[]>([])
-  const [dishes, setDishes] = useState<selectOption[]>([])
-  const [exercises, setExercises] = useState<selectOption[]>([])
-
   const form = useForm<AccountFormData>({
     resolver: zodResolver(accountSchema),
     defaultValues: data
       ? {
           fullname: data.fullname,
           phone_number: data.phone_number,
+          email: data.email,
           username: data.username,
           province: data.province,
           address: data.address,
@@ -125,6 +131,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       : {
           fullname: '',
           phone_number: '',
+          email: '',
           username: '',
           province: '',
           address: '',
@@ -148,46 +155,6 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     remove: removeSubscription,
   } = useFieldArray({ control, name: 'subscriptions', keyName: 'fieldId' })
 
-  const watchedSubscriptions = form.watch('subscriptions')
-
-  useEffect(() => {
-    const fetchFilteredCourses = async () => {
-      if (!watchedSubscriptions || watchedSubscriptions.length === 0) {
-        setCourses([]) // Clear courses if no subscriptions are selected
-        return
-      }
-
-      const selectedSubscriptionIds = watchedSubscriptions
-        .map((sub) => sub.subscription_id)
-        .filter((id): id is number => id !== undefined && id !== null) // Ensure valid IDs
-
-      if (selectedSubscriptionIds.length === 0) {
-        setCourses([])
-        return
-      }
-
-      try {
-        const coursePromises = selectedSubscriptionIds.map((id) => getCoursesBySubscriptionId(id.toString()))
-        const courseResponses = await Promise.all(coursePromises)
-
-        const allCourses = courseResponses.flatMap((res) => (Array.isArray(res.data) ? res.data : []))
-
-        const uniqueCourses = Array.from(
-          new Map(
-            allCourses.map((course) => [course.id, { value: String(course.id), label: course.course_name }])
-          ).values()
-        )
-        setCourses(uniqueCourses)
-      } catch (error) {
-        console.error('Error fetching filtered courses:', error)
-        toast.error('Failed to load courses for selected subscriptions.')
-        setCourses([]) // Clear courses on error
-      }
-    }
-
-    fetchFilteredCourses()
-  }, [watchedSubscriptions, setCourses])
-
   /**
    * Fetch all data needed for the form
    */
@@ -202,33 +169,10 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     try {
       // Fetch subscriptions based on role, ensuring accessToken is non-null
       const subscriptionsPromise = role === 'sub_admin' ? getSubAdminSubscriptions(accessToken!) : getSubscriptions()
-      const [subscriptionsResponse, mealPlansResponse, dishesResponse, exercisesResponse] = await Promise.all([
-        subscriptionsPromise,
-        getMealPlans(),
-        getDishes(),
-        getExercises(),
-      ])
+      const [subscriptionsResponse] = await Promise.all([subscriptionsPromise])
 
       const memberships = subscriptionsResponse.data
       setMembershipList(memberships)
-
-      const formattedMealPlans = mealPlansResponse.data.map((mealPlan: MealPlan) => ({
-        value: String(mealPlan.id),
-        label: mealPlan.title,
-      }))
-      setMealPlans(formattedMealPlans)
-
-      const formattedDishes = dishesResponse.data.map((dish: Dish) => ({
-        value: String(dish.id),
-        label: dish.name,
-      }))
-      setDishes(formattedDishes)
-
-      const formattedExercises = exercisesResponse.data.map((exercise: Exercise) => ({
-        value: String(exercise.id),
-        label: exercise.name,
-      }))
-      setExercises(formattedExercises)
 
       // Fetch user-courses, user-dishes, user-meal-plans, user-exercises
       if (data?.id) {
@@ -278,20 +222,6 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
         setValue('subscriptions', subscriptionsWithPlanId)
 
         console.log('subscriptionsWithPlanId', subscriptionsWithPlanId)
-
-        // // Set user courses
-        // if (userCoursesResponse?.data?.length > 0) {
-        //   const courseIds = userCoursesResponse.data.map((course: UserCourse) => course.course_id.toString())
-        //   form.setValue("course_ids", courseIds)
-        // }
-
-        // // Set user meal plans
-        // if (userMealPlansResponse?.data?.length > 0) {
-        //   const mealPlanIds = userMealPlansResponse.data.map((mealPlan: UserMealPlan) =>
-        //     mealPlan.meal_plan_id.toString()
-        //   )
-        //   form.setValue("meal_plan_ids", mealPlanIds)
-        // }
       }
     } catch (error) {
       console.error('Error fetching account data:', error)
@@ -325,8 +255,6 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       return
     }
 
-    console.log('values', values)
-
     try {
       const toastId = toast.loading('Updating course structure...')
       if (!data?.id) {
@@ -343,6 +271,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
         fullname: values.fullname,
         username: values.username,
         phone_number: values.phone_number,
+        email: values.email,
         province: values.province,
         address: values.address,
       }
@@ -492,6 +421,9 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                 required
                 placeholder="Nhập số điện thoại"
               />
+
+              <FormInputField form={form} name="email" label="Email" type="email" required placeholder="Nhập email" />
+
               <FormSelectField
                 form={form}
                 name="province"
@@ -696,6 +628,24 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                           />
                         </div>
 
+                        {/* Coupon Code Input */}
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Code khuyến mãi</label>
+                          <input
+                            type="text"
+                            placeholder="Nhập code"
+                            value={subscription.coupon_code || ''}
+                            onChange={(e) => {
+                              const newCouponCode = e.target.value
+                              updateSubscription(idx, {
+                                ...subscription,
+                                coupon_code: newCouponCode,
+                              })
+                            }}
+                            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors"
+                          />
+                        </div>
+
                         {/* Gift Select */}
                         <div className="space-y-2">
                           <label className="text-sm font-medium">Quà tặng</label>
@@ -762,105 +712,124 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                               <AccordionTrigger className="font-medium py-2">
                                 Gán khóa học, thực đơn cho gói membership này
                               </AccordionTrigger>
+
                               <AccordionContent>
                                 <div className="rounded-md bg-muted/20 p-4 space-y-6 mt-2">
                                   <div className="space-y-2">
                                     <h5 className="text-sm font-medium">Khóa học</h5>
-                                    <FormField
-                                      control={form.control}
+                                    <FormMultiSelectPaginatedField
+                                      form={form}
                                       name={`subscriptions.${idx}.course_ids`}
-                                      render={({ field }) => (
-                                        <FormItem>
-                                          <FormControl>
-                                            <FormMultiSelectField
-                                              form={form}
-                                              name={`subscriptions.${idx}.course_ids`}
-                                              label=""
-                                              data={[]}
-                                              placeholder="Chọn khóa học để gán cho gói membership này"
-                                              key={`course-select-${idx}-${
-                                                (field.value as string[] | undefined)?.length || 0
-                                              }`}
-                                            />
-                                          </FormControl>
-                                          <FormMessage />
-                                        </FormItem>
-                                      )}
+                                      getData={async ({
+                                        page,
+                                        per_page,
+                                        keyword,
+                                      }: {
+                                        page: number
+                                        per_page: number
+                                        keyword?: string
+                                      }) => {
+                                        const subscriptionId = subscriptions[idx].subscription_id
+                                        if (!subscriptionId) {
+                                          return { data: [], total: 0 }
+                                        }
+                                        const response = await getCourses({
+                                          subscription_id: String(subscriptionId),
+                                          page,
+                                          per_page,
+                                          keyword,
+                                        })
+                                        return {
+                                          data: response.data.map((course: Course) => ({
+                                            value: String(course.id),
+                                            label: course.course_name,
+                                          })),
+                                          total: response.paging.total,
+                                        }
+                                      }}
+                                      placeholder="Chọn khóa học để gán cho gói membership này"
+                                      key={`course-select-${idx}-${
+                                        (form.getValues(`subscriptions.${idx}.course_ids`) as string[] | undefined)
+                                          ?.length || 0
+                                      }`}
                                     />
                                   </div>
 
                                   <div className="space-y-2">
                                     <h5 className="text-sm font-medium">Thực đơn</h5>
-                                    <FormField
-                                      control={form.control}
+                                    <FormMultiSelectPaginatedField
+                                      form={form}
                                       name={`subscriptions.${idx}.meal_plan_ids`}
-                                      render={({ field }) => (
-                                        <FormItem>
-                                          <FormControl>
-                                            <FormMultiSelectField
-                                              form={form}
-                                              name={`subscriptions.${idx}.meal_plan_ids`}
-                                              label=""
-                                              data={[]}
-                                              placeholder="Chọn thực đơn để gán cho gói membership này"
-                                              key={`meal-plan-select-${idx}-${
-                                                (field.value as string[] | undefined)?.length || 0
-                                              }`}
-                                            />
-                                          </FormControl>
-                                          <FormMessage />
-                                        </FormItem>
-                                      )}
+                                      getData={async ({ page, per_page, keyword }) => {
+                                        const response = await getMealPlans({
+                                          page,
+                                          per_page,
+                                          keyword,
+                                        })
+
+                                        return {
+                                          data: response.data.map((mealPlan: MealPlan) => ({
+                                            value: String(mealPlan.id),
+                                            label: mealPlan.title,
+                                          })),
+                                          total: response.paging.total,
+                                        }
+                                      }}
+                                      placeholder="Chọn thực đơn để gán cho gói membership này"
+                                      key={`meal-plan-select-${idx}-${
+                                        form.getValues(`subscriptions.${idx}.meal_plan_ids`)?.length || 0
+                                      }`}
                                     />
                                   </div>
 
                                   <div className="space-y-2">
                                     <h5 className="text-sm font-medium">Bài tập</h5>
-                                    <FormField
-                                      control={form.control}
+                                    <FormMultiSelectPaginatedField
+                                      form={form}
                                       name={`subscriptions.${idx}.exercise_ids`}
-                                      render={({ field }) => (
-                                        <FormItem>
-                                          <FormControl>
-                                            <FormMultiSelectField
-                                              form={form}
-                                              name={`subscriptions.${idx}.exercise_ids`}
-                                              label=""
-                                              data={[]}
-                                              placeholder="Chọn bài tập để gán cho gói membership này"
-                                              key={`exercise-select-${idx}-${
-                                                (field.value as string[] | undefined)?.length || 0
-                                              }`}
-                                            />
-                                          </FormControl>
-                                          <FormMessage />
-                                        </FormItem>
-                                      )}
+                                      getData={async ({ page, per_page, keyword }) => {
+                                        const response = await getExercises({
+                                          page,
+                                          per_page,
+                                          keyword,
+                                        })
+
+                                        return {
+                                          data: response.data.map((exercise: Exercise) => ({
+                                            value: String(exercise.id),
+                                            label: exercise.name,
+                                          })),
+                                          total: response.paging.total,
+                                        }
+                                      }}
+                                      placeholder="Chọn bài tập để gán cho gói membership này"
+                                      key={`exercise-select-${idx}-${
+                                        form.getValues(`subscriptions.${idx}.exercise_ids`)?.length || 0
+                                      }`}
                                     />
                                   </div>
 
                                   <div className="space-y-2">
                                     <h5 className="text-sm font-medium">Món ăn</h5>
-                                    <FormField
-                                      control={form.control}
+                                    <FormMultiSelectPaginatedField
+                                      form={form}
                                       name={`subscriptions.${idx}.dish_ids`}
-                                      render={({ field }) => (
-                                        <FormItem>
-                                          <FormControl>
-                                            <FormMultiSelectField
-                                              form={form}
-                                              name={`subscriptions.${idx}.dish_ids`}
-                                              label=""
-                                              data={[]}
-                                              placeholder="Chọn món ăn để gán cho gói membership này"
-                                              key={`dish-select-${idx}-${
-                                                (field.value as string[] | undefined)?.length || 0
-                                              }`}
-                                            />
-                                          </FormControl>
-                                          <FormMessage />
-                                        </FormItem>
-                                      )}
+                                      getData={async ({ page, per_page, keyword }) => {
+                                        const response = await getDishes({
+                                          page,
+                                          per_page,
+                                          keyword,
+                                        })
+
+                                        return {
+                                          data: response.data.map((dish: Dish) => ({
+                                            value: String(dish.id),
+                                            label: dish.name,
+                                          })),
+                                          total: response.paging.total,
+                                        }
+                                      }}
+                                      placeholder="Chọn món ăn để gán cho gói membership này"
                                     />
                                   </div>
                                 </div>

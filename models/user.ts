@@ -3,6 +3,7 @@ type User = {
     username: string,
     fullname: string,
     phone_number: string,
+    email: string,
     province: string,
     address: string,
     provider: string,

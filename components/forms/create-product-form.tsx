@@ -26,6 +26,7 @@ const formSchema = z.object({
   name: z.string().min(1, 'Product name is required'),
   description: z.string().min(1, 'Description is required'),
   price: z.coerce.number().min(1, 'Price is required'),
+  weight: z.coerce.number().min(0, 'Weight is required'),
   category_id: z.coerce.number().min(1, 'Category is required'),
   image_urls: z.array(z.string()).min(1, 'At least one image is required'),
   sizes: z.array(z.string()).optional(),
@@ -240,6 +241,7 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
             name: values.name,
             description: values.description,
             price: values.price,
+            weight: values.weight,
             category_id: values.category_id,
             image_urls: values.image_urls,
             variants: values.variants,
@@ -294,6 +296,13 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
                 placeholder="Nhập mô tả sản phẩm"
               />
               <FormNumberField form={form} name="price" label="Giá (đ)" required placeholder="Nhập giá" />
+              <FormNumberField
+                form={form}
+                name="weight"
+                label="Khối lượng (kg)"
+                required
+                placeholder="Nhập khối lượng"
+              />
 
               <FormSelectField
                 form={form}
