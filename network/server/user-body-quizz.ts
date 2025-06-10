@@ -11,7 +11,7 @@ export const getAllUserBodyQuizzes = async (): Promise<ListResponse<UserBodyQuiz
     const response = await fetchData(`/v1/users/body-quizzes`)
     return await response.json()
 }
-    
+
 export const getUserBodyQuizzById = async (id: string): Promise<ApiResponse<UserBodyQuizz>> => {
     const response = await fetchData(`/v1/users/body-quizzes/${id}`)
     return await response.json()
@@ -30,19 +30,31 @@ export const updateUserBodyQuizz = async (id: string, userBodyQuizz: UserBodyQui
 
 export async function getListUserBodyQuizzes(): Promise<ListResponse<UserBodyQuizSummary>> {
     const response = await fetchData(`/v1/users/body-quizzes-summary`, {
-      method: 'GET',
+        method: 'GET',
     })
     return await response.json()
-  }
-  
-  export async function getListUserBodyQuizById(id: string, token: string): Promise<ListResponse<UserBodyQuizz>> {
-      const response = await fetchData(`/v1/users/${id}/body-quizzes`, {
+}
+
+export async function getListUserBodyQuizById(id: string, token: string): Promise<ListResponse<UserBodyQuizz>> {
+    const response = await fetchData(`/v1/users/${id}/body-quizzes`, {
         headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${token}`,
-      },
-          method: 'GET',
-      })
-      return await response.json()
-  }
-    
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        method: 'GET',
+    })
+    return await response.json()
+}
+
+export async function createUserBodyQuiz(id: string, token: string, data: any): Promise<ListResponse<UserBodyQuizz>> {
+    const response = await fetchData(`/v1/users/${id}/body-quizzes`, {
+        headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        method: 'POST',
+        body: JSON.stringify(data),
+    })
+    return await response.json()
+}
+

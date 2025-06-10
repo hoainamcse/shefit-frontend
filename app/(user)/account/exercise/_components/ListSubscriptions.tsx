@@ -1,18 +1,19 @@
-"use client"
+'use client'
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { getUserSubscriptions } from "@/network/server/user-subscriptions"
-import { getSubscription } from "@/network/server/subscriptions"
-import { useAuth } from "@/components/providers/auth-context"
-import { useEffect, useState } from "react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
+import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { getSubscription } from '@/network/server/subscriptions'
+import { useAuth } from '@/components/providers/auth-context'
+import { useEffect, useState } from 'react'
+import { useSubscription } from './SubscriptionContext'
 
 export default function ListSubscriptions() {
   const { userId } = useAuth()
+  const { selectedSubscription, setSelectedSubscription } = useSubscription()
   const [userSubscriptions, setUserSubscriptions] = useState<any[]>([])
   const [subscriptionNames, setSubscriptionNames] = useState<{ [key: number]: string }>({})
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedSubscription, setSelectedSubscription] = useState<any>(null)
   const isLoggedIn = !!userId
 
   useEffect(() => {
@@ -45,7 +46,7 @@ export default function ListSubscriptions() {
           setSubscriptionNames(namesMap)
         }
       } catch (error) {
-        console.error("Error fetching subscriptions:", error)
+        console.error('Error fetching subscriptions:', error)
       } finally {
         setIsLoading(false)
       }
@@ -62,7 +63,7 @@ export default function ListSubscriptions() {
     }
   }
 
-  const isActive = selectedSubscription?.status === "active"
+  const isActive = selectedSubscription?.status === 'active'
   const currentDate = new Date()
   const endDate = selectedSubscription?.subscription_end_at ? new Date(selectedSubscription.subscription_end_at) : null
   const isExpired = endDate ? currentDate > endDate : false
@@ -75,12 +76,12 @@ export default function ListSubscriptions() {
         defaultValue={selectedSubscription?.subscription_id?.toString()}
       >
         <SelectTrigger className="w-[370px] h-[54px] ">
-          <SelectValue placeholder={isLoading ? "Đang tải..." : "Gói member của bạn"} />
+          <SelectValue placeholder={isLoading ? 'Đang tải...' : 'Gói member của bạn'} />
         </SelectTrigger>
         <SelectContent>
           {userSubscriptions.map((subscription) => (
             <SelectItem key={subscription?.id} value={subscription?.subscription_id?.toString()}>
-              {subscriptionNames[subscription?.subscription_id] || "Đang tải..."}
+              {subscriptionNames[subscription?.subscription_id] || 'Đang tải...'}
             </SelectItem>
           ))}
         </SelectContent>
@@ -92,22 +93,26 @@ export default function ListSubscriptions() {
         <Button className="w-[160px] h-[54px] bg-[#E61417] text-lg">Hết hạn</Button>
       )}
 
-      <div className="flex flex-col justify-center text-[#737373] font-bold">
+      <div className="flex gap-5 mt-auto text-lg justify-center text-[#737373] font-bold">
         <div>
           Ngày bắt đầu:
           <span>
             {selectedSubscription?.subscription_start_at
-              ? new Date(selectedSubscription.subscription_start_at).toLocaleDateString("vi-VN")
-              : ""}
+              ? new Date(selectedSubscription.subscription_start_at).toLocaleDateString('vi-VN')
+              : ''}
           </span>
         </div>
         <div>
           Ngày kết thúc:
           <span>
             {selectedSubscription?.subscription_end_at
-              ? new Date(selectedSubscription.subscription_end_at).toLocaleDateString("vi-VN")
-              : ""}
+              ? new Date(selectedSubscription.subscription_end_at).toLocaleDateString('vi-VN')
+              : ''}
           </span>
+        </div>
+        <div>
+          Promocode:
+          <span>{selectedSubscription?.coupon_code}</span>
         </div>
       </div>
     </div>

@@ -1,24 +1,31 @@
-"use client"
+'use client'
 
-import { Button } from "@/components/ui/button"
-import { createUserExercise } from "@/network/server/user-exercises"
-import { toast } from "sonner"
+import { Button } from '@/components/ui/button'
+import { createUserExercise } from '@/network/server/user-exercises'
+import { toast } from 'sonner'
+import { useAuth } from '@/components/providers/auth-context'
 
 interface ActionButtonsProps {
   exerciseId: string
 }
 
-const handleSaveExercise = async (exerciseId: string) => {
-  try {
-    await createUserExercise({ exercise_id: exerciseId }, "1")
-    toast.success("Đã lưu bài tập thành công!")
-  } catch (error) {
-    console.error("Error saving exercise:", error)
-    toast.error("Có lỗi xảy ra khi lưu bài tập!")
-  }
-}
-
 export default function ActionButtons({ exerciseId }: ActionButtonsProps) {
+  const { userId } = useAuth()
+
+  const handleSaveExercise = async (exerciseId: string) => {
+    if (!userId) {
+      toast.error('Vui lòng đăng nhập để lưu bài tập')
+      return
+    }
+
+    try {
+      await createUserExercise({ exercise_id: exerciseId }, userId)
+      toast.success('Đã lưu bài tập thành công!')
+    } catch (error) {
+      console.error('Error saving exercise:', error)
+      toast.error('Có lỗi xảy ra khi lưu bài tập!')
+    }
+  }
   return (
     <div className="gap-5 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
       <Button

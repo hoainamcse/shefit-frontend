@@ -12,10 +12,16 @@ export async function getUserMealPlans(userId: string): Promise<ListResponse<Use
     return await response.json()
 }
 
-export async function createUserMealPlan(data: any, user_id: string): Promise<ApiResponse<any>> {
+export async function createUserMealPlan(data: { meal_plan_id: number }, user_id: string): Promise<ApiResponse<any>> {
     const response = await fetchDataServer(`/v1/users/${user_id}/meal-plans`, {
         method: 'POST',
-        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            meal_plan_id: data.meal_plan_id
+        }),
         credentials: 'include',
     })
     revalidateTag(`user-meal-plans:${user_id}`)

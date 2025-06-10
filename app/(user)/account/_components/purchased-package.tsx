@@ -1,13 +1,13 @@
-"use client"
+'use client'
 
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import Link from "next/link"
-import { useAuth } from "@/components/providers/auth-context"
-import { getUserSubscriptions } from "@/network/server/user-subscriptions"
-import { getSubscription } from "@/network/server/subscriptions"
-import { useEffect, useState } from "react"
-import { UserSubscriptionDetail } from "@/models/user-subscriptions"
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import Link from 'next/link'
+import { useAuth } from '@/components/providers/auth-context'
+import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { getSubscription } from '@/network/server/subscriptions'
+import { useEffect, useState } from 'react'
+import { UserSubscriptionDetail } from '@/models/user-subscriptions'
 
 type EnhancedSubscription = UserSubscriptionDetail & {
   name?: string
@@ -27,14 +27,11 @@ export default function PurchasedPackage() {
 
       try {
         setIsLoading(true)
-        // Properly await the Promise returned by getUserSubscriptions
         const response = await getUserSubscriptions(userId)
 
         if (response.data && response.data.length > 0) {
-          // Use the data directly from the API response
           setSubscriptions(response.data)
 
-          // Try to enhance with subscription details if possible
           try {
             const enhancedSubscriptions = await Promise.all(
               response.data.map(async (sub) => {
@@ -61,14 +58,13 @@ export default function PurchasedPackage() {
 
             setSubscriptions(enhancedSubscriptions)
           } catch (error) {
-            console.error("Error enhancing subscriptions:", error)
-            // Keep using the basic subscription data if enhancement fails
+            console.error('Error enhancing subscriptions:', error)
           }
         } else {
           setSubscriptions([])
         }
       } catch (error) {
-        console.error("Error fetching user subscriptions:", error)
+        console.error('Error fetching user subscriptions:', error)
         setSubscriptions([])
       } finally {
         setIsLoading(false)
@@ -80,7 +76,7 @@ export default function PurchasedPackage() {
 
   const formatDate = (dateString: string) => {
     try {
-      return new Date(dateString).toLocaleDateString("vi-VN")
+      return new Date(dateString).toLocaleDateString('vi-VN')
     } catch (error) {
       return dateString
     }
@@ -99,7 +95,7 @@ export default function PurchasedPackage() {
           {subscriptions.map((subscription) => (
             <div
               key={subscription.id}
-              className="bg-[#FFAEB01A] rounded-[20px] py-7 px-5 grid grid-cols-1 md:grid-cols-2 h-[372px]"
+              className="bg-[#FFAEB01A] rounded-[20px] py-5 px-5 grid grid-cols-1 md:grid-cols-2 h-full"
             >
               <div className="flex flex-col gap-5 max-w-[45%] text-lg">
                 <div className="font-[Coiny] text-[#000000] text-xl md:text-2xl mb-[18px]">
@@ -113,21 +109,21 @@ export default function PurchasedPackage() {
                   <div>Ngày kết thúc:</div>
                   <div>{formatDate(subscription.subscription_end_at)}</div>
                 </div>
-                <Button
-                  className={`px-3 py-1 rounded-lg text-white text-lg w-[160px] h-[56px] ${
-                    subscription.status === "active" ? "bg-[#13D8A7]" : "bg-[#E61417]"
-                  }`}
-                >
-                  {subscription.status === "active" ? "Còn hạn" : "Hết hạn"}
-                </Button>
-              </div>
-              <div className="flex flex-col justify-between items-end">
                 <Link
                   href={`/packages/detail/${subscription.subscription_id}`}
-                  className="h-fit text-base md:text-xl lg:text-2xl text-[#13D8A7] mb-[18px] max-md:font-light"
+                  className="h-fit text-base md:text-xl lg:text-2xl text-[#13D8A7] mb-[18px] max-md:font-light mt-auto"
                 >
-                  Chi tiết
+                  <Button className="bg-[#13D8A7] rounded-full w-[160px] h-[36px] text-lg">Chọn gói</Button>
                 </Link>
+              </div>
+              <div className="flex flex-col justify-between items-end gap-4">
+                <Button
+                  className={`rounded-lg text-white text-lg w-[160px] h-[56px] ${
+                    subscription.status === 'active' ? 'bg-[#13D8A7]' : 'bg-[#E61417]'
+                  }`}
+                >
+                  {subscription.status === 'active' ? 'Còn hạn' : 'Hết hạn'}
+                </Button>
                 <img src={subscription.cover_image} alt="" className="aspect-[3/2] object-cover rounded-[20px]" />
               </div>
             </div>

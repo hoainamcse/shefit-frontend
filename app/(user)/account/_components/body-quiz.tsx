@@ -5,17 +5,13 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { getUserBodyQuizzesByUserId } from '@/network/server/user-body-quizz'
+import { getQuizzes } from '@/network/server/body-quiz'
 import { useAuth } from '@/components/providers/auth-context'
 import { UserBodyQuizz } from '@/models/user-body-quizz'
 import { ListResponse } from '@/models/response'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import BodyQuiz from '@/models/body-quiz'
+import ListQuiz from './list-quiz'
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
   return new Intl.DateTimeFormat('vi-VN', {
@@ -35,25 +31,58 @@ export default function BodyQuiz() {
   })
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [bodyQuiz, setBodyQuiz] = useState<ListResponse<BodyQuiz> | null>(null)
+  const [quizzes, setQuizzes] = useState<BodyQuiz[]>([])
   useEffect(() => {
-    async function fetchQuizzes() {
-      if (userId) {
-        try {
-          const quizzes = await getUserBodyQuizzesByUserId(userId)
-          setUserBodyQuizzes(quizzes)
-        } catch (error) {
-          console.error('Error fetching body quizzes:', error)
-        } finally {
-          setLoading(false)
+    async function fetchData() {
+      try {
+        setLoading(true)
+        
+        // Always fetch quizzes, regardless of login status
+        const [userQuizzes, allQuizzes] = await Promise.all([
+          userId ? getUserBodyQuizzesByUserId(userId) : Promise.resolve(null),
+          getQuizzes()
+        ])
+
+        const transformedQuizzes: ListResponse<BodyQuiz> = {
+          data: allQuizzes.data.map((quiz, index) => ({
+            ...quiz,
+            id: quiz.id || index + 1,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            questions: (quiz.questions || []).map((q, qIndex) => ({
+              ...q,
+              id: q.id || qIndex + 1,
+              answer: q.choices?.[0] || '',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            })) as any,
+          })),
+          paging: {
+            page: 1,
+            per_page: allQuizzes.data.length,
+            total: allQuizzes.data.length,
+          },
+          status: 'success',
         }
-      } else {
+
+        // Only set user quizzes if user is logged in
+        if (userId && userQuizzes) {
+          setUserBodyQuizzes(userQuizzes)
+        }
+        
+        // Always set the quizzes data
+        setBodyQuiz(transformedQuizzes)
+        setQuizzes(transformedQuizzes.data || [])
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      } finally {
         setLoading(false)
       }
     }
 
-    fetchQuizzes()
+    fetchData()
   }, [userId])
-
   return (
     <div>
       <div className="bg-[#FFAEB01A] py-[33px] px-5 sm:px-9 lg:px-[87px]">
@@ -65,47 +94,7 @@ export default function BodyQuiz() {
         <div className="relative w-full aspect-[2/1] sm:aspect-[3/1] lg:aspect-[9/2]">
           <Image src="/body-quiz-image.jpg" alt="Body Quiz Image" fill objectFit="cover" />
         </div>
-
-        {!isLoggedIn ? (
-          <div>
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-              <div className="flex justify-center w-full">
-                <DialogTrigger asChild className="mt-7">
-                  <Button className="bg-[#13D8A7] w-[238px] h-[45px] text-[20px] leading-[30px] font-normal pt-[10px] pb-[6px]">
-                    Làm Quiz
-                  </Button>
-                </DialogTrigger>
-              </div>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
-                </DialogHeader>
-                <div className="flex flex-col items-center text-center gap-6">
-                  <p className="text-lg">HÃY ĐĂNG NHẬP/ĐĂNG KÝ TÀI KHOẢN ĐỂ XEM KẾT QUẢ BODY QUIZ</p>
-                  <div className="flex gap-4 justify-center w-full px-10">
-                    <Button
-                      className="bg-[#13D8A7] rounded-full w-full text-lg"
-                      onClick={() => {
-                        setDialogOpen(false)
-                        window.location.href = '/auth/login'
-                      }}
-                    >
-                      Đăng nhập
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-        ) : (
-          <div className="text-center mt-7">
-            <Link href="/account/quiz">
-              <Button className="bg-[#13D8A7] w-[238px] h-[45px] text-[20px] leading-[30px] font-normal pt-[10px] pb-[6px]">
-                Làm Quiz
-              </Button>
-            </Link>
-          </div>
-        )}
+        <ListQuiz bodyQuiz={bodyQuiz} />
       </div>
 
       {isLoggedIn && (
@@ -118,10 +107,10 @@ export default function BodyQuiz() {
               userBodyQuizzes.data.map((quiz) => (
                 <Link
                   key={quiz.id}
-                  href={`/account/quiz/${quiz.id}`}
+                  href={`/account/quiz/${quiz.id}/quiz-result`}
                   className="text-[#000000] text-[20px] leading-[30px] font-normal border border-[#E2E2E2] p-4 rounded-[10px]"
                 >
-                  Kết quả ngày {formatDate(quiz.quiz_date)}
+                  Kết quả ngày {formatDate(quiz.quiz_date)} - {quiz.body_quiz.title}
                 </Link>
               ))
             ) : (

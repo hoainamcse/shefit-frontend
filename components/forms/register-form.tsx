@@ -8,7 +8,7 @@ import { register } from '@/network/server/auth'
 import { SendOTP, VerifyOTP } from '@/network/server/verify-email'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function GoogleIcon() {
   return (
@@ -74,6 +74,21 @@ function RegisterForm() {
   const [isOtpVerified, setIsOtpVerified] = useState(false)
   const [otpCounter, setOtpCounter] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [cooldown, setCooldown] = useState(0)
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout
+
+    if (cooldown > 0) {
+      timer = setTimeout(() => {
+        setCooldown((prev) => prev - 1)
+      }, 1000)
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer)
+    }
+  }, [cooldown])
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -87,7 +102,7 @@ function RegisterForm() {
   }
 
   const handleSendOTP = async () => {
-    if (!isEmailValid) return
+    if (!isEmailValid || cooldown > 0) return
 
     setIsLoading(true)
     try {
@@ -95,6 +110,7 @@ function RegisterForm() {
       if (response && response.status === 'success') {
         setOtpCounter(response.data.otp_counter)
         setIsOtpSent(true)
+        setCooldown(60)
         toast.success('OTP đã được gửi đến email của bạn!')
       }
     } catch (error) {
@@ -219,10 +235,16 @@ function RegisterForm() {
               type="button"
               variant="secondary"
               className="absolute right-1 top-1/2 -translate-y-1/2 h-8 px-2 text-xs bg-[#13D8A7] text-white hover:bg-[#13D8A7] hover:text-white"
-              disabled={!isEmailValid || isLoading}
+              disabled={!isEmailValid || isLoading || cooldown > 0}
               onClick={handleSendOTP}
             >
-              {isLoading ? 'Đang gửi...' : isOtpSent ? 'Gửi lại' : 'Gửi OTP'}
+              {isLoading
+                ? 'Đang gửi...'
+                : cooldown > 0
+                ? `Gửi lại sau (${cooldown}s)`
+                : isOtpSent
+                ? 'Gửi lại'
+                : 'Gửi OTP'}
             </Button>
           </div>
         </div>

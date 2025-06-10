@@ -1,7 +1,10 @@
+import BodyQuiz from "./body-quiz"
+
 type UserBodyQuizz = {
     id: number
     user_id: number
     body_quiz_id: number
+    body_quiz: BodyQuiz
     user_name: string
     telephone_number: string
     quiz_date: string
