@@ -24,7 +24,7 @@ export function Menu({ isOpen }: MenuProps) {
   const pathname = usePathname()
   const menuList = getMenuList(pathname)
 
-  if (status === 'loading') return null
+  if (status === 'loading') return <div>Đang tải...</div>
 
   // Define restricted menu items for non-admin users
   const restrictedMenuItems = ['Blog', 'E-commerce', 'Content Input', 'Body quiz', 'Bài viết', 'Huấn luyện viên']

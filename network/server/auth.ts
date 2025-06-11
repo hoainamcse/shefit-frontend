@@ -11,12 +11,6 @@ export const login = async (data: Login): Promise<TokenResponse> => {
         method: "POST",
         body: JSON.stringify(data),
     });
-
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to login");
-    }
-
     return response.json();
 };
 

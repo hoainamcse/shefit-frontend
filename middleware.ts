@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 import { verifySession } from '@/lib/dal'
 
 const SUB_ADMIN_ALLOWED_ROUTES = [
-  '/admin',
+  // '/admin',
   '/admin/courses',
   '/admin/exercises',
   '/admin/muscle-groups-equipments',

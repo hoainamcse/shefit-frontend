@@ -15,7 +15,7 @@ export async function encrypt(payload: SessionPayload) {
     .sign(encodedKey)
 }
 
-export async function decrypt(session: string | undefined = '') {
+export async function decrypt(session: string) {
   try {
     const { payload } = await jwtVerify(session, encodedKey, {
       algorithms: ['HS256'],
@@ -41,6 +41,9 @@ export async function createSession(payload: SessionPayload) {
 
 export async function getSession() {
   const cookie = (await cookies()).get('session')?.value
+  if (!cookie) {
+    return undefined
+  }
   const session = await decrypt(cookie)
   return session as SessionPayload | undefined
 }
