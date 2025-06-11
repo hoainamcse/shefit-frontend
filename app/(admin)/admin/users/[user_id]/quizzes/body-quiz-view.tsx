@@ -28,7 +28,7 @@ interface BodyQuizViewProps {
 export function UserBodyQuizzesTable({ userID }: BodyQuizViewProps) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 10,
   })
 
   const { data, isLoading, error, refetch } = useQuery({

@@ -20,7 +20,7 @@ import { EditSheet } from './edit-sheet'
 export function CoachesTable() {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 10,
   })
 
   const { data, isLoading, error, refetch } = useQuery({

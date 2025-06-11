@@ -19,7 +19,7 @@ import { AddButton } from '../buttons/add-button'
 export function MealPlansTable() {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 10,
   })
 
   const { data, isLoading, error, refetch } = useQuery({

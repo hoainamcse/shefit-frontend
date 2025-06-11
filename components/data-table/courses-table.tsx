@@ -29,7 +29,7 @@ export function CoursesTable({ courseFormat, isOneOnOne = false }: CoursesTableP
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 10,
   })
 
   const { data, isLoading, error, refetch } = useQuery({

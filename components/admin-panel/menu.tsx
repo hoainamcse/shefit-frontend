@@ -12,6 +12,8 @@ import { CollapseMenuButton } from '@/components/admin-panel/collapse-menu-butto
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useSession } from '../providers/session-provider'
 import { signout } from '@/network/server/auth'
+import { Badge } from '../ui/badge'
+import { roleLabel } from '@/lib/label'
 
 interface MenuProps {
   isOpen: boolean | undefined
@@ -25,20 +27,11 @@ export function Menu({ isOpen }: MenuProps) {
   if (status === 'loading') return null
 
   // Define restricted menu items for non-admin users
-  const restrictedMenuItems = [
-    'Blog',
-    'E-commerce',
-    'Content Input',
-    'Body quiz',
-    'Bài viết',
-    'Huấn luyện viên'
-  ]
+  const restrictedMenuItems = ['Blog', 'E-commerce', 'Content Input', 'Body quiz', 'Bài viết', 'Huấn luyện viên']
 
   const visibleMenuList = menuList.map(({ groupLabel, menus }) => ({
     groupLabel,
-    menus: menus.filter(item =>
-      session?.role === 'admin' || !restrictedMenuItems.includes(item.label)
-    ),
+    menus: menus.filter((item) => session?.role === 'admin' || !restrictedMenuItems.includes(item.label)),
   }))
 
   return (
@@ -109,14 +102,11 @@ export function Menu({ isOpen }: MenuProps) {
               )}
             </li>
           ))}
-          <li className="w-full grow flex items-end">
+          <li className="w-full grow flex flex-col items-center justify-end">
+            {session && <Badge className='uppercase py-2 px-3'>{roleLabel[session.role]}</Badge>}
             <Tooltip disableHoverableContent>
               <TooltipTrigger asChild>
-                <Button
-                  onClick={signout}
-                  variant="outline"
-                  className="w-full justify-center h-10 mt-5"
-                >
+                <Button onClick={signout} variant="outline" className="w-full justify-center h-10 mt-5">
                   <span className={cn(isOpen === false ? '' : 'mr-4')}>
                     <LogOut size={18} />
                   </span>
