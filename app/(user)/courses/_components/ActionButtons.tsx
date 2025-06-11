@@ -2,14 +2,19 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { createUserCourse } from '@/network/server/user-courses'
+import { createUserCourse, getUserCourses } from '@/network/server/user-courses'
 import { toast } from 'sonner'
 import { Course } from '@/models/course'
+import { UserCourse } from '@/models/user-courses'
+
+interface UserCourseItem extends UserCourse {
+  is_active: boolean
+  start_date: string
+  end_date: string
+  course_id: number
+}
 import { useSession } from '@/components/providers/session-provider'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { getUserSubscriptions } from '@/network/server/user-subscriptions'
-import { usePathname } from 'next/navigation'
-
 interface ActionButtonsProps {
   courseId: Course['id']
   showDetails: boolean
@@ -19,55 +24,60 @@ interface ActionButtonsProps {
 export default function ActionButtons({ courseId, showDetails, handleToggleDetails }: ActionButtonsProps) {
   const { session } = useSession()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
-  const [hasCourseInSubscription, setHasCourseInSubscription] = useState(false)
-  const [isCheckingSubscription, setIsCheckingSubscription] = useState(true)
-  const pathname = usePathname()
+  const [courseStatus, setCourseStatus] = useState<'checking' | 'exists' | 'not_found'>('checking')
 
   useEffect(() => {
-    const checkCourseInSubscriptions = async () => {
+    const checkUserCourse = async () => {
       if (!session) {
-        setIsCheckingSubscription(false)
+        setCourseStatus('not_found')
         return
       }
 
       try {
-        const subscriptions = await getUserSubscriptions(session.userId.toString())
-        const hasCourse = subscriptions.data?.some((subscription) => {
-          const hasActiveSubscription = subscription.status === 'active' && subscription.courses
-          if (!hasActiveSubscription) return false
-          return subscription.courses.some((course) => {
-            const subCourseId = Number(course.id)
-            const currentCourseId = Number(courseId)
-            return subCourseId === currentCourseId
-          })
+        const response = await getUserCourses(session.userId.toString())
+        const userCourse = (response.data as UserCourseItem[])?.find((course) => {
+          const userCourseId = Number(course.course_id)
+          const currentCourseId = Number(courseId)
+          return userCourseId === currentCourseId && course.is_active === true
         })
-        setHasCourseInSubscription(!!hasCourse)
+
+        if (userCourse) {
+          setCourseStatus('exists')
+        } else {
+          setCourseStatus('not_found')
+        }
       } catch (error) {
-        console.error('Error checking course in subscriptions:', error)
-      } finally {
-        setIsCheckingSubscription(false)
+        console.error('Error checking user course:', error)
+        toast.error('Có lỗi xảy ra khi kiểm tra khóa học')
+        setCourseStatus('not_found')
       }
     }
 
-    checkCourseInSubscriptions()
-  }, [session, courseId, pathname])
+    checkUserCourse()
+  }, [session, courseId])
 
-  const handleSaveCourse = async (courseId: Course['id']) => {
+  const handleStartClick = async (e: React.MouseEvent) => {
     if (!session) {
       setShowLoginDialog(true)
       return
     }
 
-    try {
-      await createUserCourse({ course_id: courseId }, session.userId)
-      toast.success('Đã lưu khóa tập thành công!')
-      setHasCourseInSubscription(true)
-    } catch (error) {
-      console.error('Error saving course:', error)
-      toast.error('Có lỗi xảy ra khi lưu khóa tập!')
+    if (courseStatus === 'checking') {
+      return
     }
-  }
-  const handleStartClick = (e: React.MouseEvent) => {
+
+    if (courseStatus === 'not_found') {
+      try {
+        await createUserCourse({ course_id: courseId }, session.userId)
+        toast.success('Bắt đầu khóa tập thành công!')
+        setCourseStatus('exists')
+      } catch (error) {
+        console.error('Error creating user course:', error)
+        toast.error('Có lỗi xảy ra khi bắt đầu khóa tập!')
+        return
+      }
+    }
+
     handleToggleDetails()
   }
 
@@ -82,26 +92,32 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
             Trở về
           </Button>
         ) : (
-          <Button
-            onClick={handleStartClick}
-            className="w-full rounded-full text-xl bg-[#13D8A7] text-white hover:bg-[#11c296] h-14"
-          >
-            Bắt đầu
-          </Button>
-        )}
-        {!isCheckingSubscription && !hasCourseInSubscription && (
-          <Button
-            onClick={() => {
-              if (!session) {
-                setShowLoginDialog(true)
-              } else {
-                handleSaveCourse(courseId)
-              }
-            }}
-            className="w-full rounded-full text-xl bg-white text-[#13D8A7] h-14 border-2 border-[#13D8A7]"
-          >
-            Lưu
-          </Button>
+          <>
+            <Button
+              onClick={handleStartClick}
+              className="w-full rounded-full text-xl bg-[#13D8A7] text-white hover:bg-[#11c296] h-14"
+            >
+              Bắt đầu
+            </Button>
+            <Button
+              onClick={async () => {
+                if (!session) {
+                  setShowLoginDialog(true)
+                  return
+                }
+                try {
+                  await createUserCourse({ course_id: courseId }, session.userId)
+                  toast.success('Đã lưu khóa tập thành công!')
+                } catch (error) {
+                  console.error('Error saving course:', error)
+                  toast.error('Có lỗi xảy ra khi lưu khóa tập!')
+                }
+              }}
+              className="w-full rounded-full text-xl bg-white text-[#13D8A7] h-14 border-2 border-[#13D8A7]"
+            >
+              Lưu
+            </Button>
+          </>
         )}
       </div>
 

@@ -1,23 +1,23 @@
-"use client"
+'use client'
 
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { getCourse } from "@/network/server/courses"
-import { getEquipments } from "@/network/server/equipments"
-import { getMuscleGroups } from "@/network/server/muscle-groups"
-import { courseFormLabel, courseLevelLabel } from "@/lib/label"
-import { useState, useEffect, useRef } from "react"
-import { CourseLevel, CourseForm, Course } from "@/models/course"
-import LiveCourseDetail from "./LiveCourseDetail"
-import VideoCourseDetail from "./VideoCourseDetail"
-import { BackIcon } from "@/components/icons/BackIcon"
-import { useRouter } from "next/navigation"
-import ActionButtons from "./ActionButtons"
-import { Button } from "@/components/ui/button"
-import { getSubscriptions } from "@/network/server/subscriptions"
-import Link from "next/link"
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { getCourse } from '@/network/server/courses'
+import { getEquipments } from '@/network/server/equipments'
+import { getMuscleGroups } from '@/network/server/muscle-groups'
+import { courseFormLabel, courseLevelLabel } from '@/lib/label'
+import { useState, useEffect, useRef } from 'react'
+import { CourseLevel, CourseForm, Course } from '@/models/course'
+import LiveCourseDetail from './LiveCourseDetail'
+import VideoCourseDetail from './VideoCourseDetail'
+import { BackIcon } from '@/components/icons/BackIcon'
+import { useRouter } from 'next/navigation'
+import ActionButtons from './ActionButtons'
+import { Button } from '@/components/ui/button'
+import { getSubscriptions } from '@/network/server/subscriptions'
+import Link from 'next/link'
 interface CourseDetailProps {
   courseId: Course['id']
-  typeCourse: "video" | "live"
+  typeCourse: 'video' | 'live'
 }
 
 export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps) {
@@ -62,7 +62,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         }
         setSubscriptions(filteredSubscriptions)
       } catch (error) {
-        console.error("Error fetching data:", error)
+        console.error('Error fetching data:', error)
       }
     }
 
@@ -76,12 +76,12 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         setIsFooterVisible(entry.isIntersecting)
       },
       {
-        rootMargin: "0px",
+        rootMargin: '0px',
         threshold: 0.1, // When 10% of the footer is visible
       }
     )
 
-    const siteFooter = document.querySelector("footer")
+    const siteFooter = document.querySelector('footer')
 
     if (siteFooter) {
       observer.observe(siteFooter)
@@ -105,7 +105,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
     <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full pb-24 relative">
       <div className="p-6 mb-20 flex flex-col gap-10">
         <div className="flex items-center gap-[10px] cursor-pointer" onClick={() => router.back()}>
-          <BackIcon color="#000000" style={{ marginBottom: "4px" }} />
+          <BackIcon color="#000000" style={{ marginBottom: '4px' }} />
           <div className="text-xl text-[#000000] font-semibold">Quay về</div>
         </div>
         <img
@@ -125,7 +125,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
           <div className="text-gray-500">
             {course?.data?.form_categories &&
               (Array.isArray(course.data.form_categories)
-                ? course.data.form_categories.map((cat: CourseForm) => courseFormLabel[cat]).join(", ")
+                ? course.data.form_categories.map((cat: CourseForm) => courseFormLabel[cat]).join(', ')
                 : courseFormLabel[course.data.form_categories as CourseForm])}
           </div>
         </div>
@@ -138,12 +138,12 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
                 <Link
                   key={subscription.id}
                   href={`/packages/detail/${subscription.id}`}
-                  className="text-lg rounded-full hover:bg-primary/90 w-[136px] bg-[#319F43]"
+                  className="text-lg rounded-full hover:bg-primary/90 bg-[#319F43]"
                 >
                   <Button
                     key={subscription.id}
                     variant="default"
-                    className="text-lg rounded-full hover:bg-primary/90 w-[136px] bg-[#319F43]"
+                    className="text-lg rounded-full hover:bg-primary/90 py-2 px-5 bg-[#319F43]"
                   >
                     {subscription.name}
                   </Button>
@@ -160,7 +160,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         </div>
 
         {showDetails ? (
-          typeCourse === "video" ? (
+          typeCourse === 'video' ? (
             <VideoCourseDetail courseId={courseId} />
           ) : (
             <LiveCourseDetail courseId={courseId} />

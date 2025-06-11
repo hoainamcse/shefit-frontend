@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Course } from '@/models/course'
 import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { getCourse } from '@/network/server/courses'
 
 type CourseDay = {
   day: number
@@ -39,6 +40,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
   const [dialogOpen, setDialogOpen] = useState<string | false>(false)
   const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false)
   const [checkingAccess, setCheckingAccess] = useState(false)
+  const [isFreeCourse, setIsFreeCourse] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,10 +64,14 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
   }, [courseId])
 
   const checkCourseAccess = async () => {
-    if (!session?.userId) return false
-
-    setCheckingAccess(true)
     try {
+      const courseResponse = await getCourse(courseId)
+      if (courseResponse?.data?.is_free) {
+        console.log('Course is free, granting access')
+        return true
+      }
+      if (!session?.userId) return false
+      setCheckingAccess(true)
       console.log('Fetching subscriptions for user:', session.userId)
       const subscriptions = await getUserSubscriptions(session.userId)
       console.log('Subscriptions data:', subscriptions.data)
@@ -93,25 +99,55 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
     }
   }
 
+  useEffect(() => {
+    // Check if course is free when component mounts
+    const checkCourse = async () => {
+      try {
+        const courseResponse = await getCourse(courseId)
+        setIsFreeCourse(courseResponse?.data?.is_free || false)
+      } catch (error) {
+        console.error('Error checking course:', error)
+      }
+    }
+    checkCourse()
+  }, [courseId])
+
   const handleDayClick = async (e: React.MouseEvent, weekId: string, dayId: string) => {
     e.preventDefault()
     console.log('handleDayClick called with:', { weekId, dayId, courseId })
 
-    if (!session?.userId) {
-      console.log('No user ID, showing login dialog')
-      setDialogOpen(`day-${dayId}`)
-      return
-    }
+    try {
+      if (isFreeCourse) {
+        if (!session?.userId) {
+          setDialogOpen(`day-${dayId}`)
+          return
+        }
+        const targetUrl = `/courses/${courseId}/video-classes/${weekId}/${dayId}`
+        console.log('Free course, navigating to:', targetUrl)
+        window.location.href = targetUrl
+        return
+      }
 
-    console.log('Checking course access...')
-    const hasAccess = await checkCourseAccess()
-    console.log('Course access result:', hasAccess)
+      if (!session?.userId) {
+        console.log('No user ID, showing login dialog')
+        setDialogOpen(`day-${dayId}`)
+        return
+      }
 
-    if (hasAccess) {
-      const targetUrl = `/courses/${courseId}/video-classes/${weekId}/${dayId}`
-      console.log('Navigating to:', targetUrl)
-      window.location.href = targetUrl
-    } else {
+      console.log('Checking course access...')
+      const hasAccess = await checkCourseAccess()
+      console.log('Course access result:', hasAccess)
+
+      if (hasAccess) {
+        const targetUrl = `/courses/${courseId}/video-classes/${weekId}/${dayId}`
+        console.log('User has access, navigating to:', targetUrl)
+        window.location.href = targetUrl
+      } else {
+        console.log('No active subscription found, showing purchase dialog')
+        setPurchaseDialogOpen(true)
+      }
+    } catch (error) {
+      console.error('Error handling day click:', error)
       setPurchaseDialogOpen(true)
     }
   }
@@ -163,31 +199,50 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
                               <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
                             </DialogHeader>
                             <div className="flex flex-col items-center text-center gap-6">
-                              <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
-                              <div className="flex gap-4 justify-center w-full px-10">
-                                <div className="flex-1">
-                                  <Button
-                                    className="bg-[#13D8A7] rounded-full w-full text-lg"
-                                    onClick={() => {
-                                      setDialogOpen(false)
-                                      window.location.href = '/account?tab=buy-package'
-                                    }}
-                                  >
-                                    Mua gói Member
-                                  </Button>
-                                </div>
-                                <div className="flex-1">
-                                  <Button
-                                    className="bg-[#13D8A7] rounded-full w-full text-lg"
-                                    onClick={() => {
-                                      setDialogOpen(false)
-                                      window.location.href = '/auth/login'
-                                    }}
-                                  >
-                                    Đăng nhập
-                                  </Button>
-                                </div>
-                              </div>
+                              {isFreeCourse ? (
+                                <>
+                                  <p className="text-lg">ĐĂNG NHẬP ĐỂ TRUY CẬP KHÓA TẬP FREE</p>
+                                  <div className="flex justify-center w-full px-10">
+                                    <Button
+                                      className="bg-[#13D8A7] rounded-full w-full text-lg max-w-xs"
+                                      onClick={() => {
+                                        setDialogOpen(false)
+                                        window.location.href = '/auth/login'
+                                      }}
+                                    >
+                                      Đăng nhập
+                                    </Button>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
+                                  <div className="flex gap-4 justify-center w-full px-10">
+                                    <div className="flex-1">
+                                      <Button
+                                        className="bg-[#13D8A7] rounded-full w-full text-lg"
+                                        onClick={() => {
+                                          setDialogOpen(false)
+                                          window.location.href = '/account?tab=buy-package'
+                                        }}
+                                      >
+                                        Mua gói Member
+                                      </Button>
+                                    </div>
+                                    <div className="flex-1">
+                                      <Button
+                                        className="bg-[#13D8A7] rounded-full w-full text-lg"
+                                        onClick={() => {
+                                          setDialogOpen(false)
+                                          window.location.href = '/auth/login'
+                                        }}
+                                      >
+                                        Đăng nhập
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
                             </div>
                           </DialogContent>
                         </Dialog>
