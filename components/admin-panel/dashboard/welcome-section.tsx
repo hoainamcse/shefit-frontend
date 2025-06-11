@@ -1,9 +1,9 @@
 'use client'
 
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 
 export const WelcomeSection = () => {
-  const { userId } = useAuth()
+  const { session } = useSession()
   const userName = 'Admin'
 
   return (
