@@ -9,6 +9,7 @@ import {
   ChartPieIcon,
   RssIcon,
   User2Icon,
+  HomeIcon,
 } from 'lucide-react'
 
 type Submenu = {
@@ -59,6 +60,11 @@ export function getMenuList(pathname: string): Group[] {
     {
       groupLabel: 'Quản lý',
       menus: [
+        {
+          href: '/admin/dashboard',
+          label: 'Dashboard',
+          icon: HomeIcon,
+        },
         {
           href: '',
           label: 'Khoá tập',
