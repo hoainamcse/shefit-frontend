@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { QrCodeIcon } from '@/components/icons/qr-code-icon'
 import { Input } from '@/components/ui/input'
 import { useSession } from '@/components/providers/session-provider'
 import { Button } from '@/components/ui/button'
@@ -43,14 +42,12 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
   const [orderId, setOrderId] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false)
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false)
+  const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false)
   const [paymentError, setPaymentError] = useState<string | null>(null)
-  const [purchaseSuccess, setPurchaseSuccess] = useState(false)
 
-  // For the Save button (placeholder for now)
-  const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null)
-  const [cartId, setCartId] = useState<number | null>(null)
-  const [isAdding, setIsAdding] = useState(false)
+  const [purchaseSuccess, setPurchaseSuccess] = useState(false)
+  useState<number | null>(null)
 
   const generateOrderId = () => {
     return Math.floor(Math.random() * 900 + 100).toString()
@@ -64,7 +61,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
     setAccessToken(null)
     setOrderId('')
     setPaymentError(null)
-    setIsOrderDialogOpen(true)
+    setIsPaymentDialogOpen(true)
     getQrTokenAndCreateQr()
   }
 
@@ -132,10 +129,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
         console.log('Received QR Code string for rendering:', qrCode)
 
         try {
-          // Generate token for transaction sync
-          // Create base64 encoded auth credentials - using Buffer for compatibility with both client and server
           const credentials = 'shefit-vietqr:IlhtYFpFkh1ztl2hkJXuRgTpr+Ef9BZbL9Z9oYXk'
-          // In client components we need to handle this encoding safely
           const encodedCredentials =
             typeof window !== 'undefined' ? btoa(credentials) : Buffer.from(credentials).toString('base64')
 
@@ -158,7 +152,6 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
           const syncToken = tokenData.access_token || tokenData.data?.access_token
 
           if (syncToken) {
-            // Sync transaction with generated token
             const syncResponse = await fetch('https://shefit-stg.rockship.co/api/v1/vietqr/bank/api/transaction-sync', {
               method: 'POST',
               headers: {
@@ -180,9 +173,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
               const syncData = await syncResponse.json()
               console.log('Transaction sync response:', syncData)
 
-              // Check if the response indicates success (error: false)
               if (syncData.error === false || (syncData.data && syncData.data.error === false)) {
-                // Set purchase success state to show success dialog
                 setPurchaseSuccess(true)
               }
             }
@@ -234,12 +225,19 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
       </div>
 
       <div className="w-full flex gap-3 justify-center mb-10">
-        <AlertDialog open={isOrderDialogOpen} onOpenChange={setIsOrderDialogOpen}>
+        <AlertDialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
           <AlertDialogTrigger asChild>
             <Button
               variant="outline"
               className="text-lg w-full rounded-full bg-[#13D8A7] hover:bg-[#11c296] text-white hover:text-white"
-              onClick={() => handleBuyNow()}
+              onClick={(e) => {
+                if (!session) {
+                  e.preventDefault()
+                  setIsLoginDialogOpen(true)
+                  return
+                }
+                handleBuyNow()
+              }}
               disabled={!selectedPriceId || isLoading}
             >
               {isLoading ? 'Đang xử lý...' : 'Mua gói'}
@@ -261,7 +259,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
                   <Link href="/account">
                     <Button
                       onClick={() => {
-                        setIsOrderDialogOpen(false)
+                        setIsPaymentDialogOpen(false)
                       }}
                       className="mt-6 bg-[#13D8A7] hover:bg-[#11c296] text-white rounded-full px-8"
                     >
@@ -340,6 +338,30 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
           </AlertDialogContent>
         </AlertDialog>
       </div>
+
+      <Dialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center text-center gap-6">
+            <p className="text-lg">HÃY ĐĂNG NHẬP ĐỂ MUA GÓI</p>
+            <div className="flex gap-4 justify-center w-full px-10">
+              <div className="flex-1">
+                <Button
+                  className="bg-[#13D8A7] rounded-full w-full text-lg"
+                  onClick={() => {
+                    setIsLoginDialogOpen(false)
+                    window.location.href = '/auth/login'
+                  }}
+                >
+                  Đăng nhập
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

@@ -60,7 +60,7 @@ export default function QuizResultPage() {
           Kết quả ngày {formatDate(quizData.quiz_date)} - {quizData.body_quiz?.title || 'Đánh giá cơ thể'}
         </p>
         <p className="text-gray-500">
-          Chỉ số <span className="text-ring underline">HLV Đánh Giá Phom Dáng</span>
+          <span className="text-ring underline">HLV Đánh Giá</span>
         </p>
         <div className="text-gray-500 xl:text-xl max-lg:base">{quizData.comment || 'Chưa có kết quả đánh giá'}</div>
       </div>

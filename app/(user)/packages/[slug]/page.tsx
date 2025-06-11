@@ -1,9 +1,9 @@
-import Image from "next/image"
-import { BackIcon } from "@/components/icons/BackIcon"
-import { Checkbox } from "@/components/ui/checkbox"
-import { getSubscription } from "@/network/server/subscriptions"
-import { PackagePayment } from "./package-payment"
-import Link from "next/link"
+import Image from 'next/image'
+import { BackIcon } from '@/components/icons/BackIcon'
+import { Checkbox } from '@/components/ui/checkbox'
+import { getSubscription } from '@/network/server/subscriptions'
+import { PackagePayment } from './package-payment'
+import Link from 'next/link'
 
 export default async function PackageDetail({ params }: { params: Promise<{ slug: string }> }) {
   const subscription = await getSubscription(Number((await params).slug))
@@ -12,7 +12,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ slug
     <div className="flex">
       <div className="py-16 px-5 md:py-16 md:px-10 xl:p-[60px] flex-1 max-w-[832px]">
         <Link href="/account?tab=buy-package" className="flex items-center gap-[10px] mb-10 md:mb-16 cursor-pointer">
-          <BackIcon color="#000000" style={{ marginBottom: "4px" }} />
+          <BackIcon color="#000000" style={{ marginBottom: '4px' }} />
           <div className="text-xl text-[#000000] font-semibold">Quay về</div>
         </Link>
 
@@ -20,9 +20,9 @@ export default async function PackageDetail({ params }: { params: Promise<{ slug
           Gói {subscription.data.name}
         </div>
 
-        <ul className="list-disc pl-7 text-base md:text-xl text-[#737373] mb-7">
-          {subscription.data.description_1.split("\n").map((item, index) => (
-            <li key={index}>{item}</li>
+        <ul className="list-disc pl-7 text-base md:text-xl text-[#737373] mb-7 space-y-2">
+          {subscription.data.description_1.split('\n').map((item, index) => (
+            <li key={index} className="[&>p]:m-0 [&>p]:inline" dangerouslySetInnerHTML={{ __html: item }} />
           ))}
         </ul>
 

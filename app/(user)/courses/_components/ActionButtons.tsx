@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { createUserCourse } from '@/network/server/user-courses'
 import { toast } from 'sonner'
 import { Course } from '@/models/course'
 import { useSession } from '@/components/providers/session-provider'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { usePathname } from 'next/navigation'
 
 interface ActionButtonsProps {
   courseId: Course['id']
@@ -17,6 +19,38 @@ interface ActionButtonsProps {
 export default function ActionButtons({ courseId, showDetails, handleToggleDetails }: ActionButtonsProps) {
   const { session } = useSession()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
+  const [hasCourseInSubscription, setHasCourseInSubscription] = useState(false)
+  const [isCheckingSubscription, setIsCheckingSubscription] = useState(true)
+  const pathname = usePathname()
+
+  useEffect(() => {
+    const checkCourseInSubscriptions = async () => {
+      if (!session) {
+        setIsCheckingSubscription(false)
+        return
+      }
+
+      try {
+        const subscriptions = await getUserSubscriptions(session.userId.toString())
+        const hasCourse = subscriptions.data?.some((subscription) => {
+          const hasActiveSubscription = subscription.status === 'active' && subscription.courses
+          if (!hasActiveSubscription) return false
+          return subscription.courses.some((course) => {
+            const subCourseId = Number(course.id)
+            const currentCourseId = Number(courseId)
+            return subCourseId === currentCourseId
+          })
+        })
+        setHasCourseInSubscription(!!hasCourse)
+      } catch (error) {
+        console.error('Error checking course in subscriptions:', error)
+      } finally {
+        setIsCheckingSubscription(false)
+      }
+    }
+
+    checkCourseInSubscriptions()
+  }, [session, courseId, pathname])
 
   const handleSaveCourse = async (courseId: Course['id']) => {
     if (!session) {
@@ -27,18 +61,14 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
     try {
       await createUserCourse({ course_id: courseId }, session.userId)
       toast.success('Đã lưu khóa tập thành công!')
+      setHasCourseInSubscription(true)
     } catch (error) {
       console.error('Error saving course:', error)
       toast.error('Có lỗi xảy ra khi lưu khóa tập!')
     }
   }
   const handleStartClick = (e: React.MouseEvent) => {
-    if (!session) {
-      e.preventDefault()
-      setShowLoginDialog(true)
-    } else {
-      handleToggleDetails()
-    }
+    handleToggleDetails()
   }
 
   return (
@@ -59,12 +89,20 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
             Bắt đầu
           </Button>
         )}
-        <Button
-          onClick={() => handleSaveCourse(courseId)}
-          className="w-full rounded-full text-xl bg-white text-[#13D8A7] h-14 border-2 border-[#13D8A7]"
-        >
-          Lưu
-        </Button>
+        {!isCheckingSubscription && !hasCourseInSubscription && (
+          <Button
+            onClick={() => {
+              if (!session) {
+                setShowLoginDialog(true)
+              } else {
+                handleSaveCourse(courseId)
+              }
+            }}
+            className="w-full rounded-full text-xl bg-white text-[#13D8A7] h-14 border-2 border-[#13D8A7]"
+          >
+            Lưu
+          </Button>
+        )}
       </div>
 
       <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>

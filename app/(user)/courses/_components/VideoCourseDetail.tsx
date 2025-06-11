@@ -1,15 +1,15 @@
-"use client"
+'use client'
 
-import { ArrowPinkIcon } from "@/components/icons/ArrowPinkIcon"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { getWeeks } from "@/network/server/weeks"
-import { getDays } from "@/network/server/days"
-import Link from "next/link"
-import { useState, useEffect } from "react"
-import { useSession } from "@/components/providers/session-provider"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Course } from "@/models/course"
+import { ArrowPinkIcon } from '@/components/icons/ArrowPinkIcon'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { getWeeks } from '@/network/server/weeks'
+import { getDays } from '@/network/server/days'
+import { useState, useEffect } from 'react'
+import { useSession } from '@/components/providers/session-provider'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Course } from '@/models/course'
+import { getUserSubscriptions } from '@/network/server/user-subscriptions'
 
 type CourseDay = {
   day: number
@@ -37,6 +37,8 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
   const [courseData, setCourseData] = useState<CourseWeek[]>([])
   const { session } = useSession()
   const [dialogOpen, setDialogOpen] = useState<string | false>(false)
+  const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false)
+  const [checkingAccess, setCheckingAccess] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,12 +54,67 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
           setCourseData(mapCourseData(totalWeeks))
         }
       } catch (error) {
-        console.error("Error fetching video detail data:", error)
+        console.error('Error fetching video detail data:', error)
       }
     }
 
     fetchData()
   }, [courseId])
+
+  const checkCourseAccess = async () => {
+    if (!session?.userId) return false
+
+    setCheckingAccess(true)
+    try {
+      console.log('Fetching subscriptions for user:', session.userId)
+      const subscriptions = await getUserSubscriptions(session.userId)
+      console.log('Subscriptions data:', subscriptions.data)
+
+      const hasAccess = subscriptions.data.some((sub: any) => {
+        const isActive = sub.status === 'active'
+        const hasCourse = sub.courses.some((course: any) => {
+          const match = course.id == courseId
+          console.log(
+            `Checking course: ${course.id} (${typeof course.id}) vs ${courseId} (${typeof courseId}), match: ${match}`
+          )
+          return match
+        })
+        console.log(`Subscription ${sub.id}: active=${isActive}, hasCourse=${hasCourse}`)
+        return isActive && hasCourse
+      })
+
+      console.log('Final access check result:', hasAccess)
+      return hasAccess
+    } catch (error) {
+      console.error('Error checking course access:', error)
+      return false
+    } finally {
+      setCheckingAccess(false)
+    }
+  }
+
+  const handleDayClick = async (e: React.MouseEvent, weekId: string, dayId: string) => {
+    e.preventDefault()
+    console.log('handleDayClick called with:', { weekId, dayId, courseId })
+
+    if (!session?.userId) {
+      console.log('No user ID, showing login dialog')
+      setDialogOpen(`day-${dayId}`)
+      return
+    }
+
+    console.log('Checking course access...')
+    const hasAccess = await checkCourseAccess()
+    console.log('Course access result:', hasAccess)
+
+    if (hasAccess) {
+      const targetUrl = `/courses/${courseId}/video-classes/${weekId}/${dayId}`
+      console.log('Navigating to:', targetUrl)
+      window.location.href = targetUrl
+    } else {
+      setPurchaseDialogOpen(true)
+    }
+  }
 
   if (!weeks || !days) {
     return <div>Loading...</div>
@@ -75,72 +132,98 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
               <ol className="flex flex-col gap-2 text-xl">
                 {days.data
                   .sort((a: any, b: any) => a.id - b.id)
-                  .map((day: any, index: number) => {
-                    return (
-                      <li key={day.id} className="flex justify-between items-center">
-                        <div className="flex gap-1">
-                          <span className="font-semibold text-gray-900 dark:text-gray-50">Ngày </span>
-                          <span className="text-gray-900 dark:text-gray-50">{index + 1}</span>
-                          <p>{day.description}</p>
+                  .map((day: any, index: number) => (
+                    <li key={day.id} className="flex justify-between items-center">
+                      <div className="flex gap-1">
+                        <span className="font-semibold text-gray-900 dark:text-gray-50">Ngày </span>
+                        <span className="text-gray-900 dark:text-gray-50">{index + 1}</span>
+                        <p>{day.description}</p>
+                      </div>
+                      {session?.userId ? (
+                        <div
+                          onClick={(e) => handleDayClick(e, weeks.data[weekIndex]?.id, day.id)}
+                          className="cursor-pointer"
+                        >
+                          <ArrowPinkIcon />
                         </div>
-                        {session ? (
-                          <Link href={`/courses/${courseId}/video-classes/${weeks.data[weekIndex]?.id}/${day.id}`}>
-                            <ArrowPinkIcon />
-                          </Link>
-                        ) : (
-                          <Dialog
-                            open={dialogOpen === `day-${day.id}`}
-                            onOpenChange={(open) => {
-                              if (!open) setDialogOpen(false)
-                            }}
-                          >
-                            <DialogTrigger asChild>
-                              <div onClick={() => setDialogOpen(`day-${day.id}`)} className="cursor-pointer">
-                                <ArrowPinkIcon />
-                              </div>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
-                              </DialogHeader>
-                              <div className="flex flex-col items-center text-center gap-6">
-                                <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
-                                <div className="flex gap-4 justify-center w-full px-10">
-                                  <div className="flex-1">
-                                    <Button
-                                      className="bg-[#13D8A7] rounded-full w-full text-lg"
-                                      onClick={() => {
-                                        setDialogOpen(false)
-                                        window.location.href = "/account?tab=buy-package"
-                                      }}
-                                    >
-                                      Mua gói Member
-                                    </Button>
-                                  </div>
-                                  <div className="flex-1">
-                                    <Button
-                                      className="bg-[#13D8A7] rounded-full w-full text-lg"
-                                      onClick={() => {
-                                        setDialogOpen(false)
-                                        window.location.href = "/auth/login"
-                                      }}
-                                    >
-                                      Đăng nhập
-                                    </Button>
-                                  </div>
+                      ) : (
+                        <Dialog
+                          open={dialogOpen === `day-${day.id}`}
+                          onOpenChange={(open) => {
+                            if (!open) setDialogOpen(false)
+                          }}
+                        >
+                          <DialogTrigger asChild>
+                            <div onClick={() => setDialogOpen(`day-${day.id}`)} className="cursor-pointer">
+                              <ArrowPinkIcon />
+                            </div>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+                            </DialogHeader>
+                            <div className="flex flex-col items-center text-center gap-6">
+                              <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
+                              <div className="flex gap-4 justify-center w-full px-10">
+                                <div className="flex-1">
+                                  <Button
+                                    className="bg-[#13D8A7] rounded-full w-full text-lg"
+                                    onClick={() => {
+                                      setDialogOpen(false)
+                                      window.location.href = '/account?tab=buy-package'
+                                    }}
+                                  >
+                                    Mua gói Member
+                                  </Button>
+                                </div>
+                                <div className="flex-1">
+                                  <Button
+                                    className="bg-[#13D8A7] rounded-full w-full text-lg"
+                                    onClick={() => {
+                                      setDialogOpen(false)
+                                      window.location.href = '/auth/login'
+                                    }}
+                                  >
+                                    Đăng nhập
+                                  </Button>
                                 </div>
                               </div>
-                            </DialogContent>
-                          </Dialog>
-                        )}
-                      </li>
-                    )
-                  })}
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      )}
+                    </li>
+                  ))}
               </ol>
             </AccordionContent>
           </AccordionItem>
         ))}
       </Accordion>
+
+      <Dialog open={purchaseDialogOpen} onOpenChange={setPurchaseDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center text-center gap-6">
+            <p className="text-lg">HÃY MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
+            <div className="flex gap-4 justify-center w-full px-10">
+              <div className="flex-1">
+                <Button
+                  className="bg-[#13D8A7] rounded-full w-full text-lg"
+                  onClick={() => {
+                    setPurchaseDialogOpen(false)
+                    window.location.href = '/account?tab=buy-package'
+                  }}
+                  disabled={checkingAccess}
+                >
+                  {checkingAccess ? 'Đang kiểm tra...' : 'Mua gói Member'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

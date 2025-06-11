@@ -5,8 +5,11 @@ import { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getCourseLives } from '@/network/server/courses'
 import { Course, CourseLive } from '@/models/course'
-import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { useSession } from '@/components/providers/session-provider'
+import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 const formatToVNTime = (time: string) => {
   const [hours] = time.split(':')
@@ -31,8 +34,13 @@ const isClassAvailable = (startTime: string) => {
 }
 
 export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] }) {
+  const { session } = useSession()
+  const isLoggedIn = !!session?.userId
   const [course, setCourse] = useState<any>(null)
   const [live, setLive] = useState<any>(null)
+  const [showLoginDialog, setShowLoginDialog] = useState(false)
+  const [showSubscribeDialog, setShowSubscribeDialog] = useState(false)
+  const [isCheckingAccess, setIsCheckingAccess] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,13 +116,47 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
                       </p>
                     </div>
                     {isClassAvailable(item.start_time) ? (
-                      <Link
-                        href={`https://us05web.zoom.us/j/85444899811?pwd=PQMxNmwIEaB2cEkQs7i6847VXaiozO.1`}
-                        target="_blank"
+                      <div
                         className="cursor-pointer"
+                        onClick={async (e) => {
+                          e.preventDefault()
+
+                          if (!isLoggedIn) {
+                            setShowLoginDialog(true)
+                            return
+                          }
+
+                          setIsCheckingAccess(true)
+                          try {
+                            const subscriptions = await getUserSubscriptions(session?.userId!.toString())
+                            const hasAccess = subscriptions.data?.some((subscription) => {
+                              const hasActiveSubscription = subscription.status === 'active' && subscription.courses
+                              if (!hasActiveSubscription) return false
+                              return subscription.courses.some((course) => Number(course.id) === Number(courseId))
+                            })
+
+                            if (hasAccess) {
+                              window.open(
+                                'https://us05web.zoom.us/j/85444899811?pwd=PQMxNmwIEaB2cEkQs7i6847VXaiozO.1',
+                                '_blank'
+                              )
+                            } else {
+                              setShowSubscribeDialog(true)
+                            }
+                          } catch (error) {
+                            console.error('Error checking course access:', error)
+                            // On error, allow access
+                            window.open(
+                              'https://us05web.zoom.us/j/85444899811?pwd=PQMxNmwIEaB2cEkQs7i6847VXaiozO.1',
+                              '_blank'
+                            )
+                          } finally {
+                            setIsCheckingAccess(false)
+                          }
+                        }}
                       >
-                        <div className="text-primary text-xl">Vào lớp</div>
-                      </Link>
+                        <div className="text-primary text-xl">{isCheckingAccess ? 'Đang kiểm tra...' : 'Vào lớp'}</div>
+                      </div>
                     ) : (
                       <div className={cn('text-gray-400 text-xl cursor-not-allowed', 'relative group')}>
                         Vào lớp
@@ -129,6 +171,70 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
           </TabsContent>
         ))}
       </Tabs>
+
+      {/* Login Dialog */}
+      {showLoginDialog && (
+        <Dialog defaultOpen={true} onOpenChange={(open) => !open && setShowLoginDialog(false)}>
+          <DialogContent className="bg-white p-6 rounded-2xl shadow-xl border-0 max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col items-center text-center gap-6">
+              <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
+              <div className="flex gap-4 justify-center w-full px-10">
+                <div className="flex-1">
+                  <Button
+                    className="bg-[#13D8A7] rounded-full w-full text-lg"
+                    onClick={() => {
+                      setShowLoginDialog(false)
+                      window.location.href = '/account?tab=buy-package'
+                    }}
+                  >
+                    Mua gói Member
+                  </Button>
+                </div>
+                <div className="flex-1">
+                  <Button
+                    className="bg-[#13D8A7] rounded-full w-full text-lg"
+                    onClick={() => {
+                      setShowLoginDialog(false)
+                      window.location.href = '/auth/login'
+                    }}
+                  >
+                    Đăng nhập
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Subscribe Dialog */}
+      {showSubscribeDialog && (
+        <Dialog defaultOpen={true} onOpenChange={(open) => !open && setShowSubscribeDialog(false)}>
+          <DialogContent className="bg-white p-6 rounded-2xl shadow-xl border-0 max-w-md">
+            <DialogHeader className="items-center">
+              <DialogTitle className="text-lg text-center mb-4 text-[#737373]">
+                MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP
+              </DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col items-center gap-6">
+              <div className="w-full">
+                <Button
+                  className="bg-[#13D8A7] hover:bg-[#11c296] text-white rounded-full w-full text-lg font-medium"
+                  onClick={() => {
+                    setShowSubscribeDialog(false)
+                    window.location.href = '/account?tab=buy-package'
+                  }}
+                >
+                  Mua gói Member
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }
