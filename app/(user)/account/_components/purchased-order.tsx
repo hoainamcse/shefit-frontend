@@ -4,22 +4,22 @@ import Link from 'next/link'
 import { getUserCart } from '@/network/server/user-cart'
 import { Button } from '@/components/ui/button'
 import { useEffect, useState } from 'react'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 
 export default function PurchasedOrder() {
-  const { userId } = useAuth()
+  const { session } = useSession()
   const [deliveredCarts, setDeliveredCarts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!userId) {
+      if (!session) {
         setLoading(false)
         return
       }
 
       try {
-        const cartsResponse = await getUserCart(Number(userId))
+        const cartsResponse = await getUserCart(Number(session?.userId))
         console.log('Delivered carts response:', cartsResponse)
 
         const filtered = Array.isArray(cartsResponse?.data)
@@ -36,7 +36,7 @@ export default function PurchasedOrder() {
     }
 
     fetchData()
-  }, [userId])
+  }, [session])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)

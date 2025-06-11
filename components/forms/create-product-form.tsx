@@ -15,7 +15,6 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Check, X } from 'lucide-react'
 import { FormInputField, FormMultiSelectField, FormNumberField, FormSelectField, FormTextareaField } from './fields'
 import { ImageUploader } from '@/components/image-uploader'
-import { useAuth } from '@/components/providers/auth-context'
 import { Product, ProductCategory, ProductColor, ProductSize } from '@/models/products'
 import { createProduct, getCategories, getColors, getSizes, updateProduct } from '@/network/server/products'
 import { toast } from 'sonner'
@@ -108,7 +107,6 @@ interface ProductFormProps {
 export default function CreateProductForm({ isEdit = false, data }: ProductFormProps) {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
-  const { accessToken } = useAuth()
 
   const [sizeList, setSizeList] = useState<ProductSize[]>([])
   const [colorList, setColorList] = useState<ProductColor[]>([])

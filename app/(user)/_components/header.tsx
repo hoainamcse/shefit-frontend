@@ -23,14 +23,14 @@ import {
 import { GalleryIcon } from "@/components/icons/GalleryIcon"
 import { MemberShipIcon } from "@/components/icons/MemberShipIcon"
 import { FacebookIcon } from "@/components/icons/FacebookIcon"
-import { useAuth } from "@/components/providers/auth-context"
+import { useSession } from "@/components/providers/session-provider"
+import { signout } from "@/network/server/auth"
 
 export function Header() {
-  const { userId, logout } = useAuth()
-  const isLoggedIn = !!userId
+  const { session } = useSession()
 
-  const authButton = isLoggedIn ? (
-    <MainButton onClick={() => logout("/")} className="rounded-full w-44" text="Đăng xuất" variant="secondary" />
+  const authButton = session ? (
+    <MainButton onClick={signout} className="rounded-full w-44" text="Đăng xuất" variant="secondary" />
   ) : (
     <Link href="/auth/login">
       <MainButton className="rounded-full w-44" text="Đăng nhập" />

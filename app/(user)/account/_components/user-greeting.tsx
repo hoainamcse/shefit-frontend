@@ -1,19 +1,19 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useAuth } from "@/components/providers/auth-context"
+import { useSession } from "@/components/providers/session-provider"
 import { getUserById } from "@/network/server/user"
 
 export default function UserGreeting() {
-  const { userId } = useAuth()
+  const { session } = useSession()
   const [username, setUsername] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (userId) {
+      if (session) {
         try {
-          const userData = await getUserById(userId)
+          const userData = await getUserById(session.userId)
           setUsername(userData?.data?.username || "")
         } catch (error) {
           console.error("Failed to fetch user:", error)
@@ -26,7 +26,7 @@ export default function UserGreeting() {
     }
 
     fetchUser()
-  }, [userId])
+  }, [session])
 
   return (
     <div className="font-[Coiny] text-[#FF7873] text-[30px] sm:text-[40px] leading-[33px] sm:leading-[60px] font-bold mb-8 sm:mb-10 ">

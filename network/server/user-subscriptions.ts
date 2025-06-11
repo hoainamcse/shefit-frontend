@@ -23,31 +23,20 @@ export async function createUserSubscription(data: any, user_id: string): Promis
     return await response.json()
 }
 
-export async function updateUserSubscription(user_id: string, subscription_id: string, data: any, token: string): Promise<ApiResponse<UserSubscriptionDetail>> {
+export async function updateUserSubscription(user_id: string, subscription_id: string, data: any): Promise<ApiResponse<UserSubscriptionDetail>> {
     const response = await fetchDataServer(`/v1/users/${user_id}/subscriptions/${subscription_id}`, {
-        headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-        },
         method: 'PUT',
         body: JSON.stringify(data),
-        credentials: 'include',
     })
     revalidateTag(`user-subscriptions:${user_id}`)
     return await response.json()
 }
 
-export async function deleteUserSubscription(user_id: string, subscription_id: string, token: string): Promise<ApiResponse<any>> {
+export async function deleteUserSubscription(user_id: string, subscription_id: string): Promise<ApiResponse<any>> {
     const response = await fetchDataServer(`/v1/users/${user_id}/subscriptions/${subscription_id}`, {
-        headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-        },
         method: 'DELETE',
-        credentials: 'include',
     })
     revalidateTag(`user-subscriptions:${user_id}`)
     return await response.json()
 }
 
-    

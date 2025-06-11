@@ -5,7 +5,6 @@ import { FileText, Upload, X } from 'lucide-react'
 import Dropzone, { type DropzoneProps, type FileRejection } from 'react-dropzone'
 import { type UseFormReturn, type FieldValues, type Path, type PathValue, useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
-import { useAuth } from '@/components/providers/auth-context'
 import { getS3FileUrl, uploadImageApi } from '@/network/server/upload'
 
 import { cn } from '@/lib/utils'
@@ -60,21 +59,14 @@ export function ImageUploader<TFieldValues extends FieldValues>(props: ImageUplo
   // Local state for files selected for upload (previews)
   const [localFiles, setLocalFiles] = React.useState<File[]>([])
 
-  const { accessToken } = useAuth()
-
   const handleUploadLogic = React.useCallback(
     async (files: File[]): Promise<string | string[] | null | undefined> => {
-      if (!accessToken) {
-        console.warn('Access token is missing. Cannot upload files.')
-        return undefined
-      }
-
       if (maxFileCount === 1) {
         const file = files[0]
         if (!file) return undefined
 
         try {
-          const response = await uploadImageApi(file, accessToken)
+          const response = await uploadImageApi(file)
           if (response.status === 'success' && response.data.file.s3_key) {
             const imageUrl = getS3FileUrl(response.data.file.s3_key)
             return imageUrl
@@ -91,7 +83,7 @@ export function ImageUploader<TFieldValues extends FieldValues>(props: ImageUplo
         const uploadedUrls: string[] = []
         for (const file of files) {
           try {
-            const response = await uploadImageApi(file, accessToken)
+            const response = await uploadImageApi(file)
             if (response.status === 'success' && response.data.file.s3_key) {
               const imageUrl = getS3FileUrl(response.data.file.s3_key)
               uploadedUrls.push(imageUrl)
@@ -107,7 +99,7 @@ export function ImageUploader<TFieldValues extends FieldValues>(props: ImageUplo
         return uploadedUrls.length > 0 ? uploadedUrls : undefined
       }
     },
-    [accessToken, maxFileCount]
+    [maxFileCount]
   )
 
   const handleOnDrop = React.useCallback(

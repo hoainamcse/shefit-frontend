@@ -1,5 +1,3 @@
-'use client'
-
 import Link from 'next/link'
 import { LayoutGrid, LogOut, User } from 'lucide-react'
 
@@ -15,10 +13,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useAuth } from '../providers/auth-context'
 
 export function UserNav() {
-  const { logout } = useAuth()
   return (
     <DropdownMenu>
       <Tooltip disableHoverableContent>
@@ -58,7 +54,7 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="hover:cursor-pointer" onClick={() => logout('/auth/login')}>
+        <DropdownMenuItem className="hover:cursor-pointer">
           <LogOut className="w-4 h-4 mr-3" />
           Đăng xuất
         </DropdownMenuItem>

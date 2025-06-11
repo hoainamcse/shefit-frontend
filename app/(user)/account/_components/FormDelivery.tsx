@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { editCart } from '@/network/server/cart'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 import { PROVINCES } from '@/lib/label'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import { getUserById } from '@/network/server/user'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -19,7 +19,7 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
   const [loading, setLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccessDialog, setShowSuccessDialog] = useState(false)
-  const { userId } = useAuth()
+  const { session } = useSession()
 
   const form = useForm({
     defaultValues: {
@@ -67,10 +67,10 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!userId) return
+      if (!session) return
 
       try {
-        const userResponse = await getUserById(userId)
+        const userResponse = await getUserById(session.userId)
         const userData = userResponse?.data
 
         if (userData) {
@@ -96,7 +96,7 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
     }
 
     fetchUserData()
-  }, [userId, cartData, form])
+  }, [session, cartData, form])
 
   const handleSubmitOrder = async (formData: any) => {
     if (!cartData?.id || isSubmitting) return
@@ -105,8 +105,8 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
     try {
       const orderData = {
         user_name: formData.name,
-        username: userId ? '' : formData.name,
-        is_signed_up: !!userId,
+        username: session ? '' : formData.name,
+        is_signed_up: !!session,
         telephone_number: formData.phone,
         city: formData.city,
         address: formData.address,

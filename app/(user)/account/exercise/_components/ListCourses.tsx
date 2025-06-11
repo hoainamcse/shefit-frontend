@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import { useSubscription } from './SubscriptionContext'
 import { getCourse } from '@/network/server/courses'
 import { useRouter } from 'next/navigation'
@@ -18,12 +18,11 @@ type CourseWithCategory = Course & {
 
 export function ListCourses() {
   const router = useRouter()
-  const { userId } = useAuth()
+  const { session } = useSession()
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [courses, setCourses] = useState<CourseWithCategory[]>([])
-  const isLoggedIn = !!userId
   interface SubscriptionCourse {
     id: string | number
   }
@@ -75,7 +74,7 @@ export function ListCourses() {
     fetchCourseDetails()
   }, [selectedSubscription, subscriptionCourses, courseIds])
 
-  if (!isLoggedIn) {
+  if (!session) {
     return (
       <div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

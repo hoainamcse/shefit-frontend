@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { QrCodeIcon } from '@/components/icons/qr-code-icon'
 import { Input } from '@/components/ui/input'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { generateQrToken, createQr, generateToken, syncTransaction } from '@/network/server/payment'
@@ -33,12 +33,11 @@ interface PackagePaymentProps {
 }
 
 export function PackagePayment({ prices, defaultPrice, packageName }: PackagePaymentProps) {
-  const { userId } = useAuth()
+  const { session } = useSession()
   const { Canvas } = useQRCode()
   const [selectedPriceId, setSelectedPriceId] = useState<number | null>(null)
   const [totalPrice, setTotalPrice] = useState<number>(defaultPrice || 0)
   const [accessToken, setAccessToken] = useState<string | null>(null)
-  const isLoggedIn = !!userId
 
   const [qrData, setQrData] = useState<any>(null)
   const [orderId, setOrderId] = useState<string>('')
@@ -58,7 +57,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
   }
 
   const handleBuyNow = () => {
-    if (!isLoggedIn) {
+    if (!session) {
       return
     }
     setQrData(null)
@@ -97,7 +96,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
       const newOrderId = generateOrderId()
       setOrderId(newOrderId)
 
-      const username = userId || 'guest'
+      const username = session?.userId || 'guest'
       const content = `${username} ${newOrderId}`
 
       const directQrResponse = await fetch('https://shefit-stg.rockship.co/api/v1/vietqr/create-qr', {
@@ -170,7 +169,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
                 bankaccount: responseData.bankAccount || 'string',
                 amount: totalPrice,
                 transType: 'string',
-                content: `${userId} ${orderId}`,
+                content: `${session?.userId} ${orderId}`,
                 orderId: orderId,
               }),
             })
@@ -198,7 +197,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
     } finally {
       setIsLoading(false)
     }
-  }, [userId, totalPrice])
+  }, [session, totalPrice])
 
   const handlePriceSelect = (priceId: number, price: number) => {
     if (selectedPriceId === priceId) return

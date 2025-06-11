@@ -2,6 +2,9 @@
 
 import type { Login, Register, TokenResponse } from "@/models/auth";
 import { fetchData } from "../helpers/fetch-data";
+import { decodeJwt } from "jose";
+import { redirect } from "next/navigation";
+import { createSession, deleteSession } from "@/lib/session";
 
 export const login = async (data: Login): Promise<TokenResponse> => {
     const response = await fetchData("/v1/auth/token", {
@@ -86,3 +89,22 @@ export const changePassword = async (data: any): Promise<any> => {
 
     return response.json();
 };
+
+export async function signin(data: any) {
+  const jwt = decodeJwt(data.access_token)
+  const userId = jwt.sub as string
+  const role = Array.isArray(jwt.scopes) && jwt.scopes.length > 0 ? jwt.scopes[0] : 'user'
+  await createSession({
+    userId,
+    role,
+    accessToken: data.access_token,
+    refreshToken: data.refresh_token,
+    expiresAt: new Date(Date.now() + data.expires_in * 1000),
+  })
+  return { userId, role }
+}
+
+export async function signout() {
+  await deleteSession()
+  redirect('/auth/login')
+}

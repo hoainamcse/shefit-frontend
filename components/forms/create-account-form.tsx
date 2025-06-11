@@ -46,7 +46,7 @@ import { MealPlan } from '@/models/meal-plan'
 import { Exercise } from '@/models/exercise'
 
 import { PROVINCES } from '@/lib/label'
-import { useAuth } from '../providers/auth-context'
+import { useSession } from '../providers/session-provider'
 import { roleOptions } from '@/lib/label'
 import { getSubAdminSubscriptions } from '@/network/server/sub-admin'
 import { getCourses } from '@/network/client/courses'
@@ -111,7 +111,7 @@ type selectOption = {
 
 export default function CreateAccountForm({ data }: CreateAccountFormProps) {
   // const [isPending, startTransition] = useTransition()
-  const { role, accessToken } = useAuth()
+  const { session } = useSession()
   const [isLoading, setIsLoading] = useState(true)
   const [membershipList, setMembershipList] = useState<Subscription[]>([])
 
@@ -160,15 +160,9 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
    */
   const fetchAllData = async () => {
     setIsLoading(true)
-    // Guard against missing accessToken when fetching sub-admin subscriptions
-    if (role === 'sub_admin' && !accessToken) {
-      toast.error('Missing access token for sub-admin')
-      setIsLoading(false)
-      return
-    }
     try {
       // Fetch subscriptions based on role, ensuring accessToken is non-null
-      const subscriptionsPromise = role === 'sub_admin' ? getSubAdminSubscriptions(accessToken!) : getSubscriptions()
+      const subscriptionsPromise = session?.role === 'sub_admin' ? getSubAdminSubscriptions() : getSubscriptions()
       const [subscriptionsResponse] = await Promise.all([subscriptionsPromise])
 
       const memberships = subscriptionsResponse.data
@@ -279,7 +273,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       await updateUser(userId, userUpdateData)
 
       // 2. Handle subscriptions
-      if (values.subscriptions && values.subscriptions.length > 0 && accessToken) {
+      if (values.subscriptions && values.subscriptions.length > 0) {
         const currentSubscriptions = await getUserSubscriptions(userId)
         const formSubIds = values.subscriptions.filter((sub) => sub.id).map((sub) => sub.id)
         const deletedSubscriptions = currentSubscriptions.data.filter((sub) => !formSubIds.includes(sub.id))
@@ -288,11 +282,11 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
           await Promise.all(
             deletedSubscriptions
               .filter((sub) => sub.id)
-              .map((sub) => deleteUserSubscription(userId, sub.subscription_id.toString(), accessToken))
+              .map((sub) => deleteUserSubscription(userId, sub.subscription_id.toString()))
           )
-          await handleCreateUpdateUserSubscription(values.subscriptions, userId, accessToken)
+          await handleCreateUpdateUserSubscription(values.subscriptions, userId)
         } else {
-          await handleCreateUpdateUserSubscription(values.subscriptions, userId, accessToken)
+          await handleCreateUpdateUserSubscription(values.subscriptions, userId)
         }
       }
 
@@ -303,7 +297,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     }
   }
 
-  const handleCreateUpdateUserSubscription = async (subscriptionData: any, userId: string, accessToken: string) => {
+  const handleCreateUpdateUserSubscription = async (subscriptionData: any, userId: string) => {
     for (const subscription of subscriptionData) {
       const { id, plan_id, ...subscriptionData } = subscription
       // If gift_id is zero, convert to null
@@ -311,7 +305,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
         subscriptionData.gift_id = null
       }
       if (subscription.id && subscription.subscription_id) {
-        await updateUserSubscription(userId, subscription.subscription_id?.toString(), subscriptionData, accessToken)
+        await updateUserSubscription(userId, subscription.subscription_id?.toString(), subscriptionData)
       } else {
         await createUserSubscription(subscriptionData, userId)
       }
@@ -431,7 +425,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                 placeholder="Chọn tỉnh/thành phố của bạn đang sống"
                 data={PROVINCES}
               />
-              {role === 'admin' && (
+              {session?.role === 'admin' && (
                 <FormSelectField form={form} name="role" label="Role" placeholder="Chọn role" data={roleOptions} />
               )}
               <FormInputField form={form} name="address" label="Địa chỉ chi tiết" placeholder="Nhập địa chỉ của bạn" />

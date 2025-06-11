@@ -10,27 +10,34 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { CollapseMenuButton } from '@/components/admin-panel/collapse-menu-button'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '../providers/session-provider'
+import { signout } from '@/network/server/auth'
 
 interface MenuProps {
   isOpen: boolean | undefined
 }
 
 export function Menu({ isOpen }: MenuProps) {
-  const { logout, role } = useAuth()
+  const { session, status } = useSession()
   const pathname = usePathname()
   const menuList = getMenuList(pathname)
+
+  if (status === 'loading') return null
+
+  // Define restricted menu items for non-admin users
+  const restrictedMenuItems = [
+    'Blog',
+    'E-commerce',
+    'Content Input',
+    'Body quiz',
+    'Bài viết',
+    'Huấn luyện viên'
+  ]
+
   const visibleMenuList = menuList.map(({ groupLabel, menus }) => ({
     groupLabel,
-    menus: menus.filter(
-      (item) =>
-        role === 'admin' ||
-        (item.label !== 'Blog' &&
-          item.label !== 'E-commerce' &&
-          item.label !== 'Content Input' &&
-          item.label !== 'Body quiz' &&
-          item.label !== 'Bài viết' &&
-          item.label !== 'Huấn luyện viên')
+    menus: menus.filter(item =>
+      session?.role === 'admin' || !restrictedMenuItems.includes(item.label)
     ),
   }))
 
@@ -106,7 +113,7 @@ export function Menu({ isOpen }: MenuProps) {
             <Tooltip disableHoverableContent>
               <TooltipTrigger asChild>
                 <Button
-                  onClick={() => logout('/auth/login')}
+                  onClick={signout}
                   variant="outline"
                   className="w-full justify-center h-10 mt-5"
                 >

@@ -10,7 +10,7 @@ import { RectangleIcon } from "@/components/icons/RectangleIcon";
 import { ClockIcon } from "@/components/icons/ClockIcon";
 import { TriangleIcon } from "@/components/icons/TriangleIcon";
 import { formSchema } from "@/app/(admin)/admin/(content-input)/homepage/schema";
-import { useQuery } from "@/hooks/use-query";
+import { useQuery } from "@tanstack/react-query";
 import { getCourses } from "@/network/server/courses";
 import {
   Carousel,
@@ -63,15 +63,12 @@ export function SectionFive({ data }: { data: DataType["section_5"] }) {
     data: _data,
     isLoading,
     error,
-  } = useQuery(() =>
-    Promise.all(
-      Object.values(data.form_category).map((category: any) =>
-        getCourses({
-          ids: category.course_ids.join(","),
-        })
-      )
-    )
-  );
+  } = useQuery({
+    queryKey: ['categories-courses'],
+    queryFn: () => Promise.all(Object.values(data.form_category).map((category: any) =>
+      getCourses({ ids: category.course_ids.join(",")})
+    )),
+  });
 
   if (isLoading) {
     return <div className="text-center">Loading...</div>;

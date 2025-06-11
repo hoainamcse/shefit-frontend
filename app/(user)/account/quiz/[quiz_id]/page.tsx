@@ -8,11 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { getQuiz } from '@/network/server/body-quiz'
-import type BodyQuiz from '@/models/body-quiz'
+import type { BodyQuiz } from '@/models/body-quiz'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import {
   Dialog,
   DialogContent,
@@ -28,7 +28,7 @@ import { toast } from 'sonner'
 export default function BodyQuiz() {
   const { quiz_id } = useParams()
   const router = useRouter()
-  const { userId, accessToken } = useAuth()
+  const { session } = useSession()
   const [bodyQuiz, setBodyQuiz] = useState<BodyQuiz | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -51,7 +51,7 @@ export default function BodyQuiz() {
   })
 
   const onSubmit = async (formData: Record<string, any>) => {
-    if (!userId || !accessToken) {
+    if (!session) {
       setShowLoginDialog(true)
       return
     }
@@ -83,7 +83,7 @@ export default function BodyQuiz() {
       }
 
       const quizData = {
-        user_id: parseInt(userId, 10),
+        user_id: parseInt(session.userId, 10),
         body_quiz_id: bodyQuiz.id,
         quiz_date: new Date().toISOString(),
         user_name: userInfo.fullname || '',
@@ -94,7 +94,7 @@ export default function BodyQuiz() {
 
       console.log('Submitting quiz data:', JSON.stringify(quizData, null, 2))
 
-      const response = await createUserBodyQuiz(userId, accessToken, quizData)
+      const response = await createUserBodyQuiz(session.userId, quizData)
 
       if (response.status === 'success' && response.data) {
         setShowSuccessDialog(true)
@@ -138,9 +138,9 @@ export default function BodyQuiz() {
 
   useEffect(() => {
     const fetchUserInfo = async () => {
-      if (!userId || !accessToken) return
+      if (!session) return
       try {
-        const response = await getUserById(userId)
+        const response = await getUserById(session.userId)
         if (response.data) {
           const userData = response.data
 
@@ -164,7 +164,7 @@ export default function BodyQuiz() {
     }
 
     fetchUserInfo()
-  }, [userId, accessToken])
+  }, [session])
 
   useEffect(() => {
     const fetchQuiz = async () => {

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
-import { useQuery } from '@/hooks/use-query'
+import { useQuery } from '@tanstack/react-query'
 import { deleteQuestion, deleteQuiz, getQuizzes } from '@/network/server/body-quiz'
 import { Edit2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -18,7 +18,10 @@ import { toast } from 'sonner'
 export default function QuizzesPage() {
   const router = useRouter()
 
-  const { data, isLoading, error, refetch } = useQuery(getQuizzes)
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['quizzes'],
+    queryFn: getQuizzes,
+  })
 
   if (isLoading) {
     return <div>Đang tải...</div>

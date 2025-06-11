@@ -10,10 +10,9 @@ import { Diet } from "@/models/diet"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 export const dynamic = "force-dynamic"
-import { useAuth } from "@/components/providers/auth-context"
+import { useSession } from "@/components/providers/session-provider"
 export default function Gallery() {
-  const { userId } = useAuth()
-  const isLoggedIn = !!userId
+  const { session } = useSession()
   const [dialogOpen, setDialogOpen] = useState<string | false>(false)
   const [isLoading, setIsLoading] = useState(true)
   const [muscleGroupsData, setMuscleGroupsData] = useState<ListResponse<MuscleGroup>>({
@@ -67,7 +66,7 @@ export default function Gallery() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
           {muscleGroupsData.data.map((muscleGroup) =>
-            isLoggedIn ? (
+            session ? (
               <Link href={`/gallery/muscle/${muscleGroup.id}`} key={muscleGroup.id}>
                 <div key={`menu-${muscleGroup.id}`} className="text-xl">
                   <div className="relative group">
@@ -157,7 +156,7 @@ export default function Gallery() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
           {dietsData.data?.map((diet) =>
-            isLoggedIn ? (
+            session ? (
               <Link href={`/gallery/meal/${diet.id}`} key={diet.id}>
                 <div key={`menu-${diet.id}`} className="text-xl">
                   <div className="relative group">

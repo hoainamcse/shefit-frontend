@@ -38,16 +38,10 @@ export async function getCourse(course_id: string): Promise<ApiResponse<DetailCo
 export async function createCourse(
   // previousState: any,
   data: any,
-  token: string
 ): Promise<ApiResponse<DetailCourse>> {
   const response = await fetchDataServer('/v1/courses', {
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-  },
     method: 'POST',
     body: JSON.stringify(data),
-    credentials: 'include',
   })
   revalidateTag(`courses:${data.course_format}`)
   return await response.json()
@@ -62,15 +56,10 @@ export async function getCoursesBySubscriptionId(subscription_id: string): Promi
   return await response.json()
 }
 
-export async function updateCourse(course_id: string, data: any, token: string): Promise<ApiResponse<DetailCourse>> {
+export async function updateCourse(course_id: string, data: any): Promise<ApiResponse<DetailCourse>> {
   const response = await fetchDataServer(`/v1/courses/${course_id}`, {
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
     method: 'PATCH',
     body: JSON.stringify(data),
-    credentials: 'include',
   })
   revalidateTag(`courses:${data.course_format}`)
   return await response.json()
@@ -81,7 +70,7 @@ export async function deleteCourse(course_id: string, token: string ): Promise<A
     headers: {
       Accept: "application/json",
       Authorization: `Bearer ${token}`,
-    }, 
+    },
     method: 'DELETE',
     credentials: 'include',
   })

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useSubscription } from './SubscriptionContext'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { getMealPlans } from '@/network/server/meal-plans'
 import { MealPlan } from '@/models/meal-plan'
@@ -12,10 +12,9 @@ import { useEffect } from 'react'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 
 export default function ListMealPlans() {
-  const { userId } = useAuth()
+  const { session } = useSession()
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
-  const isLoggedIn = !!userId
 
   const [filteredMealPlans, setFilteredMealPlans] = useState<MealPlan[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -51,7 +50,7 @@ export default function ListMealPlans() {
     fetchAndFilterMealPlans()
   }, [selectedSubscription?.meal_plans])
 
-  if (!isLoggedIn) {
+  if (!session) {
     return (
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>

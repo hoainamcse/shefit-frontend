@@ -1,21 +1,21 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { useAuth } from "@/components/providers/auth-context"
+import { useSession } from "@/components/providers/session-provider"
 import { getUserSubscriptions } from "@/network/server/user-subscriptions"
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 
 export default function AcctionButton() {
-  const { userId } = useAuth()
+  const { session } = useSession()
   const params = useParams()
   const [isLoading, setIsLoading] = useState(true)
   const [isSubscribed, setIsSubscribed] = useState(false)
 
   useEffect(() => {
     async function fetchUserSubscriptions() {
-      if (!userId) {
+      if (!session) {
         setIsLoading(false)
         return
       }
@@ -23,7 +23,7 @@ export default function AcctionButton() {
       try {
         setIsLoading(true)
         const subscriptionId = Number(params.id)
-        const response = await getUserSubscriptions(userId.toString())
+        const response = await getUserSubscriptions(session.userId.toString())
         const hasSubscription =
           response.data?.some(
             (subscription) => subscription.subscription_id === subscriptionId && subscription.status === "active"
@@ -38,7 +38,7 @@ export default function AcctionButton() {
     }
 
     fetchUserSubscriptions()
-  }, [userId, params.id])
+  }, [session, params.id])
 
   if (isLoading) {
     return (

@@ -21,14 +21,13 @@ import {
   FormMultiSelectField,
   FormTextareaField,
 } from "@/components/forms/fields";
-import { useMutation } from "@/hooks/use-mutation";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   getConfiguration,
   updateConfiguration,
 } from "@/network/server/configurations";
 import { toast } from "sonner";
 import { formSchema } from "./schema";
-import { useQuery } from "@/hooks/use-query";
 import { Configuration } from "@/models/configuration";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { BoxIcon } from "lucide-react";
@@ -36,9 +35,10 @@ import { BoxIcon } from "lucide-react";
 const homepageID = 3;
 
 export default function HomepagePage() {
-  const { data, isLoading, error } = useQuery(() =>
-    getConfiguration(homepageID)
-  );
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["homepage-configuration", homepageID],
+    queryFn: () => getConfiguration(homepageID),
+  });
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -75,9 +75,9 @@ function HomepageForm({ defaultData }: { defaultData: Configuration["data"] }) {
     defaultValues: defaultData,
   });
 
-  const { mutate, isLoading } = useMutation(
-    (body: any) => updateConfiguration(homepageID, body),
+  const { mutate, isPending } = useMutation(
     {
+      mutationFn: (body: any) => updateConfiguration(homepageID, body),
       onSuccess: () => {
         toast.success("Configuration updated successfully");
       },
@@ -99,7 +99,7 @@ function HomepageForm({ defaultData }: { defaultData: Configuration["data"] }) {
       rightSection={
         <MainButton
           text="Lưu thay đổi"
-          loading={isLoading}
+          loading={isPending}
           type="submit"
           form="hook-form"
         />

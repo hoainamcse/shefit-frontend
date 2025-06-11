@@ -46,12 +46,8 @@ export async function getListUserBodyQuizById(id: string, token: string): Promis
     return await response.json()
 }
 
-export async function createUserBodyQuiz(id: string, token: string, data: any): Promise<ListResponse<UserBodyQuizz>> {
+export async function createUserBodyQuiz(id: string, data: any): Promise<ListResponse<UserBodyQuizz>> {
     const response = await fetchData(`/v1/users/${id}/body-quizzes`, {
-        headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-        },
         method: 'POST',
         body: JSON.stringify(data),
     })

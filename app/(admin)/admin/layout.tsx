@@ -1,10 +1,14 @@
-'use client'
-import AdminPanelLayout from '@/components/admin-panel/admin-panel-layout'
-import useRequireRole from '@/hooks/use-require-role'
+import { redirect } from 'next/navigation'
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const ready = useRequireRole(['sub_admin', 'admin'], '/auth/login')
-  if (!ready) return null
+import AdminPanelLayout from '@/components/admin-panel/admin-panel-layout'
+import { verifySession } from '@/lib/dal'
+
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const session = await verifySession()
+
+  if (!session) {
+    redirect('/auth/login')
+  }
 
   return <AdminPanelLayout>{children}</AdminPanelLayout>
 }

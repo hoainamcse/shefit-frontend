@@ -8,7 +8,7 @@ import { getProduct } from '@/network/server/products'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { deleteCart, editCart } from '@/network/server/cart'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import { getUserById } from '@/network/server/user'
 import { Form, FormItem, FormLabel, FormControl, FormMessage, FormField } from '@/components/ui/form'
 import { useForm } from 'react-hook-form'
@@ -41,7 +41,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
   const { product_id } = use(params)
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { userId } = useAuth()
+  const { session } = useSession()
 
   const [loading, setLoading] = useState(true)
   const [cart, setCart] = useState<any>(null)
@@ -85,8 +85,8 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
     try {
       const cartData = {
         user_name: formData.name,
-        username: userId ? '' : formData.name,
-        is_signed_up: !!userId,
+        username: session ? '' : formData.name,
+        is_signed_up: !!session,
         telephone_number: formData.phone,
         city: formData.city,
         address: formData.address,
@@ -149,10 +149,10 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!userId) return
+      if (!session) return
 
       try {
-        const userResponse = await getUserById(userId)
+        const userResponse = await getUserById(session.userId)
         const userData = userResponse?.data
 
         if (userData) {
@@ -176,7 +176,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
     }
 
     fetchUserData()
-  }, [userId, cart, form])
+  }, [session, cart, form])
 
   useEffect(() => {
     async function loadData() {

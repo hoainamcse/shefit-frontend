@@ -5,12 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { MainButton } from '@/components/buttons/main-button'
-import { login, handleGoogleCallback as handleGoogleOAuth, getOauth2AuthUrl } from '@/network/server/auth'
-import { useRouter } from 'next/navigation'
+import { getOauth2AuthUrl, login, signin } from '@/network/server/auth'
 import { toast } from 'sonner'
-import React, { useState } from 'react'
-import { getUserById } from '@/network/server/user'
-import { useAuth } from '../providers/auth-context'
 
 function GoogleIcon() {
   return (
@@ -57,21 +53,7 @@ function GoogleIcon() {
   )
 }
 
-function FacebookIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M15.1199 5.32003H16.9999V2.14003C16.0896 2.04538 15.175 1.99865 14.2599 2.00003C11.5399 2.00003 9.67986 3.66003 9.67986 6.70003V9.32003H6.60986V12.88H9.67986V22H13.3599V12.88H16.4199L16.8799 9.32003H13.3599V7.05003C13.3599 6.00003 13.6399 5.32003 15.1199 5.32003Z"
-        fill="#007AFE"
-      />
-    </svg>
-  )
-}
-
 export default function LoginForm() {
-  const router = useRouter()
-  const { login } = useAuth()
-
   const handleGoogleSignIn = async () => {
     try {
       const response = await getOauth2AuthUrl(encodeURIComponent(process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!))
@@ -115,7 +97,9 @@ export default function LoginForm() {
     const user = formData.get('username')?.toString() || ''
     const pass = formData.get('password')?.toString() || ''
     try {
-      await login(user, pass)
+      const res = await login({ username: user, password: pass, grant_type: 'password' })
+      const { role } =await signin(res)
+      window.location.href = '/' + (role === 'normal_user' ? '' : 'admin')
     } catch {
       toast.error('Đăng nhập thất bại!')
     }

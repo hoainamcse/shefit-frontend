@@ -41,7 +41,7 @@ import { UserDish } from '@/models/user-dishes'
 import { Subscription } from '@/models/subscription-admin'
 import { UserSubscription } from '@/models/user-subscriptions'
 import { getSubAdminUsers } from '@/network/server/sub-admin'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import { roleLabel } from '@/lib/label'
 import { Badge } from '@/components/ui/badge'
 
@@ -49,12 +49,12 @@ export default function UsersPage() {
   const router = useRouter()
   const [accountTable, setAccountTable] = useState<User[]>([])
   const [isExporting, setIsExporting] = useState(false)
-  const { userId, role, accessToken } = useAuth()
+  const { session } = useSession()
 
   const fetchAccounts = async () => {
     let userData
-    if (role === 'sub_admin' && accessToken) {
-      userData = (await getSubAdminUsers(accessToken)).data.filter((item) => item.id !== Number(userId))
+    if (session?.role === 'sub_admin') {
+      userData = (await getSubAdminUsers()).data.filter((item) => item.id !== Number(session?.userId))
     } else {
       userData = (await getUsers()).data
     }
@@ -301,7 +301,7 @@ export default function UsersPage() {
       )}
       <ContentLayout title="Danh sách tài khoản">
         <DataTable
-          headerExtraContent={role === 'admin' ? headerExtraContent : null}
+          headerExtraContent={session?.role === 'admin' ? headerExtraContent : null}
           searchPlaceholder="Tìm kiếm theo sdt"
           data={accountTable}
           columns={columns}

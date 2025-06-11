@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { createUserCourse } from '@/network/server/user-courses'
 import { toast } from 'sonner'
 import { Course } from '@/models/course'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 interface ActionButtonsProps {
@@ -15,17 +15,17 @@ interface ActionButtonsProps {
 }
 
 export default function ActionButtons({ courseId, showDetails, handleToggleDetails }: ActionButtonsProps) {
-  const { userId } = useAuth()
+  const { session } = useSession()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
 
   const handleSaveCourse = async (courseId: Course['id']) => {
-    if (!userId) {
+    if (!session) {
       setShowLoginDialog(true)
       return
     }
 
     try {
-      await createUserCourse({ course_id: courseId }, userId)
+      await createUserCourse({ course_id: courseId }, session.userId)
       toast.success('Đã lưu khóa tập thành công!')
     } catch (error) {
       console.error('Error saving course:', error)
@@ -33,7 +33,7 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
     }
   }
   const handleStartClick = (e: React.MouseEvent) => {
-    if (!userId) {
+    if (!session) {
       e.preventDefault()
       setShowLoginDialog(true)
     } else {

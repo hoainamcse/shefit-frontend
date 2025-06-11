@@ -34,6 +34,7 @@ import { z } from 'zod';
 import { MainButton } from '../buttons/main-button';
 import { cn } from '@/lib/utils';
 import BotMessage from './bot-message';
+import { useSession } from '../providers/session-provider';
 
 const formSchema = z.object({
   message: z.string(),
@@ -55,7 +56,7 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
   const [isFirstFetchDone, setIsFirstFetchDone] = useState(false);
   const [isTypingBot, setIsTypingBot] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+  const { session } = useSession();
   const [idOfMessageGotError, setIdOfMessageGotError] = useState<string>();
   const [flagMessageId, setFlagMessageId] = useState<string>();
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
@@ -75,7 +76,7 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
 
   const getParams = () => {
     const params = [
-      `user_id=${userId}`,
+      `user_id=${session?.userId}`,
       `limit=${LIMIT_MESSAGES_PER_OFFSET}`,
       'order=desc',
     ];
@@ -87,7 +88,7 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
 
   const getMessages = async () => {
     if (
-      userId &&
+      session &&
       !isFetchingRef.current &&
       !isLoadingMessages &&
       flagMessageId !== 'reached_end'
@@ -176,7 +177,7 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
       message = messages[0]?.content; // If re-send message, use the newest message to send API
     }
 
-    if (message.trim() && !isTypingBot && userId) {
+    if (message.trim() && !isTypingBot && session) {
       const currentUserMessageId = generateRandomString();
 
       // If re-send message, just use the newest message to call API again, don't add new message
@@ -205,7 +206,7 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
       try {
         const res = await fetchData('/v1/chatbot/chat', {
           method: 'POST',
-          body: JSON.stringify({ user_id: userId, message }),
+          body: JSON.stringify({ user_id: session.userId, message }),
         });
 
         const reader = res.body?.getReader();
@@ -285,17 +286,12 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
 
   // When is desktop, just getMessages when user open chat box first time. In mobile, get messages.
   useEffect(() => {
-    if (userId && isOpen && !isFirstFetchDone) {
+    if (session && isOpen && !isFirstFetchDone) {
       getMessages();
     }
-  }, [userId, isOpen, isFirstFetchDone]);
+  }, [session, isOpen, isFirstFetchDone]);
 
   useEffect(() => {
-    // Get user id
-    if (window) {
-      setUserId(window.localStorage.getItem('user_id'));
-    }
-
     // Listen for scroll events
     const container = messagesContainerRef.current;
     if (!container) return;
@@ -452,7 +448,7 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
               ))}
             </div>
 
-            {userId ? (
+            {session ? (
               <div className='flex-1 flex items-center justify-center'>
                 {isLoadingMessages && <Loader2 className='animate-spin' />}
                 {fetchError && (
@@ -510,7 +506,7 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
                       <Input
                         placeholder='Nhập tin nhắn...'
                         className='bg-white text-foreground  rounded-full !h-12 pr-12'
-                        disabled={!userId}
+                        disabled={!session}
                         {...field}
                       />
                       <Button

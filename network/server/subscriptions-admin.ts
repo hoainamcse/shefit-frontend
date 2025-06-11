@@ -15,56 +15,36 @@ export async function getSubscription(id: number): Promise<ApiResponse<Subscript
     return await response.json()
 }
 
-export async function createSubscription(data: any, token: string): Promise<Subscription> {
+export async function createSubscription(data: any): Promise<Subscription> {
     const response = await fetchData("/v1/subscriptions", {
-        headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-        },
         method: "POST",
         body: JSON.stringify(data),
-        credentials: 'include',
     })
     revalidateTag(`subscriptions`)
     return await response.json()
 }
 
-export async function updateSubscription(id: number, data: any, token: string): Promise<Subscription> {
+export async function updateSubscription(id: number, data: any): Promise<Subscription> {
     const response = await fetchData(`/v1/subscriptions/${id}`, {
-        headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-        },
         method: "PUT",
         body: JSON.stringify(data),
-        credentials: 'include',
     })
     revalidateTag(`subscriptions`)
     return await response.json()
 }
 
-export async function deleteSubscription(id: number, token: string): Promise<ApiResponse<Subscription>> {
+export async function deleteSubscription(id: number): Promise<ApiResponse<Subscription>> {
     const response = await fetchData(`/v1/subscriptions/${id}`, {
-        headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-        },
         method: "DELETE",
-        credentials: 'include',
     })
     revalidateTag(`subscriptions`)
     return await response.json()
 }
 
-export async function updateSubscriptionPrice(id: number, data: any, token: string): Promise<ApiResponse<any>> {
+export async function updateSubscriptionPrice(id: number, data: any): Promise<ApiResponse<any>> {
     const response = await fetchData(`/v1/subscriptions/${id}/prices`, {
-        headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-        },
         method: "PUT",
         body: JSON.stringify(data),
-        credentials: 'include',
     })
     revalidateTag(`subscriptions`)
     return await response.json()

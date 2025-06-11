@@ -4,24 +4,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button'
 import { getUserSubscriptions } from '@/network/server/user-subscriptions'
 import { getSubscription } from '@/network/server/subscriptions'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import { useEffect, useState } from 'react'
 import { useSubscription } from './SubscriptionContext'
 
 export default function ListSubscriptions() {
-  const { userId } = useAuth()
+  const { session } = useSession()
   const { selectedSubscription, setSelectedSubscription } = useSubscription()
   const [userSubscriptions, setUserSubscriptions] = useState<any[]>([])
   const [subscriptionNames, setSubscriptionNames] = useState<{ [key: number]: string }>({})
   const [isLoading, setIsLoading] = useState(true)
-  const isLoggedIn = !!userId
 
   useEffect(() => {
     async function fetchData() {
-      if (!isLoggedIn) return
+      if (!session) return
 
       try {
-        const userSubsResponse = await getUserSubscriptions(userId)
+        const userSubsResponse = await getUserSubscriptions(session.userId)
         if (userSubsResponse.data && userSubsResponse.data.length > 0) {
           setUserSubscriptions(userSubsResponse.data)
           setSelectedSubscription(userSubsResponse.data[0])
@@ -53,7 +52,7 @@ export default function ListSubscriptions() {
     }
 
     fetchData()
-  }, [isLoggedIn])
+  }, [session])
 
   const handleSubscriptionChange = (value: string) => {
     const subscriptionId = parseInt(value)
@@ -68,7 +67,7 @@ export default function ListSubscriptions() {
   const endDate = selectedSubscription?.subscription_end_at ? new Date(selectedSubscription.subscription_end_at) : null
   const isExpired = endDate ? currentDate > endDate : false
 
-  return isLoggedIn ? (
+  return session ? (
     <div className="flex gap-5 mb-6">
       <Select
         disabled={isLoading}

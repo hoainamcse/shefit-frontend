@@ -25,7 +25,6 @@ import { createGift } from '@/network/server/gifts'
 import { updateGift } from '@/network/server/gifts'
 import { updateSubscriptionPrice } from '@/network/server/subscriptions-admin'
 import { getCourses } from '@/network/server/courses-admin'
-import { useAuth } from '../providers/auth-context'
 import { giftTypeOptions } from '@/lib/label'
 import { ImageUploader } from '../image-uploader'
 // Define the form schema
@@ -91,7 +90,6 @@ const AVAILABLE_COURSE_FORMATS = [
 ]
 
 export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
-  const { accessToken } = useAuth()
   const [isPending, startTransition] = useTransition()
   const [courseList, setCourseList] = useState<any[]>([])
 
@@ -202,14 +200,11 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
   async function onSubmit(values: FormValues) {
     startTransition(async () => {
       try {
-        if (!accessToken) {
-          throw new Error('Access token is required')
-        }
         console.log('values', values)
         if (isEdit) {
-          await handleEditMembership(values, accessToken, data)
+          await handleEditMembership(values, data)
         } else {
-          await handleCreateMembership(values, accessToken)
+          await handleCreateMembership(values)
           router.push('/admin/membership')
         }
       } catch (error) {
@@ -219,10 +214,10 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
     })
   }
 
-  const handleCreateMembership = async (values: FormValues, accessToken: string) => {
+  const handleCreateMembership = async (values: FormValues) => {
     let giftIds: number[] = []
     if (values.gifts && values.gifts.length > 0) {
-      const createdGifts = await Promise.all(values.gifts.map((gift) => createGift(gift, accessToken)))
+      const createdGifts = await Promise.all(values.gifts.map((gift) => createGift(gift)))
       giftIds = createdGifts.filter((gift) => gift.status === 'success' && gift.data).map((gift) => gift.data.id)
     }
     const { gifts, ...rest } = values
@@ -230,20 +225,17 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
       ...rest,
       gift_ids: giftIds,
     }
-    if (!accessToken) {
-      throw new Error('Access token is required')
-    }
 
-    await createSubscription(subscriptionData, accessToken)
+    await createSubscription(subscriptionData)
     toast.success('Tạo gói thành viên thành công')
   }
 
-  const handleEditMembership = async (values: FormValues, accessToken: string, data?: Subscription) => {
+  const handleEditMembership = async (values: FormValues, data?: Subscription) => {
     const giftsWithId = (values.gifts ?? []).filter((gift) => gift.id)
     const giftsWithoutId = (values.gifts ?? []).filter((gift) => !gift.id)
 
     const updatePromises = giftsWithId.map((gift) => updateGift(String(gift.id), gift))
-    const createPromises = giftsWithoutId.map((gift) => createGift(gift, accessToken))
+    const createPromises = giftsWithoutId.map((gift) => createGift(gift))
 
     const updatedGifts = await Promise.all(updatePromises)
     const createdGifts = await Promise.all(createPromises)
@@ -254,10 +246,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
       .map((gift) => gift.data.id)
     const giftIds = [...updatedGiftIds, ...createdGiftIds]
 
-    if (!accessToken) {
-      throw new Error('Access token is required')
-    }
-    await updateSubscriptionPrice(data!.id!, values.prices, accessToken)
+    await updateSubscriptionPrice(data!.id!, values.prices)
 
     const { gifts, prices, ...rest } = values
     const subscriptionData = {
@@ -265,10 +254,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
       gift_ids: giftIds,
     }
 
-    if (!accessToken) {
-      throw new Error('Access token is required')
-    }
-    await updateSubscription(data!.id!, subscriptionData, accessToken)
+    await updateSubscription(data!.id!, subscriptionData)
     toast.success('Cập nhật gói thành viên thành công')
   }
 

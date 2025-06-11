@@ -3,23 +3,23 @@
 import { Button } from '@/components/ui/button'
 import { createUserExercise } from '@/network/server/user-exercises'
 import { toast } from 'sonner'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 
 interface ActionButtonsProps {
   exerciseId: string
 }
 
 export default function ActionButtons({ exerciseId }: ActionButtonsProps) {
-  const { userId } = useAuth()
+  const { session } = useSession()
 
   const handleSaveExercise = async (exerciseId: string) => {
-    if (!userId) {
+    if (!session) {
       toast.error('Vui lòng đăng nhập để lưu bài tập')
       return
     }
 
     try {
-      await createUserExercise({ exercise_id: exerciseId }, userId)
+      await createUserExercise({ exercise_id: exerciseId }, session.userId)
       toast.success('Đã lưu bài tập thành công!')
     } catch (error) {
       console.error('Error saving exercise:', error)

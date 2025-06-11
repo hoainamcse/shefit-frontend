@@ -3,14 +3,13 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import CurrentCart from "./current-cart"
 import PurchasedOrder from "./purchased-order"
-import { useAuth } from "@/components/providers/auth-context"
+import { useSession } from "@/components/providers/session-provider"
 import { Button } from "@/components/ui/button"
 
 export default function Cart() {
-  const { userId } = useAuth()
-  const isLoggedIn = !!userId
+  const { session } = useSession()
 
-  if (!isLoggedIn) {
+  if (!session) {
     return (
       <div className="flex flex-col items-center text-center gap-6">
         <p className="text-lg">HÃY ĐĂNG NHẬP ĐỂ XEM GIỎ HÀNG</p>

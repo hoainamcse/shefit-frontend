@@ -1,3 +1,11 @@
+type SessionPayload = {
+  userId: string
+  role: "admin" | "sub_admin" | "normal_user"
+  accessToken: string
+  refreshToken: string
+  expiresAt: Date
+}
+
 type Login = {
     username: string;
     password: string;
@@ -33,3 +41,5 @@ type Oauth2AuthUrlResponse = {
 };
 
 export type { Login, Register, TokenResponse, Account, Oauth2AuthUrlResponse };
+
+export type { SessionPayload }

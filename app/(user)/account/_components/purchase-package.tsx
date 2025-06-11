@@ -7,19 +7,18 @@ import { getSubscriptions } from '@/network/server/subscriptions'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import PurchasedPackage from './purchased-package'
 import { cn } from '@/lib/utils'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import { useState, useEffect } from 'react'
 import { ListResponse } from '@/models/response'
 import { Subscription } from '@/models/subscription'
 export default function PurchasePackage() {
-  const { userId } = useAuth()
+  const { session } = useSession()
   const [subscriptions, setSubscriptions] = useState<ListResponse<Subscription>>({
     status: '',
     data: [],
     paging: { page: 1, per_page: 10, total: 0 },
   })
   const [isLoading, setIsLoading] = useState(true)
-  const isLoggedIn = !!userId
 
   useEffect(() => {
     async function fetchSubscriptions() {
@@ -40,7 +39,7 @@ export default function PurchasePackage() {
   return (
     <div className="pb-16 md:pb-16 px-5 sm:px-9 lg:px-[56px] xl:px-[60px]">
       <Tabs defaultValue="all">
-        {isLoggedIn && (
+        {session && (
           <TabsList className="bg-background gap-y-3 sm:gap-y-5 gap-x-7 pl-0 h-fit lg:h-9 mb-6">
             <TabsTrigger
               value="all"

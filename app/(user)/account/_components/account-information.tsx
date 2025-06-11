@@ -11,18 +11,18 @@ import { getValuable } from "@/lib/helpers"
 
 import { getUserById } from "@/network/server/user"
 import { PROVINCES } from "@/lib/label"
-import { useAuth } from "@/components/providers/auth-context"
+import { useSession } from "@/components/providers/session-provider"
 
 export default function AccountInformation() {
   const [showNewForm, setShowNewForm] = useState(false)
   const [data, setData] = useState<any>(null)
 
-  const { userId } = useAuth()
+  const { session } = useSession()
 
   useEffect(() => {
-    if (!userId) return
     async function fetchUser() {
-      const res = await getUserById(userId as string)
+      if (!session) return
+      const res = await getUserById(session.userId as string)
       if (res && res.data) {
         setData({
           username: res.data.username || "",
@@ -37,7 +37,7 @@ export default function AccountInformation() {
       }
     }
     fetchUser()
-  }, [userId])
+  }, [session])
 
   const form = useForm({
     defaultValues: {

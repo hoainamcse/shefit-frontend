@@ -6,11 +6,11 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { getUserBodyQuizzesByUserId } from '@/network/server/user-body-quizz'
 import { getQuizzes } from '@/network/server/body-quiz'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import { UserBodyQuizz } from '@/models/user-body-quizz'
 import { ListResponse } from '@/models/response'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import BodyQuiz from '@/models/body-quiz'
+import type { BodyQuiz } from '@/models/body-quiz'
 import ListQuiz from './list-quiz'
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
@@ -22,8 +22,7 @@ const formatDate = (dateString: string) => {
 }
 
 export default function BodyQuiz() {
-  const { userId } = useAuth()
-  const isLoggedIn = !!userId
+  const { session } = useSession()
   const [userBodyQuizzes, setUserBodyQuizzes] = useState<ListResponse<UserBodyQuizz>>({
     data: [],
     paging: { page: 0, per_page: 0, total: 0 },
@@ -37,10 +36,10 @@ export default function BodyQuiz() {
     async function fetchData() {
       try {
         setLoading(true)
-        
+
         // Always fetch quizzes, regardless of login status
         const [userQuizzes, allQuizzes] = await Promise.all([
-          userId ? getUserBodyQuizzesByUserId(userId) : Promise.resolve(null),
+          session ? getUserBodyQuizzesByUserId(session.userId) : Promise.resolve(null),
           getQuizzes()
         ])
 
@@ -67,10 +66,10 @@ export default function BodyQuiz() {
         }
 
         // Only set user quizzes if user is logged in
-        if (userId && userQuizzes) {
+        if (session && userQuizzes) {
           setUserBodyQuizzes(userQuizzes)
         }
-        
+
         // Always set the quizzes data
         setBodyQuiz(transformedQuizzes)
         setQuizzes(transformedQuizzes.data || [])
@@ -82,7 +81,7 @@ export default function BodyQuiz() {
     }
 
     fetchData()
-  }, [userId])
+  }, [session])
   return (
     <div>
       <div className="bg-[#FFAEB01A] py-[33px] px-5 sm:px-9 lg:px-[87px]">
@@ -97,7 +96,7 @@ export default function BodyQuiz() {
         <ListQuiz bodyQuiz={bodyQuiz} />
       </div>
 
-      {isLoggedIn && (
+      {session && (
         <div className="py-12 sm:py-16 lg:py-20 px-5 sm:px-9 lg:px-[60px]">
           <div className="text-[#FF7873] text-[30px] leading-[33px] font-[Coiny] mb-10">Kết quả</div>
           <div className="flex flex-col gap-[18px]">

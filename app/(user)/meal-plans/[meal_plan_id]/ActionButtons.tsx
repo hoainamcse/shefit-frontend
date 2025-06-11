@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { createUserMealPlan } from '@/network/server/user-meal-plans'
 import { toast } from 'sonner'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useRouter } from 'next/navigation'
 
@@ -14,18 +14,18 @@ interface ActionButtonsProps {
 }
 
 export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
-  const { userId } = useAuth()
+  const { session } = useSession()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const router = useRouter()
 
   const handleSaveMealPlan = async (mealPlanId: number) => {
-    if (!userId) {
+    if (!session) {
       setShowLoginDialog(true)
       return
     }
 
     try {
-      await createUserMealPlan({ meal_plan_id: mealPlanId }, userId!)
+      await createUserMealPlan({ meal_plan_id: mealPlanId }, session.userId!)
       toast.success('Đã lưu thực đơn thành công!')
     } catch (error) {
       console.error('Error saving meal plan:', error)
@@ -34,7 +34,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
   }
 
   const handleStartClick = (e: React.MouseEvent) => {
-    if (!userId) {
+    if (!session) {
       e.preventDefault()
       setShowLoginDialog(true)
     }

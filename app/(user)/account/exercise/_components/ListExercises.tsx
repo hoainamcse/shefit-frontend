@@ -4,14 +4,14 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useSubscription } from './SubscriptionContext'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { StringHeaderIdentifier } from '@tanstack/react-table'
 import { getExercises } from '@/network/server/exercises'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import type { Exercise } from '@/models/exercise'
 export default function ListExercises() {
-  const { userId } = useAuth()
+  const { session } = useSession()
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [exercises, setExercises] = useState<Exercise[]>([])
@@ -47,9 +47,7 @@ export default function ListExercises() {
     fetchExercises()
   }, [selectedSubscription?.exercises])
 
-  const isLoggedIn = !!userId
-
-  if (!isLoggedIn) {
+  if (!session) {
     return (
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>

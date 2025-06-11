@@ -4,7 +4,6 @@ import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { MainButton } from '@/components/buttons/main-button'
 import { FileUploader } from '@/components/file-uploader'
 import { FormRichTextField } from '@/components/forms/fields'
-import { useAuth } from '@/components/providers/auth-context'
 import { ImageUploader } from '@/components/image-uploader'
 
 import { Form } from '@/components/ui/form'
@@ -27,7 +26,6 @@ type AboutUsFormValues = z.infer<typeof AboutUsSchema>
 const aboutUsID = 1
 
 export default function AboutUsPage() {
-  const { accessToken } = useAuth()
   const [aboutUsData, setAboutUsData] = useState<Configuration>()
 
   const form = useForm<AboutUsFormValues>({

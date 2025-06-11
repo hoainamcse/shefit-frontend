@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import Link from 'next/link'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import { getUserSubscriptions } from '@/network/server/user-subscriptions'
 import { getSubscription } from '@/network/server/subscriptions'
 import { useEffect, useState } from 'react'
@@ -17,17 +17,17 @@ type EnhancedSubscription = UserSubscriptionDetail & {
 }
 
 export default function PurchasedPackage() {
-  const { userId } = useAuth()
+  const { session } = useSession()
   const [subscriptions, setSubscriptions] = useState<EnhancedSubscription[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     async function fetchUserSubscriptions() {
-      if (!userId) return
+      if (!session) return
 
       try {
         setIsLoading(true)
-        const response = await getUserSubscriptions(userId)
+        const response = await getUserSubscriptions(session.userId)
 
         if (response.data && response.data.length > 0) {
           setSubscriptions(response.data)
@@ -72,7 +72,7 @@ export default function PurchasedPackage() {
     }
 
     fetchUserSubscriptions()
-  }, [userId])
+  }, [session])
 
   const formatDate = (dateString: string) => {
     try {

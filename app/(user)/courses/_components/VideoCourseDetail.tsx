@@ -6,7 +6,7 @@ import { getWeeks } from "@/network/server/weeks"
 import { getDays } from "@/network/server/days"
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { useAuth } from "@/components/providers/auth-context"
+import { useSession } from "@/components/providers/session-provider"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Course } from "@/models/course"
@@ -35,8 +35,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
   const [weeks, setWeeks] = useState<any>(null)
   const [days, setDays] = useState<any>(null)
   const [courseData, setCourseData] = useState<CourseWeek[]>([])
-  const { userId } = useAuth()
-  const isLoggedIn = !!userId
+  const { session } = useSession()
   const [dialogOpen, setDialogOpen] = useState<string | false>(false)
 
   useEffect(() => {
@@ -84,7 +83,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
                           <span className="text-gray-900 dark:text-gray-50">{index + 1}</span>
                           <p>{day.description}</p>
                         </div>
-                        {isLoggedIn ? (
+                        {session ? (
                           <Link href={`/courses/${courseId}/video-classes/${weeks.data[weekIndex]?.id}/${day.id}`}>
                             <ArrowPinkIcon />
                           </Link>

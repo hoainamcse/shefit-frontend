@@ -26,7 +26,7 @@ import { Subscription } from '@/models/subscription-admin'
 import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 import { DeleteButton } from '@/components/buttons/delete-button'
 import { useClipboard } from '@/hooks/use-clipboard'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import { getSubAdminSubscriptions } from '@/network/server/sub-admin'
 
 // Helper to map course_format to label
@@ -45,7 +45,7 @@ interface MembershipRow {
 }
 
 export default function MembershipPage() {
-  const { role, accessToken } = useAuth()
+  const { session } = useSession()
   const { copy } = useClipboard()
   const router = useRouter()
   const [coupons, setCoupons] = useState<Coupon[]>([])
@@ -61,8 +61,8 @@ export default function MembershipPage() {
 
   const fetchMemberships = async () => {
     let response
-    if (role === 'sub_admin' && accessToken) {
-      response = await getSubAdminSubscriptions(accessToken)
+    if (session?.role === 'sub_admin') {
+      response = await getSubAdminSubscriptions()
     } else {
       response = await getSubscriptions()
     }
@@ -89,8 +89,7 @@ export default function MembershipPage() {
 
   const handleDeleteMembership = async (membershipId: number) => {
     try {
-      if (!accessToken) return
-      const res = await deleteSubscription(membershipId, accessToken)
+      const res = await deleteSubscription(membershipId)
       if (res.status === 'success') {
         toast.success('Xoá gói thành viên thành công')
         fetchMemberships()
@@ -224,7 +223,7 @@ export default function MembershipPage() {
       <div className="mt-8">
         <h2 className="text-lg font-semibold mb-4">Danh sách gói thành viên</h2>
         <DataTable
-          headerExtraContent={role === 'admin' ? membershipHeaderExtraContent : null}
+          headerExtraContent={session?.role === 'admin' ? membershipHeaderExtraContent : null}
           searchPlaceholder="Tìm kiếm theo tên, ..."
           data={membershipTable}
           columns={columns}

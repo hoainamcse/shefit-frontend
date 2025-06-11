@@ -1,4 +1,4 @@
-import BodyQuiz from "./body-quiz"
+import type { BodyQuiz } from "./body-quiz"
 
 type UserBodyQuizz = {
     id: number

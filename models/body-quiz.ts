@@ -48,4 +48,4 @@ type UserBodyQuizPayload = Pick<UserBodyQuiz, 'comment'>
 
 export type { BodyQuizUser, UserBodyQuiz }
 export type { UserBodyQuizPayload }
-export default BodyQuiz
+export type { BodyQuiz }

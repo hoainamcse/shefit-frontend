@@ -7,7 +7,7 @@ import FormDelivery from './FormDelivery'
 import { removeCart } from '@/network/server/cart'
 import { getUserCart } from '@/network/server/user-cart'
 import { toast } from 'sonner'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import { useEffect, useState } from 'react'
 import { UserCart } from '@/models/user-cart'
 import {
@@ -26,17 +26,17 @@ export default function CurrentCart() {
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState(false)
   const [selectedCart, setSelectedCart] = useState<any>(null)
-  const { userId } = useAuth()
+  const { session } = useSession()
   const router = useRouter()
 
   useEffect(() => {
     async function fetchCartData() {
-      if (!userId) {
+      if (!session) {
         setLoading(false)
         return
       }
       try {
-        const cartsRes = await getUserCart(Number(userId))
+        const cartsRes = await getUserCart(Number(session.userId))
         const userCarts = (cartsRes?.data as UserCart[]) || []
         const pending = userCarts.filter(
           (item) => item?.cart?.status === 'pending' || item?.cart?.status === 'not_decided'
@@ -53,7 +53,7 @@ export default function CurrentCart() {
       }
     }
     fetchCartData()
-  }, [userId])
+  }, [session])
 
   const handleBuyNow = () => {
     router.push('/products')
@@ -79,7 +79,7 @@ export default function CurrentCart() {
   const totalPrice = (cartData?.total - cartData?.shipping_fee).toLocaleString()
 
   const handleRemove = async (variantId: number) => {
-    if (!userId) {
+    if (!session) {
       toast.error('Vui lòng đăng nhập để thực hiện thao tác này')
       return
     }
@@ -89,7 +89,7 @@ export default function CurrentCart() {
       await removeCart(cartData?.id, variantId)
       toast.success('Đã xóa sản phẩm khỏi giỏ hàng!')
 
-      const cartsRes = await getUserCart(Number(userId))
+      const cartsRes = await getUserCart(Number(session.userId))
 
       const pending =
         cartsRes?.data?.filter(

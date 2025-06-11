@@ -12,12 +12,12 @@ import { addCart, getCarts, createCart } from '@/network/server/cart'
 import { getUserCart, createUserCart } from '@/network/server/user-cart'
 import { toast } from 'sonner'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
-import { useAuth } from '@/components/providers/auth-context'
+import { useSession } from '@/components/providers/session-provider'
 import { useRouter } from 'next/navigation'
 
 export default function ProductPage({ params }: { params: Promise<{ product_id: string }> }) {
   const { product_id } = use(params)
-  const { userId } = useAuth()
+  const { session } = useSession()
   const [product, setProduct] = useState<any>(null)
   const [colors, setColors] = useState<any[]>([])
   const [sizes, setSizes] = useState<any[]>([])
@@ -102,10 +102,10 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
       const newCartId = cartResponse.data.id
       console.log('Successfully created empty cart with ID:', newCartId)
 
-      if (userId) {
+      if (session) {
         try {
           await new Promise((resolve) => setTimeout(resolve, 500))
-          const userCartResponse = await createUserCart(Number(userId), newCartId)
+          const userCartResponse = await createUserCart(Number(session.userId), newCartId)
           console.log('User cart link response for Buy Now:', userCartResponse)
           if (userCartResponse?.cart?.id) {
             console.log('Successfully linked cart to user, new cart ID:', userCartResponse.cart.id)
@@ -133,7 +133,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
   const handleAddToCart = async () => {
     if (!selectedVariantId) return
 
-    if (!userId) {
+    if (!session) {
       setLoginDialogOpen(true)
       return
     }
@@ -149,7 +149,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
 
     setIsAdding(true)
     try {
-      const cartsRes = await getUserCart(Number(userId))
+      const cartsRes = await getUserCart(Number(session.userId))
 
       let currentCartId = cartId
       let pendingCart = Array.isArray(cartsRes?.data)
@@ -172,7 +172,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
 
         await new Promise((resolve) => setTimeout(resolve, 500))
 
-        const userCartResponse = await createUserCart(Number(userId), newCartId)
+        const userCartResponse = await createUserCart(Number(session.userId), newCartId)
         console.log('User cart response:', userCartResponse)
 
         if (userCartResponse?.cart?.id) {

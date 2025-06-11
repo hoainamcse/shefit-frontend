@@ -4,7 +4,7 @@ import { Coiny, Encode_Sans_Semi_Expanded, Signika_Negative } from 'next/font/go
 import './globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { QueryProvider } from '@/components/providers/query-provider'
-import { AuthProvider } from '@/components/providers/auth-context'
+import { SessionProvider } from '@/components/providers/session-provider'
 import { Toaster } from '@/components/ui/sonner'
 
 const signika = Signika_Negative({
@@ -42,10 +42,10 @@ export default function RootLayout({
       <body className={`${signika.className} ${coiny.variable} ${encode.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <QueryProvider>
-            <AuthProvider>
+            <SessionProvider>
               {children}
               <Toaster richColors position="top-center" />
-            </AuthProvider>
+            </SessionProvider>
           </QueryProvider>
         </ThemeProvider>
       </body>

@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { EditQuizForm } from '@/components/forms/edit-quiz-form'
 
-import { useQuery } from '@/hooks/use-query'
+import { useQuery } from '@tanstack/react-query'
 import { getQuiz } from '@/network/server/body-quiz'
 
 export default function QuizDetailPage() {
@@ -13,7 +13,10 @@ export default function QuizDetailPage() {
 
   const _quizId = (Array.isArray(quiz_id) ? quiz_id[0] : quiz_id) as string
 
-  const { data, isLoading, error } = useQuery(() => getQuiz(_quizId))
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['quiz', _quizId],
+    queryFn: () => getQuiz(_quizId),
+  })
 
   if (isLoading) {
     return <div>Đang tải ...</div>

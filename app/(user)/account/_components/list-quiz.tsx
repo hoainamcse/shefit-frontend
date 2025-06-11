@@ -1,7 +1,7 @@
 'use client'
 
 import { ListResponse } from '@/models/response'
-import BodyQuiz from '@/models/body-quiz'
+import type { BodyQuiz } from '@/models/body-quiz'
 import { useEffect, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
