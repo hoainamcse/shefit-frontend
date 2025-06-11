@@ -80,6 +80,12 @@ export function BodyQuizUsersTable() {
         size: 180,
       },
       {
+        header: 'Lần làm quiz gần nhất',
+        accessorKey: 'last_done',
+        cell: ({ row }) => format(row.getValue('last_done'), 'Pp'),
+        size: 180,
+      },
+      {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
