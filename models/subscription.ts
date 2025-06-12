@@ -4,6 +4,8 @@ type Gift = {
     id: number
     name: string
     image: string
+    month_count: string
+    type: string
     created_at: string
     updated_at: string
 }

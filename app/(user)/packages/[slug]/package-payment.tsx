@@ -7,7 +7,9 @@ import { Input } from '@/components/ui/input'
 import { useSession } from '@/components/providers/session-provider'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { generateQrToken, createQr, generateToken, syncTransaction } from '@/network/server/payment'
+import { useParams } from 'next/navigation'
+import { createUserSubscription } from '@/network/server/user-subscriptions'
+
 import { useQRCode } from 'next-qrcode'
 import {
   AlertDialog,
@@ -34,6 +36,7 @@ interface PackagePaymentProps {
 export function PackagePayment({ prices, defaultPrice, packageName }: PackagePaymentProps) {
   const { session } = useSession()
   const { Canvas } = useQRCode()
+  const params = useParams()
   const [selectedPriceId, setSelectedPriceId] = useState<number | null>(null)
   const [totalPrice, setTotalPrice] = useState<number>(defaultPrice || 0)
   const [accessToken, setAccessToken] = useState<string | null>(null)
@@ -174,7 +177,32 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
               console.log('Transaction sync response:', syncData)
 
               if (syncData.error === false || (syncData.data && syncData.data.error === false)) {
-                setPurchaseSuccess(true)
+                try {
+                  const now = new Date()
+                  const endDate = new Date(now)
+                  endDate.setMonth(endDate.getMonth() + (prices.find((p) => p.id === selectedPriceId)?.duration || 1))
+                  const subscriptionData = {
+                    user_id: session?.userId,
+                    subscription_id: Number(params.slug),
+                    course_format: 'video',
+                    coupon_code: '',
+                    status: 'active',
+                    subscription_start_at: now.toISOString(),
+                    subscription_end_at: endDate.toISOString(),
+                    order_number: `ORDER-${Date.now()}`,
+                    total_price: totalPrice,
+                  }
+                  if (session?.userId) {
+                    await createUserSubscription(subscriptionData, session.userId.toString())
+                    setPurchaseSuccess(true)
+                  } else {
+                    throw new Error('User ID is not available')
+                  }
+                } catch (error) {
+                  console.error('Error creating subscription:', error)
+                  setPaymentError('Payment successful but failed to activate subscription. Please contact support.')
+                  setPurchaseSuccess(false)
+                }
               }
             }
           }
