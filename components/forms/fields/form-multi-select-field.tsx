@@ -18,7 +18,7 @@ import {
   MultiSelectValue,
   renderMultiSelectOptions,
 } from "@/components/nyxb-ui/multi-select";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 type MultiSelectOption = {
   value: string;
@@ -65,10 +65,6 @@ function FormMultiSelectField({
   data = [],
 }: FormMultiSelectFieldProps) {
   const [options, setOptions] = useState<MultiSelectOption[]>(() => data);
-
-  useEffect(() => {
-    setOptions(data);
-  }, [data]);
 
   const handleSearch = async (keyword: string) => {
     const newOptions = search(data, keyword);

@@ -32,6 +32,47 @@ type Course = {
 
 type CoursePayload = Omit<Course, 'id' | 'created_at' | 'updated_at' | 'subscriptions'>
 
+// Course Video
+type CourseWeek = {
+  id: number
+  week_number: number
+}
+
+type WeekDay = {
+  id: number
+  day_number: number
+  description: string
+}
+
+type CircuitExercise = {
+  id: number
+  circuit_exercise_title: string
+  circuit_exercise_description: string
+  youtube_url: string
+  no: number
+}
+
+type DayCircuit = {
+  id: number
+  name: string
+  description: string
+  auto_replay_count: number
+  circuit_exercises: CircuitExercise[]
+  created_at: string
+  updated_at: string
+}
+
+type CourseWeekPayload = Omit<CourseWeek, 'id'>
+type WeekDayPayload = Omit<WeekDay, 'id'>
+type CircuitExercisePayload = Omit<CircuitExercise, 'id'>
+type DayCircuitPayload = Omit<DayCircuit, 'id' | 'circuit_exercises' | 'created_at' | 'updated_at'> & {
+  circuit_exercises: CircuitExercisePayload[]
+}
+
+export type { CourseWeek, WeekDay, CircuitExercise, DayCircuit }
+export type { CourseWeekPayload, WeekDayPayload, CircuitExercisePayload, DayCircuitPayload }
+
+// Course Live
 type LiveSession = {
   id: number
   session_number: number

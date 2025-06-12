@@ -42,6 +42,7 @@ import { ExcelReader } from '@/components/excel-reader'
 import { getWeeks, createWeek, updateWeek, deleteWeek } from '@/network/server/weeks'
 import { getDays, createDay, updateDay, deleteDay } from '@/network/server/days'
 import { getCircuits, createCircuit, updateCircuit, deleteCircuit } from '@/network/server/circuits'
+import { createCourseWeek, createWeekDay, createDayCircuit } from '@/network/client/courses'
 
 // Define the schema for exercise
 const exerciseSchema = z.object({
@@ -1111,26 +1112,38 @@ function ImportDialog({ courseID, onSuccess }: { courseID: Course['id']; onSucce
 
       for (const w of _data.weeks) {
         try {
-          const weekResponse = await createWeek(courseID, { week_number: w.week_number })
+          const weekResponse = await createCourseWeek(courseID, { week_number: w.week_number })
 
           for (const d of w.days) {
-            const dayResponse = await createDay(courseID, weekResponse.data.id, {
+            const dayResponse = await createWeekDay(courseID, weekResponse.data.id, {
               day_number: d.day_number,
               description: '',
             })
 
-            for (const c of d.circuits) {
-              await createCircuit(courseID, weekResponse.data.id, dayResponse.data.id, {
-                name: c.name,
-                description: c.description,
-                auto_replay_count: c.auto_replay_count,
-                circuit_exercises: c.circuit_exercises,
-              })
-            }
+            await Promise.all(
+              d.circuits.map(
+                async (c) =>
+                  await createDayCircuit(courseID, weekResponse.data.id, dayResponse.data.id, {
+                    name: c.name,
+                    description: c.description,
+                    auto_replay_count: c.auto_replay_count,
+                    circuit_exercises: c.circuit_exercises,
+                  })
+              )
+            )
+
+            // for (const c of d.circuits) {
+            //   await createDayCircuit(courseID, weekResponse.data.id, dayResponse.data.id, {
+            //     name: c.name,
+            //     description: c.description,
+            //     auto_replay_count: c.auto_replay_count,
+            //     circuit_exercises: c.circuit_exercises,
+            //   })
+            // }
           }
         } catch (error) {
           console.error(`Error processing week ${w.week_number}:`, error)
-          throw error
+          // throw error
         }
       }
 
@@ -1160,7 +1173,7 @@ function ImportDialog({ courseID, onSuccess }: { courseID: Course['id']; onSucce
           specificHeaders={['exercise_no', 'circuit_auto_replay_count', 'week_number', 'day_number']}
           onSuccess={setData}
         />
-        {data.length > 0 && <MainButton text="Nhập khoá tập" className="mt-4" onClick={onSubmit} />}
+        {data.length > 0 && <MainButton text="Nhập khoá tập" className="mt-4" onClick={onSubmit} loading={isLoading} />}
       </DialogContent>
     </Dialog>
   )
