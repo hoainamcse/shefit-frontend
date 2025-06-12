@@ -110,7 +110,7 @@ export default function PurchasedPackage() {
                   <div>{formatDate(subscription.subscription_end_at)}</div>
                 </div>
                 <Link
-                  href={`/packages/detail/${subscription.subscription.id}`}
+                  href={`/packages/detail/${subscription.subscription_id}`}
                   className="h-fit text-base md:text-xl lg:text-2xl text-[#13D8A7] mb-[18px] max-md:font-light mt-auto"
                 >
                   <Button className="bg-[#13D8A7] rounded-full w-[160px] h-[36px] text-lg">Chọn gói</Button>
