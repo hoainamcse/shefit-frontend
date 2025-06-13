@@ -12,7 +12,6 @@ type UserSubscription = {
     gift_id?: number,
     order_number: string,
     total_price: number,
-    course_ids: number[],
     exercise_ids: number[],
     meal_plan_ids: number[],
     dish_ids: number[],
@@ -20,10 +19,10 @@ type UserSubscription = {
 
 
  type UserSubscriptionDetail = Omit<UserSubscription,
-  'gift_id' | 'course_ids' | 'exercise_ids' | 'meal_plan_ids' | 'dish_ids'> & {
+  'subscription_id' | 'gift_id' | 'exercise_ids' | 'meal_plan_ids' | 'dish_ids'> & {
   id: number
   gifts: Gift
-  courses: { id: number; course_name: string }[]
+  subscription: {id: number; courses: { id: number; course_name: string }[]}
   exercises: { id: number; name: string }[]
   meal_plans: { id: number; title: string }[]
   dishes: { id: number; name: string }[]

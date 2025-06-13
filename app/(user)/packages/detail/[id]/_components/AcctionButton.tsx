@@ -1,11 +1,11 @@
-"use client"
+'use client'
 
-import { Button } from "@/components/ui/button"
-import { useSession } from "@/components/providers/session-provider"
-import { getUserSubscriptions } from "@/network/server/user-subscriptions"
-import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
-import Link from "next/link"
+import { Button } from '@/components/ui/button'
+import { useSession } from '@/components/providers/session-provider'
+import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { useEffect, useState } from 'react'
+import { useParams } from 'next/navigation'
+import Link from 'next/link'
 
 export default function AcctionButton() {
   const { session } = useSession()
@@ -26,12 +26,12 @@ export default function AcctionButton() {
         const response = await getUserSubscriptions(session.userId.toString())
         const hasSubscription =
           response.data?.some(
-            (subscription) => subscription.subscription_id === subscriptionId && subscription.status === "active"
+            (subscription) => subscription.subscription.id === subscriptionId && subscription.status === 'active'
           ) ?? false
 
         setIsSubscribed(hasSubscription)
       } catch (error) {
-        console.error("Error fetching user subscriptions:", error)
+        console.error('Error fetching user subscriptions:', error)
       } finally {
         setIsLoading(false)
       }

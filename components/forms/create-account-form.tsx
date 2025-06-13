@@ -54,6 +54,7 @@ import { getDishes } from '@/network/client/dishes'
 import { Dish } from '@/models/dish'
 import { getExercises } from '@/network/client/exercises'
 import { getMealPlans } from '@/network/client/meal-plans'
+import { MultiSelectOptionItem } from '../nyxb-ui/multi-select'
 
 const accountSchema = z.object({
   id: z.coerce.number().optional(),
@@ -62,7 +63,7 @@ const accountSchema = z.object({
     .string()
     .min(10, { message: 'Số điện thoại phải có ít nhất 10 ký tự.' })
     .regex(/^0[0-9]{9,10}$/, { message: 'Số điện thoại không hợp lệ.' }),
-  email: z.string().email({ message: 'Email không hợp lệ.' }),
+  email: z.string().email().optional().nullable(),
   username: z.string().min(3, { message: 'Username phải có ít nhất 3 ký tự.' }),
   province: z.enum([...PROVINCES.map((province) => province.value)] as [string, ...string[]], {
     message: 'Bạn phải chọn tỉnh/thành phố',
@@ -90,7 +91,6 @@ const accountSchema = z.object({
         gift_id: z.coerce.number().optional(),
         order_number: z.string(),
         total_price: z.coerce.number(),
-        course_ids: z.array(z.coerce.string()).default([]),
         meal_plan_ids: z.array(z.coerce.string()).default([]),
         dish_ids: z.array(z.coerce.string()).default([]),
         exercise_ids: z.array(z.coerce.string()).default([]),
@@ -104,16 +104,17 @@ interface CreateAccountFormProps {
   data: User
 }
 
-type selectOption = {
-  value: string
-  label: string
-}
-
 export default function CreateAccountForm({ data }: CreateAccountFormProps) {
   // const [isPending, startTransition] = useTransition()
   const { session } = useSession()
   const [isLoading, setIsLoading] = useState(true)
   const [membershipList, setMembershipList] = useState<Subscription[]>([])
+  const [initialSelections, setInitialSelections] = useState<
+    Record<
+      number,
+      { mealPlans: MultiSelectOptionItem[]; exercises: MultiSelectOptionItem[]; dishes: MultiSelectOptionItem[] }
+    >
+  >({})
 
   const form = useForm<AccountFormData>({
     resolver: zodResolver(accountSchema),
@@ -121,7 +122,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       ? {
           fullname: data.fullname,
           phone_number: data.phone_number,
-          email: data.email,
+          email: data.email || null,
           username: data.username,
           province: data.province,
           address: data.address,
@@ -131,7 +132,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       : {
           fullname: '',
           phone_number: '',
-          email: '',
+          email: null,
           username: '',
           province: '',
           address: '',
@@ -175,47 +176,40 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
         const userSubscriptionsResponse = await getUserSubscriptions(userId)
 
         const subscriptionsWithPlanId = userSubscriptionsResponse.data.map((sub: UserSubscriptionDetail) => {
-          // Format API dates
-          const formattedSub = {
+          const mealPlans = sub.meal_plans.map((mealPlan) => ({
+            value: String(mealPlan.id),
+            label: mealPlan.title,
+          }))
+          const exercises = sub.exercises.map((exercise) => ({
+            value: String(exercise.id),
+            label: exercise.name,
+          }))
+          const dishes = sub.dishes.map((dish) => ({
+            value: String(dish.id),
+            label: dish.name,
+          }))
+
+          // Save initial selections for this subscription
+          if (sub.subscription.id) {
+            setInitialSelections((prev) => ({
+              ...prev,
+              [sub.subscription.id]: { mealPlans, exercises, dishes },
+            }))
+          }
+
+          return {
             ...sub,
+            subscription_id: sub.subscription.id,
             gift_id: sub.gifts?.id,
-            course_ids: sub.courses.map((course) => course.id.toString()),
-            meal_plan_ids: sub.meal_plans.map((mealPlan) => mealPlan.id.toString()),
-            dish_ids: sub.dishes.map((dish) => dish.id.toString()),
-            exercise_ids: sub.exercises.map((exercise) => exercise.id.toString()),
+            meal_plan_ids: mealPlans.map((mealPlan) => mealPlan.value),
+            dish_ids: dishes.map((dish) => dish.value),
+            exercise_ids: exercises.map((exercise) => exercise.value),
             subscription_start_at: sub.subscription_start_at ? formatDate(sub.subscription_start_at) : '',
             subscription_end_at: sub.subscription_end_at ? formatDate(sub.subscription_end_at) : '',
           }
-
-          // if (formattedSub.subscription_start_at && formattedSub.subscription_end_at) {
-          //   // Total duration including gift extension
-          //   const totalDuration = calculateMonthsFromDays(
-          //     formattedSub.subscription_start_at,
-          //     formattedSub.subscription_end_at
-          //   )
-          //   // Subtract gift months for accurate plan duration
-          //   let giftMonths = 0
-          //   if (sub.gifts) {
-          //     const membership = memberships.find((m) => m.id === sub.subscription_id)
-          //     const gift = membership?.gifts.find((g) => g.id === sub.gifts.id)
-          //     if (gift && gift.type === 'membership_month') {
-          //       giftMonths = gift.month_count
-          //     }
-          //   }
-          //   console.log('totalDuration', totalDuration)
-          //   console.log('giftMonths', giftMonths)
-          //   const planDuration = totalDuration - giftMonths
-          //   const membership = memberships.find((m) => m.id === sub.subscription_id)
-          //   const plan = membership?.prices.find((p) => p.duration === planDuration)
-          //   if (plan) {
-          //     return { ...formattedSub, plan_id: plan.id }
-          //   }
-          // }
-          return formattedSub
         })
-        setValue('subscriptions', subscriptionsWithPlanId)
 
-        console.log('subscriptionsWithPlanId', subscriptionsWithPlanId)
+        setValue('subscriptions', subscriptionsWithPlanId)
       }
     } catch (error) {
       console.error('Error fetching account data:', error)
@@ -241,7 +235,11 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
   }, [form])
 
   async function onSubmit(values: AccountFormData) {
-    if (values.subscriptions?.some((sub) => !sub.subscription_id || !sub.subscription_start_at)) {
+    if (
+      values.subscriptions?.some(
+        (sub) => !sub.subscription_id || !sub.subscription_start_at || !sub.subscription_end_at
+      )
+    ) {
       form.setError('subscriptions', {
         type: 'custom',
         message: 'Vui lòng điền đầy đủ thông tin cho tất cả các gói membership',
@@ -249,9 +247,10 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       return
     }
 
+    const toastId = toast.loading('Updating course structure...')
     try {
-      const toastId = toast.loading('Updating course structure...')
       if (!data?.id) {
+        toast.dismiss(toastId)
         toast.error('Không tìm thấy thông tin người dùng')
         return
       }
@@ -282,7 +281,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
           await Promise.all(
             deletedSubscriptions
               .filter((sub) => sub.id)
-              .map((sub) => deleteUserSubscription(userId, sub.subscription_id.toString()))
+              .map((sub) => deleteUserSubscription(userId, sub.subscription.id.toString()))
           )
           await handleCreateUpdateUserSubscription(values.subscriptions, userId)
         } else {
@@ -293,6 +292,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       toast.dismiss(toastId)
       toast.success('Cập nhật tài khoản thành công')
     } catch (error) {
+      toast.dismiss(toastId)
       toast.error('Cập nhật tài khoản thất bại')
     }
   }
@@ -376,14 +376,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     return newDate
   }
 
-  // const calculateMonthsFromDays = (startDateStr: string, endDateStr: string): number => {
-  //   if (!startDateStr || !endDateStr) return 0
-  //   const start = new Date(startDateStr)
-  //   const end = new Date(endDateStr)
-  //   const diffTime = Math.abs(end.getTime() - start.getTime())
-  //   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  //   return Math.round((diffDays + 1) / 35) // 35 days per month
-  // }
+  console.log('subscriptions', subscriptions)
 
   if (isLoading) {
     return (
@@ -416,7 +409,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                 placeholder="Nhập số điện thoại"
               />
 
-              <FormInputField form={form} name="email" label="Email" type="email" required placeholder="Nhập email" />
+              <FormInputField form={form} name="email" label="Email" type="email" placeholder="Nhập email" />
 
               <FormSelectField
                 form={form}
@@ -487,22 +480,14 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 {subscriptions.map((subscription, idx) => {
+                  const initialSelection =
+                    subscription.subscription_id && initialSelections[subscription.subscription_id]
+                      ? initialSelections[subscription.subscription_id]
+                      : { mealPlans: [], exercises: [], dishes: [] }
+
                   const isExistingRecord = Boolean(subscription.id) && subscription.id! > 0
                   const membership = membershipList.find((m) => m.id === subscription.subscription_id)
                   const gifts = membership?.gifts || []
-
-                  // const computeEndDate = (startAt?: string, planId?: number, giftId?: number): string => {
-                  //   if (!startAt || !planId) return ''
-                  //   const startDate = new Date(startAt)
-                  //   const plan = plans.find((p) => p.id === planId)
-                  //   if (!plan) return ''
-                  //   let date = addDaysForMonths(startDate, plan.duration)
-                  //   const gift = gifts.find((g) => g.id === giftId)
-                  //   if (gift && gift.type === 'membership_month' && gift.month_count) {
-                  //     date = addDaysForMonths(date, gift.month_count)
-                  //   }
-                  //   return formatDate(date)
-                  // }
 
                   return (
                     <div
@@ -554,39 +539,6 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                           </Select>
                         </div>
 
-                        {/* Plan Select */}
-                        {/* <div className="space-y-2">
-                          <label className="text-sm font-medium">Thời gian (tháng)</label>
-                          <Select
-                            value={subscription.plan_id?.toString() || ""}
-                            disabled={!subscription.subscription_id || !subscription.subscription_start_at}
-                            onValueChange={(value: string) => {
-                              const planId = value ? Number(value) : undefined
-                              const newEnd = computeEndDate(
-                                subscription.subscription_start_at,
-                                planId,
-                                subscription.gift_id
-                              )
-                              updateSubscription(idx, {
-                                ...subscription,
-                                plan_id: planId,
-                                subscription_end_at: newEnd,
-                              })
-                            }}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Chọn thời gian gói" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {plans.map((plan) => (
-                                <SelectItem key={plan.id} value={plan.id.toString()}>
-                                  {plan.duration} tháng - {plan.price.toLocaleString("vi-VN")}đ
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div> */}
-
                         {/* Start Date */}
                         <div className="space-y-2">
                           <label className="text-sm font-medium">Ngày bắt đầu</label>
@@ -599,6 +551,12 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                               updateSubscription(idx, {
                                 ...subscription,
                                 subscription_start_at: newStart,
+                                // If end date exists and is now invalid, clear it
+                                subscription_end_at:
+                                  subscription.subscription_end_at &&
+                                  new Date(subscription.subscription_end_at) <= new Date(newStart)
+                                    ? ''
+                                    : subscription.subscription_end_at,
                               })
                             }}
                           />
@@ -610,8 +568,23 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                           <input
                             type="date"
                             value={subscription.subscription_end_at || ''}
+                            min={
+                              subscription.subscription_start_at
+                                ? new Date(new Date(subscription.subscription_start_at).getTime() + 86400000)
+                                    .toISOString()
+                                    .split('T')[0]
+                                : undefined
+                            }
                             onChange={(e) => {
                               const newEnd = e.target.value
+                              const startDate = new Date(subscription.subscription_start_at || '')
+                              const endDate = new Date(newEnd)
+
+                              if (startDate && endDate <= startDate) {
+                                toast.error('Ngày kết thúc phải sau ngày bắt đầu')
+                                return
+                              }
+
                               updateSubscription(idx, {
                                 ...subscription,
                                 subscription_end_at: newEnd,
@@ -710,56 +683,13 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                               <AccordionContent>
                                 <div className="rounded-md bg-muted/20 p-4 space-y-6 mt-2">
                                   <div className="space-y-2">
-                                    <h5 className="text-sm font-medium">Khóa học</h5>
-                                    <FormMultiSelectPaginatedField
-                                      form={form}
-                                      name={`subscriptions.${idx}.course_ids`}
-                                      getData={async ({
-                                        page,
-                                        per_page,
-                                        keyword,
-                                      }: {
-                                        page: number
-                                        per_page: number
-                                        keyword?: string
-                                      }) => {
-                                        const subscriptionId = subscriptions[idx].subscription_id
-                                        if (!subscriptionId) {
-                                          return { data: [], total: 0 }
-                                        }
-                                        const response = await getCourses({
-                                          subscription_id: String(subscriptionId),
-                                          page,
-                                          per_page,
-                                          keyword,
-                                        })
-                                        return {
-                                          data: response.data.map((course: Course) => ({
-                                            value: String(course.id),
-                                            label: course.course_name,
-                                          })),
-                                          total: response.paging.total,
-                                        }
-                                      }}
-                                      placeholder="Chọn khóa học để gán cho gói membership này"
-                                      key={`course-select-${idx}-${
-                                        (form.getValues(`subscriptions.${idx}.course_ids`) as string[] | undefined)
-                                          ?.length || 0
-                                      }`}
-                                    />
-                                  </div>
-
-                                  <div className="space-y-2">
                                     <h5 className="text-sm font-medium">Thực đơn</h5>
                                     <FormMultiSelectPaginatedField
                                       form={form}
                                       name={`subscriptions.${idx}.meal_plan_ids`}
+                                      initialSelectedOptions={initialSelection.mealPlans}
                                       getData={async ({ page, per_page, keyword }) => {
-                                        const response = await getMealPlans({
-                                          page,
-                                          per_page,
-                                          keyword,
-                                        })
+                                        const response = await getMealPlans({ page, per_page, keyword })
 
                                         return {
                                           data: response.data.map((mealPlan: MealPlan) => ({
@@ -770,9 +700,6 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                                         }
                                       }}
                                       placeholder="Chọn thực đơn để gán cho gói membership này"
-                                      key={`meal-plan-select-${idx}-${
-                                        form.getValues(`subscriptions.${idx}.meal_plan_ids`)?.length || 0
-                                      }`}
                                     />
                                   </div>
 
@@ -781,12 +708,9 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                                     <FormMultiSelectPaginatedField
                                       form={form}
                                       name={`subscriptions.${idx}.exercise_ids`}
+                                      initialSelectedOptions={initialSelection.exercises}
                                       getData={async ({ page, per_page, keyword }) => {
-                                        const response = await getExercises({
-                                          page,
-                                          per_page,
-                                          keyword,
-                                        })
+                                        const response = await getExercises({ page, per_page, keyword })
 
                                         return {
                                           data: response.data.map((exercise: Exercise) => ({
@@ -797,9 +721,6 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                                         }
                                       }}
                                       placeholder="Chọn bài tập để gán cho gói membership này"
-                                      key={`exercise-select-${idx}-${
-                                        form.getValues(`subscriptions.${idx}.exercise_ids`)?.length || 0
-                                      }`}
                                     />
                                   </div>
 
@@ -808,12 +729,9 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                                     <FormMultiSelectPaginatedField
                                       form={form}
                                       name={`subscriptions.${idx}.dish_ids`}
+                                      initialSelectedOptions={initialSelection.dishes}
                                       getData={async ({ page, per_page, keyword }) => {
-                                        const response = await getDishes({
-                                          page,
-                                          per_page,
-                                          keyword,
-                                        })
+                                        const response = await getDishes({ page, per_page, keyword })
 
                                         return {
                                           data: response.data.map((dish: Dish) => ({

@@ -2,10 +2,10 @@
 
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { DashboardContent } from '@/components/admin-panel/dashboard/dashboard-content'
-import { useSession } from '@/components/providers/session-provider'
 import { Dashboard } from '@/models/dashboard'
 import { getDashboard } from '@/network/server/dashboard'
 import { useEffect, useState } from 'react'
+import { useSession } from '@/components/providers/session-provider'
 
 export default function DashboardPage() {
   const { session } = useSession()

@@ -1,8 +1,8 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
-
 import { Control, FieldValues, Path } from 'react-hook-form'
-import { Loader2, Search } from 'lucide-react'
+import { Loader2, Search, X } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import {
   MultiSelect,
@@ -11,18 +11,11 @@ import {
   MultiSelectList,
   MultiSelectSearch,
   MultiSelectTrigger,
-  MultiSelectValue,
   renderMultiSelectOptions,
-  type MultiSelectOption as NyxbMultiSelectOption,
+  MultiSelectOptionItem,
 } from '@/components/nyxb-ui/multi-select'
 import { cn } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
-
-// Define our simple option type for API data
-export type SelectOption = {
-  value: string
-  label: string | React.ReactNode
-}
 
 export interface PaginatedResponse<T> {
   data: T[]
@@ -45,7 +38,8 @@ interface FormMultiSelectPaginatedFieldProps<TFieldValues extends FieldValues = 
   withAsterisk?: boolean
   placeholder?: string
   description?: string
-  getData: (params: PaginatedQueryParams) => Promise<PaginatedResponse<SelectOption>>
+  getData: (params: PaginatedQueryParams) => Promise<PaginatedResponse<MultiSelectOptionItem>>
+  initialSelectedOptions?: MultiSelectOptionItem[]
 }
 
 const FormMultiSelectPaginatedField = <TFieldValues extends FieldValues>({
@@ -56,10 +50,17 @@ const FormMultiSelectPaginatedField = <TFieldValues extends FieldValues>({
   placeholder,
   description,
   getData,
+  initialSelectedOptions = [],
 }: FormMultiSelectPaginatedFieldProps<TFieldValues>) => {
+  const [selectedOptions, setSelectedOptions] = useState<MultiSelectOptionItem[]>(initialSelectedOptions)
   const [keyword, setKeyword] = useState<string | undefined>(undefined)
+  const [isOpen, setIsOpen] = useState(false)
+
   const debouncedKeyword = useDebounce(keyword, 500)
   const perPage = 5
+
+  const [searchResults, setSearchResults] = useState<MultiSelectOptionItem[]>([])
+  const [optionsCache, setOptionsCache] = useState<Map<string, MultiSelectOptionItem>>(new Map())
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error, refetch } = useInfiniteQuery(
     {
@@ -70,7 +71,24 @@ const FormMultiSelectPaginatedField = <TFieldValues extends FieldValues>({
           per_page: perPage,
           keyword: debouncedKeyword,
         })
-        return response
+
+        setOptionsCache((prevCache) => {
+          const newCache = new Map(prevCache)
+          response.data.forEach((option) => {
+            newCache.set(option.value, option)
+          })
+          return newCache
+        })
+
+        if (pageParam === 0) {
+          setSearchResults(response.data)
+        } else {
+          setSearchResults((prev) => [...prev, ...response.data])
+        }
+
+        const initialSelectedValues = new Set(initialSelectedOptions.map((opt) => opt.value))
+        const filteredData = response.data.filter((item) => !initialSelectedValues.has(item.value))
+        return { ...response, data: filteredData }
       },
       initialPageParam: 0,
       getNextPageParam: (lastPage, allPages) => {
@@ -84,26 +102,16 @@ const FormMultiSelectPaginatedField = <TFieldValues extends FieldValues>({
 
   const [isAutoLoadingMore, setIsAutoLoadingMore] = useState(false)
 
-  const allOptions = useMemo(() => {
+  const paginatedOptions: MultiSelectOptionItem[] = useMemo(() => {
     if (!data?.pages) return []
-
-    const combinedOptions: NyxbMultiSelectOption[] = []
-    const uniqueValues = new Set<string>()
-
-    data.pages.forEach((page) => {
-      page.data.forEach((option) => {
-        // Only add if the option has a value property and it's not already in our set
-        if ('value' in option && !uniqueValues.has(option.value)) {
-          uniqueValues.add(option.value)
-          combinedOptions.push(option as NyxbMultiSelectOption)
-        }
-      })
-    })
-
-    return combinedOptions
+    return data.pages.flatMap((page) => page.data)
   }, [data?.pages])
 
-  // Effect to handle deep search by auto-fetching more pages
+  const allOptions: MultiSelectOptionItem[] = useMemo(() => {
+    const selectedValues = new Set(selectedOptions.map((opt) => opt.value))
+    return [...selectedOptions, ...paginatedOptions.filter((opt) => !selectedValues.has(opt.value))]
+  }, [selectedOptions, paginatedOptions])
+
   useEffect(() => {
     if (!debouncedKeyword || debouncedKeyword.trim() === '') {
       setIsAutoLoadingMore(false)
@@ -118,33 +126,57 @@ const FormMultiSelectPaginatedField = <TFieldValues extends FieldValues>({
     }
   }, [debouncedKeyword, hasNextPage, isFetchingNextPage, isLoading, fetchNextPage])
 
-  const filteredOptions = useMemo(() => {
-    if (!keyword || keyword.trim() === '') {
-      return allOptions
+  useEffect(() => {
+    const currentFormValues = form.getValues(name) as string[] | undefined
+
+    if (!currentFormValues || currentFormValues.length === 0) {
+      if (selectedOptions.length > 0) {
+        setSelectedOptions([])
+      }
+      return
     }
 
-    const searchLower = keyword.toLowerCase()
-    return allOptions.filter((option) => {
-      // Filter out separator type options
-      if ('type' in option && option.type === 'separator') {
-        return false
-      }
+    const newSelectedOptions: MultiSelectOptionItem[] = currentFormValues.map((val) => {
+      const cachedOption = optionsCache.get(val)
+      if (cachedOption) return cachedOption
 
-      // Handle group options
-      if ('children' in option) {
-        return true // Keep groups, they'll be filtered by their children
-      }
+      const foundInSearch = searchResults.find((opt) => opt.value === val)
+      if (foundInSearch) return foundInSearch
 
-      // Handle regular options
-      if ('value' in option) {
-        const label = String(option.label || '').toLowerCase()
-        const value = String(option.value || '').toLowerCase()
-        return label.includes(searchLower) || value.includes(searchLower)
-      }
+      const foundInPaginated = paginatedOptions.find((opt) => opt.value === val)
+      if (foundInPaginated) return foundInPaginated
 
-      return false
+      const foundInSelected = selectedOptions.find((opt) => opt.value === val)
+      if (foundInSelected) return foundInSelected
+
+      return { value: val, label: val }
     })
-  }, [allOptions, keyword])
+
+    const areOptionsEqual = (arr1: MultiSelectOptionItem[], arr2: MultiSelectOptionItem[]) => {
+      if (arr1.length !== arr2.length) return false
+      for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i].value !== arr2[i].value || arr1[i].label !== arr2[i].label) {
+          return false
+        }
+      }
+      return true
+    }
+
+    if (!areOptionsEqual(selectedOptions, newSelectedOptions)) {
+      setSelectedOptions(newSelectedOptions)
+    }
+  }, [form, name, paginatedOptions, searchResults, optionsCache])
+
+  const filteredOptions = useMemo(() => {
+    const selectedSet = new Set(selectedOptions.map((opt) => opt.value))
+    if (!keyword || keyword.trim() === '') {
+      return [...selectedOptions, ...paginatedOptions.filter((opt) => !selectedSet.has(opt.value))]
+    }
+    const lower = keyword.toLowerCase()
+    return paginatedOptions.filter(
+      (opt) => typeof opt.label === 'string' && opt.label.toLowerCase().includes(lower) && !selectedSet.has(opt.value)
+    )
+  }, [keyword, paginatedOptions, selectedOptions])
 
   const handleScroll = useCallback(
     (event: React.UIEvent<HTMLDivElement>) => {
@@ -182,12 +214,57 @@ const FormMultiSelectPaginatedField = <TFieldValues extends FieldValues>({
             </FormLabel>
           )}
           <MultiSelect
-            onValueChange={field.onChange}
-            defaultValue={field.value as string[]}
-            onSearch={handleSearch}
+            value={field.value}
+            open={isOpen}
             onOpenChange={(open) => {
-              if (!open) setKeyword(undefined)
+              if (!open) {
+                const activeElement = document.activeElement
+                const isClickOutside = !activeElement?.closest('.multi-select-container')
+                if (isClickOutside) {
+                  setIsOpen(false)
+                  setKeyword(undefined)
+                }
+              } else {
+                setIsOpen(true)
+              }
             }}
+            onValueChange={(newValues: string[], items: MultiSelectOptionItem[] = []) => {
+              if (items.length > 0) {
+                setOptionsCache((prevCache) => {
+                  const newCache = new Map(prevCache)
+                  items.forEach((item) => {
+                    if (item.value) {
+                      newCache.set(item.value, item)
+                    }
+                  })
+                  return newCache
+                })
+              }
+
+              const newSelectedOptions: MultiSelectOptionItem[] = newValues.map((val) => {
+                const foundInItems = items.find((item) => item.value === val)
+                if (foundInItems) return foundInItems
+
+                const cachedOption = optionsCache.get(val)
+                if (cachedOption) return cachedOption
+
+                const foundInSearch = searchResults.find((opt) => opt.value === val)
+                if (foundInSearch) return foundInSearch
+
+                const foundInFiltered = filteredOptions.find((opt) => opt.value === val)
+                if (foundInFiltered) return foundInFiltered
+
+                const foundInSelected = selectedOptions.find((opt) => opt.value === val)
+                if (foundInSelected) return foundInSelected
+
+                return { value: val, label: val }
+              })
+
+              setSelectedOptions(newSelectedOptions)
+              field.onChange(newValues)
+              setIsOpen(true)
+            }}
+            onSearch={handleSearch}
           >
             <FormControl>
               <MultiSelectTrigger
@@ -198,11 +275,32 @@ const FormMultiSelectPaginatedField = <TFieldValues extends FieldValues>({
                   'shadow-sm hover:shadow'
                 )}
               >
-                <MultiSelectValue placeholder={placeholder} />
+                {selectedOptions.length > 0 ? (
+                  <div className="flex flex-wrap items-center gap-1">
+                    {selectedOptions.map((opt) => (
+                      <Badge
+                        variant="secondary"
+                        key={opt.value}
+                        className="group/multi-select-badge cursor-pointer rounded-md pr-1.5"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          const newSelected = selectedOptions.filter((o) => o.value !== opt.value)
+                          setSelectedOptions(newSelected)
+                          field.onChange(newSelected.map((o) => o.value))
+                        }}
+                      >
+                        <span className="truncate">{opt.label}</span>
+                        <X className="text-muted-foreground group-hover/multi-select-badge:text-foreground ml-1 size-3" />
+                      </Badge>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-muted-foreground pointer-events-none">{placeholder}</span>
+                )}
               </MultiSelectTrigger>
             </FormControl>
             <MultiSelectContent className="max-w-[min(calc(100vw-2rem),25rem)] border border-border/70 shadow-lg rounded-lg overflow-hidden">
-              {/* Search is moved inside the MultiSelectList for sticky positioning */}
               <MultiSelectSearch
                 placeholder={`${placeholder ? placeholder + ' - ' : ''}Search...`}
                 className="px-3 border-b border-border/30 sticky top-0 z-10 bg-background/95 backdrop-blur-sm"
@@ -211,7 +309,6 @@ const FormMultiSelectPaginatedField = <TFieldValues extends FieldValues>({
                 className="relative min-h-[150px] max-h-[350px] scrollbar-thumb-rounded scrollbar-thin scrollbar-thumb-border/50 scrollbar-track-transparent"
                 onScroll={handleScroll}
               >
-                {/* Search loading indicator: appears at the top when keyword is present and fetching */}
                 {keyword && (isLoading || isFetchingNextPage || isAutoLoadingMore) && (
                   <div className="flex items-center justify-center py-2 text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -219,7 +316,6 @@ const FormMultiSelectPaginatedField = <TFieldValues extends FieldValues>({
                   </div>
                 )}
 
-                {/* Initial loading state (no keyword, no options yet) */}
                 {isLoading && !keyword && filteredOptions.length === 0 && (
                   <div className="flex items-center justify-center py-6">
                     <Loader2 className="h-5 w-5 animate-spin mr-2 text-primary/70" />
@@ -227,10 +323,8 @@ const FormMultiSelectPaginatedField = <TFieldValues extends FieldValues>({
                   </div>
                 )}
 
-                {/* Render options if available */}
                 {filteredOptions.length > 0 && <div className="p-1">{renderMultiSelectOptions(filteredOptions)}</div>}
 
-                {/* No results/options state (only if no options and not currently loading/fetching more) */}
                 {!isLoading && !isFetchingNextPage && !isAutoLoadingMore && filteredOptions.length === 0 && (
                   <MultiSelectEmpty>
                     <div className="flex flex-col items-center py-4 text-muted-foreground">
@@ -240,7 +334,6 @@ const FormMultiSelectPaginatedField = <TFieldValues extends FieldValues>({
                   </MultiSelectEmpty>
                 )}
 
-                {/* Load more button / infinite scroll indicator at the bottom */}
                 {!keyword && hasNextPage && (
                   <div
                     onClick={handleLoadMore}

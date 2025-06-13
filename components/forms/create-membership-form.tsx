@@ -36,6 +36,9 @@ const formSchema = z.object({
     required_error: 'Vui lòng chọn loại hình.',
   }),
   course_ids: z.array(z.string()).optional(),
+  meal_plan_description: z.string().min(10, {
+    message: 'Mô tả phải có ít nhất 10 ký tự.',
+  }),
   meal_plan_ids: z.array(z.string()).optional(),
   description_1: z.string().min(10, {
     message: 'Mô tả phải có ít nhất 10 ký tự.',
@@ -129,6 +132,8 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
           thumbnail_image: '',
           description_1: '',
           description_2: '',
+          meal_plan_ids: [],
+          meal_plan_description: '',
         },
   })
 
@@ -303,6 +308,14 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                 label="Khoá tập IDs"
                 data={[]}
                 placeholder="Khoá tập"
+                withAsterisk
+              />
+
+              <FormRichTextField
+                form={form}
+                name="meal_plan_description"
+                label="Thông tin chi tiết thực đơn"
+                placeholder="Nhập thông tin chi tiết thực đơn"
                 withAsterisk
               />
 

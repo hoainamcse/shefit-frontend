@@ -106,12 +106,12 @@ export default function UsersPage() {
 
           if (userSubscriptionsResponse?.data && userSubscriptionsResponse.data.length > 0) {
             for (const sub of userSubscriptionsResponse.data) {
-              const subscriptionDetail = await getSubscription(sub.subscription_id)
+              const subscriptionDetail = await getSubscription(sub.subscription.id)
               const membershipName = (subscriptionDetail.data as Subscription)?.name || ''
               const startDate = sub.subscription_start_at ? formatDateString(sub.subscription_start_at) : ''
               const endDate = sub.subscription_end_at ? formatDateString(sub.subscription_end_at) : ''
 
-              const courseNames = sub.courses.map((course) => course.course_name).join(', ')
+              const courseNames = sub.subscription.courses.map((course) => course.course_name).join(', ')
               const mealPlanNames = sub.meal_plans.map((meal) => meal.title).join(', ')
               const exerciseNames = sub.exercises.map((exercise) => exercise.name).join(', ')
               const dishNames = sub.dishes.map((dish) => dish.name).join(', ')

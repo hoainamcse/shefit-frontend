@@ -30,6 +30,7 @@ type Subscription = {
     created_at: string
     updated_at: string
     meal_plan_ids?: MealPlan['id'][]
+    meal_plan_description?: string
 }
 
 export type { Subscription }

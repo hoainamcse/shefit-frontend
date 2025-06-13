@@ -1,9 +1,4 @@
-'use client'
-
-import { useSession } from '@/components/providers/session-provider'
-
 export const WelcomeSection = () => {
-  const { session } = useSession()
   const userName = 'Admin'
 
   return (

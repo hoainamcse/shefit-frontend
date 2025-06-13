@@ -130,9 +130,12 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
                           try {
                             const subscriptions = await getUserSubscriptions(session?.userId!.toString())
                             const hasAccess = subscriptions.data?.some((subscription) => {
-                              const hasActiveSubscription = subscription.status === 'active' && subscription.courses
+                              const hasActiveSubscription =
+                                subscription.status === 'active' && subscription.subscription.courses
                               if (!hasActiveSubscription) return false
-                              return subscription.courses.some((course) => Number(course.id) === Number(courseId))
+                              return subscription.subscription.courses.some(
+                                (course) => Number(course.id) === Number(courseId)
+                              )
                             })
 
                             if (hasAccess) {

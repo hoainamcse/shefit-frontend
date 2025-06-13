@@ -36,8 +36,8 @@ export default function PurchasedPackage() {
             const enhancedSubscriptions = await Promise.all(
               response.data.map(async (sub) => {
                 try {
-                  if (sub.subscription_id) {
-                    const detailsResponse = await getSubscription(sub.subscription_id)
+                  if (sub.subscription.id) {
+                    const detailsResponse = await getSubscription(sub.subscription.id)
                     if (detailsResponse.data) {
                       return {
                         ...sub,
@@ -50,7 +50,7 @@ export default function PurchasedPackage() {
                   }
                   return sub
                 } catch (err) {
-                  console.error(`Error fetching details for subscription ${sub.subscription_id}:`, err)
+                  console.error(`Error fetching details for subscription ${sub.subscription}:`, err)
                   return sub
                 }
               })
@@ -99,7 +99,7 @@ export default function PurchasedPackage() {
             >
               <div className="flex flex-col gap-5 max-w-[45%] text-lg">
                 <div className="font-[Coiny] text-[#000000] text-xl md:text-2xl mb-[18px]">
-                  {subscription.name || `Gói #${subscription.subscription_id}`}
+                  {subscription.name || `Gói #${subscription.subscription.id}`}
                 </div>
                 <div className="flex justify-between text-[#737373]">
                   <div>Ngày bắt đầu:</div>
@@ -110,7 +110,7 @@ export default function PurchasedPackage() {
                   <div>{formatDate(subscription.subscription_end_at)}</div>
                 </div>
                 <Link
-                  href={`/packages/detail/${subscription.subscription_id}`}
+                  href={`/packages/detail/${subscription.subscription.id}`}
                   className="h-fit text-base md:text-xl lg:text-2xl text-[#13D8A7] mb-[18px] max-md:font-light mt-auto"
                 >
                   <Button className="bg-[#13D8A7] rounded-full w-[160px] h-[36px] text-lg">Chọn gói</Button>

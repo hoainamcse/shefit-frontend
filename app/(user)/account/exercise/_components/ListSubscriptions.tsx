@@ -26,9 +26,9 @@ export default function ListSubscriptions() {
           setSelectedSubscription(userSubsResponse.data[0])
 
           const namesPromises = userSubsResponse.data.map(async (sub) => {
-            if (sub.subscription_id) {
-              const subResponse = await getSubscription(sub.subscription_id)
-              return { id: sub.subscription_id, name: subResponse.data?.name }
+            if (sub.subscription.id) {
+              const subResponse = await getSubscription(sub.subscription.id)
+              return { id: sub.subscription.id, name: subResponse.data?.name }
             }
             return null
           })

@@ -29,6 +29,7 @@ type Subscription = {
     course_format: 'video' | 'live' | 'both'
     course_ids: number[]
     meal_plan_ids: number[]
+    meal_plan_description?: string
     prices: Price[]
     gifts: Gift[]
     cover_image: string
