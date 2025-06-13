@@ -19,3 +19,26 @@
 .messagesContainerScrollbar::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+/* ============================================================ */
+
+.promptsContainerScrollbar::-webkit-scrollbar {
+  width: 6px; /* chiều rộng scrollbar dọc */
+}
+
+/* Track (nền của thanh cuộn) */
+.promptsContainerScrollbar::-webkit-scrollbar-track {
+  background: none;
+  border-radius: 10px;
+}
+
+/* Thumb (phần kéo) */
+.promptsContainerScrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+/* Khi hover vào thumb */
+.promptsContainerScrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
