@@ -6,7 +6,7 @@ import { createUserCourse, getUserCourses } from '@/network/server/user-courses'
 import { toast } from 'sonner'
 import { Course } from '@/models/course'
 import { UserCourse } from '@/models/user-courses'
-
+import { addFavouriteCourse } from '@/network/server/favourite-course'
 interface UserCourseItem extends UserCourse {
   is_active: boolean
   start_date: string
@@ -85,11 +85,11 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
                   return
                 }
                 try {
-                  await createUserCourse({ course_id: courseId }, session.userId)
-                  toast.success('Đã lưu khóa tập thành công!')
+                  await addFavouriteCourse(session.userId.toString(), courseId.toString())
+                  toast.success('Đã thêm vào danh sách yêu thích thành công!')
                 } catch (error) {
-                  console.error('Error saving course:', error)
-                  toast.error('Có lỗi xảy ra khi lưu khóa tập!')
+                  console.error('Error saving to favorites:', error)
+                  toast.error('Có lỗi xảy ra khi lưu vào danh sách yêu thích!')
                 }
               }}
               className="w-full rounded-full text-xl bg-white text-[#13D8A7] h-14 border-2 border-[#13D8A7]"

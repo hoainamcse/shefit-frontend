@@ -1,28 +1,65 @@
-'use client';
+'use client'
 
-import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
+import { createContext, useContext, ReactNode, useState } from 'react'
 
-interface SubscriptionContextType {
-  selectedSubscription: any;
-  setSelectedSubscription: (subscription: any) => void;
+interface Subscription {
+  id: number
+  user_id: number
+  course_format: string
+  status: string
+  subscription_start_at: string
+  subscription_end_at: string
+  order_number: string
+  total_price: number
+  coupon_code: string
+  subscription: {
+    id: number
+    courses: Array<{
+      id: number
+      course_name: string
+    }>
+  }
+  exercises: any[]
+  meal_plans: any[]
+  dishes: any[]
 }
 
-const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
+interface SubscriptionContextType {
+  selectedSubscription: Subscription | null | undefined
+  setSelectedSubscription: (subscription: Subscription | undefined) => void
+  showFavorites: boolean
+  setShowFavorites: (show: boolean) => void
+  isLoading: boolean
+  setIsLoading: (isLoading: boolean) => void
+}
+
+const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined)
 
 export function SubscriptionProvider({ children }: { children: ReactNode }) {
-  const [selectedSubscription, setSelectedSubscription] = useState<any>(null);
+  const [selectedSubscription, setSelectedSubscription] = useState<Subscription | undefined>(undefined)
+  const [showFavorites, setShowFavorites] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   return (
-    <SubscriptionContext.Provider value={{ selectedSubscription, setSelectedSubscription }}>
+    <SubscriptionContext.Provider
+      value={{
+        selectedSubscription,
+        setSelectedSubscription,
+        showFavorites,
+        setShowFavorites,
+        isLoading,
+        setIsLoading,
+      }}
+    >
       {children}
     </SubscriptionContext.Provider>
-  );
+  )
 }
 
 export function useSubscription() {
-  const context = useContext(SubscriptionContext);
+  const context = useContext(SubscriptionContext)
   if (context === undefined) {
-    throw new Error('useSubscription must be used within a SubscriptionProvider');
+    throw new Error('useSubscription must be used within a SubscriptionProvider')
   }
-  return context;
+  return context
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { createUserMealPlan } from '@/network/server/user-meal-plans'
+import { addFavouriteMealPlan } from '@/network/server/favourite-meal-plan'
 import { toast } from 'sonner'
 import { useSession } from '@/components/providers/session-provider'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -55,7 +55,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
     }
 
     try {
-      await createUserMealPlan({ meal_plan_id: mealPlanId }, session.userId!)
+      await addFavouriteMealPlan(session.userId, mealPlanId.toString())
       toast.success('Đã lưu thực đơn thành công!')
       setHasMealPlanInSubscription(true)
     } catch (error) {

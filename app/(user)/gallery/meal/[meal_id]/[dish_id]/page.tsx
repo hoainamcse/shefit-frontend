@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { getDish } from '@/network/server/dishes'
-
+import ActionButtons from './ActionButtons'
 const ReactPlayer = dynamic(() => import('react-player/lazy'), {
   ssr: false,
   loading: () => (
@@ -128,6 +128,7 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
             <p className="text-[#737373]">{dish.description}</p>
           </div>
         )}
+        <ActionButtons dishId={dish.id} />
       </div>
     </div>
   )

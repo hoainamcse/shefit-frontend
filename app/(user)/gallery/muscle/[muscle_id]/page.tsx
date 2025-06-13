@@ -1,8 +1,9 @@
-import { cn } from "@/lib/utils"
-import React from "react"
-import Link from "next/link"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getMuscleGroupExercises, getMuscleGroups } from "@/network/server/muscle-groups"
+import { cn } from '@/lib/utils'
+import React from 'react'
+import Link from 'next/link'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { getMuscleGroupExercises, getMuscleGroups } from '@/network/server/muscle-groups'
+import { getYoutubeThumbnail } from '@/lib/youtube'
 
 export default async function Muscle({ params }: { params: Promise<{ muscle_id: string }> }) {
   const resolvedParams = await params
@@ -19,16 +20,15 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
           <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] mb-5">
             Các bài tập nhóm {selectedMuscleGroup?.name}
           </div>
-          {/* <p className="text-[#737373] text-xl">{selectedMuscleGroup?.description}</p> */}
         </div>
         <div className="mb-20">
           <Tabs defaultValue="with-equipment" className="w-full">
             <div className="flex justify-center mb-10">
               <TabsList className="bg-white mx-auto">
-                <TabsTrigger value="with-equipment" className={cn("underline text-ring bg-white !shadow-none")}>
+                <TabsTrigger value="with-equipment" className={cn('underline text-ring bg-white !shadow-none')}>
                   Có dụng cụ
                 </TabsTrigger>
-                <TabsTrigger value="no-equipment" className={cn("underline text-ring bg-white !shadow-none")}>
+                <TabsTrigger value="no-equipment" className={cn('underline text-ring bg-white !shadow-none')}>
                   Không có dụng cụ
                 </TabsTrigger>
               </TabsList>
@@ -42,7 +42,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                       <div key={`menu-${exercise.id}`} className="text-xl">
                         <div className="relative group">
                           <img
-                            src={exercise.cover_image ?? undefined}
+                            src={getYoutubeThumbnail(exercise.youtube_url)}
                             alt={exercise.name}
                             className="aspect-[5/3] object-cover rounded-xl mb-4"
                             width={585}
@@ -65,7 +65,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                       <div key={`menu-${exercise.id}`} className="text-xl">
                         <div className="relative group">
                           <img
-                            src={exercise.cover_image ?? undefined}
+                            src={getYoutubeThumbnail(exercise.youtube_url)}
                             alt={exercise.name}
                             className="aspect-[5/3] object-cover rounded-xl mb-4"
                             width={585}

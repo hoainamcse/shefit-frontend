@@ -28,8 +28,11 @@ export function ListCourses() {
   }
 
   const subscriptionCourses = useMemo(() => {
-    return (selectedSubscription?.courses as SubscriptionCourse[]) || []
-  }, [selectedSubscription?.courses])
+    console.log('Selected Subscription:', selectedSubscription)
+    const courses = selectedSubscription?.subscription?.courses || []
+    console.log('Subscription Courses:', courses)
+    return courses
+  }, [selectedSubscription])
 
   const courseIds = useMemo(() => {
     return subscriptionCourses.map((course) => course.id)
@@ -37,7 +40,7 @@ export function ListCourses() {
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
-      if (!selectedSubscription || !selectedSubscription.courses || selectedSubscription.courses.length === 0) {
+      if (!selectedSubscription?.subscription?.courses?.length) {
         setCourses([])
         setIsLoading(false)
         return
