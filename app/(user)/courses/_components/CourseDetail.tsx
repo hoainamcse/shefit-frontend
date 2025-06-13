@@ -70,14 +70,13 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
   }, [courseId])
 
   useEffect(() => {
-    // Setup intersection observer to detect when footer is visible
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsFooterVisible(entry.isIntersecting)
       },
       {
         rootMargin: '0px',
-        threshold: 0.1, // When 10% of the footer is visible
+        threshold: 0.1,
       }
     )
 
@@ -103,7 +102,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
 
   return (
     <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full pb-24 relative">
-      <div className="p-6 mb-20 flex flex-col gap-10">
+      <div className="p-6 flex flex-col gap-10">
         <div className="flex items-center gap-[10px] cursor-pointer" onClick={() => router.back()}>
           <BackIcon color="#000000" style={{ marginBottom: '4px' }} />
           <div className="text-xl text-[#000000] font-semibold">Quay về</div>

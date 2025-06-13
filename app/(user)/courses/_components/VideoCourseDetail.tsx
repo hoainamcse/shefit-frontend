@@ -11,7 +11,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Course } from '@/models/course'
 import { getUserSubscriptions } from '@/network/server/user-subscriptions'
 import { getCourse } from '@/network/server/courses'
-
+import { UserCourse } from '@/models/user-courses'
+import { createUserCourse, getUserCourses } from '@/network/server/user-courses'
+interface UserCourseItem extends UserCourse {
+  is_active: boolean
+  start_date: string
+  end_date: string
+  course_id: number
+}
 type CourseDay = {
   day: number
   content: string
@@ -41,6 +48,64 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
   const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false)
   const [checkingAccess, setCheckingAccess] = useState(false)
   const [isFreeCourse, setIsFreeCourse] = useState(false)
+  const [showLoginDialog, setShowLoginDialog] = useState(false)
+  const [courseStatus, setCourseStatus] = useState<'checking' | 'exists' | 'not_found'>('checking')
+
+  const checkUserCourse = async () => {
+    if (!session) {
+      setCourseStatus('not_found')
+      return 'not_found'
+    }
+
+    try {
+      const response = await getUserCourses(session.userId.toString())
+      const userCourse = (response.data as UserCourseItem[])?.find((course) => {
+        const userCourseId = Number(course.course_id)
+        const currentCourseId = Number(courseId)
+        return userCourseId === currentCourseId && course.is_active === true
+      })
+
+      if (userCourse) {
+        setCourseStatus('exists')
+        return 'exists'
+      } else {
+        setCourseStatus('not_found')
+        return 'not_found'
+      }
+    } catch (error) {
+      console.error('Error checking user course:', error)
+      setCourseStatus('not_found')
+      return 'not_found'
+    }
+  }
+
+  useEffect(() => {
+    checkUserCourse()
+  }, [session, courseId])
+
+  const handleStartClick = async (e: React.MouseEvent) => {
+    e.preventDefault()
+
+    if (!session) {
+      setShowLoginDialog(true)
+      return 'not_logged_in'
+    }
+
+    const status = await checkUserCourse()
+
+    if (status === 'not_found') {
+      try {
+        await createUserCourse({ course_id: courseId }, session.userId)
+        setCourseStatus('exists')
+        return 'exists'
+      } catch (error) {
+        console.error('Error creating user course:', error)
+        return 'error'
+      }
+    }
+
+    return status
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,13 +143,14 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
 
       const hasAccess = subscriptions.data.some((sub: any) => {
         const isActive = sub.status === 'active'
-        const hasCourse = sub.courses.some((course: any) => {
-          const match = course.id == courseId
-          console.log(
-            `Checking course: ${course.id} (${typeof course.id}) vs ${courseId} (${typeof courseId}), match: ${match}`
-          )
-          return match
-        })
+        const hasCourse =
+          sub.courses?.some((course: any) => {
+            const match = course.id == courseId
+            console.log(
+              `Checking course: ${course.id} (${typeof course.id}) vs ${courseId} (${typeof courseId}), match: ${match}`
+            )
+            return match
+          }) || false
         console.log(`Subscription ${sub.id}: active=${isActive}, hasCourse=${hasCourse}`)
         return isActive && hasCourse
       })
@@ -100,7 +166,6 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
   }
 
   useEffect(() => {
-    // Check if course is free when component mounts
     const checkCourse = async () => {
       try {
         const courseResponse = await getCourse(courseId)
@@ -177,7 +242,12 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
                       </div>
                       {session?.userId ? (
                         <div
-                          onClick={(e) => handleDayClick(e, weeks.data[weekIndex]?.id, day.id)}
+                          onClick={async (e) => {
+                            e.preventDefault()
+                            await checkUserCourse()
+                            await handleStartClick(e)
+                            handleDayClick(e, weeks.data[weekIndex]?.id, day.id)
+                          }}
                           className="cursor-pointer"
                         >
                           <ArrowPinkIcon />

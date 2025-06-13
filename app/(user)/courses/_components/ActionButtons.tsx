@@ -57,27 +57,6 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
   }, [session, courseId])
 
   const handleStartClick = async (e: React.MouseEvent) => {
-    if (!session) {
-      setShowLoginDialog(true)
-      return
-    }
-
-    if (courseStatus === 'checking') {
-      return
-    }
-
-    if (courseStatus === 'not_found') {
-      try {
-        await createUserCourse({ course_id: courseId }, session.userId)
-        toast.success('Bắt đầu khóa tập thành công!')
-        setCourseStatus('exists')
-      } catch (error) {
-        console.error('Error creating user course:', error)
-        toast.error('Có lỗi xảy ra khi bắt đầu khóa tập!')
-        return
-      }
-    }
-
     handleToggleDetails()
   }
 
@@ -127,30 +106,17 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
             <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center text-center gap-6">
-            <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
+            <p className="text-lg">ĐĂNG NHẬP ĐỂ LƯU KHÓA TẬP</p>
             <div className="flex gap-4 justify-center w-full px-10">
-              <div className="flex-1">
-                <Button
-                  className="bg-[#13D8A7] rounded-full w-full text-lg"
-                  onClick={() => {
-                    setShowLoginDialog(false)
-                    window.location.href = '/account?tab=buy-package'
-                  }}
-                >
-                  Mua gói Member
-                </Button>
-              </div>
-              <div className="flex-1">
-                <Button
-                  className="bg-[#13D8A7] rounded-full w-full text-lg"
-                  onClick={() => {
-                    setShowLoginDialog(false)
-                    window.location.href = '/auth/login'
-                  }}
-                >
-                  Đăng nhập
-                </Button>
-              </div>
+              <Button
+                className="bg-[#13D8A7] rounded-full w-full text-lg"
+                onClick={() => {
+                  setShowLoginDialog(false)
+                  window.location.href = '/auth/login'
+                }}
+              >
+                Đăng nhập
+              </Button>
             </div>
           </div>
         </DialogContent>

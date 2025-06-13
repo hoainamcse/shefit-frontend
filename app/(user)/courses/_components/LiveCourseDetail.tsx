@@ -10,11 +10,20 @@ import { useSession } from '@/components/providers/session-provider'
 import { getUserSubscriptions } from '@/network/server/user-subscriptions'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-
+import { createUserCourse, getUserCourses } from '@/network/server/user-courses'
+import { toast } from 'sonner'
 const formatToVNTime = (time: string) => {
   const [hours] = time.split(':')
   const vnHour = (parseInt(hours) + 7) % 24
   return `${vnHour} giờ`
+}
+import { UserCourse } from '@/models/user-courses'
+
+interface UserCourseItem extends UserCourse {
+  is_active: boolean
+  start_date: string
+  end_date: string
+  course_id: number
 }
 
 const isClassAvailable = (startTime: string) => {
@@ -41,6 +50,59 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [showSubscribeDialog, setShowSubscribeDialog] = useState(false)
   const [isCheckingAccess, setIsCheckingAccess] = useState(false)
+  const [courseStatus, setCourseStatus] = useState<'checking' | 'exists' | 'not_found'>('checking')
+
+  useEffect(() => {
+    const checkUserCourse = async () => {
+      if (!session) {
+        setCourseStatus('not_found')
+        return
+      }
+
+      try {
+        const response = await getUserCourses(session.userId.toString())
+        const userCourse = (response.data as UserCourseItem[])?.find((course) => {
+          const userCourseId = Number(course.course_id)
+          const currentCourseId = Number(courseId)
+          return userCourseId === currentCourseId && course.is_active === true
+        })
+
+        if (userCourse) {
+          setCourseStatus('exists')
+        } else {
+          setCourseStatus('not_found')
+        }
+      } catch (error) {
+        console.error('Error checking user course:', error)
+        toast.error('Có lỗi xảy ra khi kiểm tra khóa học')
+        setCourseStatus('not_found')
+      }
+    }
+
+    checkUserCourse()
+  }, [session, courseId])
+
+  const handleStartClick = async (e: React.MouseEvent) => {
+    if (!session) {
+      setShowLoginDialog(true)
+      return
+    }
+
+    if (courseStatus === 'checking') {
+      return
+    }
+
+    if (courseStatus === 'not_found') {
+      try {
+        await createUserCourse({ course_id: courseId }, session.userId)
+        toast.success('Bắt đầu khóa tập thành công!')
+        setCourseStatus('exists')
+      } catch (error) {
+        console.error('Error creating user course:', error)
+        return
+      }
+    }
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -128,6 +190,8 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
 
                           setIsCheckingAccess(true)
                           try {
+                            await handleStartClick(e)
+
                             const subscriptions = await getUserSubscriptions(session?.userId!.toString())
                             const hasAccess = subscriptions.data?.some((subscription) => {
                               const hasActiveSubscription =
@@ -148,7 +212,6 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
                             }
                           } catch (error) {
                             console.error('Error checking course access:', error)
-                            // On error, allow access
                             window.open(
                               'https://us05web.zoom.us/j/85444899811?pwd=PQMxNmwIEaB2cEkQs7i6847VXaiozO.1',
                               '_blank'
