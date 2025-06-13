@@ -1,6 +1,4 @@
-import { getCircuits } from '@/network/server/circuits'
-import { getWeeks } from '@/network/server/weeks'
-import { getDays } from '@/network/server/days'
+import { getCircuits, getWeeks, getDays } from '@/network/server/courses'
 import { notFound } from 'next/navigation'
 import { VideoClientComponent } from './VideoClientComponent'
 import { Course } from '@/models/course'

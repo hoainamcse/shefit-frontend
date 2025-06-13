@@ -206,7 +206,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
           ))}
         </div>
         {sortedDays.length === 0 && (
-          <div className="text-center text-muted-foreground">Không có ngày nào trong thực đơn</div>
+          <div className="text-center text-muted-foreground">Chưa có ngày nào trong thực đơn</div>
         )}
       </div>
 
@@ -229,7 +229,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
               <p className="text-destructive">{dishesError.message}</p>
             </div>
           ) : sortedDishes.length === 0 ? (
-            <div className="text-center text-muted-foreground">Không có món ăn trong ngày</div>
+            <div className="text-center text-muted-foreground">Chưa có món ăn trong ngày</div>
           ) : (
             <div className="space-y-4">
               {sortedDishes.map((dish, index) => (

@@ -4,7 +4,7 @@ import { fetchData } from "../helpers/fetch-data"
 import type { Subscription } from "@/models/subscription-admin"
 import type { ListResponse } from "@/models/response"
 import { User } from "@/models/user"
-import { ListCourse } from "@/models/course-admin"
+import { Course } from "@/models/course"
 
 export async function getSubAdminSubscriptions(): Promise<ListResponse<Subscription>> {
     const response = await fetchData("/v1/sub_admin/subscriptions", {
@@ -21,7 +21,7 @@ export async function getSubAdminUsers(): Promise<ListResponse<User>> {
 }
 
 
-export async function getSubAdminCourses(token: string, format?: 'video' | 'live', isOneOnOne?: boolean): Promise<ListResponse<ListCourse>> {
+export async function getSubAdminCourses(token: string, format?: 'video' | 'live', isOneOnOne?: boolean): Promise<ListResponse<Course>> {
 
 const params = new URLSearchParams()
   if (format) params.append('course_format', format)

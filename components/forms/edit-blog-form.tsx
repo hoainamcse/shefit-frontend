@@ -17,7 +17,7 @@ import { Form } from '../ui/form'
 
 // ! Follow BlogPayload model in models/blog.ts
 const formSchema = z.object({
-  title: z.string().min(1),
+  title: z.string().min(1, 'Tiêu đề bài viết không được để trống'),
   content: z.string(),
   thumbnail_image: z.string().url(),
   cover_image: z.string().url(),

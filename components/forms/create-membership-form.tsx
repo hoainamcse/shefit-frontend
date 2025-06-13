@@ -24,7 +24,7 @@ import { createSubscription, updateSubscription } from '@/network/server/subscri
 import { createGift } from '@/network/server/gifts'
 import { updateGift } from '@/network/server/gifts'
 import { updateSubscriptionPrice } from '@/network/server/subscriptions-admin'
-import { getCourses } from '@/network/server/courses-admin'
+import { getCourses } from '@/network/client/courses'
 import { giftTypeOptions } from '@/lib/label'
 import { ImageUploader } from '../image-uploader'
 // Define the form schema
@@ -108,7 +108,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
       const response = await getCourses()
       setCourseList(response.data || [])
     } else {
-      const response = await getCourses(format)
+      const response = await getCourses({ course_format: format })
       setCourseList(response.data || [])
     }
   }

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 
 // Define Exercise type locally based on how it's used
 export interface Exercise {
-  id: string
+  id: number
   name: string
   description: string
   url: string

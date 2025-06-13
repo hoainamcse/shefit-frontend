@@ -1,6 +1,6 @@
 'use client'
 
-import type { CourseLive, LiveSession } from '@/models/course'
+import type { LiveDay, DaySession, Course } from '@/models/course'
 
 import { z } from 'zod'
 import { toast } from 'sonner'
@@ -8,40 +8,40 @@ import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { createLiveSession, updateLiveSession } from '@/network/client/courses'
+import { createDaySession, updateDaySession } from '@/network/client/courses'
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { FormInputField, FormNumberField, FormTextareaField } from './fields'
 import { MainButton } from '../buttons/main-button'
 import { TimePicker } from '../time-picker'
 
-// ! Follow LiveSessionPayload model in models/course.ts
+// ! Follow DaySessionPayload model in models/course.ts
 const formSchema = z.object({
   session_number: z.number().min(1),
-  name: z.string().min(1),
+  name: z.string().min(1, 'Tên session không được để trống'),
   description: z.string(),
   start_time: z.string(),
   end_time: z.string(),
-  link_zoom: z.string().url(),
+  link_zoom: z.string().url('Link Zoom không hợp lệ'),
 })
 
 type FormValue = z.infer<typeof formSchema>
 
-interface EditLiveSessionFormProps {
-  data: LiveSession | null
-  courseID: CourseLive['id']
-  courseLiveID: CourseLive['id']
+interface EditDaySessionFormProps {
+  data: DaySession | null
+  courseID: Course['id']
+  liveDayID: LiveDay['id']
   onSuccess?: () => void
 }
 
-export function EditLiveSessionForm({ data, courseID, courseLiveID, onSuccess }: EditLiveSessionFormProps) {
+export function EditDaySessionForm({ data, courseID, liveDayID, onSuccess }: EditDaySessionFormProps) {
   const isEdit = !!data
   const defaultValue = {
     session_number: 1,
     name: '',
     description: '',
     start_time: '09:00',
-    end_time: '11:00',
+    end_time: '10:00',
     link_zoom: '',
   } as FormValue
 
@@ -59,14 +59,12 @@ export function EditLiveSessionForm({ data, courseID, courseLiveID, onSuccess }:
       : defaultValue,
   })
 
-  const exerciseMutation = useMutation({
+  const daySessionMutation = useMutation({
     mutationFn: (values: FormValue) =>
-      isEdit
-        ? updateLiveSession(courseID, courseLiveID, data.id, values)
-        : createLiveSession(courseID, courseLiveID, values),
+      isEdit ? updateDaySession(courseID, liveDayID, data.id, values) : createDaySession(courseID, liveDayID, values),
     onSettled(data, error) {
       if (data?.status === 'success') {
-        toast.success(isEdit ? 'Cập nhật phiên học thành công' : 'Tạo phiên học thành công')
+        toast.success(isEdit ? 'Cập nhật session thành công' : 'Tạo session thành công')
         onSuccess?.()
       } else {
         toast.error(error?.message || 'Đã có lỗi xảy ra')
@@ -75,14 +73,19 @@ export function EditLiveSessionForm({ data, courseID, courseLiveID, onSuccess }:
   })
 
   const onSubmit = (values: FormValue) => {
-    exerciseMutation.mutate(values)
+    daySessionMutation.mutate(values)
   }
 
   return (
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-        <FormNumberField form={form} name="session_number" label="Số phiên học" placeholder="Nhập số phiên học" />
-        <FormInputField form={form} name="name" label="Tên phiên học" withAsterisk placeholder="Nhập tên phiên học" />
+        <FormNumberField
+          form={form}
+          name="session_number"
+          label="Thứ tự session"
+          placeholder="Nhập thứ tự session"
+        />
+        <FormInputField form={form} name="name" label="Tên session" withAsterisk placeholder="Nhập tên session" />
         <FormInputField form={form} name="link_zoom" label="Link Zoom" placeholder="Nhập link Zoom" withAsterisk />
         <div className="grid grid-cols-2 gap-4">
           <FormField
@@ -116,7 +119,7 @@ export function EditLiveSessionForm({ data, courseID, courseLiveID, onSuccess }:
         <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
-            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={exerciseMutation.isPending} />
+            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={daySessionMutation.isPending} />
           )}
         </div>
       </form>

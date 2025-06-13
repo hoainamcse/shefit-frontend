@@ -3,8 +3,8 @@
 import { getCourse } from '@/network/server/courses'
 import { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { getCourseLives } from '@/network/server/courses'
-import { Course, CourseLive } from '@/models/course'
+import { getLiveDays } from '@/network/server/courses'
+import { Course, LiveDay } from '@/models/course'
 import { cn } from '@/lib/utils'
 import { useSession } from '@/components/providers/session-provider'
 import { getUserSubscriptions } from '@/network/server/user-subscriptions'
@@ -110,7 +110,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
         const courseData = await getCourse(courseId)
         setCourse(courseData)
 
-        const liveData = await getCourseLives(courseId)
+        const liveData = await getLiveDays(courseId)
         setLive(liveData)
       } catch (error) {
         console.error('Error fetching live detail data:', error)
@@ -131,7 +131,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
         className="[state=active]:bg-[#91EBD5] data-[state=active]:shadow-none"
       >
         <TabsList className="bg-white">
-          {Array.from(new Set(live.data.map((item: CourseLive) => item.day_of_week)) as Set<string>).map((day) => (
+          {Array.from(new Set(live.data.map((item: LiveDay) => item.day_of_week)) as Set<string>).map((day) => (
             <TabsTrigger
               key={day}
               value={day}
@@ -161,12 +161,12 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
           ))}
         </TabsList>
 
-        {Array.from(new Set(live.data.map((item: CourseLive) => item.day_of_week)) as Set<string>).map((day) => (
+        {Array.from(new Set(live.data.map((item: LiveDay) => item.day_of_week)) as Set<string>).map((day) => (
           <TabsContent key={day} value={day} className="ml-2 mt-10">
             <div className="space-y-2 text-sm leading-7 text-gray-600 dark:text-gray-500 flex flex-col gap-5">
               {live.data
-                .filter((item: CourseLive) => item.day_of_week === day)
-                .map((item: CourseLive, index: number) => (
+                .filter((item: LiveDay) => item.day_of_week === day)
+                .map((item: LiveDay, index: number) => (
                   <div key={item.id} className="flex justify-between">
                     <div>
                       <p className="font-[family-name:var(--font-coiny)] text-[30px] flex gap-2">

@@ -32,6 +32,9 @@ type Course = {
 
 type CoursePayload = Omit<Course, 'id' | 'created_at' | 'updated_at' | 'subscriptions'>
 
+export type { CourseFormat, CourseForm, CourseLevel, Course }
+export type { CoursePayload }
+
 // Course Video
 type CourseWeek = {
   id: number
@@ -45,7 +48,7 @@ type WeekDay = {
 }
 
 type CircuitExercise = {
-  id: number
+  id?: number
   circuit_exercise_title: string
   circuit_exercise_description: string
   youtube_url: string
@@ -64,16 +67,15 @@ type DayCircuit = {
 
 type CourseWeekPayload = Omit<CourseWeek, 'id'>
 type WeekDayPayload = Omit<WeekDay, 'id'>
-type CircuitExercisePayload = Omit<CircuitExercise, 'id'>
-type DayCircuitPayload = Omit<DayCircuit, 'id' | 'circuit_exercises' | 'created_at' | 'updated_at'> & {
-  circuit_exercises: CircuitExercisePayload[]
-}
+type DayCircuitPayload = Omit<DayCircuit, 'id' | 'created_at' | 'updated_at'>
 
 export type { CourseWeek, WeekDay, CircuitExercise, DayCircuit }
-export type { CourseWeekPayload, WeekDayPayload, CircuitExercisePayload, DayCircuitPayload }
+export type { CourseWeekPayload, WeekDayPayload, DayCircuitPayload }
 
 // Course Live
-type LiveSession = {
+type DayOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday'
+
+type DaySession = {
   id: number
   session_number: number
   name: string
@@ -83,21 +85,17 @@ type LiveSession = {
   link_zoom: string
 }
 
-type LiveSessionPayload = Omit<LiveSession, 'id'>
-
-type CourseLiveDay = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday'
-
-type CourseLive = {
+type LiveDay = {
   id: number
-  day_of_week: CourseLiveDay
+  day_of_week: DayOfWeek
   start_time: string // ! needed?
   end_time: string // ! needed?
   description: string
-  sessions: LiveSession[]
+  sessions: DaySession[]
 }
 
-type CourseLivePayload = Omit<CourseLive, 'id' | 'sessions'>
+type LiveDayPayload = Omit<LiveDay, 'id' | 'sessions'>
+type DaySessionPayload = Omit<DaySession, 'id'>
 
-export type { CourseFormat, CourseForm, CourseLevel, CourseLiveDay }
-export type { Course, CourseLive, LiveSession }
-export type { CoursePayload, LiveSessionPayload, CourseLivePayload }
+export type { DayOfWeek, LiveDay, DaySession }
+export type { LiveDayPayload, DaySessionPayload }

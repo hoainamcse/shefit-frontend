@@ -2,8 +2,7 @@
 
 import { ArrowPinkIcon } from '@/components/icons/ArrowPinkIcon'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { getWeeks } from '@/network/server/weeks'
-import { getDays } from '@/network/server/days'
+import { getWeeks, getDays } from '@/network/server/courses'
 import { useState, useEffect } from 'react'
 import { useSession } from '@/components/providers/session-provider'
 import { Button } from '@/components/ui/button'

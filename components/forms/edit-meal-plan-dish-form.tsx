@@ -17,7 +17,7 @@ import { FormInputField, FormNumberField, FormSelectField, FormTextareaField } f
 
 // ! Follow MealPlanDishPayload model in models/meal-plan.ts
 export const formSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1, 'Tên món ăn không được để trống'),
   description: z.string(),
   calories: z.number().min(0),
   protein: z.number().min(0),

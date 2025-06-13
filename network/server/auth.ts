@@ -90,12 +90,12 @@ export async function signin(data: any) {
   const role = Array.isArray(jwt.scopes) && jwt.scopes.length > 0 ? jwt.scopes[0] : 'user'
   await createSession({
     userId,
-    role,
+    role: role === 'user' ? 'normal_user' : role,
     accessToken: data.access_token,
     refreshToken: data.refresh_token,
     expiresAt: new Date(Date.now() + data.expires_in * 1000),
   })
-  return { userId, role }
+  return { userId, scope: role }
 }
 
 export async function signout() {

@@ -17,11 +17,11 @@ import { ImageUploader } from '../image-uploader'
 
 // ! Follow DishPayload model in models/dish.ts
 export const formSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1, 'Tên món ăn không được để trống'),
   description: z.string(),
   diet_id: z.number().nullable(),
   image: z.string().url(),
-  youtube_url: z.string().url(),
+  youtube_url: z.string().url('Link Youtube không hợp lệ'),
   calories: z.number().min(0),
   protein: z.number().min(0),
   carb: z.number().min(0),
@@ -92,7 +92,7 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
         <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
         <FormSelectField form={form} name="diet_id" label="Chế độ ăn" placeholder="Chọn chế độ ăn" />
         <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
-        <FormInputField form={form} name="youtube_url" label="Video" placeholder="Nhập video" />
+        <FormInputField form={form} name="youtube_url" label="Link Youtube" placeholder="Nhập link Youtube" withAsterisk />
 
         <div className="grid grid-cols-2 gap-4">
           <FormNumberField form={form} name="calories" label="Calories (kcal)" placeholder="e.g., 250" />

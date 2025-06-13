@@ -17,7 +17,7 @@ import { ImageUploader } from '../image-uploader'
 
 // ! Follow MuscleGroupPayload model in models/muscle-group.ts
 const formSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1, 'Tên nhóm cơ không được để trống'),
   image: z.string().url(),
 })
 

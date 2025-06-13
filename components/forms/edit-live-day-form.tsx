@@ -1,6 +1,6 @@
 'use client'
 
-import type { CourseLive } from '@/models/course'
+import type { Course, LiveDay } from '@/models/course'
 
 import { z } from 'zod'
 import { toast } from 'sonner'
@@ -8,14 +8,14 @@ import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { createCourseLive, updateCourseLive } from '@/network/client/courses'
+import { createLiveDay, updateLiveDay } from '@/network/client/courses'
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { FormSelectField, FormTextareaField } from './fields'
 import { MainButton } from '../buttons/main-button'
 import { TimePicker } from '../time-picker'
 
-// ! Follow CourseLivePayload model in models/course.ts
+// ! Follow LiveDayPayload model in models/course.ts
 const formSchema = z.object({
   day_of_week: z.enum(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']),
   start_time: z.string(),
@@ -25,18 +25,18 @@ const formSchema = z.object({
 
 type FormValue = z.infer<typeof formSchema>
 
-interface EditCourseLiveFormProps {
-  data: CourseLive | null
-  courseID: CourseLive['id']
+interface EditLiveDayFormProps {
+  data: LiveDay | null
+  courseID: Course['id']
   onSuccess?: () => void
 }
 
-export function EditCourseLiveForm({ data, courseID, onSuccess }: EditCourseLiveFormProps) {
+export function EditLiveDayForm({ data, courseID, onSuccess }: EditLiveDayFormProps) {
   const isEdit = !!data
   const defaultValue = {
     day_of_week: 'Monday',
     start_time: '09:00',
-    end_time: '11:00',
+    end_time: '21:00',
     description: '',
   } as FormValue
 
@@ -52,12 +52,12 @@ export function EditCourseLiveForm({ data, courseID, onSuccess }: EditCourseLive
       : defaultValue,
   })
 
-  const exerciseMutation = useMutation({
+  const liveDayMutation = useMutation({
     mutationFn: (values: FormValue) =>
-      isEdit ? updateCourseLive(courseID, data.id, values) : createCourseLive(courseID, values),
+      isEdit ? updateLiveDay(courseID, data.id, values) : createLiveDay(courseID, values),
     onSettled(data, error) {
       if (data?.status === 'success') {
-        toast.success(isEdit ? 'Cập nhật phiên học thành công' : 'Tạo phiên học thành công')
+        toast.success(isEdit ? 'Cập nhật ngày thành công' : 'Tạo ngày thành công')
         onSuccess?.()
       } else {
         toast.error(error?.message || 'Đã có lỗi xảy ra')
@@ -66,7 +66,7 @@ export function EditCourseLiveForm({ data, courseID, onSuccess }: EditCourseLive
   })
 
   const onSubmit = (values: FormValue) => {
-    exerciseMutation.mutate(values)
+    liveDayMutation.mutate(values)
   }
 
   return (
@@ -111,7 +111,7 @@ export function EditCourseLiveForm({ data, courseID, onSuccess }: EditCourseLive
         <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
-            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={exerciseMutation.isPending} />
+            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={liveDayMutation.isPending} />
           )}
         </div>
       </form>

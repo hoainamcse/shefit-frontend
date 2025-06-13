@@ -1,14 +1,14 @@
 import type {
   Course,
-  CourseLive,
-  CourseLivePayload,
+  LiveDay,
+  LiveDayPayload,
   CoursePayload,
   CourseWeek,
   CourseWeekPayload,
   DayCircuit,
   DayCircuitPayload,
-  LiveSession,
-  LiveSessionPayload,
+  DaySession,
+  DaySessionPayload,
   WeekDay,
   WeekDayPayload,
 } from '@/models/course'
@@ -206,18 +206,18 @@ export async function deleteDayCircuit(
 }
 
 // Course Live APIs
-export const queryKeyCourseLives = 'course-lives'
+export const queryKeyLiveDays = 'live-days'
 
-export async function getCourseLives(course_id: Course['id'], params?: any): Promise<ListResponse<CourseLive>> {
+export async function getLiveDays(course_id: Course['id'], params?: any): Promise<ListResponse<LiveDay>> {
   const queryParams = new URLSearchParams(params).toString()
   const response = await fetchData(`/v1/courses/${course_id}/live-classes/` + '?' + queryParams)
   return await response.json()
 }
 
-export async function createCourseLive(
+export async function createLiveDay(
   course_id: Course['id'],
-  data: CourseLivePayload
-): Promise<ApiResponse<CourseLive>> {
+  data: LiveDayPayload
+): Promise<ApiResponse<LiveDay>> {
   const response = await fetchData(`/v1/courses/${course_id}/live-classes/`, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -225,11 +225,11 @@ export async function createCourseLive(
   return await response.json()
 }
 
-export async function updateCourseLive(
+export async function updateLiveDay(
   course_id: Course['id'],
-  class_id: CourseLive['id'],
-  data: CourseLivePayload
-): Promise<ApiResponse<CourseLive>> {
+  class_id: LiveDay['id'],
+  data: LiveDayPayload
+): Promise<ApiResponse<LiveDay>> {
   const response = await fetchData(`/v1/courses/${course_id}/live-classes/${class_id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
@@ -237,9 +237,9 @@ export async function updateCourseLive(
   return await response.json()
 }
 
-export async function deleteCourseLive(
+export async function deleteLiveDay(
   course_id: Course['id'],
-  class_id: CourseLive['id']
+  class_id: LiveDay['id']
 ): Promise<ApiResponse<string>> {
   const response = await fetchData(`/v1/courses/${course_id}/live-classes/${class_id}`, {
     method: 'DELETE',
@@ -248,13 +248,13 @@ export async function deleteCourseLive(
 }
 
 // Live Session APIs
-export const queryKeyLiveSessions = 'live-sessions'
+export const queryKeyDaySessions = 'day-sessions'
 
-export async function createLiveSession(
+export async function createDaySession(
   course_id: Course['id'],
-  class_id: CourseLive['id'],
-  data: LiveSessionPayload
-): Promise<ApiResponse<LiveSession>> {
+  class_id: LiveDay['id'],
+  data: DaySessionPayload
+): Promise<ApiResponse<DaySession>> {
   const response = await fetchData(`/v1/courses/${course_id}/live-classes/${class_id}/sessions`, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -262,12 +262,12 @@ export async function createLiveSession(
   return await response.json()
 }
 
-export async function updateLiveSession(
+export async function updateDaySession(
   course_id: Course['id'],
-  class_id: CourseLive['id'],
-  session_id: LiveSession['id'],
-  data: LiveSessionPayload
-): Promise<ApiResponse<LiveSession>> {
+  class_id: LiveDay['id'],
+  session_id: DaySession['id'],
+  data: DaySessionPayload
+): Promise<ApiResponse<DaySession>> {
   const response = await fetchData(`/v1/courses/${course_id}/live-classes/${class_id}/sessions/${session_id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
@@ -275,10 +275,10 @@ export async function updateLiveSession(
   return await response.json()
 }
 
-export async function deleteLiveSession(
+export async function deleteDaySession(
   course_id: Course['id'],
-  class_id: CourseLive['id'],
-  session_id: LiveSession['id']
+  class_id: LiveDay['id'],
+  session_id: DaySession['id']
 ): Promise<ApiResponse<string>> {
   const response = await fetchData(`/v1/courses/${course_id}/live-classes/${class_id}/sessions/${session_id}`, {
     method: 'DELETE',

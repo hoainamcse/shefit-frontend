@@ -7,11 +7,11 @@ import { MainButton } from '@/components/buttons/main-button'
 import { Pause, Play, PlayCircle } from 'lucide-react'
 import { getYoutubeThumbnail } from '@/lib/youtube'
 import VideoPlayer from './VideoPlayer'
-import { Circuit, CircuitExercise } from '@/models/circuits'
+import { DayCircuit, CircuitExercise } from '@/models/course'
 
 function mapCircuitExerciseToExercise(exercise: CircuitExercise) {
   return {
-    id: exercise.id.toString(),
+    id: exercise.id || 0,
     name: exercise.circuit_exercise_title,
     description: exercise.circuit_exercise_description,
     url: exercise.youtube_url,
@@ -19,7 +19,7 @@ function mapCircuitExerciseToExercise(exercise: CircuitExercise) {
   }
 }
 
-export function CircuitItem({ circuit, cIdx }: { circuit: Circuit; cIdx: number }) {
+export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: number }) {
   const [isPlaying, setIsPlaying] = useState(false)
 
   const handlePlayPauseToggle = () => {
@@ -141,7 +141,7 @@ export function VideoClientComponent({ circuits }: { circuits: any }) {
     <div className="flex flex-col gap-10 mt-10">
       <div className="mb-20">
         <div className="flex flex-col justify-center text-center gap-5 mb-20"></div>
-        {circuits.data.map((circuit: Circuit, cIdx: number) => (
+        {circuits.data.map((circuit: DayCircuit, cIdx: number) => (
           <CircuitItem key={circuit.id} circuit={circuit} cIdx={cIdx} />
         ))}
       </div>

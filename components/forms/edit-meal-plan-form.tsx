@@ -21,12 +21,12 @@ import { ImageUploader } from '../image-uploader'
 
 // ! Follow MealPlanPayload model in models/meal-plan.ts
 const formSchema = z.object({
-  title: z.string().min(1),
+  title: z.string().min(1, 'Tiêu đề thực đơn không được để trống'),
   subtitle: z.string(),
   chef_name: z.string(),
   goal: z.enum(['weight_loss', 'energy', 'recovery', 'hormonal_balance', 'muscle_tone']),
   image: z.string().url(),
-  youtube_url: z.string().url(),
+  youtube_url: z.string().url('Link Youtube không hợp lệ'),
   description: z.string(),
   meal_ingredients: z.array(
     z.object({
@@ -125,7 +125,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
           />
         </div>
         <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
-        <FormInputField form={form} name="youtube_url" label="Video" placeholder="Nhập video" />
+        <FormInputField form={form} name="youtube_url" label="Link Youtube" placeholder="Nhập link Youtube" withAsterisk />
         <div className="grid grid-cols-2 gap-4">
           <FormSelectField form={form} name="diet_id" label="Chế độ ăn" placeholder="Chọn chế độ ăn" />
           <FormSelectField form={form} name="calorie_id" label="Calorie" placeholder="Chọn calorie" />

@@ -28,7 +28,7 @@ import { ImageUploader } from '../image-uploader'
 const formSchema = z.object({
   thumbnail_image: z.string().url(),
   description: z.string(),
-  course_name: z.string().min(1),
+  course_name: z.string().min(1, 'Tên khoá tập không được để trống'),
   course_format: z.enum(['video', 'live']),
   trainer: z.string(),
   form_categories: z.array(z.enum(['pear', 'apple', 'rectangle', 'hourglass', 'inverted_triangle'])),

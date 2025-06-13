@@ -17,7 +17,7 @@ import { ImageUploader } from '../image-uploader'
 
 // ! Follow DietPayload model in models/diet.ts
 const formSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1, 'Tên chế độ ăn không được để trống'),
   image: z.string().url(),
   description: z.string(),
 })

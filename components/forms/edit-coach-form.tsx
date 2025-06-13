@@ -17,7 +17,7 @@ import { ImageUploader } from '../image-uploader'
 
 // ! Follow CoachPayload model in models/coach.ts
 const formSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1, 'Tên HLV không được để trống'),
   image: z.string().url(),
   detail: z.string(),
   description: z.string(),

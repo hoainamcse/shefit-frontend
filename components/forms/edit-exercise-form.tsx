@@ -16,9 +16,9 @@ import { Form } from '../ui/form'
 
 // ! Follow ExercisePayload model in models/exercise.ts
 const formSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1, 'Tên bài tập không được để trống'),
   description: z.string(),
-  youtube_url: z.string().url(),
+  youtube_url: z.string().url('Link Youtube không hợp lệ'),
   cover_image: z.string().url(),
   thumbnail_image: z.string().url(),
   muscle_group_ids: z.array(z.string()),

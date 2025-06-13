@@ -1,291 +1,245 @@
 'use client'
 
-import type { Course, CourseLive, LiveSession, CourseLiveDay } from '@/models/course'
+import type { Course, LiveDay, DaySession, DayOfWeek } from '@/models/course'
 
-import { toast } from 'sonner'
-import { useState, useEffect } from 'react'
-import { Clock, Hourglass, Link, Trash2 } from 'lucide-react'
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { Calendar, Clock, Video, Edit, Trash2 } from 'lucide-react'
 
-import { deleteCourseLive, deleteLiveSession, getCourseLives, queryKeyCourseLives } from '@/network/client/courses'
-import { EditLiveSessionForm } from '@/components/forms/edit-live-session-form'
-import { EditSheet } from '@/components/data-table/edit-sheet'
-import { MainButton } from '@/components/buttons/main-button'
-import { EditButton } from '@/components/buttons/edit-button'
-import { AddButton } from '@/components/buttons/add-button'
-import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/spinner'
-import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { EditCourseLiveForm } from '@/components/forms/edit-course-live-form'
+import { Button } from '@/components/ui/button'
+import { AddButton } from '@/components/buttons/add-button'
+import { MainButton } from '@/components/buttons/main-button'
+import { EditSheet } from '@/components/data-table/edit-sheet'
+import { EditLiveDayForm } from '@/components/forms/edit-live-day-form'
+import { getLiveDays, queryKeyLiveDays } from '@/network/client/courses'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { EditDaySessionForm } from '@/components/forms/edit-day-session-form'
 
-interface CourseViewProps {
-  courseID: Course['id']
-}
+const dayOrder: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
-export function CourseLiveView({ courseID: courseID }: CourseViewProps) {
-  const [isEditCourseLiveOpen, setIsEditCourseLiveOpen] = useState(false)
-  const [isEditLiveSessionOpen, setIsEditLiveSessionOpen] = useState(false)
-  const [selectedCourseLive, setSelectedCourseLive] = useState<CourseLive | null>(null)
-  const [selectedLiveSession, setSelectedLiveSession] = useState<LiveSession | null>(null)
-  const [isAddingCourseLive, setIsAddingCourseLive] = useState(false)
+export function CourseLiveView({ courseID }: { courseID: Course['id'] }) {
+  const [selectedDay, setSelectedDay] = useState<LiveDay | null>(null)
 
-  const isEditCourseLive = !!selectedCourseLive
-  const isEditLiveSession = !!selectedLiveSession
+  // Form states
+  const [showDayForm, setShowDayForm] = useState(false)
+  const [showSessionForm, setShowSessionForm] = useState(false)
+  const [editingDay, setEditingDay] = useState<LiveDay | null>(null)
+  const [editingSession, setEditingSession] = useState<DaySession | null>(null)
+  const [deleteItem, setDeleteItem] = useState<{ type: string; item: any } | null>(null)
 
+  // const queryClient = useQueryClient()
+
+  // Queries
   const {
-    data: courseLivesData,
-    isLoading: isCourseLivesLoading,
-    error: courseLivesError,
-    refetch: courseLivesRefresh,
+    data: liveDays,
+    isLoading: liveDaysLoading,
+    refetch: liveDaysRefetch,
   } = useQuery({
-    queryKey: [queryKeyCourseLives, courseID],
-    queryFn: () => getCourseLives(courseID),
-    placeholderData: keepPreviousData,
+    queryKey: [queryKeyLiveDays, courseID],
+    queryFn: () => getLiveDays(courseID),
   })
 
-  // useEffect(() => {
-  //   if (daysData?.data && daysData.data.length > 0 && !selectedDay) {
-  //     setSelectedDay(daysData.data[0])
-  //   }
-  // }, [daysData, selectedDay])
-
-  if (isCourseLivesLoading) {
-    return (
-      <div className="flex items-center justify-center">
-        <Spinner className="bg-ring dark:bg-white" />
-      </div>
-    )
+  const handleAddDay = () => {
+    setEditingDay(null)
+    setShowDayForm(true)
   }
 
-  if (courseLivesError) {
-    return (
-      <div className="flex items-center justify-center">
-        <p className="text-destructive">{courseLivesError.message}</p>
-      </div>
-    )
+  const handleEditDay = (day: LiveDay) => {
+    setEditingDay(day)
+    setShowDayForm(true)
   }
 
-  const courseLives = courseLivesData?.data || []
-  const liveSessions = courseLives.find((day: CourseLive) => day.id === selectedCourseLive?.id)?.sessions || []
-
-  const liveDayOrder: CourseLiveDay[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-  const sortedCourseLives = [...courseLives].sort((a: CourseLive, b: CourseLive) => {
-    return liveDayOrder.indexOf(a.day_of_week as CourseLiveDay) - liveDayOrder.indexOf(b.day_of_week as CourseLiveDay)
-  })
-  const sortedLiveSessions = [...liveSessions].sort((a: LiveSession, b: LiveSession) => {
-    return a.session_number - b.session_number
-  }) as LiveSession[]
-
-  const onAddCourseLive = () => {
-    setIsAddingCourseLive(true)
-    setIsEditCourseLiveOpen(true)
+  const handleDeleteDay = (day: LiveDay) => {
+    setDeleteItem({ type: 'day', item: day })
   }
 
-  const onAddLiveSession = () => {
-    setSelectedLiveSession(null)
-    setIsEditLiveSessionOpen(true)
+  const handleAddSession = (day: LiveDay) => {
+    setSelectedDay(day)
+    setEditingSession(null)
+    setShowSessionForm(true)
   }
 
-  const onEditCourseLive = (cl: CourseLive) => {
-    setSelectedCourseLive(cl)
-    setIsEditCourseLiveOpen(true)
+  const handleEditSession = (session: DaySession, day: LiveDay) => {
+    setSelectedDay(day)
+    setEditingSession(session)
+    setShowSessionForm(true)
   }
 
-  const onEditCourseLiveSuccess = () => {
-    if (isAddingCourseLive) setIsAddingCourseLive(false)
-    setSelectedCourseLive(null)
-    setIsEditCourseLiveOpen(false)
-    courseLivesRefresh()
+  const handleDeleteSession = (session: DaySession) => {
+    setDeleteItem({ type: 'session', item: session })
   }
 
-  const onEditLiveSession = (ls: LiveSession) => {
-    setSelectedLiveSession(ls)
-    setIsEditLiveSessionOpen(true)
-  }
-
-  const onEditLiveSessionSuccess = () => {
-    setSelectedLiveSession(null)
-    setIsEditLiveSessionOpen(false)
-    courseLivesRefresh()
-  }
-
-  const onDeleteCourseLive = async (day: CourseLive) => {
-    const deletePromise = () => deleteCourseLive(courseID, day.id)
-
-    toast.promise(deletePromise, {
-      loading: 'Đang xoá...',
-      success: (_) => {
-        courseLivesRefresh()
-        setSelectedCourseLive(null)
-        return 'Xoá ngày thành công'
-      },
-      error: 'Đã có lỗi xảy ra',
-    })
-  }
-
-  const onDeleteLiveSession = async (dish: LiveSession) => {
-    const deletePromise = () => deleteLiveSession(courseID, selectedCourseLive?.id!, dish.id)
-
-    toast.promise(deletePromise, {
-      loading: 'Đang xoá...',
-      success: (_) => {
-        courseLivesRefresh()
-        setSelectedLiveSession(null)
-        return 'Xoá phiên học thành công'
-      },
-      error: 'Đã có lỗi xảy ra',
-    })
-  }
+  const sortedDays = liveDays
+    ? [...liveDays.data].sort((a, b) => dayOrder.indexOf(a.day_of_week) - dayOrder.indexOf(b.day_of_week))
+    : []
 
   return (
     <div className="space-y-4">
-      {/* Days Navigation */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <Label className="text-base">Danh sách ngày</Label>
-          <div className="flex items-center gap-2">
-            {selectedCourseLive && (
-              <EditButton size="icon" variant="outline" onClick={() => onEditCourseLive(selectedCourseLive)} />
-            )}
-            {selectedCourseLive && (
-              <MainButton
-                size="icon"
-                variant="outline"
-                icon={Trash2}
-                className="hover:text-destructive"
-                onClick={() => onDeleteCourseLive(selectedCourseLive!)}
-              />
-            )}
-            <AddButton text="Thêm ngày" onClick={onAddCourseLive} />
-          </div>
-        </div>
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          {sortedCourseLives.map((day: CourseLive) => (
-            <Button
-              type="button"
-              key={day.id}
-              className={`w-32 whitespace-nowrap ${
-                selectedCourseLive?.id !== day.id && 'opacity-60 hover:opacity-100'
-              }`}
-              onClick={() => setSelectedCourseLive(day)}
-            >
-              {day.day_of_week}
-            </Button>
-          ))}
-        </div>
-        {sortedCourseLives.length === 0 && (
-          <div className="text-center text-muted-foreground">Không có ngày nào trong khoá tập</div>
-        )}
+      <div className="flex justify-end">
+        <AddButton onClick={handleAddDay} text="Thêm ngày" />
       </div>
 
-      {/* Dishes for Selected Day */}
-      {selectedCourseLive && (
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <Label className="text-base">
-              Danh sách phiên học{' '}
-              {sortedCourseLives.find((d: CourseLive) => d.id === selectedCourseLive.id)?.day_of_week}
-            </Label>
-            <AddButton text="Thêm phiên học" onClick={onAddLiveSession} />
-          </div>
-
-          {sortedLiveSessions.length === 0 ? (
-            <div className="text-center text-muted-foreground">Không có phiên học trong ngày</div>
-          ) : (
-            <div className="space-y-4">
-              {sortedLiveSessions.map((ls, index) => (
-                <div key={`ls-${index}`} className="border rounded-lg p-4">
-                  <div className="flex justify-between items-start">
-                    <div className="space-y-2">
-                      <Badge className="'bg-gray-100 text-gray-800 border-gray-200'" variant="outline">
-                        Phiên học {ls.session_number}
-                      </Badge>
-                      <h3 className="font-medium">{ls.name}</h3>
-                      <p className="text-gray-600">{ls.description}</p>
-
-                      <div className="flex gap-3 text-sm">
-                        <div className="flex items-center gap-2">
-                          <Link className="h-4 w-4 text-blue-500" />
-                          <span className="text-muted-foreground">zoom</span>
-                          <a className="font-medium" href={ls.link_zoom}>
-                            {ls.link_zoom}
-                          </a>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-green-500" />
-                          <span className="text-muted-foreground">bắt đầu</span>
-                          <span className="font-medium">{ls.start_time}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Hourglass className="h-4 w-4 text-red-500" />
-                          <span className="text-muted-foreground">kết thúc</span>
-                          <span className="font-medium">{ls.end_time}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <EditButton size="icon" variant="outline" onClick={() => onEditLiveSession(ls)} />
-                      <MainButton
-                        size="icon"
-                        variant="outline"
-                        icon={Trash2}
-                        className="hover:text-destructive"
-                        onClick={() => onDeleteLiveSession(ls)}
-                      />
-                    </div>
+      {liveDaysLoading ? (
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-32 bg-muted rounded animate-pulse" />
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {sortedDays.map((day) => (
+            <Card key={day.id}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-xl">{day.day_of_week}</CardTitle>
+                    <CardDescription>{day.description}</CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <AddButton onClick={() => handleAddSession(day)} text="Thêm session" />
+                    <MainButton size="icon" variant="ghost" onClick={() => handleEditDay(day)} icon={Edit} />
+                    <MainButton
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => handleDeleteDay(day)}
+                      icon={Trash2}
+                      className="hover:text-destructive"
+                    />
                   </div>
                 </div>
-              ))}
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {day.sessions.length === 0 ? (
+                    <p className="text-muted-foreground text-sm">Chưa có session nào được lên lịch cho ngày này</p>
+                  ) : (
+                    day.sessions
+                      .sort((a, b) => a.session_number - b.session_number)
+                      .map((session) => (
+                        <div
+                          key={session.id}
+                          className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-muted/50 rounded-lg"
+                        >
+                          <div className="flex-1 mb-4 md:mb-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge variant="outline">{session.session_number}</Badge>
+                              <h4 className="font-medium">{session.name}</h4>
+                            </div>
+                            <p className="text-sm text-muted-foreground">{session.description}</p>
+                          </div>
+                          <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-4 h-4 text-muted-foreground" />
+                              <span className="text-sm">
+                                {formatTime(session.start_time)} - {formatTime(session.end_time)}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button size="sm" variant="outline" asChild>
+                                <a
+                                  href={session.link_zoom}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-1"
+                                >
+                                  <Video className="w-4 h-4 mr-1" />
+                                  Join Zoom
+                                </a>
+                              </Button>
+                              <MainButton
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => handleEditSession(session, day)}
+                                icon={Edit}
+                              />
+                              <MainButton
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => handleDeleteSession(session)}
+                                icon={Trash2}
+                                className="hover:text-destructive"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+
+          {sortedDays.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Calendar className="w-12 h-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">Chưa có ngày nào được lên lịch</h3>
+              <p className="text-muted-foreground mb-4">Bắt đầu bằng cách thêm một ngày vào lịch trình</p>
             </div>
           )}
         </div>
       )}
 
+      {/* Sheets and Forms */}
       <EditSheet
-        title={!isAddingCourseLive ? 'Chỉnh sửa ngày' : 'Thêm ngày'}
+        title={editingDay ? 'Chỉnh sửa ngày' : 'Thêm ngày'}
         description="Make changes to your profile here. Click save when you're done."
-        open={isEditCourseLiveOpen}
-        onOpenChange={(open) => {
-          setIsEditCourseLiveOpen(open)
-          if (!open) setIsAddingCourseLive(false)
-        }}
+        open={showDayForm}
+        onOpenChange={setShowDayForm}
       >
-        <EditCourseLiveForm
+        <EditLiveDayForm
           courseID={courseID}
-          data={!isAddingCourseLive ? selectedCourseLive : null}
-          onSuccess={onEditCourseLiveSuccess}
+          data={editingDay}
+          onSuccess={() => {
+            setShowDayForm(false)
+            setEditingDay(null)
+            liveDaysRefetch()
+            // queryClient.invalidateQueries({ queryKey: ['liveDays'] })
+          }}
         />
       </EditSheet>
 
       <EditSheet
-        title={isEditLiveSession ? 'Chỉnh sửa phiên học' : 'Thêm phiên học'}
+        title={editingSession ? 'Chỉnh sửa session' : 'Thêm session'}
         description="Make changes to your profile here. Click save when you're done."
-        open={isEditLiveSessionOpen}
-        onOpenChange={setIsEditLiveSessionOpen}
+        open={showSessionForm}
+        onOpenChange={setShowSessionForm}
       >
-        <EditLiveSessionForm
+        <EditDaySessionForm
           courseID={courseID}
-          courseLiveID={selectedCourseLive?.id!}
-          data={selectedLiveSession}
-          onSuccess={onEditLiveSessionSuccess}
+          liveDayID={selectedDay?.id!}
+          data={editingSession}
+          onSuccess={() => {
+            setShowSessionForm(false)
+            setEditingSession(null)
+            setSelectedDay(null)
+            liveDaysRefetch()
+            // queryClient.invalidateQueries({ queryKey: ['liveDays'] })
+          }}
         />
       </EditSheet>
+
+      {/* <DeleteConfirmDialog
+        open={!!deleteItem}
+        onOpenChange={() => setDeleteItem(null)}
+        item={deleteItem}
+        onConfirm={() => {
+          // Handle delete logic here
+          setDeleteItem(null)
+          queryClient.invalidateQueries({ queryKey: ["liveDays"] })
+        }}
+      /> */}
     </div>
   )
 }
 
-const getMealTimeColor = (mealTime: string) => {
-  switch (mealTime) {
-    case 'breakfast':
-      return 'bg-orange-100 text-orange-800 border-orange-200'
-    case 'lunch':
-      return 'bg-green-100 text-green-800 border-green-200'
-    case 'dinner':
-      return 'bg-blue-100 text-blue-800 border-blue-200'
-    case 'snack':
-      return 'bg-purple-100 text-purple-800 border-purple-200'
-    default:
-      return 'bg-gray-100 text-gray-800 border-gray-200'
+function formatTime(time: string): string {
+  try {
+    const [hours, minutes] = time.split(':').map(Number)
+    const period = hours >= 12 ? 'PM' : 'AM'
+    const formattedHours = hours % 12 || 12
+    return `${formattedHours}:${minutes.toString().padStart(2, '0')} ${period}`
+  } catch (error) {
+    return time
   }
 }

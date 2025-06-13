@@ -98,11 +98,11 @@ export default function LoginForm() {
     const pass = formData.get('password')?.toString() || ''
     try {
       const res = await login({ username: user, password: pass, grant_type: 'password' })
-      const { role } = await signin(res)
-      window.location.href = '/' + (role === 'normal_user' ? '' : 'admin')
+      const { scope } = await signin(res)
+      window.location.href = '/' + (scope === 'user' ? '' : 'admin')
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Đăng nhập thất bại!';
-      toast.error(errorMessage);
+      const errorMessage = error instanceof Error ? error.message : 'Đăng nhập thất bại!'
+      toast.error(errorMessage)
     }
   }
 

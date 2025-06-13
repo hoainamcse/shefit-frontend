@@ -1,6 +1,6 @@
 'use server'
 
-import type { Course, CourseLive } from '@/models/course'
+import type { Course, LiveDay, CourseWeek, DayCircuit, WeekDay } from '@/models/course'
 import type { ApiResponse, ListResponse } from '@/models/response'
 
 import { fetchDataServer } from '../helpers/fetch-data-server'
@@ -31,22 +31,37 @@ export async function getCourse(course_id: Course['id']): Promise<ApiResponse<Co
   return await response.json()
 }
 
-export async function getCoursesBySubscriptionId(subscription_id: string): Promise<ListResponse<Course>> {
-  const response = await fetchDataServer(`/v1/courses/?subscription_id=${subscription_id}`, {
-    cache: 'force-cache',
-    next: {
-      revalidate: false,
-      tags: [`courses:subscription_id=${subscription_id}`],
-    },
-  })
-  return await response.json()
-}
-
-export async function getCourseLives(courseId: Course['id']): Promise<ListResponse<CourseLive>> {
+export async function getLiveDays(courseId: Course['id']): Promise<ListResponse<LiveDay>> {
   const response = await fetchDataServer(`/v1/courses/${courseId}/live-classes/`, {
     next: {
       revalidate: 0,
     },
   })
   return await response.json()
+}
+
+export async function getWeeks(course_id: Course['id']): Promise<ListResponse<CourseWeek>> {
+  const response = await fetchDataServer(`/v1/courses/${course_id}/video-classes/weeks/`, { next: { tags: ['weeks'] } })
+  return response.json()
+}
+
+export async function getDays(course_id: Course['id'], week_id: CourseWeek['id']): Promise<ListResponse<WeekDay>> {
+  const response = await fetchDataServer(`/v1/courses/${course_id}/video-classes/weeks/${week_id}/days`, {
+    next: { tags: ['days'] },
+  })
+  return response.json()
+}
+
+export async function getCircuits(
+  course_id: Course['id'],
+  week_id: CourseWeek['id'],
+  day_id: WeekDay['id']
+): Promise<ListResponse<DayCircuit>> {
+  const response = await fetchDataServer(
+    `/v1/courses/${course_id}/video-classes/weeks/${week_id}/days/${day_id}/circuits`,
+    {
+      next: { tags: ['circuits'] },
+    }
+  )
+  return response.json()
 }
