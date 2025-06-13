@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { MainButton } from '@/components/buttons/main-button'
 import { Plus, Trash2 } from 'lucide-react'
-import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useTransition, useEffect } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -17,6 +17,7 @@ import { FormInputField, FormMultiSelectField, FormNumberField, FormSelectField,
 import { ImageUploader } from '@/components/image-uploader'
 import { Product, ProductCategory, ProductColor, ProductSize } from '@/models/products'
 import { createProduct, getCategories, getColors, getSizes, updateProduct } from '@/network/server/products'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 
@@ -59,93 +60,45 @@ interface ProductFormProps {
   data?: Product
 }
 
-// // Helper function to determine if a string is a URL
-// const isUrl = (str: string) => {
-//   return str.startsWith('http://') || str.startsWith('https://') || str.startsWith('blob:')
-// }
-
-// // Helper function to create file values based on mode (edit or create)
-// const useFileValues = (isEdit: boolean, fieldValue: string[], fileObjects: File[]) => {
-//   if (isEdit && fieldValue && fieldValue.length > 0) {
-//     return fieldValue.map((url) => {
-//       if (isUrl(url) && !url.startsWith('blob:')) {
-//         return Object.assign(new File([], url.split('/').pop() || 'image.jpg', { type: 'image/jpeg' }), {
-//           preview: url,
-//         })
-//       } else if (url.startsWith('blob:')) {
-//         const matchingFile = fileObjects.find((file) => 'preview' in file && file.preview === url)
-
-//         if (matchingFile) {
-//           return matchingFile //
-//           //  Use the original file with its name
-//         }
-
-//         return Object.assign(new File([], 'uploaded-image.jpg', { type: 'image/jpeg' }), {
-//           preview: url,
-//         })
-//       }
-//       return Object.assign(new File([], 'image.jpg', { type: 'image/jpeg' }), {
-//         preview: url,
-//       })
-//     })
-//   }
-//   return fileObjects
-// }
-
-// // Helper function to extract preview URLs from File objects
-// const extractPreviewUrls = (files: File[]): string[] => {
-//   return files
-//     .map((file) => {
-//       if ('preview' in file && typeof file.preview === 'string') {
-//         return file.preview
-//       }
-//       return ''
-//     })
-//     .filter((url) => url !== '')
-// }
-
 export default function CreateProductForm({ isEdit = false, data }: ProductFormProps) {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
-  const [sizeList, setSizeList] = useState<ProductSize[]>([])
-  const [colorList, setColorList] = useState<ProductColor[]>([])
-  const [categoryList, setCategoryList] = useState<ProductCategory[]>([])
+  // Fetch available sizes with React Query
+  const { data: sizesData, isLoading: isLoadingSizes } = useQuery({
+    queryKey: ['product-sizes'],
+    queryFn: getSizes,
+    select: (response) =>
+      (response.data || []).map((size: ProductSize) => ({
+        value: size.id.toString(),
+        label: size.size,
+      })),
+    placeholderData: keepPreviousData,
+  })
 
-  const AVAILABLE_SIZES = useMemo(
-    () => sizeList.map((size) => ({ value: size.id.toString(), label: size.size })),
-    [sizeList]
-  )
+  // Fetch available colors with React Query
+  const { data: colorsData, isLoading: isLoadingColors } = useQuery({
+    queryKey: ['product-colors'],
+    queryFn: getColors,
+    select: (response) =>
+      (response.data || []).map((color: ProductColor) => ({
+        value: color.id.toString(),
+        label: color.name,
+      })),
+    placeholderData: keepPreviousData,
+  })
 
-  const AVAILABLE_COLORS = useMemo(
-    () => colorList.map((color) => ({ value: color.id.toString(), label: color.name })),
-    [colorList]
-  )
-
-  const AVAILABLE_CATEGORIES = useMemo(
-    () => categoryList.map((category) => ({ value: category.id.toString(), label: category.name })),
-    [categoryList]
-  )
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [sizeResponse, colorResponse, categoryResponse] = await Promise.all([
-          getSizes(),
-          getColors(),
-          getCategories(),
-        ])
-
-        setSizeList(sizeResponse.data || [])
-        setColorList(colorResponse.data || [])
-        setCategoryList(categoryResponse.data || [])
-      } catch (error) {
-        console.error('Failed to fetch product options:', error)
-      }
-    }
-
-    fetchData()
-  }, [])
+  // Fetch available categories with React Query
+  const { data: categoriesData, isLoading: isLoadingCategories } = useQuery({
+    queryKey: ['product-categories'],
+    queryFn: getCategories,
+    select: (response) =>
+      (response.data || []).map((category: ProductCategory) => ({
+        value: category.id.toString(),
+        label: category.name,
+      })),
+    placeholderData: keepPreviousData,
+  })
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
@@ -302,14 +255,16 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
                 placeholder="Nhập khối lượng"
               />
 
-              <FormSelectField
-                form={form}
-                name="category_id"
-                label="Phân loại"
-                data={AVAILABLE_CATEGORIES}
-                placeholder="Chọn loại sản phẩm"
-                withAsterisk
-              />
+              {!isLoadingCategories && (
+                <FormSelectField
+                  form={form}
+                  name="category_id"
+                  label="Phân loại"
+                  data={categoriesData}
+                  placeholder="Chọn loại sản phẩm"
+                  withAsterisk
+                />
+              )}
 
               <ImageUploader form={form} name="image_urls" accept={{ 'image/*': [] }} maxFileCount={10} />
               <div className="space-y-4">
@@ -360,20 +315,24 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
                 ))}
               </div>
 
-              <FormMultiSelectField
-                form={form}
-                name="sizes"
-                data={AVAILABLE_SIZES}
-                label="Kích cỡ"
-                placeholder="Chọn kích cỡ"
-              />
-              <FormMultiSelectField
-                form={form}
-                name="colors"
-                data={AVAILABLE_COLORS}
-                label="Màu sắc"
-                placeholder="Chọn màu sắc"
-              />
+              {!isLoadingSizes && (
+                <FormMultiSelectField
+                  form={form}
+                  name="sizes"
+                  data={sizesData}
+                  label="Kích cỡ"
+                  placeholder="Chọn kích cỡ"
+                />
+              )}
+              {!isLoadingColors && (
+                <FormMultiSelectField
+                  form={form}
+                  name="colors"
+                  data={colorsData}
+                  label="Màu sắc"
+                  placeholder="Chọn màu sắc"
+                />
+              )}
 
               {/* Stock Management Section */}
               <FormField
@@ -450,14 +409,14 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
                               <TableBody>
                                 {variants.map((variant, index) => (
                                   <TableRow key={index} className="hover:bg-neutral-50 dark:hover:bg-neutral-800">
-                                    {sizes.length > 0 && (
+                                    {sizes.length > 0 && sizesData && (
                                       <TableCell className="p-3">
-                                        {AVAILABLE_SIZES.find((s) => s.value === variant.size_id?.toString())?.label}
+                                        {sizesData.find((s) => s.value === variant.size_id?.toString())?.label}
                                       </TableCell>
                                     )}
-                                    {colors?.length > 0 && (
+                                    {colors?.length > 0 && colorsData && (
                                       <TableCell className="p-3">
-                                        {AVAILABLE_COLORS.find((c) => c.value === variant.color_id?.toString())?.label}
+                                        {colorsData.find((c) => c.value === variant.color_id?.toString())?.label}
                                       </TableCell>
                                     )}
                                     <TableCell className="p-3 text-center">

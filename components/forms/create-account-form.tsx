@@ -223,16 +223,16 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     fetchAllData()
   }, [data?.id])
 
-  useEffect(() => {
-    const subscription = form.watch((value, { name }) => {
-      if (name === 'fullname' && value.fullname) {
-        const username = generateUsername(value.fullname)
-        form.setValue('username', username)
-      }
-    })
+  // useEffect(() => {
+  //   const subscription = form.watch((value, { name }) => {
+  //     if (name === 'fullname' && value.fullname) {
+  //       const username = generateUsername(value.fullname)
+  //       form.setValue('username', username)
+  //     }
+  //   })
 
-    return () => subscription.unsubscribe()
-  }, [form])
+  //   return () => subscription.unsubscribe()
+  // }, [form])
 
   async function onSubmit(values: AccountFormData) {
     if (
@@ -375,8 +375,6 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
     newDate.setDate(newDate.getDate() - 1 + months * 35) // 35 days per month
     return newDate
   }
-
-  console.log('subscriptions', subscriptions)
 
   if (isLoading) {
     return (
