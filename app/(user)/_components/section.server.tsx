@@ -1,26 +1,26 @@
-import Link from "next/link"
-import { z } from "zod"
-import { Fragment } from "react"
-import { ArrowRight } from "lucide-react"
+import Link from 'next/link'
+import { z } from 'zod'
+import { Fragment } from 'react'
+import { ArrowRight } from 'lucide-react'
 
-import { cn } from "@/lib/utils"
-import { CupIcon } from "@/components/icons/CupIcon"
-import { BodyIcon } from "@/components/icons/BodyIcon"
-import { ArrowIcon } from "@/components/icons/ArrowIcon"
-import { PersonIcon } from "@/components/icons/PersonIcon"
-import { MainButton } from "@/components/buttons/main-button"
-import { DumbbellIcon } from "@/components/icons/DumbbellIcon"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-import { formSchema } from "@/app/(admin)/admin/(content-input)/homepage/schema"
-import { getProducts } from "@/network/server/products"
-import { getMealPlans } from "@/network/server/meal-plans"
-import { getSubscriptions } from "@/network/server/subscriptions"
-import { getCourses } from "@/network/server/courses"
-import { getCoaches } from "@/network/server/coaches"
+import { cn } from '@/lib/utils'
+import { CupIcon } from '@/components/icons/CupIcon'
+import { BodyIcon } from '@/components/icons/BodyIcon'
+import { ArrowIcon } from '@/components/icons/ArrowIcon'
+import { PersonIcon } from '@/components/icons/PersonIcon'
+import { MainButton } from '@/components/buttons/main-button'
+import { DumbbellIcon } from '@/components/icons/DumbbellIcon'
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
+import { formSchema } from '@/app/(admin)/admin/(content-input)/homepage/schema'
+import { getProducts } from '@/network/server/products'
+import { getMealPlans } from '@/network/server/meal-plans'
+import { getSubscriptions } from '@/network/server/subscriptions'
+import { getCourses } from '@/network/server/courses'
+import { getCoaches } from '@/network/server/coaches'
 
 type DataType = z.infer<typeof formSchema>
 
-export function SectionOne({ data }: { data: DataType["section_1"] }) {
+export function SectionOne({ data }: { data: DataType['section_1'] }) {
   return (
     <div className="lg:relative flex flex-col-reverse">
       <img src={data.image} alt={data.image} className="w-full object-cover aspect-[5/3] lg:aspect-[21/9]" />
@@ -42,7 +42,7 @@ export function SectionOne({ data }: { data: DataType["section_1"] }) {
   )
 }
 
-export function SectionTwo({ data }: { data: DataType["section_2"] }) {
+export function SectionTwo({ data }: { data: DataType['section_2'] }) {
   return (
     <div className="py-8 lg:py-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
@@ -78,9 +78,9 @@ export function SectionTwo({ data }: { data: DataType["section_2"] }) {
 }
 
 // Todo: carousel indicator on mobile
-export async function SectionThree({ data }: { data: DataType["section_3"] }) {
+export async function SectionThree({ data }: { data: DataType['section_3'] }) {
   const res = await getSubscriptions({
-    ids: data.membership_ids.join(","),
+    ids: data.membership_ids.join(','),
   })
 
   const courses = await Promise.all(res.data.map((dt) => getCourses({ ids: dt.course_ids })))
@@ -96,13 +96,13 @@ export async function SectionThree({ data }: { data: DataType["section_3"] }) {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
             {res.data.map((membership, mIndex) => (
               <div key={mIndex} className="flex flex-col h-full space-y-4">
-                <Link href={"#"}>
+                <Link href={'#'}>
                   <div
                     className={cn(
-                      "group flex items-center gap-2 text-base lg:text-lg text-background font-medium rounded-md p-3",
-                      mIndex === 0 && "bg-primary",
-                      mIndex === 1 && "bg-ring",
-                      mIndex === 2 && "bg-[#B60606]"
+                      'group flex items-center gap-2 text-base lg:text-lg text-background font-medium rounded-md p-3',
+                      mIndex === 0 && 'bg-primary',
+                      mIndex === 1 && 'bg-ring',
+                      mIndex === 2 && 'bg-[#B60606]'
                     )}
                   >
                     <PersonIcon />
@@ -122,16 +122,16 @@ export async function SectionThree({ data }: { data: DataType["section_3"] }) {
                         <div className="flex flex-col items-center gap-4">
                           <div className="relative w-full overflow-hidden">
                             <img
-                              src={course.cover_image || "/temp/homepage-3.jpg"}
+                              src={course.cover_image || '/temp/homepage-3.jpg'}
                               alt={course.course_name}
                               className="rounded-md w-full object-cover aspect-[5/7]"
                             />
                             <div
                               className={cn(
-                                "absolute bottom-[15%] -left-[42px] -right-[42px] h-16 bg-gradient-to-t from-background to-transparent -rotate-12 text-background flex flex-col items-center justify-center",
-                                mIndex === 0 && "bg-primary",
-                                mIndex === 1 && "bg-ring",
-                                mIndex === 2 && "bg-[#B60606]"
+                                'absolute bottom-[15%] -left-[42px] -right-[42px] h-16 bg-gradient-to-t from-background to-transparent -rotate-12 text-background flex flex-col items-center justify-center',
+                                mIndex === 0 && 'bg-primary',
+                                mIndex === 1 && 'bg-ring',
+                                mIndex === 2 && 'bg-[#B60606]'
                               )}
                             >
                               <p className="uppercase text-sm lg:text-base font-semibold">{course.course_name}</p>
@@ -155,7 +155,7 @@ export async function SectionThree({ data }: { data: DataType["section_3"] }) {
   )
 }
 
-export function SectionFour({ data }: { data: DataType["section_4"] }) {
+export function SectionFour({ data }: { data: DataType['section_4'] }) {
   return (
     <div className="py-8 lg:py-12">
       <div className="container mx-auto">
@@ -187,9 +187,9 @@ export function SectionSix() {
 }
 
 // Todo: carousel indicator
-export async function SectionSeven({ data }: { data: DataType["section_7"] }) {
+export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
   const res = await getMealPlans({
-    ids: data.meal_plan_ids.join(","),
+    ids: data.meal_plan_ids.join(','),
   })
 
   return (
@@ -209,7 +209,7 @@ export async function SectionSeven({ data }: { data: DataType["section_7"] }) {
                   <div className="flex flex-col items-center gap-4">
                     <div className="relative w-full overflow-hidden">
                       <img
-                        src={item.image || "/temp/homepage-4.jpg"}
+                        src={item.image || '/temp/homepage-4.jpg'}
                         alt={item.title}
                         className="rounded-lg w-full object-cover aspect-[4/3]"
                       />
@@ -239,14 +239,14 @@ export async function SectionSeven({ data }: { data: DataType["section_7"] }) {
 }
 
 // Todo: carousel indicator
-export async function SectionEight({ data }: { data: DataType["section_8"] }) {
+export async function SectionEight({ data }: { data: DataType['section_8'] }) {
   const res = await getProducts({
-    ids: data.product_ids.join(","),
+    ids: data.product_ids.join(','),
   })
 
-  let VND = new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
+  let VND = new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
   })
 
   return (
@@ -264,7 +264,7 @@ export async function SectionEight({ data }: { data: DataType["section_8"] }) {
                   <Link href={`/products/${item.id}`}>
                     <div className="flex flex-col gap-2">
                       <img
-                        src={item.image_urls[0] || "/temp/homepage-5.jpg"}
+                        src={item.image_urls[0] || '/temp/homepage-5.jpg'}
                         alt={item.name}
                         className="rounded-2xl w-full object-cover aspect-square"
                       />
@@ -289,9 +289,9 @@ export async function SectionEight({ data }: { data: DataType["section_8"] }) {
   )
 }
 
-export async function SectionNine({ data }: { data: DataType["section_9"] }) {
+export async function SectionNine({ data }: { data: DataType['section_9'] }) {
   const res = await getCoaches({
-    ids: data.coach_ids.join(","),
+    ids: data.coach_ids.join(','),
   })
 
   return (
@@ -306,7 +306,7 @@ export async function SectionNine({ data }: { data: DataType["section_9"] }) {
               <div className="relative w-40 lg:w-44">
                 <div className="absolute bottom-0 left-0 size-40 lg:size-44 bg-primary rounded-full -z-10" />
                 <img
-                  src={coach.image || "/temp/homepage-6.png"}
+                  src={coach.image || '/temp/homepage-6.png'}
                   alt={coach.name}
                   className="size-40 lg:size-44 object-cover"
                 />
@@ -329,12 +329,12 @@ export async function SectionNine({ data }: { data: DataType["section_9"] }) {
   )
 }
 
-export function SectionTen({ data }: { data: DataType["section_10"] }) {
+export function SectionTen({ data }: { data: DataType['section_10'] }) {
   return (
     <div className="py-8 lg:py-12">
       <div
         className="relative w-full h-[400px] lg:h-[600px]"
-        style={{ clipPath: "polygon(0 5%, 100% 0, 100% 100%, 0 90%)" }}
+        style={{ clipPath: 'polygon(0 5%, 100% 0, 100% 100%, 0 90%)' }}
       >
         <img src={data.top.image} className="absolute w-full h-full object-cover" />
         <div className="bg-[#FF78734D] absolute inset-0 transition-opacity" />
@@ -347,7 +347,7 @@ export function SectionTen({ data }: { data: DataType["section_10"] }) {
       </div>
       <div
         className="relative w-full h-[400px] lg:h-[600px] -mt-[40px] lg:-mt-[60px]"
-        style={{ clipPath: "polygon(0 0, 100% 10%, 100% 95%, 0 100%)" }}
+        style={{ clipPath: 'polygon(0 0, 100% 10%, 100% 95%, 0 100%)' }}
       >
         <img src={data.bottom.image} className="absolute w-full h-full object-cover" />
         <div className="bg-[#FF78734D] absolute inset-0 transition-opacity" />
@@ -362,7 +362,7 @@ export function SectionTen({ data }: { data: DataType["section_10"] }) {
   )
 }
 
-export function SectionEleven({ data }: { data: DataType["section_11"] }) {
+export function SectionEleven({ data }: { data: DataType['section_11'] }) {
   return (
     <div className="py-8 lg:py-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
@@ -372,11 +372,8 @@ export function SectionEleven({ data }: { data: DataType["section_11"] }) {
         <div className="max-w-6xl mx-auto space-y-4">
           <img src={data.image} alt={data.image} className="aspect-video rounded-lg w-full object-cover" />
           <div className="max-w-2xl mx-auto text-center space-y-4">
-            <p className="text-neutral-500">
-              Tham gia facebook của SHEFIT để cập nhật bài tập, thực đơn và hành trình truyền cảm hứng từ hàng ngàn học
-              viên
-            </p>
-            <MainButton text="Tham gia ngay" className="rounded-full w-44" size="lg" href="#" />
+            <p className="text-neutral-500">{data.description}</p>
+            <MainButton text={data.cta.text} className="rounded-full w-44" size="lg" href={data.cta.href} />
           </div>
         </div>
       </div>

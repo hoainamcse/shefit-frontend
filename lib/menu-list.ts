@@ -50,7 +50,7 @@ export function getMenuList(pathname: string): Group[] {
               label: 'Về chúng tôi',
             },
             {
-              href: '#',
+              href: '/admin/policy',
               label: 'Chính sách',
             },
           ],

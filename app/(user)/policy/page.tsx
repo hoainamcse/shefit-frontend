@@ -1,9 +1,10 @@
-import { getConfigurations } from "@/network/server/configurations"
+import { HtmlContent } from '@/components/html-content'
+import { getConfigurations } from '@/network/server/configurations'
 
-export const dynamic = "force-dynamic"
+export const dynamic = 'force-dynamic'
 
 export default async function PolicyPage() {
-  const response = await getConfigurations("policy")
+  const response = await getConfigurations('policy')
   const policyData = response.data[0]?.data as
     | {
         privacy_policy: string
@@ -17,11 +18,11 @@ export default async function PolicyPage() {
   return (
     <div className="flex flex-col gap-10 mt-10">
       <div className="font-[family-name:var(--font-coiny)] xl:text-[40px] max-lg:text-2xl">Chính sách bảo mật</div>
-      <p className="text-gray-500 xl:text-xl max-lg:text-base">{policyData.privacy_policy}</p>
+      <HtmlContent content={policyData.privacy_policy} className="text-gray-500 xl:text-xl max-lg:text-base" />
       <div className="font-[family-name:var(--font-coiny)] xl:text-[40px] max-lg:text-2xl">
         Chính Sách Bảo Vệ Thông Tin Cá Nhân Khách Hàng
       </div>
-      <p className="text-gray-500 xl:text-xl max-lg:text-base">{policyData.personal_policy}</p>
+      <HtmlContent content={policyData.personal_policy} className="text-gray-500 xl:text-xl max-lg:text-base" />
     </div>
   )
 }

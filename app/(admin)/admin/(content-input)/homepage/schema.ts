@@ -43,28 +43,11 @@ export const formSchema = z.object({
   section_5: z.object({
     title: z.string(),
     description: z.string(),
-    form_category: z.object({
-      pear: z.object({
+    features: z.array(z.object({
+        title: z.string(),
         description: z.string(),
         course_ids: z.array(z.string()),
-      }),
-      apple: z.object({
-        description: z.string(),
-        course_ids: z.array(z.string()),
-      }),
-      rectangle: z.object({
-        description: z.string(),
-        course_ids: z.array(z.string()),
-      }),
-      hourglass: z.object({
-        description: z.string(),
-        course_ids: z.array(z.string()),
-      }),
-      inverted_triangle: z.object({
-        description: z.string(),
-        course_ids: z.array(z.string()),
-      }),
-    }),
+      })),
   }),
   section_7: z.object({
     title: z.string(),
@@ -93,5 +76,10 @@ export const formSchema = z.object({
   }),
   section_11: z.object({
     image: z.string(),
+    description: z.string(),
+    cta: z.object({
+      text: z.string(),
+      href: z.string(),
+    }),
   }),
 });

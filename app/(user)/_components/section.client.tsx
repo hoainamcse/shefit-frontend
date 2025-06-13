@@ -1,85 +1,51 @@
-"use client";
+'use client'
 
-import { z } from "zod";
-import { useState } from "react";
+import { useState } from 'react'
+import { cn } from '@/lib/utils'
+import { CheckCircle } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { getCourses } from '@/network/server/courses'
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
+import Link from 'next/link'
+import { z } from 'zod'
+import { formSchema } from '@/app/(admin)/admin/(content-input)/homepage/schema'
 
-import { cn } from "@/lib/utils";
-import { PearIcon } from "@/components/icons/PearIcon";
-import { AppleIcon } from "@/components/icons/AppleIcon";
-import { RectangleIcon } from "@/components/icons/RectangleIcon";
-import { ClockIcon } from "@/components/icons/ClockIcon";
-import { TriangleIcon } from "@/components/icons/TriangleIcon";
-import { formSchema } from "@/app/(admin)/admin/(content-input)/homepage/schema";
-import { useQuery } from "@tanstack/react-query";
-import { getCourses } from "@/network/server/courses";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import Link from "next/link";
-
-type DataType = z.infer<typeof formSchema>;
+type DataType = z.infer<typeof formSchema>
 
 // Todo: responsive
-export function SectionFive({ data }: { data: DataType["section_5"] }) {
-  const formCategories = [
-    {
-      id: 0,
-      label: "Quả lê",
-      value: "pear",
-      icon: PearIcon,
-    },
-    {
-      id: 1,
-      label: "Quả táo",
-      value: "apple",
-      icon: AppleIcon,
-    },
-    {
-      id: 2,
-      label: "Chữ nhật",
-      value: "rectangle",
-      icon: RectangleIcon,
-    },
-    {
-      id: 3,
-      label: "Đồng hồ cát",
-      value: "hourglass",
-      icon: ClockIcon,
-    },
-    {
-      id: 4,
-      label: "Tam giác ngược",
-      value: "inverted_triangle",
-      icon: TriangleIcon,
-    },
-  ];
-  const [activeTab, setActiveTab] = useState(formCategories[0]);
+export function SectionFive({ data }: { data: DataType['section_5'] }) {
+  const [activeTabIndex, setActiveTabIndex] = useState(0)
+  const features = data?.features || []
+  const activeFeature = features[activeTabIndex] || null
 
   const {
-    data: _data,
+    data: allCoursesData,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['categories-courses'],
-    queryFn: () => Promise.all(Object.values(data.form_category).map((category: any) =>
-      getCourses({ ids: category.course_ids.join(",")})
-    )),
-  });
+    queryKey: ['all-feature-courses'],
+    queryFn: async () => {
+      if (!features.length) return []
+      const res = await Promise.all(features.map((feature) => getCourses({ ids: feature.course_ids.join(',') })))
+      return res.map((res) => res.data)
+    },
+    enabled: features.length > 0,
+  })
+
+  if (!data || !Array.isArray(features)) {
+    return <div className="text-center py-8">Dữ liệu không hợp lệ</div>
+  }
 
   if (isLoading) {
-    return <div className="text-center">Loading...</div>;
+    return <div className="text-center py-8">Đang tải khóa học...</div>
   }
 
   if (error) {
-    return <div className="text-center text-red-500">Error loading data</div>;
+    return <div className="text-center text-red-500 py-8">Lỗi khi tải dữ liệu khóa học</div>
   }
 
-  if (!_data) {
-    return <div className="text-center">No data available</div>;
+  if (!features.length) {
+    return <div className="text-center py-8">Chưa có dữ liệu hiển thị</div>
   }
 
   return (
@@ -92,67 +58,50 @@ export function SectionFive({ data }: { data: DataType["section_5"] }) {
           </div>
           <div className="max-w-2xl mx-auto space-y-6">
             <div className="flex flex-wrap justify-center gap-4">
-              {formCategories.map((category) => {
-                const Icon = category.icon;
-                return (
-                  <button
-                    key={category.value}
-                    className={cn(
-                      "flex items-center gap-2 font-medium rounded-md p-2 text-neutral-500 capitalize",
-                      activeTab.value === category.value &&
-                        "bg-background text-primary"
-                    )}
-                    onClick={() => setActiveTab(category)}
-                  >
-                    <Icon size={32} />
-                    {category.label}
-                  </button>
-                );
-              })}
+              {data.features.map((feature, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  className={cn(
+                    'flex items-center gap-2 font-medium rounded-md p-2 text-neutral-500 capitalize',
+                    activeTabIndex === index && 'bg-background text-primary'
+                  )}
+                  onClick={() => setActiveTabIndex(index)}
+                >
+                  <CheckCircle size={20} />
+                  {feature.title}
+                </button>
+              ))}
             </div>
-            <p className="text-center">
-              {(data.form_category as any)[activeTab.value].description}
-            </p>
+            {activeFeature?.description && <p className="text-center">{activeFeature.description}</p>}
           </div>
           <div className="max-w-6xl mx-auto">
             <Carousel>
               <CarouselContent>
-                {_data[activeTab.id].data.map((course, mIndex) => (
-                  <CarouselItem
-                    key={course.id}
-                    className="basis-4/5 lg:basis-1/4"
-                  >
+                {allCoursesData?.[activeTabIndex]?.map((course, mIndex) => (
+                  <CarouselItem key={course.id} className="basis-4/5 lg:basis-1/4">
                     <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
-                      <CarouselItem
-                        key={course.id}
-                        className="basis-2/3 lg:basis-full"
-                      >
+                      <CarouselItem key={course.id} className="basis-2/3 lg:basis-full">
                         <div className="flex flex-col items-center gap-4">
                           <div className="relative w-full overflow-hidden">
                             <img
-                              src={course.cover_image || "/temp/homepage-3.jpg"}
+                              src={course.cover_image || '/temp/homepage-3.jpg'}
                               alt={course.course_name}
                               className="rounded-md w-full object-cover aspect-[5/7]"
                             />
                             <div
                               className={cn(
-                                "absolute bottom-[15%] -left-[42px] -right-[42px] h-16 bg-gradient-to-t from-background to-transparent -rotate-12 text-background flex flex-col items-center justify-center",
-                                mIndex === 1 && "bg-primary",
-                                mIndex === 2 && "bg-ring",
-                                mIndex === 3 && "bg-[#B60606]"
+                                'absolute bottom-[15%] -left-[42px] -right-[42px] h-16 bg-gradient-to-t from-background to-transparent -rotate-12 text-background flex flex-col items-center justify-center',
+                                mIndex === 1 && 'bg-primary',
+                                mIndex === 2 && 'bg-ring',
+                                mIndex === 3 && 'bg-[#B60606]'
                               )}
                             >
-                              <p className="uppercase text-sm lg:text-base font-semibold">
-                                {course.course_name}
-                              </p>
-                              <p className="capitalize text-sm lg:text-base">
-                                {course.difficulty_level}
-                              </p>
+                              <p className="uppercase text-sm lg:text-base font-semibold">{course.course_name}</p>
+                              <p className="capitalize text-sm lg:text-base">{course.difficulty_level}</p>
                             </div>
                           </div>
-                          <p className="text-center text-neutral-500">
-                            {course.description}
-                          </p>
+                          <p className="text-center text-neutral-500">{course.description}</p>
                         </div>
                       </CarouselItem>
                     </Link>
@@ -166,5 +115,5 @@ export function SectionFive({ data }: { data: DataType["section_5"] }) {
         </div>
       </div>
     </div>
-  );
+  )
 }

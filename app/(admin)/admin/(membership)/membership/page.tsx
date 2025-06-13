@@ -46,7 +46,7 @@ interface MembershipRow {
 
 export default function MembershipPage() {
   const { session } = useSession()
-  const { copy } = useClipboard()
+  const { copy, copied } = useClipboard()
   const router = useRouter()
   const [coupons, setCoupons] = useState<Coupon[]>([])
   const [membershipTable, setMembershipTable] = useState<MembershipRow[]>([])
@@ -216,6 +216,12 @@ export default function MembershipPage() {
     fetchCoupons()
     fetchMemberships()
   }, [])
+
+  useEffect(() => {
+    if (copied) {
+      toast.success('Đã sao chép ID vào bộ nhớ tạm')
+    }
+  }, [copied])
 
   return (
     <ContentLayout title="Quản lý gói thành viên">
