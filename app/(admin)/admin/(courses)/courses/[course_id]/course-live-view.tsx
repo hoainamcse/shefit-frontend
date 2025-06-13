@@ -2,6 +2,7 @@
 
 import type { Course, LiveDay, DaySession, DayOfWeek } from '@/models/course'
 
+import { toast } from 'sonner'
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Calendar, Clock, Video, Edit, Trash2 } from 'lucide-react'
@@ -12,21 +13,21 @@ import { AddButton } from '@/components/buttons/add-button'
 import { MainButton } from '@/components/buttons/main-button'
 import { EditSheet } from '@/components/data-table/edit-sheet'
 import { EditLiveDayForm } from '@/components/forms/edit-live-day-form'
-import { getLiveDays, queryKeyLiveDays } from '@/network/client/courses'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { EditDaySessionForm } from '@/components/forms/edit-day-session-form'
+import { deleteDaySession, deleteLiveDay, getLiveDays, queryKeyLiveDays } from '@/network/client/courses'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 const dayOrder: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 export function CourseLiveView({ courseID }: { courseID: Course['id'] }) {
-  const [selectedDay, setSelectedDay] = useState<LiveDay | null>(null)
+  const [selectedDay, setSelectedDay] = useState<number | null>(null)
 
   // Form states
   const [showDayForm, setShowDayForm] = useState(false)
   const [showSessionForm, setShowSessionForm] = useState(false)
   const [editingDay, setEditingDay] = useState<LiveDay | null>(null)
   const [editingSession, setEditingSession] = useState<DaySession | null>(null)
-  const [deleteItem, setDeleteItem] = useState<{ type: string; item: any } | null>(null)
+  // const [deleteItem, setDeleteItem] = useState<{ type: string; item: any } | null>(null)
 
   // const queryClient = useQueryClient()
 
@@ -51,23 +52,45 @@ export function CourseLiveView({ courseID }: { courseID: Course['id'] }) {
   }
 
   const handleDeleteDay = (day: LiveDay) => {
-    setDeleteItem({ type: 'day', item: day })
+    // setDeleteItem({ type: 'day', item: day })
+    const deletePromise = () => deleteLiveDay(courseID, day.id)
+
+    toast.promise(deletePromise, {
+      loading: 'Đang xoá...',
+      success: (_) => {
+        liveDaysRefetch()
+        setSelectedDay(null)
+        return 'Xoá ngày thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
   }
 
   const handleAddSession = (day: LiveDay) => {
-    setSelectedDay(day)
+    setSelectedDay(day.id)
     setEditingSession(null)
     setShowSessionForm(true)
   }
 
   const handleEditSession = (session: DaySession, day: LiveDay) => {
-    setSelectedDay(day)
+    setSelectedDay(day.id)
     setEditingSession(session)
     setShowSessionForm(true)
   }
 
-  const handleDeleteSession = (session: DaySession) => {
-    setDeleteItem({ type: 'session', item: session })
+  const handleDeleteSession = async (dayID: LiveDay['id'], session: DaySession) => {
+    // setDeleteItem({ type: 'session', item: session })
+    const deletePromise = () => deleteDaySession(courseID, dayID, session.id)
+
+    toast.promise(deletePromise, {
+      loading: 'Đang xoá...',
+      success: (_) => {
+        liveDaysRefetch()
+        setSelectedDay(null)
+        return 'Xoá session thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
   }
 
   const sortedDays = liveDays
@@ -156,7 +179,7 @@ export function CourseLiveView({ courseID }: { courseID: Course['id'] }) {
                               <MainButton
                                 size="icon"
                                 variant="ghost"
-                                onClick={() => handleDeleteSession(session)}
+                                onClick={() => handleDeleteSession(day.id, session)}
                                 icon={Trash2}
                                 className="hover:text-destructive"
                               />
@@ -207,7 +230,7 @@ export function CourseLiveView({ courseID }: { courseID: Course['id'] }) {
       >
         <EditDaySessionForm
           courseID={courseID}
-          liveDayID={selectedDay?.id!}
+          liveDayID={selectedDay!}
           data={editingSession}
           onSuccess={() => {
             setShowSessionForm(false)

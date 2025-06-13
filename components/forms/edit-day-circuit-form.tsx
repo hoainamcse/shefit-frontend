@@ -75,7 +75,7 @@ export function EditDayCircuitForm({ data, onSuccess, courseID, weekID, dayID }:
   return (
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-        <FormInputField form={form} name="name" label="Tên circuit" placeholder="Nhập tên circuit" />
+        <FormInputField form={form} name="name" label="Tên circuit" placeholder="Nhập tên circuit" withAsterisk />
         <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
         <FormNumberField
           form={form}

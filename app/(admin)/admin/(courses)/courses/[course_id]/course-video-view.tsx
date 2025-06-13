@@ -5,18 +5,22 @@ import type { Course } from '@/models/course'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Calendar, Clock, Play, Edit, Trash2, ChevronRight, ChevronDown, Import } from 'lucide-react'
+import { Calendar, Clock, Play, Edit, Trash2, ChevronRight, ChevronDown, Import, ClipboardPen } from 'lucide-react'
 
 import {
   createCourseWeek,
   createDayCircuit,
   createWeekDay,
+  deleteCourseWeek,
+  deleteDayCircuit,
+  deleteWeekDay,
   getCourseWeeks,
   getDayCircuits,
   getWeekDays,
   queryKeyCourseWeeks,
   queryKeyDayCircuits,
   queryKeyWeekDays,
+  updateDayCircuit,
 } from '@/network/client/courses'
 import {
   Dialog,
@@ -42,6 +46,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null)
   const [selectedDay, setSelectedDay] = useState<number | null>(null)
+  const [selectedExercise, setSelectedExercise] = useState<number | null>(null)
   const [expandedCircuits, setExpandedCircuits] = useState<Set<number>>(new Set())
 
   // Form states
@@ -50,8 +55,7 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
   const [showCircuitForm, setShowCircuitForm] = useState(false)
   const [showExerciseForm, setShowExerciseForm] = useState(false)
   const [editingItem, setEditingItem] = useState<any>(null)
-  const [deleteItem, setDeleteItem] = useState<{ type: string; item: any } | null>(null)
-  const [selectedExercise, setSelectedExercise] = useState<number | null>(null)
+  // const [deleteItem, setDeleteItem] = useState<{ type: string; item: any } | null>(null)
 
   // const queryClient = useQueryClient()
 
@@ -114,7 +118,65 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
   }
 
   const handleDelete = (type: string, item: any) => {
-    setDeleteItem({ type, item })
+    // setDeleteItem({ type, item })
+
+    if (type === 'week') {
+      const deletePromise = () => deleteCourseWeek(courseID, item.id)
+
+      toast.promise(deletePromise, {
+        loading: 'Đang xoá...',
+        success: (_) => {
+          weeksRefetch()
+          setSelectedWeek(null)
+          return 'Xoá tuần thành công'
+        },
+        error: 'Đã có lỗi xảy ra',
+      })
+    }
+
+    if (type === 'day') {
+      const deletePromise = () => deleteWeekDay(courseID, selectedWeek!, item.id)
+
+      toast.promise(deletePromise, {
+        loading: 'Đang xoá...',
+        success: (_) => {
+          daysRefetch()
+          setSelectedDay(null)
+          return 'Xoá ngày thành công'
+        },
+        error: 'Đã có lỗi xảy ra',
+      })
+    }
+
+    if (type === 'circuit') {
+      const deletePromise = () => deleteDayCircuit(courseID, selectedWeek!, selectedDay!, item.id)
+
+      toast.promise(deletePromise, {
+        loading: 'Đang xoá...',
+        success: (_) => {
+          circuitsRefetch()
+          return 'Xoá circuit thành công'
+        },
+        error: 'Đã có lỗi xảy ra',
+      })
+    }
+
+    if (type === 'exercise') {
+      const deletePromise = () =>
+        updateDayCircuit(courseID, selectedWeek!, selectedDay!, item.id, {
+          ...item,
+          circuit_exercises: [...item.circuit_exercises].filter((ex: any) => ex.id !== item.exercise_id),
+        })
+
+      toast.promise(deletePromise, {
+        loading: 'Đang xoá...',
+        success: (_) => {
+          circuitsRefetch()
+          return 'Xoá bài tập thành công'
+        },
+        error: 'Đã có lỗi xảy ra',
+      })
+    }
   }
 
   return (
@@ -138,6 +200,8 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
               <div key={i} className="h-12 bg-muted rounded animate-pulse" />
             ))}
           </div>
+        ) : weeks?.data.length === 0 ? (
+          <p className="text-muted-foreground text-sm">Chưa có tuần nào được thêm</p>
         ) : (
           <div className="space-y-4">
             {weeks?.data.map((week) => (
@@ -213,6 +277,12 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
                     <div key={i} className="h-32 bg-muted rounded animate-pulse" />
                   ))}
                 </div>
+              ) : days?.data.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <Calendar className="w-12 h-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium mb-2">Chưa có ngày nào được thêm</h3>
+                  <p className="text-muted-foreground mb-4">Bắt đầu bằng cách thêm một ngày vào tuần</p>
+                </div>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {days?.data.map((day) => (
@@ -276,6 +346,12 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
                         <div key={i} className="h-24 bg-muted rounded animate-pulse" />
                       ))}
                     </div>
+                  ) : circuits?.data.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12">
+                      <ClipboardPen className="w-12 h-12 text-muted-foreground mb-4" />
+                      <h3 className="text-lg font-medium mb-2">Chưa có circuit nào được thêm</h3>
+                      <p className="text-muted-foreground mb-4">Bắt đầu bằng cách thêm một circuit vào ngày</p>
+                    </div>
                   ) : (
                     <div className="space-y-4">
                       {circuits?.data.map((circuit) => (
@@ -331,46 +407,55 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
                                 />
                               </div>
                               <div className="space-y-2">
-                                {circuit.circuit_exercises.map((exercise) => (
-                                  <div
-                                    key={exercise.id}
-                                    className="flex items-center justify-between p-4 bg-muted rounded-lg"
-                                  >
-                                    <div className="flex items-center gap-4">
-                                      <Badge variant="outline">{exercise.no}</Badge>
-                                      <div>
-                                        <p className="font-medium text-sm">{exercise.circuit_exercise_title}</p>
-                                        <p className="text-xs text-muted-foreground">
-                                          {exercise.circuit_exercise_description}
-                                        </p>
+                                {circuit.circuit_exercises.length === 0 ? (
+                                  <p className="text-muted-foreground text-sm">Chưa có bài tập nào cho circuit này</p>
+                                ) : (
+                                  circuit.circuit_exercises.map((exercise) => (
+                                    <div
+                                      key={exercise.id}
+                                      className="flex items-center justify-between p-4 bg-muted rounded-lg"
+                                    >
+                                      <div className="flex items-center gap-4">
+                                        <Badge variant="outline">
+                                          <Clock className="w-4 h-4 mr-1" />
+                                          {exercise.no}x
+                                        </Badge>
+                                        <div>
+                                          <p className="font-medium text-sm">{exercise.circuit_exercise_title}</p>
+                                          <p className="text-xs text-muted-foreground">
+                                            {exercise.circuit_exercise_description}
+                                          </p>
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-1">
+                                        <Button size="sm" variant="ghost" asChild>
+                                          <a href={exercise.youtube_url} target="_blank" rel="noopener noreferrer">
+                                            <Play className="w-4 h-4" />
+                                          </a>
+                                        </Button>
+                                        <MainButton
+                                          size="icon"
+                                          variant="ghost"
+                                          onClick={() => {
+                                            setSelectedExercise(exercise.id!)
+                                            setEditingItem(circuit)
+                                            setShowExerciseForm(true)
+                                          }}
+                                          icon={Edit}
+                                        />
+                                        <MainButton
+                                          size="icon"
+                                          variant="ghost"
+                                          onClick={() =>
+                                            handleDelete('exercise', { ...circuit, exercise_id: exercise.id })
+                                          }
+                                          icon={Trash2}
+                                          className="hover:text-destructive"
+                                        />
                                       </div>
                                     </div>
-                                    <div className="flex items-center gap-1">
-                                      <Button size="sm" variant="ghost" asChild>
-                                        <a href={exercise.youtube_url} target="_blank" rel="noopener noreferrer">
-                                          <Play className="w-4 h-4" />
-                                        </a>
-                                      </Button>
-                                      <MainButton
-                                        size="icon"
-                                        variant="ghost"
-                                        onClick={() => {
-                                          setSelectedExercise(exercise.id!)
-                                          setEditingItem(circuit)
-                                          setShowExerciseForm(true)
-                                        }}
-                                        icon={Edit}
-                                      />
-                                      <MainButton
-                                        size="icon"
-                                        variant="ghost"
-                                        onClick={() => handleDelete('exercise', exercise)}
-                                        icon={Trash2}
-                                        className="hover:text-destructive"
-                                      />
-                                    </div>
-                                  </div>
-                                ))}
+                                  ))
+                                )}
                               </div>
                             </CardContent>
                           )}
