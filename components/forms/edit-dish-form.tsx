@@ -92,7 +92,7 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
         <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
         <FormSelectField form={form} name="diet_id" label="Chế độ ăn" placeholder="Chọn chế độ ăn" />
         <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
-        <FormInputField form={form} name="youtube_url" label="Link Youtube" placeholder="Nhập link Youtube" withAsterisk />
+        <FormInputField form={form} name="youtube_url" label="Link Youtube" placeholder="Nhập link Youtube" />
 
         <div className="grid grid-cols-2 gap-4">
           <FormNumberField form={form} name="calories" label="Calories (kcal)" placeholder="e.g., 250" />

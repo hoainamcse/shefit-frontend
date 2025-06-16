@@ -183,7 +183,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
                   endDate.setMonth(endDate.getMonth() + (prices.find((p) => p.id === selectedPriceId)?.duration || 1))
                   const subscriptionData = {
                     user_id: session?.userId,
-                    subscription_id: Number(params.slug),
+                    subscription_id: Number(params?.slug),
                     course_format: 'video',
                     coupon_code: '',
                     status: 'active',

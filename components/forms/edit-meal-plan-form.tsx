@@ -125,7 +125,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
           />
         </div>
         <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
-        <FormInputField form={form} name="youtube_url" label="Link Youtube" placeholder="Nhập link Youtube" withAsterisk />
+        <FormInputField form={form} name="youtube_url" label="Link Youtube" placeholder="Nhập link Youtube" />
         <div className="grid grid-cols-2 gap-4">
           <FormSelectField form={form} name="diet_id" label="Chế độ ăn" placeholder="Chọn chế độ ăn" />
           <FormSelectField form={form} name="calorie_id" label="Calorie" placeholder="Chọn calorie" />

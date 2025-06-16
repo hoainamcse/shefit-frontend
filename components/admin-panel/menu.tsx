@@ -14,6 +14,7 @@ import { useSession } from '../providers/session-provider'
 import { signout } from '@/network/server/auth'
 import { Badge } from '../ui/badge'
 import { roleLabel } from '@/lib/label'
+import { Spinner } from '../spinner'
 
 interface MenuProps {
   isOpen: boolean | undefined
@@ -22,9 +23,15 @@ interface MenuProps {
 export function Menu({ isOpen }: MenuProps) {
   const { session, status } = useSession()
   const pathname = usePathname()
-  const menuList = getMenuList(pathname)
+  const menuList = getMenuList(pathname || '')
 
-  if (status === 'loading') return <div>Đang tải...</div>
+  if (status === 'loading') {
+    return (
+      <div className="flex items-center justify-center">
+        <Spinner className="bg-ring dark:bg-white" />
+      </div>
+    )
+  }
 
   // Define restricted menu items for non-admin users
   const restrictedMenuItems = ['Blog', 'E-commerce', 'Content Input', 'Body quiz', 'Bài viết', 'Huấn luyện viên']
@@ -65,7 +72,7 @@ export function Menu({ isOpen }: MenuProps) {
                       <TooltipTrigger asChild>
                         <Button
                           variant={
-                            (active === undefined && pathname.startsWith(href)) || active ? 'secondary' : 'ghost'
+                            (active === undefined && pathname?.startsWith(href)) || active ? 'secondary' : 'ghost'
                           }
                           className="w-full justify-start h-10 mb-1"
                           asChild
@@ -93,7 +100,7 @@ export function Menu({ isOpen }: MenuProps) {
                     <CollapseMenuButton
                       icon={Icon}
                       label={label}
-                      active={active === undefined ? pathname.startsWith(href) : active}
+                      active={active === undefined ? !!pathname?.startsWith(href) : active}
                       submenus={submenus}
                       isOpen={isOpen}
                     />
@@ -103,7 +110,7 @@ export function Menu({ isOpen }: MenuProps) {
             </li>
           ))}
           <li className="w-full grow flex flex-col items-center justify-end">
-            {session && <Badge className='uppercase py-2 px-3'>{roleLabel[session.role]}</Badge>}
+            {session && <Badge className="uppercase py-2 px-3">{roleLabel[session.role]}</Badge>}
             <Tooltip disableHoverableContent>
               <TooltipTrigger asChild>
                 <Button onClick={signout} variant="outline" className="w-full justify-center h-10 mt-5">

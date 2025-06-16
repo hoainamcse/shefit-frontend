@@ -22,7 +22,7 @@ export default function AcctionButton() {
 
       try {
         setIsLoading(true)
-        const subscriptionId = Number(params.id)
+        const subscriptionId = Number(params?.id)
         const response = await getUserSubscriptions(session.userId.toString())
         const hasSubscription =
           response.data?.some(
@@ -38,7 +38,7 @@ export default function AcctionButton() {
     }
 
     fetchUserSubscriptions()
-  }, [session, params.id])
+  }, [session, params?.id])
 
   if (isLoading) {
     return (
@@ -50,13 +50,13 @@ export default function AcctionButton() {
 
   if (isSubscribed) {
     return (
-      <Link href={`/packages/${params.id}`} className="mx-auto">
+      <Link href={`/packages/${params?.id}`} className="mx-auto">
         <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] w-full px-5 text-lg">Gia hạn gói</Button>
       </Link>
     )
   }
   return (
-    <Link href={`/packages/${params.id}`} className="mx-auto">
+    <Link href={`/packages/${params?.id}`} className="mx-auto">
       <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] w-full px-5 text-lg">Mua gói</Button>
     </Link>
   )

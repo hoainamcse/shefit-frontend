@@ -1,34 +1,15 @@
-'use client'
-
-import { useParams } from 'next/navigation'
+import type { BodyQuiz } from '@/models/body-quiz'
 
 import { ContentLayout } from '@/components/admin-panel/content-layout'
-import { EditQuizForm } from '@/components/forms/edit-quiz-form'
 
-import { useQuery } from '@tanstack/react-query'
-import { getQuiz } from '@/network/server/body-quiz'
+import { BodyQuizView } from './body-quiz-view'
 
-export default function QuizDetailPage() {
-  const { quiz_id } = useParams()
-
-  const _quizId = (Array.isArray(quiz_id) ? quiz_id[0] : quiz_id) as string
-
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['quiz', _quizId],
-    queryFn: () => getQuiz(_quizId),
-  })
-
-  if (isLoading) {
-    return <div>Đang tải ...</div>
-  }
-
-  if (error) {
-    return <div>Lỗi khi tải quizzes: {error.message}</div>
-  }
+export default async function QuizPage({ params }: { params: Promise<{ quiz_id: BodyQuiz['id'] }> }) {
+  const { quiz_id } = await params
 
   return (
     <ContentLayout title="Chỉnh sửa quiz">
-      <EditQuizForm data={data?.data} />
+      <BodyQuizView quizID={quiz_id} />
     </ContentLayout>
   )
 }

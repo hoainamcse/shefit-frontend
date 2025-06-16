@@ -34,15 +34,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  redirects: async () => {
-    return [
-      {
-        source: '/admin',
-        destination: '/admin/users',
-        permanent: true,
-      },
-    ]
-  },
 }
 
 export default nextConfig

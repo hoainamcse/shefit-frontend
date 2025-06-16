@@ -7,7 +7,7 @@ import { Form, FormItem, FormControl, FormMessage, FormField } from '@/component
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
-import { getQuiz } from '@/network/server/body-quiz'
+import { getBodyQuiz } from '@/network/server/body-quizzes'
 import type { BodyQuiz } from '@/models/body-quiz'
 import { useState } from 'react'
 import { useEffect } from 'react'
@@ -21,12 +21,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { createUserBodyQuiz } from '@/network/server/user-body-quizz'
+import { createBodyQuizByUser } from '@/network/server/body-quizzes'
 import { getUserById } from '@/network/server/user'
 import { toast } from 'sonner'
 
-export default function BodyQuiz() {
-  const { quiz_id } = useParams()
+export default function BodyQuizPage() {
+  const params = useParams<{ quiz_id: string }>()
+  const quiz_id = Number(params?.quiz_id)
   const router = useRouter()
   const { session } = useSession()
   const [bodyQuiz, setBodyQuiz] = useState<BodyQuiz | null>(null)
@@ -43,7 +44,7 @@ export default function BodyQuiz() {
       ...(bodyQuiz?.questions?.reduce(
         (acc, q) => ({
           ...acc,
-          [`question_${q.id}`]: q.question_type === 'multiple_choice' ? [] : '',
+          [`question_${q.id}`]: q.question_type === 'MULTIPLE_CHOICE' ? [] : '',
         }),
         {}
       ) || {}),
@@ -94,7 +95,7 @@ export default function BodyQuiz() {
 
       console.log('Submitting quiz data:', JSON.stringify(quizData, null, 2))
 
-      const response = await createUserBodyQuiz(session.userId, quizData)
+      const response = await createBodyQuizByUser(session.userId, quizData)
 
       if (response.status === 'success' && response.data) {
         setShowSuccessDialog(true)
@@ -128,7 +129,7 @@ export default function BodyQuiz() {
       const defaultValues = bodyQuiz.questions.reduce(
         (acc, q) => ({
           ...acc,
-          [`question_${q.id}`]: q.question_type === 'multiple_choice' ? [] : '',
+          [`question_${q.id}`]: q.question_type === 'MULTIPLE_CHOICE' ? [] : '',
         }),
         {}
       )
@@ -169,14 +170,14 @@ export default function BodyQuiz() {
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const response = await getQuiz(quiz_id as string)
+        const response = await getBodyQuiz(quiz_id)
         if (response.status === 'success') {
           setBodyQuiz(mapToBodyQuiz(response.data))
           form.reset(
             response.data.questions.reduce<Record<string, string | string[]>>(
               (acc, q) => ({
                 ...acc,
-                [`question_${q.id}`]: q.question_type === 'multiple_choice' ? [] : '',
+                [`question_${q.id}`]: q.question_type === 'MULTIPLE_CHOICE' ? [] : '',
               }),
               {}
             )
@@ -223,7 +224,7 @@ export default function BodyQuiz() {
               <FormItem>
                 <FormControl>
                   <div>
-                    {question.question_type === 'single_choice' && (
+                    {question.question_type === 'SINGLE_CHOICE' && (
                       <Select
                         onValueChange={field.onChange}
                         value={field.value as string}
@@ -241,7 +242,7 @@ export default function BodyQuiz() {
                         </SelectContent>
                       </Select>
                     )}
-                    {question.question_type === 'multiple_choice' && (
+                    {question.question_type === 'MULTIPLE_CHOICE' && (
                       <div className="grid gap-4">
                         {question.choices?.map((choice, index) => {
                           const choiceId = `${question.id}-${index}`
@@ -272,7 +273,7 @@ export default function BodyQuiz() {
                         })}
                       </div>
                     )}
-                    {question.question_type === 'short_answer' && (
+                    {question.question_type === 'SHORT_ANSWER' && (
                       <Input
                         {...field}
                         type={question.input_type === 'integer' ? 'number' : 'text'}

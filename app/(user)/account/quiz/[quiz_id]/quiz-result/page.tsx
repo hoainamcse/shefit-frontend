@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { getUserBodyQuizzById } from '@/network/server/user-body-quizz'
-import { UserBodyQuizz } from '@/models/user-body-quizz'
+import { getBodyQuizResultByUser } from '@/network/server/body-quizzes'
+import { UserBodyQuiz } from '@/models/body-quiz'
 import { useParams } from 'next/navigation'
 
 const formatDate = (dateString: string) => {
@@ -15,8 +15,9 @@ const formatDate = (dateString: string) => {
 }
 
 export default function QuizResultPage() {
-  const { quiz_id } = useParams()
-  const [quizData, setQuizData] = useState<UserBodyQuizz | null>(null)
+  const params = useParams<{ quiz_id: string }>()
+  const quiz_id = Number(params?.quiz_id)
+  const [quizData, setQuizData] = useState<UserBodyQuiz | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -24,7 +25,7 @@ export default function QuizResultPage() {
     async function fetchQuizData() {
       try {
         setLoading(true)
-        const response = await getUserBodyQuizzById(quiz_id as string)
+        const response = await getBodyQuizResultByUser(quiz_id)
 
         if (response?.status === 'success' && response.data) {
           setQuizData(response.data)

@@ -79,14 +79,9 @@ export function EditDaySessionForm({ data, courseID, liveDayID, onSuccess }: Edi
   return (
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-        <FormNumberField
-          form={form}
-          name="session_number"
-          label="Thứ tự session"
-          placeholder="Nhập thứ tự session"
-        />
+        <FormNumberField form={form} name="session_number" label="Thứ tự session" placeholder="Nhập thứ tự session" />
         <FormInputField form={form} name="name" label="Tên session" withAsterisk placeholder="Nhập tên session" />
-        <FormInputField form={form} name="link_zoom" label="Link Zoom" placeholder="Nhập link Zoom" withAsterisk />
+        <FormInputField form={form} name="link_zoom" label="Link Zoom" placeholder="Nhập link Zoom" />
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}

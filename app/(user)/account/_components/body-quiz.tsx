@@ -4,13 +4,12 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { getUserBodyQuizzesByUserId } from '@/network/server/user-body-quizz'
-import { getQuizzes } from '@/network/server/body-quiz'
+import { getBodyQuizzesByUser } from '@/network/server/body-quizzes'
+import { getBodyQuizzes } from '@/network/server/body-quizzes'
 import { useSession } from '@/components/providers/session-provider'
-import { UserBodyQuizz } from '@/models/user-body-quizz'
 import { ListResponse } from '@/models/response'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import type { BodyQuiz } from '@/models/body-quiz'
+import type { BodyQuiz, UserBodyQuiz } from '@/models/body-quiz'
 import ListQuiz from './list-quiz'
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
@@ -23,7 +22,7 @@ const formatDate = (dateString: string) => {
 
 export default function BodyQuiz() {
   const { session } = useSession()
-  const [userBodyQuizzes, setUserBodyQuizzes] = useState<ListResponse<UserBodyQuizz>>({
+  const [userBodyQuizzes, setUserBodyQuizzes] = useState<ListResponse<UserBodyQuiz>>({
     data: [],
     paging: { page: 0, per_page: 0, total: 0 },
     status: 'success',
@@ -39,8 +38,8 @@ export default function BodyQuiz() {
 
         // Always fetch quizzes, regardless of login status
         const [userQuizzes, allQuizzes] = await Promise.all([
-          session ? getUserBodyQuizzesByUserId(session.userId) : Promise.resolve(null),
-          getQuizzes()
+          session ? getBodyQuizzesByUser(session.userId) : Promise.resolve(null),
+          getBodyQuizzes()
         ])
 
         const transformedQuizzes: ListResponse<BodyQuiz> = {

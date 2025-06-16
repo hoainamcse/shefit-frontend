@@ -94,13 +94,7 @@ export function EditExerciseForm({ data, onSuccess }: EditExerciseFormProps) {
           placeholder="Nhập dụng cụ ID"
           description="Nhập ID và nhấn enter để thêm"
         />
-        <FormInputField
-          form={form}
-          name="youtube_url"
-          label="Link Youtube"
-          placeholder="Nhập link Youtube"
-          withAsterisk
-        />
+        <FormInputField form={form} name="youtube_url" label="Link Youtube" placeholder="Nhập link Youtube" />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
             <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={exerciseMutation.isPending} />

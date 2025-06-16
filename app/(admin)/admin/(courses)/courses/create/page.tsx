@@ -11,8 +11,8 @@ import { MainButton } from '@/components/buttons/main-button'
 export default function CreateCoursePage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const courseFormat = searchParams.get('course_format') as CourseFormat | undefined
-  const isOneOnOne = searchParams.get('is_one_on_one') === 'true'
+  const courseFormat = searchParams?.get('course_format') as CourseFormat | undefined
+  const isOneOnOne = searchParams?.get('is_one_on_one') === 'true'
 
   if (!courseFormat) {
     return (
@@ -21,11 +21,11 @@ export default function CreateCoursePage() {
         <div className="flex gap-4 mt-4">
           <MainButton
             text="Khoá tập video"
-            onClick={() => router.push(`/admin/courses/create?course_format=video&${searchParams.toString()}`)}
+            onClick={() => router.push(`/admin/courses/create?course_format=video&${searchParams?.toString()}`)}
           />
           <MainButton
             text="Khoá tập Zoom"
-            onClick={() => router.push(`/admin/courses/create?course_format=live&${searchParams.toString()}`)}
+            onClick={() => router.push(`/admin/courses/create?course_format=live&${searchParams?.toString()}`)}
           />
         </div>
       </ContentLayout>

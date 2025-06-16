@@ -421,8 +421,8 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
                                           {exercise.no}x
                                         </Badge>
                                         <div>
-                                          <p className="font-medium text-sm">{exercise.circuit_exercise_title}</p>
-                                          <p className="text-xs text-muted-foreground">
+                                          <p className="font-medium">{exercise.circuit_exercise_title}</p>
+                                          <p className="text-sm text-muted-foreground">
                                             {exercise.circuit_exercise_description}
                                           </p>
                                         </div>

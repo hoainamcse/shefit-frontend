@@ -97,13 +97,7 @@ export function EditCircuitExerciseForm({
           withAsterisk
         />
         <FormTextareaField form={form} name="circuit_exercise_description" label="Mô tả" placeholder="Nhập mô tả" />
-        <FormInputField
-          form={form}
-          name="youtube_url"
-          label="Link Youtube"
-          placeholder="Nhập tên youtube"
-          withAsterisk
-        />
+        <FormInputField form={form} name="youtube_url" label="Link Youtube" placeholder="Nhập tên youtube" />
         <FormNumberField form={form} name="no" label="Số lần phát lại" placeholder="Nhập số lần phát lại" />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (

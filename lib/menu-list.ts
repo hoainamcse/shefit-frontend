@@ -37,6 +37,11 @@ export function getMenuList(pathname: string): Group[] {
       groupLabel: '',
       menus: [
         {
+          href: '/admin',
+          label: 'Dashboard',
+          icon: HomeIcon,
+        },
+        {
           href: '#',
           label: 'Content Input',
           icon: LayoutGrid,
@@ -60,11 +65,6 @@ export function getMenuList(pathname: string): Group[] {
     {
       groupLabel: 'Quản lý',
       menus: [
-        {
-          href: '/admin/dashboard',
-          label: 'Dashboard',
-          icon: HomeIcon,
-        },
         {
           href: '',
           label: 'Khoá tập',

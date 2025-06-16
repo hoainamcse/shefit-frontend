@@ -13,7 +13,7 @@ function GoogleCallback() {
   const handleCallback = async () => {
     try {
       const res = await handleGoogleCallback(
-        searchParams.toString() +
+        searchParams?.toString() +
           `&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI || "")}`
       )
       await signin(res)

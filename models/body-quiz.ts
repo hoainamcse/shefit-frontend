@@ -1,17 +1,19 @@
 import { User } from './user'
 
 type Question = {
-  id: number
+  id: string
   title: string
-  question_type: 'single_choice' | 'multiple_choice' | 'short_answer'
+  question_type: 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'SHORT_ANSWER'
   is_required: boolean
   input_type: 'string' | 'integer'
   choices: string[]
-  answer: string | null
+  answer: string
   image: string
   created_at: string
   updated_at: string
 }
+
+type QuestionPayload = Omit<Question, 'id' | 'created_at' | 'updated_at'>
 
 type BodyQuiz = {
   id: number
@@ -22,6 +24,14 @@ type BodyQuiz = {
   updated_at: string
 }
 
+type BodyQuizPayload = Omit<BodyQuiz, 'id' | 'created_at' | 'updated_at' | 'questions'> & {
+  question_ids: Question['id'][]
+}
+
+export type { Question, BodyQuiz }
+export type { QuestionPayload, BodyQuizPayload }
+
+// User
 type BodyQuizUser = {
   id: User['id']
   user_name: string
@@ -48,4 +58,3 @@ type UserBodyQuizPayload = Pick<UserBodyQuiz, 'comment'>
 
 export type { BodyQuizUser, UserBodyQuiz }
 export type { UserBodyQuizPayload }
-export type { BodyQuiz }

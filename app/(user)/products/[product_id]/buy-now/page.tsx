@@ -124,7 +124,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
     }
   }
 
-  const cartId = searchParams.get('cart_id')
+  const cartId = searchParams?.get('cart_id')
 
   const onSubmit = (data: any) => {
     console.log('Form Data:', data)
