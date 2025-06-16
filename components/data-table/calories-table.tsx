@@ -1,6 +1,6 @@
 'use client'
 
-import type { ColumnDef, PaginationState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
 import type { Calorie } from '@/models/calorie'
 
 import { toast } from 'sonner'
@@ -14,14 +14,20 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
 
 import { EditCalorieForm } from '../forms/edit-calorie-form'
+import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
 import { EditSheet } from './edit-sheet'
 
-export function CaloriesTable() {
+interface CaloriesTableProps {
+  onConfirmRowSelection?: (data: Calorie[]) => void
+}
+
+export function CaloriesTable({ onConfirmRowSelection }: CaloriesTableProps) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 5,
   })
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyCalories, pagination],
@@ -129,10 +135,29 @@ export function CaloriesTable() {
       <DataTable
         data={data?.data}
         columns={columns}
-        state={{ pagination }}
+        state={{ pagination, rowSelection }}
         rowCount={data?.paging.total}
         onPaginationChange={setPagination}
-        rightSection={<AddButton text="Thêm calorie" onClick={onAddRow} />}
+        onRowSelectionChange={setRowSelection}
+        rightSection={
+          <>
+            {onConfirmRowSelection && (
+              <MainButton
+                variant="outline"
+                text={`Chọn ${Object.keys(rowSelection).length} calorie`}
+                onClick={() => {
+                  const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
+                  if (selectedRows.length === 0) {
+                    toast.error('Vui lòng chọn ít nhất một calorie để xoá')
+                    return
+                  }
+                  onConfirmRowSelection(selectedRows.filter((row): row is Calorie => !!row))
+                }}
+              />
+            )}
+            <AddButton text="Thêm calorie" onClick={onAddRow} />
+          </>
+        }
       />
       <EditSheet
         title={isEdit ? 'Chỉnh sửa calorie' : 'Thêm calorie'}

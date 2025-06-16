@@ -1,6 +1,6 @@
 'use client'
 
-import type { ColumnDef, PaginationState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
 import type { Diet } from '@/models/diet'
 
 import { toast } from 'sonner'
@@ -16,12 +16,18 @@ import { Spinner } from '@/components/spinner'
 import { EditDietForm } from '../forms/edit-diet-form'
 import { AddButton } from '../buttons/add-button'
 import { EditSheet } from './edit-sheet'
+import { MainButton } from '../buttons/main-button'
 
-export function DietsTable() {
+interface DietsTableProps {
+  onConfirmRowSelection?: (data: Diet[]) => void
+}
+
+export function DietsTable({ onConfirmRowSelection }: DietsTableProps) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 5,
   })
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyDiets, pagination],
@@ -144,10 +150,29 @@ export function DietsTable() {
       <DataTable
         data={data?.data}
         columns={columns}
-        state={{ pagination }}
+        state={{ pagination, rowSelection }}
         rowCount={data?.paging.total}
         onPaginationChange={setPagination}
-        rightSection={<AddButton text="Thêm chế độ ăn" onClick={onAddRow} />}
+        onRowSelectionChange={setRowSelection}
+        rightSection={
+          <>
+            {onConfirmRowSelection && (
+              <MainButton
+                variant="outline"
+                text={`Chọn ${Object.keys(rowSelection).length} chế độ ăn`}
+                onClick={() => {
+                  const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
+                  if (selectedRows.length === 0) {
+                    toast.error('Vui lòng chọn ít nhất một chế độ ăn để xoá')
+                    return
+                  }
+                  onConfirmRowSelection(selectedRows.filter((row): row is Diet => !!row))
+                }}
+              />
+            )}
+            <AddButton text="Thêm chế độ ăn" onClick={onAddRow} />
+          </>
+        }
       />
       <EditSheet
         title={isEdit ? 'Chỉnh sửa chế độ ăn' : 'Thêm chế độ ăn'}

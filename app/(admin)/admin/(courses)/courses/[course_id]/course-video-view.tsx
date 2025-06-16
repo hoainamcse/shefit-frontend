@@ -635,7 +635,7 @@ function ImportDialog({ courseID, onSuccess }: { courseID: Course['id']; onSucce
       <DialogTrigger asChild>
         <MainButton text="Nhập khoá tập" icon={Import} variant="outline" />
       </DialogTrigger>
-      <DialogContent className="max-w-3xl" onInteractOutside={(e) => e.preventDefault()}>
+      <DialogContent className="max-w-screen-lg" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Nhập món ăn</DialogTitle>
           <DialogDescription>Chức năng này sẽ cho phép nhập danh sách món ăn từ tệp Excel</DialogDescription>

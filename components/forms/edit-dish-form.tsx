@@ -4,6 +4,7 @@ import type { Dish } from '@/models/dish'
 
 import z from 'zod'
 import { toast } from 'sonner'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -12,8 +13,12 @@ import { createDish, updateDish } from '@/network/client/dishes'
 import { MainButton } from '@/components/buttons/main-button'
 import { Form } from '@/components/ui/form'
 
-import { FormInputField, FormNumberField, FormSelectField, FormTextareaField } from './fields'
+import { FormInputField, FormNumberField, FormTextareaField } from './fields'
+import { DietsTable } from '../data-table/diets-table'
+import { EditDialog } from '../data-table/edit-dialog'
 import { ImageUploader } from '../image-uploader'
+import { Label } from '../ui/label'
+import { Input } from '../ui/input'
 
 // ! Follow DishPayload model in models/dish.ts
 export const formSchema = z.object({
@@ -85,28 +90,60 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
     dishMutation.mutate(values)
   }
 
-  return (
-    <Form {...form}>
-      <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-        <FormInputField form={form} name="name" label="Tên món ăn" withAsterisk placeholder="Nhập tên món ăn" />
-        <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
-        <FormSelectField form={form} name="diet_id" label="Chế độ ăn" placeholder="Chọn chế độ ăn" />
-        <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
-        <FormInputField form={form} name="youtube_url" label="Link Youtube" placeholder="Nhập link Youtube" />
+  const [openDietsTable, setOpenDietsTable] = useState(false)
+  const [selectedDiet, setSelectedDiet] = useState(data?.diet || null)
 
-        <div className="grid grid-cols-2 gap-4">
-          <FormNumberField form={form} name="calories" label="Calories (kcal)" placeholder="e.g., 250" />
-          <FormNumberField form={form} name="protein" label="Protein (g)" step="0.1" placeholder="e.g., 20" />
-          <FormNumberField form={form} name="carb" label="Carbs (g)" step="0.1" placeholder="e.g., 30" />
-          <FormNumberField form={form} name="fat" label="Fat (g)" step="0.1" placeholder="e.g., 10" />
-          <FormNumberField form={form} name="fiber" label="Fiber (g)" step="0.1" placeholder="e.g., 5" />
-        </div>
-        <div className="flex justify-end">
-          {(!isEdit || (isEdit && form.formState.isDirty)) && (
-            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={dishMutation.isPending} />
-          )}
-        </div>
-      </form>
-    </Form>
+  return (
+    <>
+      <Form {...form}>
+        <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+          <FormInputField form={form} name="name" label="Tên món ăn" withAsterisk placeholder="Nhập tên món ăn" />
+          <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
+          <div className="space-y-2">
+            <Label>Chế độ ăn</Label>
+            <Input
+              value={selectedDiet ? `${selectedDiet.name}` : ''}
+              onFocus={() => setOpenDietsTable(true)}
+              placeholder="Chọn chế độ ăn"
+              readOnly
+            />
+          </div>
+          <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
+          <FormInputField form={form} name="youtube_url" label="Link Youtube" placeholder="Nhập link Youtube" />
+
+          <div className="grid grid-cols-2 gap-4">
+            <FormNumberField form={form} name="calories" label="Calories (kcal)" placeholder="e.g., 250" />
+            <FormNumberField form={form} name="protein" label="Protein (g)" step="0.1" placeholder="e.g., 20" />
+            <FormNumberField form={form} name="carb" label="Carbs (g)" step="0.1" placeholder="e.g., 30" />
+            <FormNumberField form={form} name="fat" label="Fat (g)" step="0.1" placeholder="e.g., 10" />
+            <FormNumberField form={form} name="fiber" label="Fiber (g)" step="0.1" placeholder="e.g., 5" />
+          </div>
+          <div className="flex justify-end">
+            {(!isEdit || (isEdit && form.formState.isDirty)) && (
+              <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={dishMutation.isPending} />
+            )}
+          </div>
+        </form>
+      </Form>
+      <EditDialog
+        title="Chọn Chế độ ăn"
+        description="Chọn một chế độ ăn đã có hoặc tạo mới để liên kết với món ăn này."
+        open={openDietsTable}
+        onOpenChange={setOpenDietsTable}
+      >
+        <DietsTable
+          onConfirmRowSelection={(row) => {
+            if (row.length > 1) {
+              toast.error('Vui lòng chỉ chọn một chế độ ăn')
+              return
+            }
+            setSelectedDiet(row[0])
+            form.setValue('diet_id', row[0].id, { shouldDirty: true })
+            form.trigger('diet_id')
+            setOpenDietsTable(false)
+          }}
+        />
+      </EditDialog>
+    </>
   )
 }

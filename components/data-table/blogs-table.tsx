@@ -19,7 +19,7 @@ import { AddButton } from '../buttons/add-button'
 export function BlogsTable() {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 5,
   })
 
   const { data, isLoading, error, refetch } = useQuery({

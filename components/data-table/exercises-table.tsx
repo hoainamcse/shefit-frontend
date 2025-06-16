@@ -29,7 +29,7 @@ import { ExcelReader } from '../excel-reader'
 export function ExercisesTable() {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 5,
   })
 
   const { data, isLoading, error, refetch } = useQuery({
@@ -280,7 +280,7 @@ function ImportDialog({ onSuccess }: { onSuccess?: () => void }) {
       <DialogTrigger asChild>
         <MainButton text="Nhập bài tập" icon={ImportIcon} variant="outline" />
       </DialogTrigger>
-      <DialogContent className="max-w-3xl" onInteractOutside={(e) => e.preventDefault()}>
+      <DialogContent className="max-w-screen-lg" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Nhập món ăn</DialogTitle>
           <DialogDescription>Chức năng này sẽ cho phép nhập danh sách bài tập từ tệp Excel</DialogDescription>

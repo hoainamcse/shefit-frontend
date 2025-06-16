@@ -10,8 +10,10 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  OnChangeFn,
   PaginationState,
   Row,
+  RowSelectionState,
   SortingState,
   TableState,
   useReactTable,
@@ -85,7 +87,8 @@ interface DataTableProps<T extends { id: string | number }> {
   state?: Partial<TableState>
   rowCount?: number
   onDelete?: (selectedRows: T[]) => void
-  onPaginationChange?: Dispatch<SetStateAction<PaginationState>>
+  onPaginationChange?: OnChangeFn<PaginationState>
+  onRowSelectionChange?: OnChangeFn<RowSelectionState>
   rightSection?: React.ReactNode
 }
 
@@ -97,6 +100,7 @@ export function DataTable<T extends { id: string | number }>({
   onDelete,
   onPaginationChange,
   rightSection,
+  onRowSelectionChange,
 }: DataTableProps<T>) {
   const id = useId()
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -122,6 +126,7 @@ export function DataTable<T extends { id: string | number }>({
     // getPaginationRowModel: getPaginationRowModel(),
     manualPagination: true,
     onPaginationChange,
+    ...(onRowSelectionChange ? { onRowSelectionChange } : {}),
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     getFilteredRowModel: getFilteredRowModel(),
@@ -294,7 +299,7 @@ export function DataTable<T extends { id: string | number }>({
         </div>
         <div className="flex items-center gap-3">
           {/* Delete button */}
-          {table.getSelectedRowModel().rows.length > 0 && (
+          {/* {table.getSelectedRowModel().rows.length > 0 && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button className="ml-auto" variant="outline">
@@ -328,7 +333,7 @@ export function DataTable<T extends { id: string | number }>({
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-          )}
+          )} */}
           {/* Add user button */}
           {rightSection}
         </div>

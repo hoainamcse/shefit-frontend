@@ -13,9 +13,8 @@ export async function getCourses(query?: any): Promise<ListResponse<Course>> {
 
 export async function getCoursesByType(format: 'video' | 'live'): Promise<ListResponse<Course>> {
   const response = await fetchDataServer(`/v1/courses/?course_format=${format}`, {
-    cache: 'force-cache',
     next: {
-      revalidate: false,
+      revalidate: 0,
       tags: [`courses:${format}`],
     },
   })

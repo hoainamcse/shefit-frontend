@@ -4,6 +4,7 @@ import type { MealPlan } from '@/models/meal-plan'
 
 import { z } from 'zod'
 import { toast } from 'sonner'
+import { useState } from 'react'
 import { Trash2Icon } from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
@@ -12,12 +13,16 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { createMealPlan, updateMealPlan } from '@/network/client/meal-plans'
 import { mealPlanGoalOptions } from '@/lib/label'
 
+import { FormInputField, FormNumberField, FormSelectField, FormSwitchField, FormTextareaField } from './fields'
+import { CaloriesTable } from '../data-table/calories-table'
+import { EditDialog } from '../data-table/edit-dialog'
+import { DietsTable } from '../data-table/diets-table'
 import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
+import { ImageUploader } from '../image-uploader'
+import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 import { Form } from '../ui/form'
-import { FormInputField, FormNumberField, FormSelectField, FormSwitchField, FormTextareaField } from './fields'
-import { ImageUploader } from '../image-uploader'
 
 // ! Follow MealPlanPayload model in models/meal-plan.ts
 const formSchema = z.object({
@@ -108,94 +113,155 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
     mealPlanMutation.mutate(values)
   }
 
+  const [openCaloriesTable, setOpenCaloriesTable] = useState(false)
+  const [openDietsTable, setOpenDietsTable] = useState(false)
+  const [selectedCalorie, setSelectedCalorie] = useState(data?.calorie || null)
+  const [selectedDiet, setSelectedDiet] = useState(data?.diet || null)
+
   return (
-    <Form {...form}>
-      <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-        <FormInputField form={form} name="title" label="Tên thực đơn" withAsterisk placeholder="Nhập tên thực đơn" />
-        <FormTextareaField form={form} name="subtitle" label="Tóm tắt" placeholder="Nhập tóm tắt" />
-        <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
-        <div className="grid grid-cols-2 gap-4">
-          <FormInputField form={form} name="chef_name" label="Tên đầu bếp" placeholder="Nhập tên đầu bếp" />
-          <FormSelectField
-            form={form}
-            name="goal"
-            label="Mục tiêu"
-            placeholder="Chọn mục tiêu"
-            data={mealPlanGoalOptions}
-          />
-        </div>
-        <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
-        <FormInputField form={form} name="youtube_url" label="Link Youtube" placeholder="Nhập link Youtube" />
-        <div className="grid grid-cols-2 gap-4">
-          <FormSelectField form={form} name="diet_id" label="Chế độ ăn" placeholder="Chọn chế độ ăn" />
-          <FormSelectField form={form} name="calorie_id" label="Calorie" placeholder="Chọn calorie" />
-        </div>
-        <div className="border border-dashed p-4 rounded-md space-y-4">
-          <div className="flex items-center justify-between">
-            <Label className="text-base">Thành phần nguyên liệu</Label>
-            <AddButton
-              size="sm"
-              type="button"
-              variant="outline"
-              text="Thêm nguyên liệu"
-              onClick={() => append({ name: '', image: 'https://placehold.co/600x400?text=example' })}
+    <>
+      <Form {...form}>
+        <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+          <FormInputField form={form} name="title" label="Tên thực đơn" withAsterisk placeholder="Nhập tên thực đơn" />
+          <FormTextareaField form={form} name="subtitle" label="Tóm tắt" placeholder="Nhập tóm tắt" />
+          <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
+          <div className="grid grid-cols-2 gap-4">
+            <FormInputField form={form} name="chef_name" label="Tên đầu bếp" placeholder="Nhập tên đầu bếp" />
+            <FormSelectField
+              form={form}
+              name="goal"
+              label="Mục tiêu"
+              placeholder="Chọn mục tiêu"
+              data={mealPlanGoalOptions}
             />
           </div>
+          <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
+          <FormInputField form={form} name="youtube_url" label="Link Youtube" placeholder="Nhập link Youtube" />
           <div className="grid grid-cols-2 gap-4">
-            {fields.map((field, index) => (
-              <div key={field.id} className="border border-ring border-dashed rounded-md space-y-4 p-4">
-                <div className="flex items-center justify-between">
-                  <Label className="text-base">Nguyên liệu {index + 1}</Label>
-                  <MainButton
-                    size="icon"
-                    variant="outline"
-                    icon={Trash2Icon}
-                    onClick={() => remove(index)}
-                    className="hover:text-destructive"
-                  />
-                </div>
-                <div className="space-y-4">
-                  <FormInputField
-                    form={form}
-                    name={`meal_ingredients.${index}.name`}
-                    label={`Tên nguyên liệu`}
-                    placeholder="Nhập tên nguyên liệu"
-                    withAsterisk
-                  />
-
-                  <ImageUploader
-                    form={form}
-                    name={`meal_ingredients.${index}.image`}
-                    label={`Hình ảnh`}
-                    accept={{ 'image/*': [] }}
-                    maxFileCount={1}
-                  />
-                </div>
-              </div>
-            ))}
+            <div className="space-y-2">
+              <Label>Chế độ ăn</Label>
+              <Input
+                value={selectedDiet ? `${selectedDiet.name}` : ''}
+                onFocus={() => setOpenDietsTable(true)}
+                placeholder="Chọn chế độ ăn"
+                readOnly
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Calorie</Label>
+              <Input
+                value={selectedCalorie ? `${selectedCalorie.name}` : ''}
+                onFocus={() => setOpenCaloriesTable(true)}
+                placeholder="Chọn calorie"
+                readOnly
+              />
+            </div>
           </div>
-        </div>
-        <div className="grid grid-cols-3 gap-4">
-          <FormSwitchField
-            form={form}
-            name="is_public"
-            label="Công khai"
-            description="Bật khi muốn thực đơn này hiển thị công khai"
-          />
-          <FormSwitchField
-            form={form}
-            name="is_free"
-            label="Miễn phí"
-            description="Bật khi muốn thực đơn này miễn phí cho người dùng"
-          />
-          <FormNumberField form={form} name="free_days" label="Số ngày miễn phí" placeholder="e.g., 10" />
-        </div>
-        <div className="flex justify-end">
-          {(!isEdit || (isEdit && form.formState.isDirty)) && (
-            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={mealPlanMutation.isPending} />
-          )}
-        </div>
-      </form>
-    </Form>
+          <div className="border border-dashed p-4 rounded-md space-y-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-base">Thành phần nguyên liệu</Label>
+              <AddButton
+                size="sm"
+                type="button"
+                variant="outline"
+                text="Thêm nguyên liệu"
+                onClick={() => append({ name: '', image: 'https://placehold.co/600x400?text=example' })}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {fields.map((field, index) => (
+                <div key={field.id} className="border border-ring border-dashed rounded-md space-y-4 p-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-base">Nguyên liệu {index + 1}</Label>
+                    <MainButton
+                      size="icon"
+                      variant="outline"
+                      icon={Trash2Icon}
+                      onClick={() => remove(index)}
+                      className="hover:text-destructive"
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <FormInputField
+                      form={form}
+                      name={`meal_ingredients.${index}.name`}
+                      label={`Tên nguyên liệu`}
+                      placeholder="Nhập tên nguyên liệu"
+                      withAsterisk
+                    />
+
+                    <ImageUploader
+                      form={form}
+                      name={`meal_ingredients.${index}.image`}
+                      label={`Hình ảnh`}
+                      accept={{ 'image/*': [] }}
+                      maxFileCount={1}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <FormSwitchField
+              form={form}
+              name="is_public"
+              label="Công khai"
+              description="Bật khi muốn thực đơn này hiển thị công khai"
+            />
+            <FormSwitchField
+              form={form}
+              name="is_free"
+              label="Miễn phí"
+              description="Bật khi muốn thực đơn này miễn phí cho người dùng"
+            />
+            <FormNumberField form={form} name="free_days" label="Số ngày miễn phí" placeholder="e.g., 10" />
+          </div>
+          <div className="flex justify-end">
+            {(!isEdit || (isEdit && form.formState.isDirty)) && (
+              <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={mealPlanMutation.isPending} />
+            )}
+          </div>
+        </form>
+      </Form>
+      <EditDialog
+        title="Chọn Chế độ ăn"
+        description="Chọn một chế độ ăn đã có hoặc tạo mới để liên kết với thực đơn này."
+        open={openDietsTable}
+        onOpenChange={setOpenDietsTable}
+      >
+        <DietsTable
+          onConfirmRowSelection={(row) => {
+            if (row.length > 1) {
+              toast.error('Vui lòng chỉ chọn một chế độ ăn')
+              return
+            }
+            setSelectedDiet(row[0])
+            form.setValue('diet_id', row[0].id, { shouldDirty: true })
+            form.trigger('diet_id')
+            setOpenDietsTable(false)
+          }}
+        />
+      </EditDialog>
+      <EditDialog
+        title="Chọn Calorie"
+        description="Chọn một calorie đã có hoặc tạo mới để liên kết với thực đơn này."
+        open={openCaloriesTable}
+        onOpenChange={setOpenCaloriesTable}
+      >
+        <CaloriesTable
+          onConfirmRowSelection={(row) => {
+            if (row.length > 1) {
+              toast.error('Vui lòng chỉ chọn một calorie')
+              return
+            }
+            setSelectedCalorie(row[0])
+            form.setValue('calorie_id', row[0].id, { shouldDirty: true })
+            form.trigger('calorie_id')
+            setOpenCaloriesTable(false)
+          }}
+        />
+      </EditDialog>
+    </>
   )
 }
