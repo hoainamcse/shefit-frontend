@@ -2,7 +2,7 @@
 
 import { WelcomeSection } from './welcome-section'
 import { StatsSection } from './stats-section'
-import { Dashboard } from '@/models/dashboard'
+import { Dashboard } from '@/models/configuration'
 
 interface DashboardContentProps {
   data: Dashboard

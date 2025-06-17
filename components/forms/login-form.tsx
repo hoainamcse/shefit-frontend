@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { MainButton } from '@/components/buttons/main-button'
-import { getOauth2AuthUrl, login, signin } from '@/network/server/auth'
+import { getOauth2AuthUrl, generateToken, signIn } from '@/network/server/auth'
 import { toast } from 'sonner'
 
 function GoogleIcon() {
@@ -61,7 +61,7 @@ export default function LoginForm() {
   // Lấy URL từ query parameter hoặc từ sessionStorage
   const getRedirectUrl = () => {
     // Ưu tiên lấy từ URL query parameter
-    const redirectUrl = searchParams.get('redirect')
+    const redirectUrl = searchParams?.get('redirect')
     if (redirectUrl) {
       return decodeURIComponent(redirectUrl)
     }
@@ -95,8 +95,8 @@ export default function LoginForm() {
     const pass = formData.get('password')?.toString() || ''
 
     try {
-      const res = await login({ username: user, password: pass, grant_type: 'password' })
-      const { scope } = await signin(res)
+      const res = await generateToken({ username: user, password: pass })
+      const { scope } = await signIn(res)
 
       // Lấy URL để redirect
       const redirectUrl = getRedirectUrl()
@@ -107,7 +107,7 @@ export default function LoginForm() {
       }
 
       // Redirect dựa trên scope và redirectUrl
-      if (scope === 'admin') {
+      if (scope === 'admin' || scope === 'sub_admin') {
         // Nếu là admin, luôn redirect về admin panel
         window.location.href = '/admin'
       } else {

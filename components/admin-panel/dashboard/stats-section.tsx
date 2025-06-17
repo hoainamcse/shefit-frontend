@@ -2,7 +2,7 @@
 
 import { Users, Dumbbell, Utensils, UserRound } from 'lucide-react'
 import { DashboardCard } from './dashboard-card'
-import { Dashboard } from '@/models/dashboard'
+import { Dashboard } from '@/models/configuration'
 
 interface StatsSectionProps {
   data: Dashboard

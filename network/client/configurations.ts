@@ -1,5 +1,6 @@
-import type { ApiResponse } from '@/models/response'
 import type { Configuration, ConfigurationPayload } from '@/models/configuration'
+import type { Dashboard } from '@/models/configuration'
+import type { ApiResponse } from '@/models/response'
 
 import { fetchData } from '../helpers/fetch-data'
 
@@ -20,5 +21,10 @@ export async function updateConfiguration(
     method: 'PUT',
     body: JSON.stringify(data),
   })
+  return response.json()
+}
+
+export async function getDashboard(): Promise<ApiResponse<Dashboard>> {
+  const response = await fetchData('/v1/sub_admin/count')
   return response.json()
 }

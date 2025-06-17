@@ -24,13 +24,13 @@ import { GalleryIcon } from "@/components/icons/GalleryIcon"
 import { MemberShipIcon } from "@/components/icons/MemberShipIcon"
 import { FacebookIcon } from "@/components/icons/FacebookIcon"
 import { useSession } from "@/components/providers/session-provider"
-import { signout } from "@/network/server/auth"
+import { signOut } from "@/network/server/auth"
 
 export function Header() {
   const { session } = useSession()
 
   const authButton = session ? (
-    <MainButton onClick={signout} className="rounded-full w-44" text="Đăng xuất" variant="secondary" />
+    <MainButton onClick={signOut} className="rounded-full w-44" text="Đăng xuất" variant="secondary" />
   ) : (
     <Link href="/auth/login">
       <MainButton className="rounded-full w-44" text="Đăng nhập" />

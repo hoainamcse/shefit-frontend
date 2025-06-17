@@ -11,7 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { CollapseMenuButton } from '@/components/admin-panel/collapse-menu-button'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useSession } from '../providers/session-provider'
-import { signout } from '@/network/server/auth'
+import { signOut } from '@/network/server/auth'
 import { Badge } from '../ui/badge'
 import { roleLabel } from '@/lib/label'
 import { Spinner } from '../spinner'
@@ -113,7 +113,7 @@ export function Menu({ isOpen }: MenuProps) {
             {session && <Badge className="uppercase py-2 px-3">{roleLabel[session.role]}</Badge>}
             <Tooltip disableHoverableContent>
               <TooltipTrigger asChild>
-                <Button onClick={signout} variant="outline" className="w-full justify-center h-10 mt-5">
+                <Button onClick={signOut} variant="outline" className="w-full justify-center h-10 mt-5">
                   <span className={cn(isOpen === false ? '' : 'mr-4')}>
                     <LogOut size={18} />
                   </span>

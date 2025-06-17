@@ -78,7 +78,7 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
         enableHiding: false,
       },
       {
-        header: 'Loại gói tập`}',
+        header: 'Loại khoá tập',
         accessorKey: 'course_format',
         cell: ({ row }) => getCourseFormatLabel(row.getValue('course_format')),
         size: 180,

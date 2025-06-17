@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
-import { handleGoogleCallback, signin } from "@/network/server/auth"
+import { handleGoogleCallback, signIn } from "@/network/server/auth"
 import { toast } from "sonner"
 import { Suspense } from "react"
 
@@ -16,7 +16,7 @@ function GoogleCallback() {
         searchParams?.toString() +
           `&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI || "")}`
       )
-      await signin(res)
+      await signIn(res)
       router.push("/")
     } catch (error) {
       console.error(error)
