@@ -26,7 +26,7 @@ const formSchema = z.object({
 type FormValue = z.infer<typeof formSchema>
 
 interface EditBlogFormProps {
-  data: Blog | null
+  data?: Blog
   onSuccess?: () => void
 }
 

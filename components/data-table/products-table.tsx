@@ -105,11 +105,11 @@ export function ProductsTable({ onConfirmRowSelection }: ProductsTableProps) {
   const router = useRouter()
 
   const onAddRow = () => {
-    router.push('/products/create')
+    router.push('/admin/products/create')
   }
 
   const onEditRow = (row: Product) => {
-    router.push(`/products/${row.id}`)
+    router.push(`/admin/products/${row.id}`)
   }
 
   const onDeleteRow = async (row: Product) => {
