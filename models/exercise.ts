@@ -6,8 +6,6 @@ type Exercise = {
   name: string
   description: string
   youtube_url: string
-  cover_image: string
-  thumbnail_image: string
   muscle_groups: MuscleGroup[]
   equipments: Equipment[]
   created_at: string

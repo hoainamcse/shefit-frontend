@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Form } from '@/components/ui/form'
-import { FormMultiSelectField, FormInputField, FormTextareaField, FormSelectField } from '@/components/forms/fields'
+import { FormInputField, FormTextareaField, FormSelectField } from '@/components/forms/fields'
 import { Copy, Edit, Ellipsis, Eye, Import, Trash2, FolderDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -33,14 +33,13 @@ import { getUserCourses } from '@/network/server/user-courses'
 import { getUserMealPlans } from '@/network/server/user-meal-plans'
 import { getUserExercises } from '@/network/server/user-exercises'
 import { getUserDishes } from '@/network/server/user-dishes'
-import { getSubscription } from '@/network/server/subscriptions-admin'
+import { getSubAdminUsers, getSubscription } from '@/network/client/subscriptions'
 import { UserCourse } from '@/models/user-courses'
 import { UserMealPlan } from '@/models/user-meal-plans'
 import { UserExercise } from '@/models/user-exercises'
 import { UserDish } from '@/models/user-dishes'
-import { Subscription } from '@/models/subscription-admin'
+import { Subscription } from '@/models/subscription'
 import { UserSubscription } from '@/models/user-subscriptions'
-import { getSubAdminUsers } from '@/network/server/sub-admin'
 import { useSession } from '@/components/providers/session-provider'
 import { roleLabel } from '@/lib/label'
 import { Badge } from '@/components/ui/badge'
@@ -106,8 +105,8 @@ export default function UsersPage() {
 
           if (userSubscriptionsResponse?.data && userSubscriptionsResponse.data.length > 0) {
             for (const sub of userSubscriptionsResponse.data) {
-              const subscriptionDetail = await getSubscription(sub.subscription.id)
-              const membershipName = (subscriptionDetail.data as Subscription)?.name || ''
+              const subscriptionDetail = await getSubscription(sub.subscription.id.toString())
+              const membershipName = subscriptionDetail.data.name
               const startDate = sub.subscription_start_at ? formatDateString(sub.subscription_start_at) : ''
               const endDate = sub.subscription_end_at ? formatDateString(sub.subscription_end_at) : ''
 

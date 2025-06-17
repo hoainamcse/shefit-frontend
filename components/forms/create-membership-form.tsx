@@ -17,13 +17,11 @@ import { Button } from '@/components/ui/button'
 import { Trash2, Plus } from 'lucide-react'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent } from '../ui/card'
-import { Subscription } from '@/models/subscription-admin'
+import { Subscription } from '@/models/subscription'
 import { FormInputField, FormMultiSelectField, FormSelectField, FormRichTextField } from './fields'
 import { useRouter } from 'next/navigation'
-import { createSubscription, updateSubscription } from '@/network/server/subscriptions-admin'
-import { createGift } from '@/network/server/gifts'
-import { updateGift } from '@/network/server/gifts'
-import { updateSubscriptionPrice } from '@/network/server/subscriptions-admin'
+import { createSubscription, updateSubscription, updateSubscriptionPrices } from '@/network/client/subscriptions'
+import { createGift, updateGift } from '@/network/client/subscriptions'
 import { getCourses } from '@/network/client/courses'
 import { giftTypeOptions } from '@/lib/label'
 import { ImageUploader } from '../image-uploader'
@@ -222,7 +220,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
   const handleCreateMembership = async (values: FormValues) => {
     let giftIds: number[] = []
     if (values.gifts && values.gifts.length > 0) {
-      const createdGifts = await Promise.all(values.gifts.map((gift) => createGift(gift)))
+      const createdGifts = await Promise.all(values.gifts.map((gift) => createGift(gift as any)))
       giftIds = createdGifts.filter((gift) => gift.status === 'success' && gift.data).map((gift) => gift.data.id)
     }
     const { gifts, ...rest } = values
@@ -239,8 +237,8 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
     const giftsWithId = (values.gifts ?? []).filter((gift) => gift.id)
     const giftsWithoutId = (values.gifts ?? []).filter((gift) => !gift.id)
 
-    const updatePromises = giftsWithId.map((gift) => updateGift(String(gift.id), gift))
-    const createPromises = giftsWithoutId.map((gift) => createGift(gift))
+    const updatePromises = giftsWithId.map((gift) => updateGift(gift.id!, gift as any))
+    const createPromises = giftsWithoutId.map((gift) => createGift(gift as any))
 
     const updatedGifts = await Promise.all(updatePromises)
     const createdGifts = await Promise.all(createPromises)
@@ -251,7 +249,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
       .map((gift) => gift.data.id)
     const giftIds = [...updatedGiftIds, ...createdGiftIds]
 
-    await updateSubscriptionPrice(data!.id!, values.prices)
+    await updateSubscriptionPrices(data!.id!, values.prices)
 
     const { gifts, prices, ...rest } = values
     const subscriptionData = {

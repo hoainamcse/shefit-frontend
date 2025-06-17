@@ -3,7 +3,7 @@
 import type { Cart } from "@/models/cart"
 import { fetchData } from "../helpers/fetch-data"
 import { ApiResponse, ListResponse } from "@/models/response"
-import { Product, ProductColor, ProductSize } from "@/models/products"
+import { Product, ProductColor, ProductSize } from "@/models/product"
 import { revalidateTag } from "next/cache"
 import { fetchDataServer } from "../helpers/fetch-data-server"
 

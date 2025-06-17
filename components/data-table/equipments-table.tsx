@@ -1,6 +1,6 @@
 'use client'
 
-import type { ColumnDef, PaginationState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
 import type { Equipment } from '@/models/equipment'
 
 import { toast } from 'sonner'
@@ -15,14 +15,20 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
 
 import { EditEquipmentForm } from '../forms/edit-equipment-form'
+import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
 import { EditSheet } from './edit-sheet'
 
-export function EquipmentsTable() {
+interface EquipmentsTableProps {
+  onConfirmRowSelection?: (selectedRows: Equipment[]) => void
+}
+
+export function EquipmentsTable({ onConfirmRowSelection }: EquipmentsTableProps) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 5,
   })
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyEquipments, pagination],
@@ -152,10 +158,29 @@ export function EquipmentsTable() {
       <DataTable
         data={data?.data}
         columns={columns}
-        state={{ pagination }}
+        state={{ pagination, rowSelection }}
         rowCount={data?.paging.total}
         onPaginationChange={setPagination}
-        rightSection={<AddButton text="Thêm dụng cụ" onClick={onAddRow} />}
+        onRowSelectionChange={setRowSelection}
+        rightSection={
+          <>
+            {onConfirmRowSelection && (
+              <MainButton
+                variant="outline"
+                text={`Chọn ${Object.keys(rowSelection).length} dụng cụ`}
+                onClick={() => {
+                  const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
+                  if (selectedRows.length === 0) {
+                    toast.error('Vui lòng chọn ít nhất một dụng cụ')
+                    return
+                  }
+                  onConfirmRowSelection(selectedRows.filter((row): row is Equipment => !!row))
+                }}
+              />
+            )}
+            <AddButton text="Thêm dụng cụ" onClick={onAddRow} />
+          </>
+        }
       />
       <EditSheet
         title={isEdit ? 'Chỉnh sửa dụng cụ' : 'Thêm dụng cụ'}

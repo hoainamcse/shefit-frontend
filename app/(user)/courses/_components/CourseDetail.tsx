@@ -2,8 +2,6 @@
 
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { getCourse } from '@/network/server/courses'
-import { getEquipments } from '@/network/server/equipments'
-import { getMuscleGroups } from '@/network/server/muscle-groups'
 import { courseFormLabel, courseLevelLabel } from '@/lib/label'
 import { useState, useEffect, useRef } from 'react'
 import { CourseLevel, CourseForm, Course } from '@/models/course'
@@ -13,7 +11,6 @@ import { BackIcon } from '@/components/icons/BackIcon'
 import { useRouter } from 'next/navigation'
 import ActionButtons from './ActionButtons'
 import { Button } from '@/components/ui/button'
-import { getSubscriptions } from '@/network/server/subscriptions'
 import Link from 'next/link'
 interface CourseDetailProps {
   courseId: Course['id']
@@ -24,9 +21,6 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
   const router = useRouter()
   const [showDetails, setShowDetails] = useState(false)
   const [course, setCourse] = useState<any>(null)
-  const [equipment, setEquipment] = useState<any>(null)
-  const [muscleGroup, setMuscleGroup] = useState<any>(null)
-  const [subscriptions, setSubscriptions] = useState<any>(null)
   const [isFooterVisible, setIsFooterVisible] = useState(false)
 
   const footerRef = useRef<HTMLDivElement>(null)
@@ -40,27 +34,6 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
       try {
         const courseData = await getCourse(courseId)
         setCourse(courseData)
-
-        const equipmentData = await getEquipments()
-        const filteredEquipment = {
-          ...equipmentData,
-          data: equipmentData.data.filter((eq: any) => courseData.data?.equipment_ids?.includes(eq.id)),
-        }
-        setEquipment(filteredEquipment)
-
-        const muscleGroupData = await getMuscleGroups()
-        const filteredMuscleGroups = {
-          ...muscleGroupData,
-          data: muscleGroupData.data.filter((mg: any) => courseData.data?.muscle_group_ids?.includes(mg.id)),
-        }
-        setMuscleGroup(filteredMuscleGroups)
-
-        const subscriptionsData = await getSubscriptions()
-        const filteredSubscriptions = {
-          ...subscriptionsData,
-          data: subscriptionsData.data.filter((sub: any) => courseData.data?.subscription_ids?.includes(sub.id)),
-        }
-        setSubscriptions(filteredSubscriptions)
       } catch (error) {
         console.error('Error fetching data:', error)
       }
@@ -128,12 +101,12 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
                 : courseFormLabel[course.data.form_categories as CourseForm])}
           </div>
         </div>
-        {course?.data?.subscription_ids?.length > 0 && (
+        {course?.data?.relationships?.subscriptions?.length > 0 && (
           <div>
             <div className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px]">Gói Member</div>
             <div className="text-[#737373] text-lg">Bạn cần mua các Gói Member sau để truy cập khóa tập</div>
             <div className="flex flex-wrap gap-2 mt-4">
-              {subscriptions?.data?.map((subscription: any) => (
+              {course?.data?.relationships?.subscriptions?.map((subscription: any) => (
                 <Link
                   key={subscription.id}
                   href={`/packages/detail/${subscription.id}`}
@@ -170,12 +143,12 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
               <p className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px]">Thông tin</p>
               <p className="text-[#737373] text-lg">{course?.data?.description}</p>
             </div>
-            {equipment?.data?.length > 0 && (
+            {course?.data?.relationship?.equipments?.length > 0 && (
               <div>
                 <p className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px]">Dụng cụ</p>
                 <ScrollArea className="w-screen-max-xl">
                   <div className="flex w-max space-x-4 py-4">
-                    {equipment?.data?.map((equipment: any, index: number) => (
+                    {course?.data?.equipments?.map((equipment: any, index: number) => (
                       <figure key={`equipment-${equipment.id}-${index}`} className="shrink-0">
                         <div className="overflow-hidden rounded-md">
                           <img
@@ -194,12 +167,12 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
                 </ScrollArea>
               </div>
             )}
-            {muscleGroup?.data?.length > 0 && (
+            {course?.data?.relationship?.muscle_groups?.length > 0 && (
               <div>
                 <p className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px]">Nhóm cơ</p>
                 <ScrollArea className="w-screen-max-xl">
                   <div className="flex w-max space-x-4 py-4">
-                    {muscleGroup?.data?.map((muscleGroup: any, index: number) => (
+                    {course?.data?.relationship?.muscle_groups?.map((muscleGroup: any, index: number) => (
                       <figure key={`muscleGroup-${muscleGroup.id}-${index}`} className="shrink-0">
                         <div className="overflow-hidden rounded-md">
                           <img

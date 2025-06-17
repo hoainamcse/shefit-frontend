@@ -22,7 +22,7 @@ export async function getCoursesByType(format: 'video' | 'live'): Promise<ListRe
 }
 
 export async function getCourse(course_id: Course['id']): Promise<ApiResponse<Course>> {
-  const response = await fetchDataServer(`/v1/courses/${course_id}`, {
+  const response = await fetchDataServer(`/v1/courses/${course_id}?include_relationships=true`, {
     next: {
       revalidate: 0,
     },

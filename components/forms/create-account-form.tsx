@@ -5,7 +5,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import {
   FormInputField,
-  FormMultiSelectField,
   FormSelectField,
   FormMultiSelectPaginatedField,
 } from '@/components/forms/fields'
@@ -32,8 +31,8 @@ import { useState, useEffect } from 'react'
 import { User } from '@/models/user'
 import { generatePassword, generateUsername } from '@/lib/helpers'
 import { updatePassword, updateUser } from '@/network/server/user'
-import { getSubscriptions } from '@/network/server/subscriptions-admin'
-import { Subscription } from '@/models/subscription-admin'
+import { getSubAdminSubscriptions, getSubscriptions } from '@/network/client/subscriptions'
+import { Subscription } from '@/models/subscription'
 import { UserSubscriptionDetail } from '@/models/user-subscriptions'
 import {
   getUserSubscriptions,
@@ -48,7 +47,6 @@ import { Exercise } from '@/models/exercise'
 import { PROVINCES } from '@/lib/label'
 import { useSession } from '../providers/session-provider'
 import { roleOptions } from '@/lib/label'
-import { getSubAdminSubscriptions } from '@/network/server/sub-admin'
 import { getCourses } from '@/network/client/courses'
 import { getDishes } from '@/network/client/dishes'
 import { Dish } from '@/models/dish'
@@ -313,7 +311,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
   }
 
   const getAvailableSubscriptions = () =>
-    membershipList.filter((membership) => !subscriptions.some((sub) => sub.subscription_id === membership.id))
+    membershipList.filter((membership) => !subscriptions.some((sub) => sub.subscription_id === Number(membership.id)))
 
   const handleAddMembershipPackage = () => {
     const availableSubscriptions = getAvailableSubscriptions()
@@ -484,7 +482,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                       : { mealPlans: [], exercises: [], dishes: [] }
 
                   const isExistingRecord = Boolean(subscription.id) && subscription.id! > 0
-                  const membership = membershipList.find((m) => m.id === subscription.subscription_id)
+                  const membership = membershipList.find((m) => Number(m.id) === subscription.subscription_id)
                   const gifts = membership?.gifts || []
 
                   return (
@@ -508,7 +506,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                             value={subscription.subscription_id?.toString() || ''}
                             disabled={isExistingRecord}
                             onValueChange={(value: string) => {
-                              const courseFormat = membershipList.find((m) => m.id === Number(value))?.course_format
+                              const courseFormat = membershipList.find((m) => m.id === value)?.course_format
                               updateSubscription(idx, {
                                 ...subscription,
                                 subscription_id: Number(value),
@@ -524,7 +522,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                               {membershipList.map((m) => {
                                 // Check if this membership is already selected in another row
                                 const isAlreadySelected = subscriptions.some(
-                                  (sub, subIdx) => subIdx !== idx && sub.subscription_id === m.id
+                                  (sub, subIdx) => subIdx !== idx && sub.subscription_id === Number(m.id)
                                 )
 
                                 return (

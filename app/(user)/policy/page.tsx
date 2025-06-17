@@ -1,16 +1,13 @@
 import { HtmlContent } from '@/components/html-content'
-import { getConfigurations } from '@/network/server/configurations'
+import { getConfiguration } from '@/network/server/configurations'
 
 export const dynamic = 'force-dynamic'
 
+const configurationID = 2
+
 export default async function PolicyPage() {
-  const response = await getConfigurations('policy')
-  const policyData = response.data[0]?.data as
-    | {
-        privacy_policy: string
-        personal_policy: string
-      }
-    | undefined
+  const response = await getConfiguration(configurationID)
+  const policyData = response.data.data
 
   if (!policyData) {
     return <div>No data available</div>

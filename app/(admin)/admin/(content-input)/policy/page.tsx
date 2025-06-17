@@ -1,109 +1,116 @@
 'use client'
 
+import { z } from 'zod'
+import { toast } from 'sonner'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQuery } from '@tanstack/react-query'
+
+import { getConfiguration, queryKeyConfigurations, updateConfiguration } from '@/network/client/configurations'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { MainButton } from '@/components/buttons/main-button'
-import { FileUploader } from '@/components/file-uploader'
 import { FormRichTextField } from '@/components/forms/fields'
-import { ImageUploader } from '@/components/image-uploader'
-
-import { Form } from '@/components/ui/form'
 import { Configuration } from '@/models/configuration'
-import { getConfiguration, updateConfiguration } from '@/network/server/configurations'
-import { getS3FileUrl, uploadImageApi } from '@/network/server/upload'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
+import { Spinner } from '@/components/spinner'
+import { Form } from '@/components/ui/form'
 
-const PolicySchema = z.object({
-  privacy_policy: z.string().min(1, 'Privacy policy is required'),
-  personal_policy: z.string().min(1, 'Personal policy is required'),
-})
-
-type PolicyFormValues = z.infer<typeof PolicySchema>
-
-const policyID = 2
+const configurationID = 2
 
 export default function PolicyPage() {
-  const [policyData, setPolicyData] = useState<Configuration>()
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: [queryKeyConfigurations, configurationID],
+    queryFn: () => getConfiguration(configurationID),
+  })
 
-  const form = useForm<PolicyFormValues>({
-    resolver: zodResolver(PolicySchema),
-    defaultValues: policyData?.data || {
-      privacy_policy: '',
-      personal_policy: '',
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center">
+        <Spinner className="bg-ring dark:bg-white" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center">
+        <p className="text-destructive">{error.message}</p>
+      </div>
+    )
+  }
+
+  return (
+    <ContentLayout title="Chính sách">
+      <EditPolicyForm data={data?.data} onSuccess={refetch} />
+    </ContentLayout>
+  )
+}
+
+// ! Follow ConfigurationPayload model in models/configuration.ts
+const formSchema = z.object({
+  type: z.enum(['about_us', 'policy', 'homepage']),
+  data: z.object({
+    privacy_policy: z.string().min(1),
+    personal_policy: z.string().min(1),
+  }),
+})
+
+type FormValue = z.infer<typeof formSchema>
+
+interface EditPolicyFormProps {
+  data?: Configuration
+  onSuccess?: () => void
+}
+
+function EditPolicyForm({ data, onSuccess }: EditPolicyFormProps) {
+  if (!data) {
+    return <p className="text-destructive">Không tìm thấy dữ liệu</p>
+  }
+
+  const form = useForm<FormValue>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      type: data.type,
+      data: data.data,
     },
   })
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await getConfiguration(policyID)
-        if (!result?.data) {
-          throw new Error('Policy data not found')
-        }
-        setPolicyData(result.data)
-        form.reset(result.data.data)
-      } catch (error) {
-        console.error('Error fetching about us data:', error)
+  const configurationMutation = useMutation({
+    mutationFn: (values: FormValue) => updateConfiguration(data.id, values),
+    onSettled(data, error) {
+      if (data?.status === 'success') {
+        toast.success('Cập nhật thành công')
+        onSuccess?.()
+      } else {
+        toast.error(error?.message || 'Đã có lỗi xảy ra')
       }
-    }
+    },
+  })
 
-    fetchData()
-  }, [])
-
-  async function updatePolicy(id: number, values: PolicyFormValues) {
-    if (!policyData?.data) {
-      throw new Error('Policy data not found')
-    }
-
-    const updateData: Configuration = {
-      ...policyData,
-      data: values,
-    }
-    const res = await updateConfiguration(Number(id), updateData)
-    return res
+  const onSubmit = (values: FormValue) => {
+    configurationMutation.mutate(values)
   }
-
-  async function onSubmit(values: PolicyFormValues) {
-    try {
-      if (!policyData?.id) {
-        throw new Error('Policy ID not found')
-      }
-      await updatePolicy(policyData?.id, values)
-      toast.success('Đã cập nhật thành công!')
-    } catch (error) {
-      toast.error('Failed to create dish')
-    }
-  }
-
-  console.log('form.getValues()', form.getValues())
 
   return (
-    <ContentLayout title="About Us">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="space-y-6">
-            <FormRichTextField
-              form={form}
-              name="privacy_policy"
-              label="Chính sách bảo mật"
-              withAsterisk
-              placeholder="Nhập nội dung"
-            />
-
-            <FormRichTextField
-              form={form}
-              name="personal_policy"
-              label="Chính sách bảo vệ thông tin cá nhân khách hàng"
-              withAsterisk
-              placeholder="Nhập nội dung"
-            />
-            <MainButton text="Lưu" type="submit" className="mt-6" />
-          </div>
-        </form>
-      </Form>
-    </ContentLayout>
+    <Form {...form}>
+      <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+        <FormRichTextField
+          form={form}
+          name="data.privacy_policy"
+          label="Chính sách bảo mật"
+          placeholder="Nhập nội dung"
+          withAsterisk
+        />
+        <FormRichTextField
+          form={form}
+          name="data.personal_policy"
+          label="Chính sách bảo vệ thông tin cá nhân"
+          placeholder="Nhập nội dung"
+          withAsterisk
+        />
+        <div className="flex justify-end">
+          {form.formState.isDirty && <MainButton text="Cập nhật" loading={configurationMutation.isPending} />}
+        </div>
+      </form>
+    </Form>
   )
 }

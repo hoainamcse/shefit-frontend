@@ -1,6 +1,6 @@
 'use client'
 
-import type { ColumnDef, PaginationState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
 import type { MuscleGroup } from '@/models/muscle-group'
 
 import { toast } from 'sonner'
@@ -15,14 +15,20 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
 
 import { EditMuscleGroupForm } from '../forms/edit-muscle-group-form'
+import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
 import { EditSheet } from './edit-sheet'
 
-export function MuscleGroupsTable() {
+interface MuscleGroupsTableProps {
+  onConfirmRowSelection?: (selectedRows: MuscleGroup[]) => void
+}
+
+export function MuscleGroupsTable({ onConfirmRowSelection }: MuscleGroupsTableProps) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 5,
   })
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyMuscleGroups, pagination],
@@ -152,10 +158,29 @@ export function MuscleGroupsTable() {
       <DataTable
         data={data?.data}
         columns={columns}
-        state={{ pagination }}
+        state={{ pagination, rowSelection }}
         rowCount={data?.paging.total}
         onPaginationChange={setPagination}
-        rightSection={<AddButton text="Thêm nhóm cơ" onClick={onAddRow} />}
+        onRowSelectionChange={setRowSelection}
+        rightSection={
+          <>
+            {onConfirmRowSelection && (
+              <MainButton
+                variant="outline"
+                text={`Chọn ${Object.keys(rowSelection).length} nhóm cơ`}
+                onClick={() => {
+                  const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
+                  if (selectedRows.length === 0) {
+                    toast.error('Vui lòng chọn ít nhất một nhóm cơ')
+                    return
+                  }
+                  onConfirmRowSelection(selectedRows.filter((row): row is MuscleGroup => !!row))
+                }}
+              />
+            )}
+            <AddButton text="Thêm nhóm cơ" onClick={onAddRow} />
+          </>
+        }
       />
       <EditSheet
         title={isEdit ? 'Chỉnh sửa nhóm cơ' : 'Thêm nhóm cơ'}

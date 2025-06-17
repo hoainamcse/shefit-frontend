@@ -1,6 +1,6 @@
 'use server'
 
-import type { Product, ProductColor, ProductSize, ProductCategory } from "@/models/products"
+import type { Product, ProductColor, ProductSize, ProductCategory } from "@/models/product"
 import { fetchData } from "../helpers/fetch-data"
 import { ApiResponse, ListResponse } from "@/models/response"
 import { fetchDataServer } from "../helpers/fetch-data-server"

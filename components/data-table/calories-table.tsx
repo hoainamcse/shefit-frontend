@@ -19,7 +19,7 @@ import { AddButton } from '../buttons/add-button'
 import { EditSheet } from './edit-sheet'
 
 interface CaloriesTableProps {
-  onConfirmRowSelection?: (data: Calorie[]) => void
+  onConfirmRowSelection?: (selectedRows: Calorie[]) => void
 }
 
 export function CaloriesTable({ onConfirmRowSelection }: CaloriesTableProps) {
@@ -148,7 +148,7 @@ export function CaloriesTable({ onConfirmRowSelection }: CaloriesTableProps) {
                 onClick={() => {
                   const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
                   if (selectedRows.length === 0) {
-                    toast.error('Vui lòng chọn ít nhất một calorie để xoá')
+                    toast.error('Vui lòng chọn ít nhất một calorie')
                     return
                   }
                   onConfirmRowSelection(selectedRows.filter((row): row is Calorie => !!row))

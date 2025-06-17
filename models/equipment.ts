@@ -1,5 +1,5 @@
 type Equipment = {
-  id: string
+  id: string // expected: number
   name: string
   image: string
   created_at: string

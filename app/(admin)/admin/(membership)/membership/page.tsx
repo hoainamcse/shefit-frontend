@@ -2,54 +2,22 @@
 
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { AddButton } from '@/components/buttons/add-button'
-import { MainButton } from '@/components/buttons/main-button'
 import { ColumnDef, DataTable } from '@/components/data-table'
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Copy, Edit, Ellipsis, Eye, Import, Trash2 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { Edit } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { CreateCouponForm } from '@/components/forms/create-coupon-form'
 import { Coupon } from '@/models/coupon'
 import { useEffect, useState } from 'react'
 import { deleteCoupon, getListCoupons } from '@/network/server/coupon'
 import { toast } from 'sonner'
-import { deleteSubscription, getSubscriptions } from '@/network/server/subscriptions-admin'
-import { Subscription } from '@/models/subscription-admin'
-import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 import { DeleteButton } from '@/components/buttons/delete-button'
 import { useClipboard } from '@/hooks/use-clipboard'
-import { useSession } from '@/components/providers/session-provider'
-import { getSubAdminSubscriptions } from '@/network/server/sub-admin'
-
-// Helper to map course_format to label
-const getCourseFormatLabel = (format: string): string => {
-  if (format === 'live') return 'Zoom'
-  if (format === 'video') return 'Video'
-  if (format === 'both') return 'Zoom & Video'
-  return format
-}
-
-interface MembershipRow {
-  id: number
-  name: string
-  course_format: string
-  cover_image: string
-}
+import { SubscriptionsTable } from '@/components/data-table/subscriptions-table'
 
 export default function MembershipPage() {
-  const { session } = useSession()
   const { copy, copied } = useClipboard()
-  const router = useRouter()
   const [coupons, setCoupons] = useState<Coupon[]>([])
-  const [membershipTable, setMembershipTable] = useState<MembershipRow[]>([])
   const [openCouponModal, setOpenCouponModal] = useState(false)
   const [editingCoupon, setEditingCoupon] = useState<Coupon>()
 
@@ -57,22 +25,6 @@ export default function MembershipPage() {
     const response = await getListCoupons()
     const subscriptionCoupons = (response.data || []).filter((coupon) => coupon.coupon_type === 'subscription')
     setCoupons(subscriptionCoupons)
-  }
-
-  const fetchMemberships = async () => {
-    let response
-    if (session?.role === 'sub_admin') {
-      response = await getSubAdminSubscriptions()
-    } else {
-      response = await getSubscriptions()
-    }
-    const mapped = (response.data || []).map((item: any) => ({
-      id: item.id,
-      name: item.name,
-      course_format: getCourseFormatLabel(item.course_format),
-      cover_image: item.cover_image,
-    }))
-    setMembershipTable(mapped)
   }
 
   const handleDeleteCoupon = async (couponId: number) => {
@@ -84,18 +36,6 @@ export default function MembershipPage() {
       }
     } catch (e) {
       toast.error('Có lỗi khi xoá khuyến mãi')
-    }
-  }
-
-  const handleDeleteMembership = async (membershipId: number) => {
-    try {
-      const res = await deleteSubscription(membershipId)
-      if (res.status === 'success') {
-        toast.success('Xoá gói thành viên thành công')
-        fetchMemberships()
-      }
-    } catch (e) {
-      toast.error('Có lỗi khi xoá gói thành viên')
     }
   }
 
@@ -164,57 +104,8 @@ export default function MembershipPage() {
     </CreateCouponDialog>
   )
 
-  const membershipHeaderExtraContent = (
-    <AddButton text="Thêm gói thành viên" onClick={() => router.push('/admin/membership/create')} />
-  )
-
-  const columns: ColumnDef<MembershipRow>[] = [
-    {
-      accessorKey: 'name',
-      header: 'Tên gói',
-    },
-    {
-      accessorKey: 'course_format',
-      header: 'Loại hình',
-    },
-    {
-      accessorKey: 'cover_image',
-      header: 'Hình ảnh',
-      render: ({ row }) => {
-        return (
-          <img src={row.cover_image} alt={`${row.name} cover image`} className="h-16 w-16 rounded-lg object-cover " />
-        )
-      },
-    },
-    {
-      accessorKey: 'actions',
-      render: ({ row }) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button size="icon" variant="ghost">
-              <Ellipsis />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => copy(row.id)}>
-              <Copy /> Sao chép gói tập ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem onClick={() => router.push(`/admin/membership/${row.id}`)}>
-              <Edit /> Cập nhật
-            </DropdownMenuItem>
-            <DeleteMenuItem onConfirm={() => handleDeleteMembership(row.id)} />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
-    },
-  ]
-
   useEffect(() => {
     fetchCoupons()
-    fetchMemberships()
   }, [])
 
   useEffect(() => {
@@ -225,17 +116,7 @@ export default function MembershipPage() {
 
   return (
     <ContentLayout title="Quản lý gói thành viên">
-      {/* Memberships section */}
-      <div className="mt-8">
-        <h2 className="text-lg font-semibold mb-4">Danh sách gói thành viên</h2>
-        <DataTable
-          headerExtraContent={session?.role === 'admin' ? membershipHeaderExtraContent : null}
-          searchPlaceholder="Tìm kiếm theo tên, ..."
-          data={membershipTable}
-          columns={columns}
-          onSelectChange={() => {}}
-        />
-      </div>
+      <SubscriptionsTable />
 
       {/* Promotions section */}
       <div className="mt-8">

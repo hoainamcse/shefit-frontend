@@ -17,7 +17,6 @@ type Course = {
   difficulty_level: CourseLevel
   is_public: boolean
   is_popular: boolean
-  subscriptions: any[] // ! not in schema
   cover_image: string
   created_at: string
   is_free: boolean
@@ -25,12 +24,24 @@ type Course = {
   summary: string
   free_amount: number
   is_one_on_one: boolean
-  subscription_ids: Subscription['id'][]
-  muscle_group_ids: MuscleGroup['id'][]
-  equipment_ids: Equipment['id'][]
+  // muscle_groups: MuscleGroup[]
+  // equipments: Equipment[]
+  subscriptions: Subscription[]
+  relationships?: {
+    equipments: Equipment[]
+    muscle_groups: MuscleGroup[]
+    subscriptions: Subscription[]
+  }
 }
 
-type CoursePayload = Omit<Course, 'id' | 'created_at' | 'updated_at' | 'subscriptions'>
+type CoursePayload = Omit<
+  Course,
+  'id' | 'created_at' | 'updated_at' | 'muscle_groups' | 'equipments' | 'subscriptions' | 'relationships'
+> & {
+  muscle_group_ids: MuscleGroup['id'][]
+  equipment_ids: Equipment['id'][]
+  subscription_ids: Subscription['id'][]
+}
 
 export type { CourseFormat, CourseForm, CourseLevel, Course }
 export type { CoursePayload }

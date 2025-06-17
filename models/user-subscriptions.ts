@@ -1,4 +1,4 @@
-import type { Gift } from '@/models/subscription-admin'
+import type {Gift } from '@/models/subscription'
 
 type UserSubscription = {
     id?: number,

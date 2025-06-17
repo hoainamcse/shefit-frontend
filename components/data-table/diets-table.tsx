@@ -19,7 +19,7 @@ import { EditSheet } from './edit-sheet'
 import { MainButton } from '../buttons/main-button'
 
 interface DietsTableProps {
-  onConfirmRowSelection?: (data: Diet[]) => void
+  onConfirmRowSelection?: (selectedRows: Diet[]) => void
 }
 
 export function DietsTable({ onConfirmRowSelection }: DietsTableProps) {
@@ -163,7 +163,7 @@ export function DietsTable({ onConfirmRowSelection }: DietsTableProps) {
                 onClick={() => {
                   const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
                   if (selectedRows.length === 0) {
-                    toast.error('Vui lòng chọn ít nhất một chế độ ăn để xoá')
+                    toast.error('Vui lòng chọn ít nhất một chế độ ăn')
                     return
                   }
                   onConfirmRowSelection(selectedRows.filter((row): row is Diet => !!row))

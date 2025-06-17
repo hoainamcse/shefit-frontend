@@ -1,38 +1,13 @@
-import { ApiResponse } from '@/models/response';
-import { Configuration, ConfigurationsResponse } from '@/models/configuration';
-import { fetchData } from '../helpers/fetch-data';
+'use server'
 
-export async function getConfigurations(type: string): Promise<ConfigurationsResponse> {
-    const response = await fetchData(`/v1/configurations?type=${type}`, {
-        method: 'GET',
-        headers: {
-            'accept': 'application/json',
-        },
-        cache: 'no-store',
-    });
+import type { ApiResponse } from '@/models/response'
+import type { Configuration } from '@/models/configuration'
 
-    if (!response.ok) {
-        throw new Error(`Failed to fetch ${type} data`);
-    }
+import { fetchDataServer } from '../helpers/fetch-data-server'
 
-    return response.json();
+export async function getConfiguration(id: Configuration['id']): Promise<ApiResponse<Configuration>> {
+  const response = await fetchDataServer(`/v1/configurations/${id}`, {
+    method: 'GET',
+  })
+  return response.json()
 }
-
-async function getConfiguration(configuration_id: number): Promise<ApiResponse<Configuration>> {
-    const response = await fetchData(`/v1/configurations/${configuration_id}`, {
-        method: 'GET',
-    });
-
-    return response.json();
-}
-
-async function updateConfiguration(configuration_id: number, configuration: Configuration): Promise<ApiResponse<Configuration>> {
-    const response = await fetchData(`/v1/configurations/${configuration_id}`, {
-        method: 'PUT',
-        body: JSON.stringify(configuration),
-    });
-
-    return response.json();
-}
-
-export { getConfiguration, updateConfiguration };

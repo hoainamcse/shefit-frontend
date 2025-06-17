@@ -1,28 +1,35 @@
 'use client'
 
 import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
-import type { Coach } from '@/models/coach'
+import type { Subscription } from '@/models/subscription'
 
 import { toast } from 'sonner'
 import { useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { deleteCoach, getCoaches, queryKeyCoaches } from '@/network/client/coaches'
+import {
+  deleteSubscription,
+  getSubAdminSubscriptions,
+  getSubscriptions,
+  queryKeySubscriptions,
+} from '@/network/client/subscriptions'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
 
-import { EditCoachForm } from '../forms/edit-coach-form'
-import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
-import { EditSheet } from './edit-sheet'
+import { useSession } from '../providers/session-provider'
+import { MainButton } from '../buttons/main-button'
 
-interface CoachesTableProps {
-  onConfirmRowSelection?: (selectedRows: Coach[]) => void
+interface SubscriptionsTableProps {
+  onConfirmRowSelection?: (selectedRows: Subscription[]) => void
 }
 
-export function CoachesTable({ onConfirmRowSelection }: CoachesTableProps) {
+export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTableProps) {
+  const { session } = useSession()
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 5,
@@ -30,12 +37,18 @@ export function CoachesTable({ onConfirmRowSelection }: CoachesTableProps) {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [queryKeyCoaches, pagination],
-    queryFn: () => getCoaches({ page: pagination.pageIndex, per_page: pagination.pageSize }),
+    queryKey: [queryKeySubscriptions, pagination],
+    queryFn: () =>
+      session
+        ? session.role === 'sub_admin'
+          ? getSubAdminSubscriptions({ page: pagination.pageIndex, per_page: pagination.pageSize })
+          : getSubscriptions({ page: pagination.pageIndex, per_page: pagination.pageSize })
+        : Promise.resolve(null),
     placeholderData: keepPreviousData,
+    enabled: !!session,
   })
 
-  const columns = useMemo<ColumnDef<Coach>[]>(
+  const columns = useMemo<ColumnDef<Subscription>[]>(
     () => [
       {
         id: 'select',
@@ -58,19 +71,25 @@ export function CoachesTable({ onConfirmRowSelection }: CoachesTableProps) {
         enableHiding: false,
       },
       {
-        header: 'Tên HLV',
+        header: 'Tên gói tập',
         accessorKey: 'name',
         cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
         size: 180,
         enableHiding: false,
       },
       {
+        header: 'Loại gói tập`}',
+        accessorKey: 'course_format',
+        cell: ({ row }) => getCourseFormatLabel(row.getValue('course_format')),
+        size: 180,
+      },
+      {
         header: 'Hình ảnh',
-        accessorKey: 'image',
+        accessorKey: 'cover_image',
         cell: ({ row }) => (
           <div>
             <img
-              src={row.getValue('image')}
+              src={row.getValue('cover_image')}
               alt={`${row.getValue('name')} thumbnail`}
               className="h-16 w-28 rounded-md object-cover"
             />
@@ -78,11 +97,6 @@ export function CoachesTable({ onConfirmRowSelection }: CoachesTableProps) {
         ),
         size: 180,
         enableSorting: false,
-      },
-      {
-        header: 'Chuyên môn',
-        accessorKey: 'detail',
-        size: 180,
       },
       {
         id: 'actions',
@@ -95,36 +109,27 @@ export function CoachesTable({ onConfirmRowSelection }: CoachesTableProps) {
     []
   )
 
-  const [selectedRow, setSelectedRow] = useState<Coach | null>(null)
-  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false)
+  const router = useRouter()
 
   const onAddRow = () => {
-    setSelectedRow(null)
-    setIsEditSheetOpen(true)
+    router.push('/admin/membership/create')
   }
 
-  const onEditRow = (row: Coach) => {
-    setSelectedRow(row)
-    setIsEditSheetOpen(true)
+  const onEditRow = (row: Subscription) => {
+    router.push(`/admin/membership/${row.id}`)
   }
 
-  const onDeleteRow = async (row: Coach) => {
-    const deletePromise = () => deleteCoach(row.id)
+  const onDeleteRow = async (row: Subscription) => {
+    const deletePromise = () => deleteSubscription(row.id)
 
     toast.promise(deletePromise, {
       loading: 'Đang xoá...',
       success: (_) => {
         refetch()
-        return 'Xoá HLV thành công'
+        return 'Xoá gói tập thành công'
       },
       error: 'Đã có lỗi xảy ra',
     })
-  }
-
-  const onEditSuccess = () => {
-    setSelectedRow(null)
-    setIsEditSheetOpen(false)
-    refetch()
   }
 
   if (isLoading) {
@@ -143,8 +148,6 @@ export function CoachesTable({ onConfirmRowSelection }: CoachesTableProps) {
     )
   }
 
-  const isEdit = !!selectedRow
-
   return (
     <>
       <DataTable
@@ -159,29 +162,34 @@ export function CoachesTable({ onConfirmRowSelection }: CoachesTableProps) {
             {onConfirmRowSelection && (
               <MainButton
                 variant="outline"
-                text={`Chọn ${Object.keys(rowSelection).length} HLV`}
+                text={`Chọn ${Object.keys(rowSelection).length} gói tập`}
                 onClick={() => {
                   const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
                   if (selectedRows.length === 0) {
-                    toast.error('Vui lòng chọn ít nhất một HLV')
+                    toast.error('Vui lòng chọn ít nhất một gói tập`}')
                     return
                   }
-                  onConfirmRowSelection(selectedRows.filter((row): row is Coach => !!row))
+                  onConfirmRowSelection(selectedRows.filter((row): row is Subscription => !!row))
                 }}
               />
             )}
-            <AddButton text="Thêm HLV" onClick={onAddRow} />
+            <AddButton text="Thêm gói tập" onClick={onAddRow} />
           </>
         }
       />
-      <EditSheet
-        title={isEdit ? 'Chỉnh sửa HLV' : 'Thêm HLV'}
-        description="Make changes to your profile here. Click save when you're done."
-        open={isEditSheetOpen}
-        onOpenChange={setIsEditSheetOpen}
-      >
-        <EditCoachForm data={selectedRow} onSuccess={onEditSuccess} />
-      </EditSheet>
     </>
   )
+}
+
+function getCourseFormatLabel(format: string) {
+  switch (format) {
+    case 'video':
+      return 'Video'
+    case 'live':
+      return 'Zoom'
+    case 'both':
+      return 'Video & Zoom'
+    default:
+      return format
+  }
 }

@@ -1,4 +1,4 @@
-import { ProductColor, ProductSize } from "./products"
+import { ProductColor, ProductSize } from "./product"
 
 export interface Cart {
     data: any

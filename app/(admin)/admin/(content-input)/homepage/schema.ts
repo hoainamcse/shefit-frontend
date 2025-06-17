@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 export const formSchema = z.object({
   section_1: z.object({
@@ -30,7 +30,7 @@ export const formSchema = z.object({
   section_3: z.object({
     title: z.string(),
     description: z.string(),
-    membership_ids: z.array(z.string()),
+    subscriptions: z.array(z.any()),
   }),
   section_4: z.object({
     title: z.string(),
@@ -43,24 +43,26 @@ export const formSchema = z.object({
   section_5: z.object({
     title: z.string(),
     description: z.string(),
-    features: z.array(z.object({
+    features: z.array(
+      z.object({
         title: z.string(),
         description: z.string(),
         course_ids: z.array(z.string()),
-      })),
+      })
+    ),
   }),
   section_7: z.object({
     title: z.string(),
     subtitle: z.string(),
-    meal_plan_ids: z.array(z.string()),
+    meal_plans: z.array(z.any()),
   }),
   section_8: z.object({
     title: z.string(),
     description: z.string(),
-    product_ids: z.array(z.string()),
+    products: z.array(z.any()),
   }),
   section_9: z.object({
-    coach_ids: z.array(z.string()),
+    coaches: z.array(z.any()),
   }),
   section_10: z.object({
     top: z.object({
@@ -82,4 +84,4 @@ export const formSchema = z.object({
       href: z.string(),
     }),
   }),
-});
+})

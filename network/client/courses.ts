@@ -34,7 +34,7 @@ export async function createCourse(data: CoursePayload): Promise<ApiResponse<Cou
 }
 
 export async function getCourse(id: Course['id']): Promise<ApiResponse<Course>> {
-  const response = await fetchData(`/v1/courses/${id}`)
+  const response = await fetchData(`/v1/courses/${id}?include_relationships=true`)
   return await response.json()
 }
 

@@ -1,27 +1,27 @@
 'use client'
 
 import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
-import type { MealPlan } from '@/models/meal-plan'
+import type { Product } from '@/models/product'
 
 import { toast } from 'sonner'
 import { useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { deleteMealPlan, getMealPlans, queryKeyMealPlans } from '@/network/client/meal-plans'
+import { deleteProduct, getProducts, queryKeyProducts } from '@/network/client/products'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
 
 import { AddButton } from '../buttons/add-button'
+import { useRouter } from 'next/navigation'
 import { MainButton } from '../buttons/main-button'
 
-interface MealPlansTableProps {
-  onConfirmRowSelection?: (selectedRows: MealPlan[]) => void
+interface ProductsTableProps {
+  onConfirmRowSelection?: (selectedRows: Product[]) => void
 }
 
-export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
+export function ProductsTable({ onConfirmRowSelection }: ProductsTableProps) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 5,
@@ -29,12 +29,12 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [queryKeyMealPlans, pagination],
-    queryFn: () => getMealPlans({ page: pagination.pageIndex, per_page: pagination.pageSize }),
+    queryKey: [queryKeyProducts, pagination],
+    queryFn: () => getProducts({ page: pagination.pageIndex, per_page: pagination.pageSize }),
     placeholderData: keepPreviousData,
   })
 
-  const columns = useMemo<ColumnDef<MealPlan>[]>(
+  const columns = useMemo<ColumnDef<Product>[]>(
     () => [
       {
         id: 'select',
@@ -57,35 +57,33 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
         enableHiding: false,
       },
       {
-        header: 'Tên thực đơn',
-        accessorKey: 'title',
-        cell: ({ row }) => <div className="font-medium">{row.getValue('title')}</div>,
+        header: 'Tên sản phẩm',
+        accessorKey: 'name',
+        cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
         size: 180,
         enableHiding: false,
       },
       {
-        header: 'Tóm tắt',
-        accessorKey: 'subtitle',
+        header: 'Mô tả',
+        accessorKey: 'description',
         size: 180,
       },
       {
-        header: 'Chế độ ăn',
-        accessorFn: (originalRow) => originalRow.diet?.name,
-        size: 180,
-      },
-      {
-        header: 'Calorie',
-        accessorFn: (originalRow) => originalRow.calorie?.name,
+        header: 'Giá',
+        accessorKey: 'price',
+        cell: ({ row }) => (
+          <span>{row.original.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
+        ),
         size: 180,
       },
       {
         header: 'Hình ảnh',
-        accessorKey: 'image',
+        accessorKey: 'image_urls',
         cell: ({ row }) => (
           <div>
             <img
-              src={row.getValue('image')}
-              alt={`${row.getValue('title')} thumbnail`}
+              src={row.original.image_urls[0] || ''}
+              alt={`${row.getValue('name')} thumbnail`}
               className="h-16 w-28 rounded-md object-cover"
             />
           </div>
@@ -107,21 +105,21 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
   const router = useRouter()
 
   const onAddRow = () => {
-    router.push('/admin/meal-plans/create')
+    router.push('/products/create')
   }
 
-  const onEditRow = (row: MealPlan) => {
-    router.push(`/admin/meal-plans/${row.id}`)
+  const onEditRow = (row: Product) => {
+    router.push(`/products/${row.id}`)
   }
 
-  const onDeleteRow = async (row: MealPlan) => {
-    const deletePromise = () => deleteMealPlan(row.id)
+  const onDeleteRow = async (row: Product) => {
+    const deletePromise = () => deleteProduct(row.id)
 
     toast.promise(deletePromise, {
       loading: 'Đang xoá...',
       success: (_) => {
         refetch()
-        return 'Xoá thực đơn thành công'
+        return 'Xoá sản phẩm thành công'
       },
       error: 'Đã có lỗi xảy ra',
     })
@@ -156,18 +154,18 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
           {onConfirmRowSelection && (
             <MainButton
               variant="outline"
-              text={`Chọn ${Object.keys(rowSelection).length} thực đơn`}
+              text={`Chọn ${Object.keys(rowSelection).length} sản phẩm`}
               onClick={() => {
                 const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
                 if (selectedRows.length === 0) {
-                  toast.error('Vui lòng chọn ít nhất một thực đơn')
+                  toast.error('Vui lòng chọn ít nhất một sản phẩm')
                   return
                 }
-                onConfirmRowSelection(selectedRows.filter((row): row is MealPlan => !!row))
+                onConfirmRowSelection(selectedRows.filter((row): row is Product => !!row))
               }}
             />
           )}
-          <AddButton text="Thêm thực đơn" onClick={onAddRow} />
+          <AddButton text="Thêm sản phẩm" onClick={onAddRow} />
         </>
       }
     />

@@ -4,6 +4,7 @@ import type { Course, CourseFormat } from '@/models/course'
 
 import { z } from 'zod'
 import { toast } from 'sonner'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -16,13 +17,18 @@ import { Form } from '../ui/form'
 import {
   FormCheckboxField,
   FormInputField,
-  FormMultiSelectField,
   FormNumberField,
   FormRadioField,
   FormSwitchField,
   FormTextareaField,
 } from './fields'
 import { ImageUploader } from '../image-uploader'
+import { EquipmentsTable } from '../data-table/equipments-table'
+import { EditDialog } from '../data-table/edit-dialog'
+import { MuscleGroupsTable } from '../data-table/muscle-groups-table'
+import { Label } from '../ui/label'
+import { Input } from '../ui/input'
+import { SubscriptionsTable } from '../data-table/subscriptions-table'
 
 // ! Follow CoursePayload model in models/course.ts
 const formSchema = z.object({
@@ -94,9 +100,9 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
           summary: data.summary,
           free_amount: data.free_amount,
           is_one_on_one: data.is_one_on_one,
-          muscle_group_ids: data.muscle_group_ids.map((mg) => mg.toString()),
-          equipment_ids: data.equipment_ids.map((e) => e.toString()),
-          subscription_ids: data.subscription_ids.map((s) => s.toString()),
+          muscle_group_ids: data.relationships?.muscle_groups.map((mg) => mg.id.toString()) || [],
+          equipment_ids: data.relationships?.equipments.map((e) => e.id.toString()) || [],
+          subscription_ids: data.relationships?.subscriptions.map((s) => s.id.toString()) || [],
         }
       : defaultValue,
   })
@@ -117,89 +123,163 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
     courseMutation.mutate(values)
   }
 
+  const [openMuscleGroupsTable, setOpenMuscleGroupsTable] = useState(false)
+  const [openEquipmentsTable, setOpenEquipmentsTable] = useState(false)
+  const [openSubscriptionsTable, setOpenSubscriptionsTable] = useState(false)
+  const [selectedMuscleGroups, setSelectedMuscleGroups] = useState(data?.relationships?.muscle_groups || [])
+  const [selectedEquipments, setSelectedEquipments] = useState(data?.relationships?.equipments || [])
+  const [selectedSubscriptions, setSelectedSubscriptions] = useState(data?.relationships?.subscriptions || [])
+
   return (
-    <Form {...form}>
-      <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="grid grid-cols-2 gap-4">
-          <FormInputField
-            form={form}
-            name="course_name"
-            label="Tên khoá tập"
-            withAsterisk
-            placeholder="Nhập tên khoá tập"
-          />
-          <FormInputField form={form} name="trainer" label="Tên HLV" placeholder="Nhập tên HLV" />
-        </div>
-        <FormTextareaField form={form} name="summary" label="Tóm tắt" placeholder="Nhập tóm tắt" />
-        <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
-        <div className="grid grid-cols-2 gap-4">
-          <ImageUploader
-            form={form}
-            name="thumbnail_image"
-            label="Hình ảnh đại diện"
-            accept={{ 'image/*': [] }}
-            maxFileCount={1}
-          />
-          <ImageUploader
-            form={form}
-            name="cover_image"
-            label="Hình ảnh bìa"
-            accept={{ 'image/*': [] }}
-            maxFileCount={1}
-          />
-        </div>
-        <FormMultiSelectField
-          form={form}
-          name="muscle_group_ids"
-          label="Nhóm cơ IDs"
-          placeholder="Nhập nhóm cơ ID"
-          description="Nhập ID và nhấn enter để thêm"
+    <>
+      <Form {...form}>
+        <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="grid grid-cols-2 gap-4">
+            <FormInputField
+              form={form}
+              name="course_name"
+              label="Tên khoá tập"
+              withAsterisk
+              placeholder="Nhập tên khoá tập"
+            />
+            <FormInputField form={form} name="trainer" label="Tên HLV" placeholder="Nhập tên HLV" />
+          </div>
+          <FormTextareaField form={form} name="summary" label="Tóm tắt" placeholder="Nhập tóm tắt" />
+          <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
+          <div className="grid grid-cols-2 gap-4">
+            <ImageUploader
+              form={form}
+              name="thumbnail_image"
+              label="Hình ảnh đại diện"
+              accept={{ 'image/*': [] }}
+              maxFileCount={1}
+            />
+            <ImageUploader
+              form={form}
+              name="cover_image"
+              label="Hình ảnh bìa"
+              accept={{ 'image/*': [] }}
+              maxFileCount={1}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Nhóm cơ</Label>
+              <Input
+                value={selectedMuscleGroups.map((mg) => mg.name).join(', ')}
+                onFocus={() => setOpenMuscleGroupsTable(true)}
+                placeholder="Chọn nhóm cơ"
+                readOnly
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Dụng cụ</Label>
+              <Input
+                value={selectedEquipments.map((e) => e.name).join(', ')}
+                onFocus={() => setOpenEquipmentsTable(true)}
+                placeholder="Chọn dụng cụ"
+                readOnly
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label>Gói tập</Label>
+            <Input
+              value={selectedSubscriptions.map((e) => e.name).join(', ')}
+              onFocus={() => setOpenSubscriptionsTable(true)}
+              placeholder="Chọn gói tập"
+              readOnly
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <FormCheckboxField form={form} name="form_categories" label="Phom dáng" data={courseFormOptions} />
+            <FormRadioField form={form} name="difficulty_level" label="Độ khó" data={courseLevelOptions} />
+            <FormSwitchField
+              form={form}
+              name="is_popular"
+              label="Phổ biến"
+              description="Bật khi muốn khoá tập này xuất hiện trong danh sách phổ biến"
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <FormSwitchField
+              form={form}
+              name="is_public"
+              label="Công khai"
+              description="Bật khi muốn khoá tập này hiển thị công khai"
+            />
+            <FormSwitchField
+              form={form}
+              name="is_free"
+              label="Miễn phí"
+              description="Bật khi muốn khoá tập này miễn phí cho người dùng"
+            />
+            <FormNumberField form={form} name="free_amount" label="Số ngày miễn phí" placeholder="e.g., 10" />
+          </div>
+          <div className="flex justify-end">
+            {(!isEdit || (isEdit && form.formState.isDirty)) && (
+              <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={courseMutation.isPending} />
+            )}
+          </div>
+        </form>
+      </Form>
+      <EditDialog
+        title="Chọn Nhóm cơ"
+        description="Chọn một hoặc nhiều nhóm cơ đã có hoặc tạo mới để liên kết với khoá tập này."
+        open={openMuscleGroupsTable}
+        onOpenChange={setOpenMuscleGroupsTable}
+      >
+        <MuscleGroupsTable
+          onConfirmRowSelection={(row) => {
+            setSelectedMuscleGroups(row)
+            form.setValue(
+              'muscle_group_ids',
+              row.map((r) => r.id.toString()),
+              { shouldDirty: true }
+            )
+            form.trigger('muscle_group_ids')
+            setOpenMuscleGroupsTable(false)
+          }}
         />
-        <FormMultiSelectField
-          form={form}
-          name="equipment_ids"
-          label="Dụng cụ IDs"
-          placeholder="Nhập dụng cụ ID"
-          description="Nhập ID và nhấn enter để thêm"
+      </EditDialog>
+      <EditDialog
+        title="Chọn Dụng cụ"
+        description="Chọn một hoặc nhiều dụng cụ đã có hoặc tạo mới để liên kết với khoá tập này."
+        open={openEquipmentsTable}
+        onOpenChange={setOpenEquipmentsTable}
+      >
+        <EquipmentsTable
+          onConfirmRowSelection={(row) => {
+            setSelectedEquipments(row)
+            form.setValue(
+              'equipment_ids',
+              row.map((r) => r.id.toString()),
+              { shouldDirty: true }
+            )
+            form.trigger('equipment_ids')
+            setOpenEquipmentsTable(false)
+          }}
         />
-        <FormMultiSelectField
-          form={form}
-          name="subscription_ids"
-          label="Gói tập IDs"
-          placeholder="Nhập gói tập ID"
-          description="Nhập ID và nhấn enter để thêm"
+      </EditDialog>
+      <EditDialog
+        title="Chọn Gói tập"
+        description="Chọn một hoặc nhiều gói tập đã có hoặc tạo mới để liên kết với khoá tập này."
+        open={openSubscriptionsTable}
+        onOpenChange={setOpenSubscriptionsTable}
+      >
+        <SubscriptionsTable
+          onConfirmRowSelection={(row) => {
+            setSelectedSubscriptions(row)
+            form.setValue(
+              'subscription_ids',
+              row.map((r) => r.id.toString()),
+              { shouldDirty: true }
+            )
+            form.trigger('subscription_ids')
+            setOpenSubscriptionsTable(false)
+          }}
         />
-        <div className="grid grid-cols-3 gap-4">
-          <FormCheckboxField form={form} name="form_categories" label="Phom dáng" data={courseFormOptions} />
-          <FormRadioField form={form} name="difficulty_level" label="Độ khó" data={courseLevelOptions} />
-          <FormSwitchField
-            form={form}
-            name="is_popular"
-            label="Phổ biến"
-            description="Bật khi muốn khoá tập này xuất hiện trong danh sách phổ biến"
-          />
-        </div>
-        <div className="grid grid-cols-3 gap-4">
-          <FormSwitchField
-            form={form}
-            name="is_public"
-            label="Công khai"
-            description="Bật khi muốn khoá tập này hiển thị công khai"
-          />
-          <FormSwitchField
-            form={form}
-            name="is_free"
-            label="Miễn phí"
-            description="Bật khi muốn khoá tập này miễn phí cho người dùng"
-          />
-          <FormNumberField form={form} name="free_amount" label="Số ngày miễn phí" placeholder="e.g., 10" />
-        </div>
-        <div className="flex justify-end">
-          {(!isEdit || (isEdit && form.formState.isDirty)) && (
-            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={courseMutation.isPending} />
-          )}
-        </div>
-      </form>
-    </Form>
+      </EditDialog>
+    </>
   )
 }

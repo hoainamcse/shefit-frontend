@@ -60,7 +60,6 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
   } = useQuery({
     queryKey: [queryKeyMealPlanDays, mealPlanID],
     queryFn: () => getMealPlanDays(mealPlanID),
-    placeholderData: keepPreviousData,
   })
 
   // useEffect(() => {

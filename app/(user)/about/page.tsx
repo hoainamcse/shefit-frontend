@@ -1,16 +1,12 @@
-import React from "react"
-import { getConfigurations } from "@/network/server/configurations"
+import { getConfiguration } from "@/network/server/configurations"
 
 export const dynamic = "force-dynamic"
 
+const configurationID = 1
+
 export default async function About() {
-  const response = await getConfigurations("about_us")
-  const aboutUsData = response.data[0]?.data as
-    | {
-        description: string
-        "thumbnail image": string
-      }
-    | undefined
+  const response = await getConfiguration(configurationID)
+  const aboutUsData = response.data.data
 
   if (!aboutUsData) {
     return <div>No data available</div>
@@ -18,7 +14,7 @@ export default async function About() {
 
   return (
     <div className="flex flex-col gap-10 mt-10 xl:p-10 max-lg:p-0">
-      <img src={aboutUsData["thumbnail image"]} alt="About Us" className="h-[680px] object-cover w-full" />
+      <img src={aboutUsData["thumbnail_image"]} alt="About Us" className="h-[680px] object-cover w-full" />
       <div>
         <div className="font-[family-name:var(--font-coiny)] xl:text-[40px] text-3xl">Về Shefit</div>
         <div

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { getProducts } from "@/network/server/products"
 import { getColors } from "@/network/server/products"
 import { getCategories } from "@/network/server/products"
-import type { Product } from "@/models/products"
+import type { Product } from "@/models/product"
 import FilterCategory from "./_components/FilterCategory"
 import { useEffect, useState } from "react"
 

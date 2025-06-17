@@ -1,6 +1,6 @@
 'use client'
 
-import type { ColumnDef, PaginationState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
 import type { Course, CourseForm, CourseFormat, CourseLevel } from '@/models/course'
 
 import { toast } from 'sonner'
@@ -16,21 +16,24 @@ import { Spinner } from '@/components/spinner'
 import { courseFormLabel, courseLevelLabel } from '@/lib/label'
 
 // import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu'
+import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
 import { Badge } from '../ui/badge'
 
 interface CoursesTableProps {
   courseFormat?: CourseFormat
   isOneOnOne?: boolean
+  onConfirmRowSelection?: (selectedRows: Course[]) => void
 }
 
-export function CoursesTable({ courseFormat, isOneOnOne = false }: CoursesTableProps) {
+export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSelection }: CoursesTableProps) {
   const searchParams = useSearchParams()
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 5,
   })
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyCourses, { ...pagination, courseFormat, isOneOnOne }],
@@ -176,7 +179,26 @@ export function CoursesTable({ courseFormat, isOneOnOne = false }: CoursesTableP
       state={{ pagination }}
       rowCount={data?.paging.total}
       onPaginationChange={setPagination}
-      rightSection={<AddButton text="Thêm khoá tập" onClick={onAddRow} />}
+      onRowSelectionChange={setRowSelection}
+      rightSection={
+        <>
+          {onConfirmRowSelection && (
+            <MainButton
+              variant="outline"
+              text={`Chọn ${Object.keys(rowSelection).length} khoá tập`}
+              onClick={() => {
+                const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
+                if (selectedRows.length === 0) {
+                  toast.error('Vui lòng chọn ít nhất một khoá tập')
+                  return
+                }
+                onConfirmRowSelection(selectedRows.filter((row): row is Course => !!row))
+              }}
+            />
+          )}
+          <AddButton text="Thêm khoá tập" onClick={onAddRow} />
+        </>
+      }
     />
   )
 }

@@ -12,11 +12,8 @@ import { MainButton } from '@/components/buttons/main-button'
 import { DumbbellIcon } from '@/components/icons/DumbbellIcon'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import { formSchema } from '@/app/(admin)/admin/(content-input)/homepage/schema'
-import { getProducts } from '@/network/server/products'
-import { getMealPlans } from '@/network/server/meal-plans'
 import { getSubscriptions } from '@/network/server/subscriptions'
 import { getCourses } from '@/network/server/courses'
-import { getCoaches } from '@/network/server/coaches'
 
 type DataType = z.infer<typeof formSchema>
 
@@ -79,11 +76,7 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
 
 // Todo: carousel indicator on mobile
 export async function SectionThree({ data }: { data: DataType['section_3'] }) {
-  const res = await getSubscriptions({
-    ids: data.membership_ids.join(','),
-  })
-
-  const courses = await Promise.all(res.data.map((dt) => getCourses({ ids: dt.course_ids })))
+  const courses = await Promise.all(data.subscriptions.map((dt) => getCourses({ ids: dt.course_ids })))
 
   return (
     <div className="py-8 lg:py-12">
@@ -94,7 +87,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
         </div>
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
-            {res.data.map((membership, mIndex) => (
+            {data.subscriptions.map((sub, mIndex) => (
               <div key={mIndex} className="flex flex-col h-full space-y-4">
                 <Link href={'#'}>
                   <div
@@ -106,14 +99,14 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                     )}
                   >
                     <PersonIcon />
-                    <span>{membership.name}</span>
+                    <span>{sub.name}</span>
                     <span className="ml-auto transform transition-transform duration-300 group-hover:translate-x-1">
                       <ArrowIcon size={20} />
                     </span>
                   </div>
                 </Link>
                 <div className="flex-1 flex items-center">
-                  <p className="text-center text-neutral-500 w-full">{membership.description_1}</p>
+                  <p className="text-center text-neutral-500 w-full">{sub.description_1}</p>
                 </div>
                 <Carousel className="mx-4">
                   <CarouselContent>
@@ -188,10 +181,6 @@ export function SectionSix() {
 
 // Todo: carousel indicator
 export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
-  const res = await getMealPlans({
-    ids: data.meal_plan_ids.join(','),
-  })
-
   return (
     <div className="py-8 lg:py-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
@@ -204,7 +193,7 @@ export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
         <div className="max-w-6xl mx-auto flex flex-col items-center justify-center gap-4">
           <Carousel>
             <CarouselContent>
-              {res.data.map((item) => (
+              {data.meal_plans.map((item) => (
                 <CarouselItem key={item.id} className="basis-2/3 lg:basis-1/3">
                   <div className="flex flex-col items-center gap-4">
                     <div className="relative w-full overflow-hidden">
@@ -240,10 +229,6 @@ export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
 
 // Todo: carousel indicator
 export async function SectionEight({ data }: { data: DataType['section_8'] }) {
-  const res = await getProducts({
-    ids: data.product_ids.join(','),
-  })
-
   let VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND',
@@ -259,7 +244,7 @@ export async function SectionEight({ data }: { data: DataType['section_8'] }) {
         <div className="space-y-4">
           <Carousel>
             <CarouselContent>
-              {res.data.map((item, index) => (
+              {data.products.map((item, index) => (
                 <CarouselItem key={item.id} className="basis-2/5 lg:basis-1/6">
                   <Link href={`/products/${item.id}`}>
                     <div className="flex flex-col gap-2">
@@ -290,10 +275,6 @@ export async function SectionEight({ data }: { data: DataType['section_8'] }) {
 }
 
 export async function SectionNine({ data }: { data: DataType['section_9'] }) {
-  const res = await getCoaches({
-    ids: data.coach_ids.join(','),
-  })
-
   return (
     <div className="py-8 lg:py-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
@@ -301,7 +282,7 @@ export async function SectionNine({ data }: { data: DataType['section_9'] }) {
           <h2 className="text-2xl lg:text-3xl font-bold">Dẫn dắt bởi chuyên gia hàng đầu</h2>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          {res.data.map((coach, index) => (
+          {data.coaches.map((coach, index) => (
             <div key={index} className="flex flex-col items-center justify-center gap-4">
               <div className="relative w-40 lg:w-44">
                 <div className="absolute bottom-0 left-0 size-40 lg:size-44 bg-primary rounded-full -z-10" />
