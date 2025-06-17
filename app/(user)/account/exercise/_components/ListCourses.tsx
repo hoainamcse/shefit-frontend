@@ -9,7 +9,9 @@ import { getCourse } from '@/network/server/courses'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect, useMemo } from 'react'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
+import { Lock } from 'lucide-react'
 import { courseFormLabel } from '@/lib/label'
+import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import type { Course } from '@/models/course'
 
 type CourseWithCategory = Course & {
@@ -19,12 +21,22 @@ type CourseWithCategory = Course & {
 export function ListCourses() {
   const router = useRouter()
   const { session } = useSession()
+  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [courses, setCourses] = useState<CourseWithCategory[]>([])
-  interface SubscriptionCourse {
-    id: string | number
+
+  // Handle login button click with redirect
+  const handleLoginClick = () => {
+    setDialogOpen(false)
+    redirectToLogin()
+  }
+
+  // Handle buy package button click with redirect
+  const handleBuyPackageClick = () => {
+    setDialogOpen(false)
+    redirectToAccount('buy-package')
   }
 
   const subscriptionCourses = useMemo(() => {
@@ -92,24 +104,12 @@ export function ListCourses() {
               <p className="text-lg">HÃY ĐĂNG NHẬP & MUA GÓI ĐỂ THÊM KHÓA TẬP & THỰC ĐƠN</p>
               <div className="flex gap-4 justify-center w-full px-10">
                 <div className="flex-1">
-                  <Button
-                    className="bg-[#13D8A7] rounded-full w-full text-lg"
-                    onClick={() => {
-                      setDialogOpen(false)
-                      window.location.href = '/account?tab=buy-package'
-                    }}
-                  >
+                  <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>
                     Mua gói
                   </Button>
                 </div>
                 <div className="flex-1">
-                  <Button
-                    className="bg-[#13D8A7] rounded-full w-full text-lg"
-                    onClick={() => {
-                      setDialogOpen(false)
-                      window.location.href = '/auth/login'
-                    }}
-                  >
+                  <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
                     Đăng nhập
                   </Button>
                 </div>
@@ -158,33 +158,43 @@ export function ListCourses() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
         {courses.map((course) => (
           <div key={course.id} className="group">
-            <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
+            <Link
+              href={
+                selectedSubscription?.status === 'expired'
+                  ? '#'
+                  : `/courses/${course.id}/${course.course_format}-classes`
+              }
+              className={selectedSubscription?.status === 'expired' ? 'cursor-not-allowed' : ''}
+              onClick={selectedSubscription?.status === 'expired' ? (e) => e.preventDefault() : undefined}
+            >
               <div>
                 <div className="relative group">
                   <div className="absolute top-4 right-4 z-10">
                     <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                   </div>
-                  <img
-                    src={course.cover_image}
-                    alt={course.course_name}
-                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
-                  />
-                  <div className="bg-[#00000033] group-hover:bg-[#00000055] absolute inset-0 transition-all duration-300 rounded-xl" />
+                  <div className="relative">
+                    <img
+                      src={course.cover_image}
+                      alt={course.course_name}
+                      className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
+                    />
+                    {selectedSubscription?.status === 'expired' && (
+                      <div className="absolute inset-0 bg-black/50 rounded-xl z-20 flex items-center justify-center">
+                        <Lock className="w-12 h-12 text-white" />
+                      </div>
+                    )}
+                    <div className="bg-[#00000033] group-hover:bg-[#00000055] absolute inset-0 transition-all duration-300 rounded-xl" />
+                  </div>
                 </div>
                 <div className="flex justify-between">
                   <div>
                     <p className="font-medium">{course.course_name}</p>
-                    {/* <p className="text-[#737373]">{course.course.category}</p> */}
                     <div className="flex gap-2">
                       <p className="text-[#737373]">{course.trainer}</p>
-                      {/* <p className="text-[#737373]">{course.course.days_per_week} tuần</p> */}
                     </div>
                   </div>
                   <div className="flex gap-2 justify-end flex-col items-end">
                     <p>{courseFormLabel[course.form_categories[0]]}</p>
-                    {/* <Link href={`/courses/${course.course.id}`} className="text-ring underline">
-                          Bắt đầu
-                        </Link> */}
                   </div>
                 </div>
               </div>
@@ -192,9 +202,6 @@ export function ListCourses() {
           </div>
         ))}
       </div>
-      <Link href="/courses">
-        <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm khóa tập</Button>
-      </Link>
     </div>
   )
 }

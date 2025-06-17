@@ -18,15 +18,30 @@ import { getExerciseById } from '@/network/server/exercises'
 import { getMealPlan } from '@/network/server/meal-plans'
 import { getDish } from '@/network/server/dishes'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 export default function FavouriteContent() {
   const { session } = useSession()
+  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [exercises, setExercises] = useState<FavouriteExercise[]>([])
   const [courses, setCourses] = useState<Course[]>([])
   const [mealPlans, setMealPlans] = useState<FavouriteMealPlan[]>([])
   const [dishes, setDishes] = useState<FavouriteDish[]>([])
+
+  // Handle login button click with redirect
+  const handleLoginClick = () => {
+    setDialogOpen(false)
+    redirectToLogin()
+  }
+
+  // Handle buy package button click with redirect
+  const handleBuyPackageClick = () => {
+    setDialogOpen(false)
+    redirectToAccount('buy-package')
+  }
+
   useEffect(() => {
     const fetchFavouriteExercises = async () => {
       if (!session?.userId) {
@@ -138,6 +153,7 @@ export default function FavouriteContent() {
 
     fetchFavouriteCourses()
   }, [session?.userId])
+
   useEffect(() => {
     const fetchFavouriteMealPlans = async () => {
       if (!session?.userId) {
@@ -198,6 +214,7 @@ export default function FavouriteContent() {
 
     fetchFavouriteMealPlans()
   }, [session?.userId])
+
   useEffect(() => {
     const fetchFavouriteDishes = async () => {
       if (!session?.userId) {
@@ -267,24 +284,12 @@ export default function FavouriteContent() {
               <p className="text-lg">HÃY ĐĂNG NHẬP & MUA GÓI ĐỂ THÊM KHÓA TẬP & THỰC ĐƠN</p>
               <div className="flex gap-4 justify-center w-full px-10">
                 <div className="flex-1">
-                  <Button
-                    className="bg-[#13D8A7] rounded-full w-full text-lg"
-                    onClick={() => {
-                      setDialogOpen(false)
-                      window.location.href = '/account?tab=buy-package'
-                    }}
-                  >
+                  <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>
                     Mua gói
                   </Button>
                 </div>
                 <div className="flex-1">
-                  <Button
-                    className="bg-[#13D8A7] rounded-full w-full text-lg"
-                    onClick={() => {
-                      setDialogOpen(false)
-                      window.location.href = '/auth/login'
-                    }}
-                  >
+                  <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
                     Đăng nhập
                   </Button>
                 </div>
@@ -342,17 +347,12 @@ export default function FavouriteContent() {
                     <div className="flex justify-between">
                       <div>
                         <p className="font-medium">{course.course_name}</p>
-                        {/* <p className="text-[#737373]">{course.course.category}</p> */}
                         <div className="flex gap-2">
                           <p className="text-[#737373]">{course.trainer}</p>
-                          {/* <p className="text-[#737373]">{course.course.days_per_week} tuần</p> */}
                         </div>
                       </div>
                       <div className="flex gap-2 justify-end flex-col items-end">
                         <p>{courseFormLabel[course.form_categories[0]]}</p>
-                        {/* <Link href={`/courses/${course.course.id}`} className="text-ring underline">
-                          Bắt đầu
-                        </Link> */}
                       </div>
                     </div>
                   </div>

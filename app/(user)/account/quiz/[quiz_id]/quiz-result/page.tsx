@@ -60,8 +60,18 @@ export default function QuizResultPage() {
         <p>
           Kết quả ngày {formatDate(quizData.quiz_date)} - {quizData.body_quiz?.title || 'Đánh giá cơ thể'}
         </p>
+        <div className="space-y-6 text-xl text-gray-600">
+          {quizData.body_quiz.questions.map((question, index) => (
+            <div key={question.id} className="pb-4">
+              <h3 className="font-medium text-gray-800 mb-1">
+                Câu hỏi {index + 1}: {question.title}
+              </h3>
+              <p className="text-gray-600">{quizData.responses[index] || 'Chưa có câu trả lời'}</p>
+            </div>
+          ))}
+        </div>
         <p className="text-gray-500">
-          <span className="text-ring underline">HLV Đánh Giá</span>
+          <span className="text-ring underline text-2xl">HLV Đánh Giá</span>
         </p>
         <div className="text-gray-500 xl:text-xl max-lg:base">{quizData.comment || 'Chưa có kết quả đánh giá'}</div>
       </div>

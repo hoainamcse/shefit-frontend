@@ -1,11 +1,11 @@
-import { getSubscription } from "@/network/server/subscriptions"
-import { getCourses } from "@/network/server/courses"
-import { ChevronRight } from "lucide-react"
-import { courseLevelLabel, courseFormLabel } from "@/lib/label"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { getMealPlans } from "@/network/server/meal-plans"
-import AcctionButton from "./_components/AcctionButton"
+import { getSubscription } from '@/network/server/subscriptions'
+import { getCourses } from '@/network/server/courses'
+import { ChevronRight } from 'lucide-react'
+import { courseLevelLabel, courseFormLabel } from '@/lib/label'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import { getMealPlans } from '@/network/server/meal-plans'
+import AcctionButton from './_components/AcctionButton'
 
 export default async function PackageDetail({ params }: { params: Promise<{ id: string }> }) {
   const subscription = await getSubscription(Number((await params).id))
@@ -17,19 +17,6 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
         <ChevronRight className="w-4 h-4" />
       </button>
     )
-  }
-  type SubscriptionData = {
-    id: number
-    name: string
-    description_1?: string
-    description_2?: string
-    cover_image?: string
-    course_ids?: number[]
-    meal_plan_ids?: number[]
-    difficulty_level?: string
-    trainer?: string
-    form_categories?: string[] | string
-    is_free?: boolean
   }
 
   const subscriptionData = subscription?.data
@@ -51,17 +38,13 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
               <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
                 Thông tin gói
               </div>
-              <p>
-                Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis.
-                Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus
-                bibendum ad curae consequat.
-              </p>
+              <p dangerouslySetInnerHTML={{ __html: subscriptionData?.description_2 || '' }} />
             </div>
             <div>
               <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
                 Khóa tập thuộc gói
               </div>
-              <p>Các khóa tập bạn được truy cập khi mua gói member này</p>
+              <p className="mb-5">Các khóa tập bạn được truy cập khi mua gói member này</p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 {subscriptionData?.course_ids?.map((courseId) => {
                   const course = courses?.data?.find((course) => course.id === courseId)
@@ -86,17 +69,15 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                           <p className="text-[#737373]">{course.trainer}</p>
                         </div>
                         <div>
-                          <div className="text-gray-500 flex justify-end">
+                          <div className="text-gray-500 flex justify-end max-w-[200px]">
                             {Array.isArray(course.form_categories)
-                              ? course.form_categories.map((cat) => courseFormLabel[cat]).join(", ")
+                              ? course.form_categories.map((cat) => courseFormLabel[cat]).join(', ')
                               : courseFormLabel[course.form_categories]}
                           </div>
                           <div className="flex justify-end">
                             {course.is_free ? (
                               <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
-                            ) : (
-                              <Button className="bg-[#737373] text-white w-[136px] rounded-full">+ Gói Member</Button>
-                            )}
+                            ) : null}
                           </div>
                         </div>
                       </div>
@@ -110,11 +91,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                 <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
                   Thực đơn
                 </div>
-                <p>
-                  Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis.
-                  Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar
-                  penatibus bibendum ad curae consequat.
-                </p>
+                <p dangerouslySetInnerHTML={{ __html: subscriptionData?.meal_plan_description || '' }} />
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                   {subscriptionData.meal_plan_ids.map((mealPlanId) => {
                     const mealPlan = mealPlans?.data?.find((plan: any) => plan.id === mealPlanId)
@@ -142,9 +119,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                           <div className="absolute bottom-0 right-0">
                             {mealPlan.is_free ? (
                               <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
-                            ) : (
-                              <Button className="bg-[#737373] text-white w-[136px] rounded-full">+ Gói Member</Button>
-                            )}
+                            ) : null}
                           </div>
                         </div>
                       </div>
@@ -157,11 +132,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
               <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
                 Theo dõi kết quả
               </div>
-              <p>
-                Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis.
-                Molestie nascetur justo sit accumsan nunc quam tincidunt blandit. Arcu iaculis risus pulvinar penatibus
-                bibendum ad curae consequat.
-              </p>
+              <p dangerouslySetInnerHTML={{ __html: subscriptionData?.result_checkup }} />
             </div>
             <AcctionButton />
           </div>

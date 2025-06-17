@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -54,8 +55,33 @@ function GoogleIcon() {
 }
 
 export default function LoginForm() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // Lấy URL từ query parameter hoặc từ sessionStorage
+  const getRedirectUrl = () => {
+    // Ưu tiên lấy từ URL query parameter
+    const redirectUrl = searchParams.get('redirect')
+    if (redirectUrl) {
+      return decodeURIComponent(redirectUrl)
+    }
+
+    // Fallback lấy từ sessionStorage
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('redirectAfterLogin') || '/'
+    }
+
+    return '/'
+  }
+
   const handleGoogleSignIn = async () => {
     try {
+      // Lưu redirect URL trước khi chuyển hướng đến Google OAuth
+      const redirectUrl = getRedirectUrl()
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('redirectAfterLogin', redirectUrl)
+      }
+
       const response = await getOauth2AuthUrl(encodeURIComponent(process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!))
       window.location.href = response.data.url
     } catch (error) {
@@ -64,42 +90,30 @@ export default function LoginForm() {
     }
   }
 
-  // async function handleSubmit(formData: FormData) {
-  //   try {
-  //     const data = {
-  //       username: formData.get('username')?.toString() || '',
-  //       password: formData.get('password')?.toString() || '',
-  //       grant_type: 'password' as const,
-  //     }
-
-  //     const response = await login(data)
-
-  //     localStorage.setItem('access_token', response.access_token)
-  //     localStorage.setItem('refresh_token', response.refresh_token)
-
-  //     const tokenParts = response.access_token.split('.')
-  //     let payload: any
-  //     if (tokenParts.length === 3) {
-  //       payload = JSON.parse(atob(tokenParts[1]))
-  //       console.log('user_id:', payload.sub)
-  //       localStorage.setItem('user_id', payload.sub)
-  //     }
-  //     toast.success('Đăng nhập thành công!')
-  //     const role = (await getUserById(payload.sub))?.data?.role
-  //     if (role === 'normal_user') router.push('/')
-  //     else if (role === 'sub_admin' || role === 'admin') router.push('/admin')
-  //   } catch (error) {
-  //     console.error('Error during login:', error)
-  //     toast.error('Đăng nhập thất bại!')
-  //   }
-  // }
   async function handleSubmit(formData: FormData) {
     const user = formData.get('username')?.toString() || ''
     const pass = formData.get('password')?.toString() || ''
+
     try {
       const res = await login({ username: user, password: pass, grant_type: 'password' })
       const { scope } = await signin(res)
-      window.location.href = '/' + (scope === 'user' ? '' : 'admin')
+
+      // Lấy URL để redirect
+      const redirectUrl = getRedirectUrl()
+
+      // Xóa redirect URL từ sessionStorage sau khi sử dụng
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('redirectAfterLogin')
+      }
+
+      // Redirect dựa trên scope và redirectUrl
+      if (scope === 'admin') {
+        // Nếu là admin, luôn redirect về admin panel
+        window.location.href = '/admin'
+      } else {
+        // Nếu là user, redirect về URL đã lưu hoặc trang chủ
+        window.location.href = redirectUrl
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Đăng nhập thất bại!'
       toast.error(errorMessage)

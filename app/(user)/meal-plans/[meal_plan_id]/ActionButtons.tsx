@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import { useSession } from '@/components/providers/session-provider'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 interface ActionButtonsProps {
   mealPlanId: number
@@ -15,10 +16,22 @@ interface ActionButtonsProps {
 
 export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
   const { session } = useSession()
+  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [showSubscribeDialog, setShowSubscribeDialog] = useState(false)
   const [hasMealPlanInSubscription, setHasMealPlanInSubscription] = useState(false)
   const [isCheckingSubscription, setIsCheckingSubscription] = useState(true)
+
+  const handleLoginClick = () => {
+    setShowLoginDialog(false)
+    redirectToLogin()
+  }
+
+  const handleBuyPackageClick = () => {
+    setShowLoginDialog(false)
+    setShowSubscribeDialog(false)
+    redirectToAccount('buy-package')
+  }
 
   useEffect(() => {
     const checkMealPlanInSubscriptions = async () => {
@@ -88,6 +101,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
       console.error('Error checking meal plan access:', error)
     }
   }
+
   return (
     <>
       <div className="gap-5 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
@@ -116,24 +130,12 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
             <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP THỰC ĐƠN</p>
             <div className="flex gap-4 justify-center w-full px-10">
               <div className="flex-1">
-                <Button
-                  className="bg-[#13D8A7] rounded-full w-full text-lg"
-                  onClick={() => {
-                    setShowLoginDialog(false)
-                    window.location.href = '/account?tab=buy-package'
-                  }}
-                >
+                <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>
                   Mua gói Member
                 </Button>
               </div>
               <div className="flex-1">
-                <Button
-                  className="bg-[#13D8A7] rounded-full w-full text-lg"
-                  onClick={() => {
-                    setShowLoginDialog(false)
-                    window.location.href = '/auth/login'
-                  }}
-                >
+                <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
                   Đăng nhập
                 </Button>
               </div>
@@ -151,13 +153,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
           <div className="flex flex-col items-center text-center gap-6">
             <p className="text-lg">HÃY MUA GÓI ĐỂ TRUY CẬP THỰC ĐƠN</p>
             <div className="w-full px-10">
-              <Button
-                className="bg-[#13D8A7] rounded-full w-full text-lg"
-                onClick={() => {
-                  setShowSubscribeDialog(false)
-                  window.location.href = '/account?tab=buy-package'
-                }}
-              >
+              <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>
                 Mua gói Member
               </Button>
             </div>

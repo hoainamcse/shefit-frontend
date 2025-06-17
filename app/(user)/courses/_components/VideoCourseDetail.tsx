@@ -12,12 +12,15 @@ import { getUserSubscriptions } from '@/network/server/user-subscriptions'
 import { getCourse } from '@/network/server/courses'
 import { UserCourse } from '@/models/user-courses'
 import { createUserCourse, getUserCourses } from '@/network/server/user-courses'
+import { useRouter } from 'next/navigation'
+
 interface UserCourseItem extends UserCourse {
   is_active: boolean
   start_date: string
   end_date: string
   course_id: number
 }
+
 type CourseDay = {
   day: number
   content: string
@@ -38,6 +41,22 @@ export const mapCourseData = (totalWeeks: number): CourseWeek[] => {
   }))
 }
 
+const saveCurrentUrl = () => {
+  if (typeof window !== 'undefined') {
+    const currentUrl = window.location.pathname + window.location.search
+    sessionStorage.setItem('redirectAfterLogin', currentUrl)
+  }
+}
+
+const redirectToLogin = () => {
+  if (typeof window !== 'undefined') {
+    saveCurrentUrl()
+    const currentUrl = window.location.pathname + window.location.search
+    const loginUrl = `/auth/login?redirect=${encodeURIComponent(currentUrl)}`
+    window.location.href = loginUrl
+  }
+}
+
 export default function VideoCourseDetail({ courseId }: { courseId: Course['id'] }) {
   const [weeks, setWeeks] = useState<any>(null)
   const [days, setDays] = useState<any>(null)
@@ -49,6 +68,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
   const [isFreeCourse, setIsFreeCourse] = useState(false)
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [courseStatus, setCourseStatus] = useState<'checking' | 'exists' | 'not_found'>('checking')
+  const router = useRouter()
 
   const checkUserCourse = async () => {
     if (!session) {
@@ -216,6 +236,20 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
     }
   }
 
+  const handleLoginClick = () => {
+    setDialogOpen(false)
+    redirectToLogin()
+  }
+
+  const handleBuyPackageClick = () => {
+    if (typeof window !== 'undefined') {
+      saveCurrentUrl()
+      const currentUrl = window.location.pathname + window.location.search
+      const accountUrl = `/account?tab=buy-package&redirect=${encodeURIComponent(currentUrl)}`
+      window.location.href = accountUrl
+    }
+  }
+
   if (!weeks || !days) {
     return <div>Loading...</div>
   }
@@ -274,10 +308,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
                                   <div className="flex justify-center w-full px-10">
                                     <Button
                                       className="bg-[#13D8A7] rounded-full w-full text-lg max-w-xs"
-                                      onClick={() => {
-                                        setDialogOpen(false)
-                                        window.location.href = '/auth/login'
-                                      }}
+                                      onClick={handleLoginClick}
                                     >
                                       Đăng nhập
                                     </Button>
@@ -290,10 +321,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
                                     <div className="flex-1">
                                       <Button
                                         className="bg-[#13D8A7] rounded-full w-full text-lg"
-                                        onClick={() => {
-                                          setDialogOpen(false)
-                                          window.location.href = '/account?tab=buy-package'
-                                        }}
+                                        onClick={handleBuyPackageClick}
                                       >
                                         Mua gói Member
                                       </Button>
@@ -301,10 +329,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
                                     <div className="flex-1">
                                       <Button
                                         className="bg-[#13D8A7] rounded-full w-full text-lg"
-                                        onClick={() => {
-                                          setDialogOpen(false)
-                                          window.location.href = '/auth/login'
-                                        }}
+                                        onClick={handleLoginClick}
                                       >
                                         Đăng nhập
                                       </Button>
@@ -337,7 +362,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
                   className="bg-[#13D8A7] rounded-full w-full text-lg"
                   onClick={() => {
                     setPurchaseDialogOpen(false)
-                    window.location.href = '/account?tab=buy-package'
+                    handleBuyPackageClick()
                   }}
                   disabled={checkingAccess}
                 >

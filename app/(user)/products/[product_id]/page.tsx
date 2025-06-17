@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import { useSession } from '@/components/providers/session-provider'
 import { useRouter } from 'next/navigation'
+import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 export default function ProductPage({ params }: { params: Promise<{ product_id: string }> }) {
   const { product_id } = use(params)
@@ -32,6 +33,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
   const [quantity, setQuantity] = useState(1)
   const [loginDialogOpen, setLoginDialogOpen] = useState(false)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const { redirectToLogin } = useAuthRedirect()
 
   useEffect(() => {
     if (product && product.variants && product.variants.length > 0) {
@@ -209,6 +211,11 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
     } finally {
       setIsAdding(false)
     }
+  }
+
+  const handleLoginClick = () => {
+    setLoginDialogOpen(false)
+    redirectToLogin()
   }
 
   return (
@@ -401,10 +408,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
               <div className="flex-1">
                 <Button
                   className="bg-[#13D8A7] hover:bg-[#13D8A7]/90 rounded-full w-full text-lg"
-                  onClick={() => {
-                    setLoginDialogOpen(false)
-                    window.location.href = '/auth/login?redirect=' + encodeURIComponent(window.location.pathname)
-                  }}
+                  onClick={handleLoginClick}
                 >
                   Đăng nhập
                 </Button>

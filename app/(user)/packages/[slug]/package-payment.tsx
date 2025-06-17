@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { createUserSubscription } from '@/network/server/user-subscriptions'
+import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 import { useQRCode } from 'next-qrcode'
 import {
@@ -21,6 +22,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { CloseIcon } from '@/components/icons/CloseIcon'
+
 interface Price {
   id: number
   duration: number
@@ -35,6 +37,7 @@ interface PackagePaymentProps {
 
 export function PackagePayment({ prices, defaultPrice, packageName }: PackagePaymentProps) {
   const { session } = useSession()
+  const { redirectToLogin } = useAuthRedirect()
   const { Canvas } = useQRCode()
   const params = useParams()
   const [selectedPriceId, setSelectedPriceId] = useState<number | null>(null)
@@ -51,6 +54,11 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
 
   const [purchaseSuccess, setPurchaseSuccess] = useState(false)
   useState<number | null>(null)
+
+  const handleLoginClick = () => {
+    setIsLoginDialogOpen(false)
+    redirectToLogin()
+  }
 
   const generateOrderId = () => {
     return Math.floor(Math.random() * 900 + 100).toString()
@@ -376,13 +384,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
             <p className="text-lg">HÃY ĐĂNG NHẬP ĐỂ MUA GÓI</p>
             <div className="flex gap-4 justify-center w-full px-10">
               <div className="flex-1">
-                <Button
-                  className="bg-[#13D8A7] rounded-full w-full text-lg"
-                  onClick={() => {
-                    setIsLoginDialogOpen(false)
-                    window.location.href = '/auth/login'
-                  }}
-                >
+                <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
                   Đăng nhập
                 </Button>
               </div>

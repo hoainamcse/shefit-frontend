@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { Course } from '@/models/course'
 import { UserCourse } from '@/models/user-courses'
 import { addFavouriteCourse } from '@/network/server/favourite-course'
+import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 interface UserCourseItem extends UserCourse {
   is_active: boolean
   start_date: string
@@ -25,6 +26,7 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
   const { session } = useSession()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [courseStatus, setCourseStatus] = useState<'checking' | 'exists' | 'not_found'>('checking')
+  const { redirectToLogin } = useAuthRedirect()
 
   useEffect(() => {
     const checkUserCourse = async () => {
@@ -58,6 +60,11 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
 
   const handleStartClick = async (e: React.MouseEvent) => {
     handleToggleDetails()
+  }
+
+  const handleLoginClick = () => {
+    setShowLoginDialog(false)
+    redirectToLogin()
   }
 
   return (
@@ -108,13 +115,7 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
           <div className="flex flex-col items-center text-center gap-6">
             <p className="text-lg">ĐĂNG NHẬP ĐỂ LƯU KHÓA TẬP</p>
             <div className="flex gap-4 justify-center w-full px-10">
-              <Button
-                className="bg-[#13D8A7] rounded-full w-full text-lg"
-                onClick={() => {
-                  setShowLoginDialog(false)
-                  window.location.href = '/auth/login'
-                }}
-              >
+              <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
                 Đăng nhập
               </Button>
             </div>

@@ -24,12 +24,14 @@ import {
 import { createBodyQuizByUser } from '@/network/server/body-quizzes'
 import { getUserById } from '@/network/server/user'
 import { toast } from 'sonner'
+import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 export default function BodyQuizPage() {
   const params = useParams<{ quiz_id: string }>()
   const quiz_id = Number(params?.quiz_id)
   const router = useRouter()
   const { session } = useSession()
+  const { redirectToLogin } = useAuthRedirect()
   const [bodyQuiz, setBodyQuiz] = useState<BodyQuiz | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -50,6 +52,12 @@ export default function BodyQuizPage() {
       ) || {}),
     },
   })
+
+  // Handle login button click with redirect
+  const handleLoginClick = () => {
+    setShowLoginDialog(false)
+    redirectToLogin()
+  }
 
   const onSubmit = async (formData: Record<string, any>) => {
     if (!session) {
@@ -308,16 +316,6 @@ export default function BodyQuizPage() {
     )
   }
 
-  if (error) {
-    return (
-      <div className="p-14 max-w-screen-3xl mx-auto mb-20">
-        <div className="bg-red-50 border-l-4 border-red-500 p-4">
-          <p className="text-red-700">{error}</p>
-        </div>
-      </div>
-    )
-  }
-
   if (!bodyQuiz) {
     return (
       <div className="p-14 max-w-screen-3xl mx-auto mb-20">
@@ -366,10 +364,7 @@ export default function BodyQuizPage() {
           <div className="flex gap-4 justify-center mt-4">
             <Button
               className="bg-[#13D8A7] hover:bg-[#13d8a7d0] rounded-full w-1/3 h-[45px]"
-              onClick={() => {
-                setShowLoginDialog(false)
-                router.push(`/auth/login?returnUrl=${encodeURIComponent(window.location.pathname)}`)
-              }}
+              onClick={handleLoginClick}
             >
               Đăng nhập
             </Button>

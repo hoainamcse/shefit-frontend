@@ -1,30 +1,45 @@
-"use client"
+'use client'
 
-import Link from "next/link"
-import { getMuscleGroups } from "@/network/server/muscle-groups"
-import { getDiets } from "@/network/server/diets"
-import { useState, useEffect } from "react"
-import { ListResponse } from "@/models/response"
-import { MuscleGroup } from "@/models/muscle-group"
-import { Diet } from "@/models/diet"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-export const dynamic = "force-dynamic"
-import { useSession } from "@/components/providers/session-provider"
+import Link from 'next/link'
+import { getMuscleGroups } from '@/network/server/muscle-groups'
+import { getDiets } from '@/network/server/diets'
+import { useState, useEffect } from 'react'
+import { ListResponse } from '@/models/response'
+import { MuscleGroup } from '@/models/muscle-group'
+import { Diet } from '@/models/diet'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { useSession } from '@/components/providers/session-provider'
+import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+
+export const dynamic = 'force-dynamic'
+
 export default function Gallery() {
   const { session } = useSession()
+  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const [dialogOpen, setDialogOpen] = useState<string | false>(false)
   const [isLoading, setIsLoading] = useState(true)
   const [muscleGroupsData, setMuscleGroupsData] = useState<ListResponse<MuscleGroup>>({
-    status: "",
+    status: '',
     data: [],
     paging: { page: 1, per_page: 10, total: 0 },
   })
   const [dietsData, setDietsData] = useState<ListResponse<Diet>>({
-    status: "",
+    status: '',
     data: [],
     paging: { page: 1, per_page: 10, total: 0 },
   })
+
+  const handleLoginClick = () => {
+    setDialogOpen(false)
+    redirectToLogin()
+  }
+
+  const handleBuyPackageClick = () => {
+    setDialogOpen(false)
+    redirectToAccount('buy-package')
+  }
+
   useEffect(() => {
     async function fetchMuscleGroups() {
       try {
@@ -32,7 +47,7 @@ export default function Gallery() {
         const data = await getMuscleGroups()
         setMuscleGroupsData(data)
       } catch (error) {
-        console.error("Error fetching muscle groups:", error)
+        console.error('Error fetching muscle groups:', error)
       } finally {
         setIsLoading(false)
       }
@@ -40,6 +55,7 @@ export default function Gallery() {
 
     fetchMuscleGroups()
   }, [])
+
   useEffect(() => {
     async function fetchDiets() {
       try {
@@ -47,7 +63,7 @@ export default function Gallery() {
         const data = await getDiets()
         setDietsData(data)
       } catch (error) {
-        console.error("Error fetching diets:", error)
+        console.error('Error fetching diets:', error)
       } finally {
         setIsLoading(false)
       }
@@ -55,6 +71,7 @@ export default function Gallery() {
 
     fetchDiets()
   }, [])
+
   return (
     <div className="flex flex-col gap-10 mt-10">
       <div className="mb-20">
@@ -117,24 +134,12 @@ export default function Gallery() {
                       <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN</p>
                       <div className="flex gap-4 justify-center w-full px-10">
                         <div className="flex-1">
-                          <Button
-                            className="bg-[#13D8A7] rounded-full w-full text-lg"
-                            onClick={() => {
-                              setDialogOpen(false)
-                              window.location.href = "/account?tab=buy-package"
-                            }}
-                          >
+                          <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>
                             Mua gói Member
                           </Button>
                         </div>
                         <div className="flex-1">
-                          <Button
-                            className="bg-[#13D8A7] rounded-full w-full text-lg"
-                            onClick={() => {
-                              setDialogOpen(false)
-                              window.location.href = "/auth/login"
-                            }}
-                          >
+                          <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
                             Đăng nhập
                           </Button>
                         </div>
@@ -207,24 +212,12 @@ export default function Gallery() {
                       <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN</p>
                       <div className="flex gap-4 justify-center w-full px-10">
                         <div className="flex-1">
-                          <Button
-                            className="bg-[#13D8A7] rounded-full w-full text-lg"
-                            onClick={() => {
-                              setDialogOpen(false)
-                              window.location.href = "/account?tab=buy-package"
-                            }}
-                          >
+                          <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>
                             Mua gói Member
                           </Button>
                         </div>
                         <div className="flex-1">
-                          <Button
-                            className="bg-[#13D8A7] rounded-full w-full text-lg"
-                            onClick={() => {
-                              setDialogOpen(false)
-                              window.location.href = "/auth/login"
-                            }}
-                          >
+                          <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
                             Đăng nhập
                           </Button>
                         </div>

@@ -1,12 +1,10 @@
 'use client'
 
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import Layout from '@/app/(user)/_components/layout'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { MultiSelect } from '@/components/ui/select' // Import MultiSelect component
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import React, { useState, useEffect } from 'react'
-import Image from 'next/image'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { getCoursesByType } from '@/network/server/courses'
 import { cn } from '@/lib/utils'
@@ -17,7 +15,8 @@ import type { Subscription } from '@/models/subscription'
 import PopularCoursesCarousel from './_components/PopularCoursesCarousel'
 import { Button } from '@/components/ui/button'
 
-function SelectHero({
+// Updated MultiSelectHero component
+function MultiSelectHero({
   placeholder,
   options,
   value,
@@ -25,22 +24,18 @@ function SelectHero({
 }: {
   placeholder: string
   options: { value: string; label: string }[]
-  value: string
-  onChange: (value: string) => void
+  value: string[]
+  onChange: (value: string[]) => void
 }) {
   return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger>
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map((item) => (
-          <SelectItem key={item.value} value={item.value}>
-            {item.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <MultiSelect
+      options={options}
+      value={value}
+      onValueChange={onChange}
+      placeholder={placeholder}
+      selectAllLabel="Tất cả"
+      maxDisplay={2}
+    />
   )
 }
 
@@ -55,9 +50,10 @@ const NextButton = ({ className }: { className?: string }) => {
 export const fetchCache = 'default-no-store'
 
 export default function CoursesPage() {
-  const [difficulty, setDifficulty] = useState('')
-  const [formCategory, setFormCategory] = useState('')
-  const [subscriptionId, setSubscriptionId] = useState<string | number>('')
+  // Updated state to use arrays for multi-select
+  const [difficulty, setDifficulty] = useState<string[]>([])
+  const [formCategory, setFormCategory] = useState<string[]>([])
+  const [subscriptionId, setSubscriptionId] = useState<string[]>([])
   const [courses, setCourses] = useState<Course[]>([])
   const [coursesZoom, setCoursesZoom] = useState<Course[]>([])
   const [activeTab, setActiveTab] = useState('video')
@@ -81,13 +77,21 @@ export default function CoursesPage() {
     fetchCourses()
   }, [])
 
+  // Updated filter logic for multi-select
   const filterCourses = (courseList: Course[]) => {
     return courseList.filter((course) => {
-      const matchesDifficulty = !difficulty || course.difficulty_level === difficulty
-      const matchesFormCategory = !formCategory || course.form_categories.includes(formCategory as CourseForm)
+      const matchesDifficulty = difficulty.length === 0 || difficulty.includes(course.difficulty_level)
+
+      const matchesFormCategory =
+        formCategory.length === 0 ||
+        (Array.isArray(course.form_categories)
+          ? course.form_categories.some((cat) => formCategory.includes(cat))
+          : formCategory.includes(course.form_categories))
+
       const matchesSubscription =
-        !subscriptionId ||
-        course.subscriptions.some((subscription) => String(subscription.id) === String(subscriptionId))
+        subscriptionId.length === 0 ||
+        course.subscriptions.some((subscription) => subscriptionId.includes(String(subscription.id)))
+
       return matchesDifficulty && matchesFormCategory && matchesSubscription
     })
   }
@@ -105,23 +109,34 @@ export default function CoursesPage() {
             Lựa chọn khóa tập phù hợp với kinh nghiệm, mục tiêu và phom dáng của chị để bắt đầu hành trình độ dáng ngay
             hôm nay!
           </p>
-          <div className="flex gap-4">
-            <SelectHero placeholder="Độ khó" options={courseLevelOptions} value={difficulty} onChange={setDifficulty} />
-            <SelectHero
-              placeholder="Phom dáng"
-              options={courseFormOptions}
-              value={formCategory}
-              onChange={setFormCategory}
-            />
-            <SelectHero
-              placeholder="Gói Member"
-              options={subscriptions.map((subscription) => ({
-                value: subscription.id.toString(),
-                label: subscription.name,
-              }))}
-              value={subscriptionId.toString()}
-              onChange={setSubscriptionId}
-            />
+          <div className="flex justify-center gap-4 w-full">
+            <div className="w-full max-w-lg">
+              <MultiSelectHero
+                placeholder="Độ khó"
+                options={courseLevelOptions}
+                value={difficulty}
+                onChange={setDifficulty}
+              />
+            </div>
+            <div className="w-full max-w-lg">
+              <MultiSelectHero
+                placeholder="Phom dáng"
+                options={courseFormOptions}
+                value={formCategory}
+                onChange={setFormCategory}
+              />
+            </div>
+            <div className="w-full max-w-lg">
+              <MultiSelectHero
+                placeholder="Gói Member"
+                options={subscriptions.map((subscription) => ({
+                  value: subscription.id.toString(),
+                  label: subscription.name,
+                }))}
+                value={subscriptionId}
+                onChange={setSubscriptionId}
+              />
+            </div>
           </div>
           <div className="flex justify-center gap-4 mt-4">
             <Tabs defaultValue="video" onValueChange={setActiveTab}>
@@ -148,10 +163,6 @@ export default function CoursesPage() {
                           // height={373}
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-                        {/* <Link href={`/courses/videos/${course.id}`}>
-                          <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
-                        </Link> */}
-
                         <Link href={`/courses/${course.id}/video-classes`}>
                           <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
                         </Link>
@@ -195,10 +206,6 @@ export default function CoursesPage() {
                           height={373}
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-                        {/* <Link href={`/courses/live/${course.id}`}>
-                          <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
-                        </Link> */}
-
                         <Link href={`/courses/${course.id}/live-classes`}>
                           <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
                         </Link>

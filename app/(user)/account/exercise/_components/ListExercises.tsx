@@ -10,12 +10,26 @@ import { getExercises } from '@/network/server/exercises'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import type { Exercise } from '@/models/exercise'
 import { getYoutubeThumbnail } from '@/lib/youtube'
+import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+
 export default function ListExercises() {
   const { session } = useSession()
+  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [isLoading, setIsLoading] = useState(true)
+
+  const handleLoginClick = () => {
+    setDialogOpen(false)
+    redirectToLogin()
+  }
+
+  const handleBuyPackageClick = () => {
+    setDialogOpen(false)
+    redirectToAccount('buy-package')
+  }
+
   useEffect(() => {
     if (!selectedSubscription?.exercises?.length) {
       setExercises([])
@@ -61,24 +75,12 @@ export default function ListExercises() {
             <p className="text-lg">HÃY ĐĂNG NHẬP & MUA GÓI ĐỂ THÊM KHÓA TẬP & THỰC ĐƠN</p>
             <div className="flex gap-4 justify-center w-full px-10">
               <div className="flex-1">
-                <Button
-                  className="bg-[#13D8A7] rounded-full w-full text-lg"
-                  onClick={() => {
-                    setDialogOpen(false)
-                    window.location.href = '/account?tab=buy-package'
-                  }}
-                >
+                <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>
                   Mua gói
                 </Button>
               </div>
               <div className="flex-1">
-                <Button
-                  className="bg-[#13D8A7] rounded-full w-full text-lg"
-                  onClick={() => {
-                    setDialogOpen(false)
-                    window.location.href = '/auth/login'
-                  }}
-                >
+                <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
                   Đăng nhập
                 </Button>
               </div>

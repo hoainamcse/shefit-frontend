@@ -1,31 +1,29 @@
-"use client"
+'use client'
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import CurrentCart from "./current-cart"
-import PurchasedOrder from "./purchased-order"
-import { useSession } from "@/components/providers/session-provider"
-import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import CurrentCart from './current-cart'
+import PurchasedOrder from './purchased-order'
+import { useSession } from '@/components/providers/session-provider'
+import { Button } from '@/components/ui/button'
+import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 export default function Cart() {
   const { session } = useSession()
+  const { redirectToLogin } = useAuthRedirect()
 
   if (!session) {
     return (
       <div className="flex flex-col items-center text-center gap-6">
         <p className="text-lg">HÃY ĐĂNG NHẬP ĐỂ XEM GIỎ HÀNG</p>
         <div className="flex gap-4 justify-center w-full px-10">
-          <Button
-            className="bg-[#13D8A7] rounded-full w-full text-lg max-w-[200px]"
-            onClick={() => {
-              window.location.href = "/auth/login"
-            }}
-          >
+          <Button className="bg-[#13D8A7] rounded-full w-full text-lg max-w-[200px]" onClick={redirectToLogin}>
             Đăng nhập
           </Button>
         </div>
       </div>
     )
   }
+
   return (
     <div className="max-w-screen-3xl mx-auto px-14">
       <Tabs defaultValue="current-cart">

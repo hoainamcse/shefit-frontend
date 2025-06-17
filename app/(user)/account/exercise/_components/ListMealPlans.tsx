@@ -10,12 +10,13 @@ import { getMealPlans } from '@/network/server/meal-plans'
 import { MealPlan } from '@/models/meal-plan'
 import { useEffect } from 'react'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
+import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 export default function ListMealPlans() {
   const { session } = useSession()
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
-
+  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const [filteredMealPlans, setFilteredMealPlans] = useState<MealPlan[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -49,7 +50,15 @@ export default function ListMealPlans() {
 
     fetchAndFilterMealPlans()
   }, [selectedSubscription?.meal_plans])
+  const handleLoginClick = () => {
+    setDialogOpen(false)
+    redirectToLogin()
+  }
 
+  const handleBuyPackageClick = () => {
+    setDialogOpen(false)
+    redirectToAccount('buy-package')
+  }
   if (!session) {
     return (
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -64,24 +73,12 @@ export default function ListMealPlans() {
             <p className="text-lg">HÃY ĐĂNG NHẬP & MUA GÓI ĐỂ THÊM KHÓA TẬP & THỰC ĐƠN</p>
             <div className="flex gap-4 justify-center w-full px-10">
               <div className="flex-1">
-                <Button
-                  className="bg-[#13D8A7] rounded-full w-full text-lg"
-                  onClick={() => {
-                    setDialogOpen(false)
-                    window.location.href = '/account?tab=buy-package'
-                  }}
-                >
+                <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>
                   Mua gói
                 </Button>
               </div>
               <div className="flex-1">
-                <Button
-                  className="bg-[#13D8A7] rounded-full w-full text-lg"
-                  onClick={() => {
-                    setDialogOpen(false)
-                    window.location.href = '/auth/login'
-                  }}
-                >
+                <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
                   Đăng nhập
                 </Button>
               </div>

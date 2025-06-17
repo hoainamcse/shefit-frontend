@@ -12,18 +12,20 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { createUserCourse, getUserCourses } from '@/network/server/user-courses'
 import { toast } from 'sonner'
-const formatToVNTime = (time: string) => {
-  const [hours] = time.split(':')
-  const vnHour = (parseInt(hours) + 7) % 24
-  return `${vnHour} giờ`
-}
 import { UserCourse } from '@/models/user-courses'
+import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 interface UserCourseItem extends UserCourse {
   is_active: boolean
   start_date: string
   end_date: string
   course_id: number
+}
+
+const formatToVNTime = (time: string) => {
+  const [hours] = time.split(':')
+  const vnHour = (parseInt(hours) + 7) % 24
+  return `${vnHour} giờ`
 }
 
 const isClassAvailable = (startTime: string) => {
@@ -44,6 +46,7 @@ const isClassAvailable = (startTime: string) => {
 
 export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] }) {
   const { session } = useSession()
+  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const isLoggedIn = !!session?.userId
   const [course, setCourse] = useState<any>(null)
   const [live, setLive] = useState<any>(null)
@@ -119,6 +122,17 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
 
     fetchData()
   }, [courseId])
+
+  const handleLoginClick = () => {
+    setShowLoginDialog(false)
+    redirectToLogin()
+  }
+
+  const handleBuyPackageClick = () => {
+    setShowLoginDialog(false)
+    setShowSubscribeDialog(false)
+    redirectToAccount('buy-package')
+  }
 
   if (!course || !live) {
     return <div>Loading...</div>
@@ -249,24 +263,12 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
               <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
               <div className="flex gap-4 justify-center w-full px-10">
                 <div className="flex-1">
-                  <Button
-                    className="bg-[#13D8A7] rounded-full w-full text-lg"
-                    onClick={() => {
-                      setShowLoginDialog(false)
-                      window.location.href = '/account?tab=buy-package'
-                    }}
-                  >
+                  <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>
                     Mua gói Member
                   </Button>
                 </div>
                 <div className="flex-1">
-                  <Button
-                    className="bg-[#13D8A7] rounded-full w-full text-lg"
-                    onClick={() => {
-                      setShowLoginDialog(false)
-                      window.location.href = '/auth/login'
-                    }}
-                  >
+                  <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
                     Đăng nhập
                   </Button>
                 </div>
@@ -289,10 +291,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
               <div className="w-full">
                 <Button
                   className="bg-[#13D8A7] hover:bg-[#11c296] text-white rounded-full w-full text-lg font-medium"
-                  onClick={() => {
-                    setShowSubscribeDialog(false)
-                    window.location.href = '/account?tab=buy-package'
-                  }}
+                  onClick={handleBuyPackageClick}
                 >
                   Mua gói Member
                 </Button>
