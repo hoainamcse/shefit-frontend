@@ -117,8 +117,9 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
     defaultValues: data
       ? {
           ...data,
-          meal_plan_ids: data.meal_plan_ids.map((mealPlanId) => mealPlanId.toString()),
-          course_ids: data.course_ids.map((courseId) => courseId.toString()),
+          meal_plan_ids: data.meal_plan_ids?.map((mealPlanId) => mealPlanId.toString()),
+          course_ids: data.course_ids?.map((courseId) => courseId.toString()),
+          course_format: data.course_format as 'video' | 'live' | 'both',
         }
       : {
           name: '',
@@ -126,6 +127,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
           course_ids: [],
           prices: [],
           gifts: [],
+          result_checkup: '',
           cover_image: '',
           thumbnail_image: '',
           description_1: '',
