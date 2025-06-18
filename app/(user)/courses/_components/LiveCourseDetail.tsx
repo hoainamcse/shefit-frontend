@@ -24,7 +24,7 @@ interface UserCourseItem extends UserCourse {
 
 const formatToVNTime = (time: string) => {
   const [hours] = time.split(':')
-  const vnHour = (parseInt(hours) + 7) % 24
+  const vnHour = parseInt(hours) % 24
   return `${vnHour} giờ`
 }
 
