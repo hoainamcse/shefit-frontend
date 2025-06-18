@@ -38,7 +38,6 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
     const checkMealPlanInSubscriptions = async () => {
       if (!session) {
         setIsCheckingSubscription(false)
-        setShowLoginDialogSave(true)
         return
       }
 
