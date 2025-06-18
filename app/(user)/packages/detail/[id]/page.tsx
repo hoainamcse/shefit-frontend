@@ -132,7 +132,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
               <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
                 Theo dõi kết quả
               </div>
-              <p dangerouslySetInnerHTML={{ __html: subscriptionData?.result_checkup }} />
+              <p dangerouslySetInnerHTML={{ __html: subscriptionData?.result_checkup || '' }} />
             </div>
             <AcctionButton />
           </div>

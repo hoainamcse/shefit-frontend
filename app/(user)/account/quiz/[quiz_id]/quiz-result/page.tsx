@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react'
 import { getBodyQuizResultByUser } from '@/network/server/body-quizzes'
 import { UserBodyQuiz } from '@/models/body-quiz'
 import { useParams } from 'next/navigation'
+import Link from 'next/link'
+import { BackIconBlack } from '@/components/icons/BackIconBlack'
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
@@ -54,7 +56,14 @@ export default function QuizResultPage() {
   }
 
   return (
-    <div className="flex flex-col gap-10 mt-10 p-10">
+    <div className="flex flex-col gap-10 mt-10 p-10 relative">
+      <Link
+        href="/account?tab=body-quiz"
+        className="inline-flex items-center gap-2 text-xl font-semibold transition-colors mb-4 absolute top-5 left-13"
+      >
+        <BackIconBlack className="w-5 h-5" />
+        <span>Quay về</span>
+      </Link>
       <img src="/body-quiz-image.jpg" alt="body-quiz-image" className="h-[680px]" />
       <div className="xl:text-3xl max-lg:text-xl flex flex-col gap-5">
         <p>

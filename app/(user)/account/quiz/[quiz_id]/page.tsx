@@ -25,6 +25,8 @@ import { createBodyQuizByUser } from '@/network/server/body-quizzes'
 import { getUserById } from '@/network/server/user'
 import { toast } from 'sonner'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import Link from 'next/link'
+import { BackIconBlack } from '@/components/icons/BackIconBlack'
 
 export default function BodyQuizPage() {
   const params = useParams<{ quiz_id: string }>()
@@ -53,7 +55,6 @@ export default function BodyQuizPage() {
     },
   })
 
-  // Handle login button click with redirect
   const handleLoginClick = () => {
     setShowLoginDialog(false)
     redirectToLogin()
@@ -332,19 +333,19 @@ export default function BodyQuizPage() {
   }
 
   return (
-    <div className="p-14 max-w-screen-3xl mx-auto mb-20">
+    <div className="p-14 max-w-screen-3xl mx-auto mb-20 relative">
       <Dialog open={showSuccessDialog} onOpenChange={handleCloseDialog}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle></DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-center text-lg font-semibold text-[#737373]">Gửi bài kiểm tra thành công!</p>
+            <p className="text-center text-lg font-semibold text-[#737373] uppercase">Gửi bài kiểm tra thành công!</p>
           </div>
           <DialogFooter>
             <Button
               onClick={handleCloseDialog}
-              className="bg-[#13D8A7] hover:bg-[#13d8a7d0] rounded-full w-full h-[45px]"
+              className="bg-[#13D8A7] hover:bg-[#13d8a7d0] rounded-full w-full h-[45px] text-xl font-semibold"
             >
               Trở về
             </Button>
@@ -373,6 +374,13 @@ export default function BodyQuizPage() {
       </Dialog>
 
       <div className="bg-[#FFF7F8] p-8 rounded-[10px] pb-28">
+        <Link
+          href="/account?tab=body-quiz"
+          className="inline-flex items-center gap-2 text-xl font-semibold transition-colors mb-4 absolute top-5 left-13"
+        >
+          <BackIconBlack className="w-5 h-5" />
+          <span>Quay về</span>
+        </Link>
         <div className="relative w-full aspect-[9/4]">
           <Image src={'/body-quiz-image.jpg'} alt="Body Quiz Image" fill className="rounded-[10px] object-cover" />
         </div>

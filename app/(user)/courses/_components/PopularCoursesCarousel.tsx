@@ -53,7 +53,7 @@ export default function PopularCoursesCarousel() {
                   </div>
                   <p className="font-medium">{course.course_name}</p>
                   <p className="text-[#737373]">
-                    {course.form_categories.map((cat) => courseFormLabel[cat]).join(", ")}
+                    {course.form_categories?.map((cat) => courseFormLabel[cat]).join(", ")}
                   </p>
                   <p className="text-[#737373]">{course.trainer}</p>
                 </div>

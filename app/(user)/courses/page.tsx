@@ -1,7 +1,7 @@
 'use client'
 
 import Layout from '@/app/(user)/_components/layout'
-import { MultiSelect } from '@/components/ui/select' // Import MultiSelect component
+import { MultiSelect } from '@/components/ui/select'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import React, { useState, useEffect } from 'react'
@@ -9,13 +9,17 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { getCoursesByType } from '@/network/server/courses'
 import { cn } from '@/lib/utils'
 import { courseLevelLabel, courseLevelOptions, courseFormLabel, courseFormOptions } from '@/lib/label'
-import type { Course, CourseForm } from '@/models/course'
+import type { Course } from '@/models/course'
 import { getSubscriptions } from '@/network/server/subscriptions'
+import { getUserSubscriptions } from '@/network/server/user-subscriptions'
 import type { Subscription } from '@/models/subscription'
 import PopularCoursesCarousel from './_components/PopularCoursesCarousel'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { useRouter } from 'next/navigation'
+import { useSession } from '@/components/providers/session-provider'
+import { UserSubscriptionDetail } from '@/models/user-subscriptions'
 
-// Updated MultiSelectHero component
 function MultiSelectHero({
   placeholder,
   options,
@@ -50,7 +54,8 @@ const NextButton = ({ className }: { className?: string }) => {
 export const fetchCache = 'default-no-store'
 
 export default function CoursesPage() {
-  // Updated state to use arrays for multi-select
+  const router = useRouter()
+  const { session } = useSession()
   const [difficulty, setDifficulty] = useState<string[]>([])
   const [formCategory, setFormCategory] = useState<string[]>([])
   const [subscriptionId, setSubscriptionId] = useState<string[]>([])
@@ -58,6 +63,9 @@ export default function CoursesPage() {
   const [coursesZoom, setCoursesZoom] = useState<Course[]>([])
   const [activeTab, setActiveTab] = useState('video')
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
+  const [showAccessDialog, setShowAccessDialog] = useState(false)
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
+  const [isCheckingAccess, setIsCheckingAccess] = useState(false)
 
   useEffect(() => {
     const fetchSubscriptions = async () => {
@@ -77,7 +85,47 @@ export default function CoursesPage() {
     fetchCourses()
   }, [])
 
-  // Updated filter logic for multi-select
+  const checkCourseAccess = (courseId: number, userSubscriptions: UserSubscriptionDetail[]): boolean => {
+    return userSubscriptions.some(
+      (userSub) => userSub.status === 'active' && userSub.subscription.courses.some((course) => course.id === courseId)
+    )
+  }
+
+  const handleMembershipClick = async (course: Course) => {
+    if (!session?.userId) {
+      router.push(`/account?tab=buy-package&course_id=${course.id}`)
+      return
+    }
+
+    setIsCheckingAccess(true)
+
+    try {
+      const userSubscriptions = await getUserSubscriptions(session.userId.toString())
+      const hasAccess = checkCourseAccess(course.id, userSubscriptions.data)
+
+      if (hasAccess) {
+        setSelectedCourse(course)
+        setShowAccessDialog(true)
+      } else {
+        router.push(`/account?tab=buy-package&course_id=${course.id}`)
+      }
+    } catch (error) {
+      console.error('Error checking course access:', error)
+      router.push(`/account?tab=buy-package&course_id=${course.id}`)
+    } finally {
+      setIsCheckingAccess(false)
+    }
+  }
+
+  const handleStartCourse = () => {
+    if (selectedCourse) {
+      const courseType = activeTab === 'video' ? 'video-classes' : 'live-classes'
+      router.push(`/courses/${selectedCourse.id}/${courseType}`)
+      setShowAccessDialog(false)
+      setSelectedCourse(null)
+    }
+  }
+
   const filterCourses = (courseList: Course[]) => {
     return courseList.filter((course) => {
       const matchesDifficulty = difficulty.length === 0 || difficulty.includes(course.difficulty_level)
@@ -183,7 +231,13 @@ export default function CoursesPage() {
                             {course.is_free ? (
                               <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
                             ) : (
-                              <Button className="bg-[#737373] text-white w-[136px] rounded-full">+ Gói Member</Button>
+                              <Button
+                                className="bg-[#737373] text-white w-[136px] rounded-full"
+                                onClick={() => handleMembershipClick(course)}
+                                disabled={isCheckingAccess}
+                              >
+                                {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
+                              </Button>
                             )}
                           </div>
                         </div>
@@ -226,7 +280,13 @@ export default function CoursesPage() {
                             {course.is_free ? (
                               <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
                             ) : (
-                              <Button className="bg-[#737373] text-white w-[136px] rounded-full">+ Gói Member</Button>
+                              <Button
+                                className="bg-[#737373] text-white w-[136px] rounded-full"
+                                onClick={() => handleMembershipClick(course)}
+                                disabled={isCheckingAccess}
+                              >
+                                {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
+                              </Button>
                             )}
                           </div>
                         </div>
@@ -239,6 +299,22 @@ export default function CoursesPage() {
           </div>
         </div>
       </div>
+
+      <Dialog open={showAccessDialog} onOpenChange={setShowAccessDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center font-[Coiny] text-[#FF7873] text-xl"></DialogTitle>
+          </DialogHeader>
+          <div className="text-center py-4">
+            <p className="text-lg text-[#737373] mb-4 ">BẠN ĐÃ MUA GÓI MEMBER CÓ KHÓA TẬP NÀY</p>
+          </div>
+          <div className="flex gap-4 justify-center w-full px-10">
+            <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={() => handleStartCourse()}>
+              Bắt đầu học
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   )
 }
