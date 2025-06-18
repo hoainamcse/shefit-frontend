@@ -29,6 +29,7 @@ import { MuscleGroupsTable } from '../data-table/muscle-groups-table'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { SubscriptionsTable } from '../data-table/subscriptions-table'
+import { CoverMediaSelector } from './cover-media-selector'
 import { FormCategoryTable } from '../data-table/form-category-table'
 
 // ! Follow CoursePayload model in models/course.ts
@@ -43,6 +44,7 @@ const formSchema = z.object({
   is_public: z.boolean(),
   is_popular: z.boolean(),
   cover_image: z.string().url(),
+  youtube_url: z.string().url().optional(),
   is_free: z.boolean(),
   summary: z.string(),
   free_amount: z.number().min(0),
@@ -61,10 +63,13 @@ interface EditCourseFormProps {
   isOneOnOne: boolean
 }
 
+const defaultImageUrl = 'https://placehold.co/600x400?text=example'
+const defaultYoutubeUrl = 'https://www.youtube.com/'
+
 export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: EditCourseFormProps) {
   const isEdit = !!data
   const defaultValue = {
-    thumbnail_image: 'https://placehold.co/600x400?text=example',
+    thumbnail_image: defaultImageUrl,
     description: '',
     course_name: '',
     course_format: courseFormat,
@@ -73,7 +78,8 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
     difficulty_level: 'beginner',
     is_public: true,
     is_popular: false,
-    cover_image: 'https://placehold.co/600x400?text=example',
+    youtube_url: defaultYoutubeUrl,
+    cover_image: defaultImageUrl,
     is_free: false,
     summary: '',
     free_amount: 0,
@@ -86,27 +92,35 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: isEdit
-      ? {
-          thumbnail_image: data.thumbnail_image,
-          description: data.description,
-          course_name: data.course_name,
-          course_format: data.course_format,
-          trainer: data.trainer,
-          form_category_ids: data.relationships?.form_categories.map((mg) => mg.id.toString()) || [],
-          difficulty_level: data.difficulty_level,
-          is_public: data.is_public,
-          is_popular: data.is_popular,
-          cover_image: data.cover_image,
-          is_free: data.is_free,
-          summary: data.summary,
-          free_amount: data.free_amount,
-          is_one_on_one: data.is_one_on_one,
-          muscle_group_ids: data.relationships?.muscle_groups.map((mg) => mg.id.toString()) || [],
-          equipment_ids: data.relationships?.equipments.map((e) => e.id.toString()) || [],
-          subscription_ids: data.relationships?.subscriptions.map((s) => s.id.toString()) || [],
-        }
+      ? (() => {
+          const isYoutube = typeof data.cover_image === 'string' && data.cover_image.includes('youtube.com')
+          return {
+            thumbnail_image: data.thumbnail_image,
+            description: data.description,
+            course_name: data.course_name,
+            course_format: data.course_format,
+            trainer: data.trainer,
+            form_category_ids: data.relationships?.form_categories.map((mg) => mg.id.toString()) || [],
+            difficulty_level: data.difficulty_level,
+            is_public: data.is_public,
+            is_popular: data.is_popular,
+            cover_image: isYoutube ? defaultImageUrl : data.cover_image,
+            youtube_url: isYoutube ? data.cover_image : defaultYoutubeUrl,
+            is_free: data.is_free,
+            summary: data.summary,
+            free_amount: data.free_amount,
+            is_one_on_one: data.is_one_on_one,
+            muscle_group_ids: data.relationships?.muscle_groups.map((mg) => mg.id.toString()) || [],
+            equipment_ids: data.relationships?.equipments.map((e) => e.id.toString()) || [],
+            subscription_ids: data.relationships?.subscriptions.map((s) => s.id.toString()) || [],
+          }
+        })()
       : defaultValue,
   })
+
+  const [showYoutubeUrlInput, setShowYoutubeUrlInput] = useState(
+    isEdit && data?.cover_image?.includes('youtube.com') ? true : false
+  )
 
   const courseMutation = useMutation({
     mutationFn: (values: FormValue) => (isEdit ? updateCourse(data.id, values) : createCourse(values)),
@@ -121,7 +135,13 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
   })
 
   const onSubmit = (values: FormValue) => {
-    courseMutation.mutate(values)
+    if (showYoutubeUrlInput && values.youtube_url) {
+      const { youtube_url, ...submitValues } = values
+      submitValues.cover_image = youtube_url
+      courseMutation.mutate(submitValues)
+    } else {
+      courseMutation.mutate(values)
+    }
   }
 
   const [openMuscleGroupsTable, setOpenMuscleGroupsTable] = useState(false)
@@ -157,12 +177,12 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
               accept={{ 'image/*': [] }}
               maxFileCount={1}
             />
-            <ImageUploader
+            <CoverMediaSelector
               form={form}
-              name="cover_image"
-              label="Hình ảnh bìa"
-              accept={{ 'image/*': [] }}
-              maxFileCount={1}
+              showYoutubeUrlInput={showYoutubeUrlInput}
+              setShowYoutubeUrlInput={setShowYoutubeUrlInput}
+              coverImageName="cover_image"
+              youtubeUrlName="youtube_url"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">

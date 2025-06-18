@@ -21,6 +21,7 @@ import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
 import { ExcelReader } from '../excel-reader'
 import { EditSheet } from './edit-sheet'
+import { getYoutubeThumbnail } from '@/lib/youtube'
 
 export function DishesTable() {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -71,15 +72,21 @@ export function DishesTable() {
       {
         header: 'Hình ảnh',
         accessorKey: 'image',
-        cell: ({ row }) => (
-          <div>
-            <img
-              src={row.getValue('image')}
-              alt={`${row.getValue('name')} thumbnail`}
-              className="h-16 w-28 rounded-md object-cover"
-            />
-          </div>
-        ),
+        cell: ({ row }) => {
+          const image = row.getValue('image')
+          if (typeof image !== 'string') return null
+          const isYoutube = image.includes('youtube.com') || image.includes('youtu.be')
+          const imgSrc = isYoutube ? getYoutubeThumbnail(image) : image
+          return (
+            <div>
+              <img
+                src={imgSrc}
+                alt={`${row.getValue('title')} thumbnail`}
+                className="h-16 w-28 rounded-md object-cover"
+              />
+            </div>
+          )
+        },
         size: 180,
         enableSorting: false,
       },

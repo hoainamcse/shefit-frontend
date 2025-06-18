@@ -32,6 +32,29 @@ function FormCheckboxField({ form, data, name, label, description, withAsterisk 
             )}
             {description && <FormDescription>{description}</FormDescription>}
           </div>
+          <FormField
+            control={form.control}
+            name={name}
+            render={({ field }) => {
+              const allValues = data.map((item) => item.value);
+              const isAllChecked = field.value?.length === allValues.length;
+              return (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={isAllChecked}
+                      onCheckedChange={(checked) => {
+                        return checked
+                          ? field.onChange(allValues)
+                          : field.onChange([]);
+                      }}
+                    />
+                  </FormControl>
+                  <FormLabel className="text-sm font-normal">Tất cả</FormLabel>
+                </FormItem>
+              );
+            }}
+          />
           {data.map((item) => (
             <FormField
               key={item.value}

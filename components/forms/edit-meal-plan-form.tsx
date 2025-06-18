@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { useState } from 'react'
 import { Trash2Icon } from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createMealPlan, updateMealPlan } from '@/network/client/meal-plans'
@@ -19,10 +19,11 @@ import { EditDialog } from '../data-table/edit-dialog'
 import { DietsTable } from '../data-table/diets-table'
 import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
-import { ImageUploader } from '../image-uploader'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 import { Form } from '../ui/form'
+import { CoverMediaSelector } from './cover-media-selector'
+import { ImageUploader } from '../image-uploader'
 import { GoalTable } from '../data-table/goal-table'
 
 // ! Follow MealPlanPayload model in models/meal-plan.ts
@@ -32,7 +33,7 @@ const formSchema = z.object({
   chef_name: z.string(),
   meal_plan_goal_id: z.number().nullable(),
   image: z.string().url(),
-  youtube_url: z.string().url('Link Youtube không hợp lệ'),
+  youtube_url: z.string().url().optional(),
   description: z.string(),
   meal_ingredients: z.array(
     z.object({
@@ -43,8 +44,8 @@ const formSchema = z.object({
   is_public: z.boolean(),
   is_free: z.boolean(),
   free_days: z.number().min(0),
-  diet_id: z.number().nullable(),
-  calorie_id: z.number().nullable(),
+  diet_id: z.coerce.number().nullable(),
+  calorie_id: z.coerce.number().nullable(),
 })
 
 type FormValue = z.infer<typeof formSchema>
@@ -54,6 +55,9 @@ interface EditMealPlanFormProps {
   onSuccess?: (data: MealPlan) => void
 }
 
+const defaultImageUrl = 'https://placehold.co/600x400?text=example'
+const defaultYoutubeUrl = 'https://www.youtube.com/'
+
 export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
   const isEdit = !!data
   const defaultValue = {
@@ -61,8 +65,9 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
     subtitle: '',
     chef_name: '',
     meal_plan_goal_id: null,
-    image: 'https://placehold.co/600x400?text=example',
-    youtube_url: '',
+    image: defaultImageUrl,
+    youtube_url: defaultYoutubeUrl,
+
     description: '',
     meal_ingredients: [],
     is_public: true,
@@ -75,23 +80,30 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: isEdit
-      ? {
-          title: data.title,
-          subtitle: data.subtitle,
-          chef_name: data.chef_name,
-          meal_plan_goal_id: data.meal_plan_goal?.id || null,
-          image: data.image,
-          youtube_url: data.youtube_url,
-          description: data.description,
-          meal_ingredients: data.meal_ingredients,
-          is_public: data.is_public,
-          is_free: data.is_free,
-          free_days: data.free_days,
-          calorie_id: data.calorie?.id || null,
-          diet_id: data.diet?.id || null,
-        }
+      ? (() => {
+          const isYoutube = typeof data.image === 'string' && data.image.includes('youtube.com')
+          return {
+            title: data.title,
+            subtitle: data.subtitle,
+            chef_name: data.chef_name,
+            meal_plan_goal_id: data.meal_plan_goal?.id || null,
+            image: isYoutube ? defaultImageUrl : data.image,
+            youtube_url: isYoutube ? data.image : defaultYoutubeUrl,
+            description: data.description,
+            meal_ingredients: data.meal_ingredients,
+            is_public: data.is_public,
+            is_free: data.is_free,
+            free_days: data.free_days,
+            calorie_id: data.calorie?.id || null,
+            diet_id: data.diet?.id || null,
+          }
+        })()
       : defaultValue,
   })
+
+  const [showYoutubeUrlInput, setShowYoutubeUrlInput] = useState(
+    isEdit && data?.image?.includes('youtube.com') ? true : false
+  )
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -111,7 +123,12 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
   })
 
   const onSubmit = (values: FormValue) => {
-    mealPlanMutation.mutate(values)
+    if (showYoutubeUrlInput && values.youtube_url) {
+      const { youtube_url, ...submitValues } = values
+      mealPlanMutation.mutate({ ...submitValues, image: youtube_url })
+    } else {
+      mealPlanMutation.mutate(values)
+    }
   }
 
   const [openCaloriesTable, setOpenCaloriesTable] = useState(false)
@@ -128,6 +145,13 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
           <FormInputField form={form} name="title" label="Tên thực đơn" withAsterisk placeholder="Nhập tên thực đơn" />
           <FormTextareaField form={form} name="subtitle" label="Tóm tắt" placeholder="Nhập tóm tắt" />
           <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
+          <CoverMediaSelector
+            form={form}
+            showYoutubeUrlInput={showYoutubeUrlInput}
+            setShowYoutubeUrlInput={setShowYoutubeUrlInput}
+            coverImageName="image"
+            youtubeUrlName="youtube_url"
+          />
           <div className="grid grid-cols-2 gap-4">
             <FormInputField form={form} name="chef_name" label="Tên đầu bếp" placeholder="Nhập tên đầu bếp" />
             <div className="space-y-2">
@@ -140,8 +164,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
               />
             </div>
           </div>
-          <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
-          <FormInputField form={form} name="youtube_url" label="Link Youtube" placeholder="Nhập link Youtube" />
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Chế độ ăn</Label>

@@ -25,6 +25,7 @@ import { createGift, updateGift } from '@/network/client/subscriptions'
 import { getCourses } from '@/network/client/courses'
 import { giftTypeOptions } from '@/lib/label'
 import { ImageUploader } from '../image-uploader'
+import { CoverMediaSelector } from './cover-media-selector'
 // Define the form schema
 const formSchema = z.object({
   name: z.string().min(3, {
@@ -48,6 +49,7 @@ const formSchema = z.object({
     message: 'Mô tả phải có ít nhất 10 ký tự.',
   }),
   cover_image: z.string().optional(),
+  youtube_url: z.string().url().optional(),
   thumbnail_image: z.string().optional(),
   gifts: z
     .array(
@@ -90,6 +92,9 @@ const AVAILABLE_COURSE_FORMATS = [
   { value: 'both', label: 'Video & Zoom' },
 ]
 
+const defaultImageUrl = 'https://placehold.co/600x400?text=example'
+const defaultYoutubeUrl = 'https://www.youtube.com/'
+
 export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
   const [isPending, startTransition] = useTransition()
   const [courseList, setCourseList] = useState<any[]>([])
@@ -115,20 +120,26 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: data
-      ? {
-          ...data,
-          meal_plan_ids: data.meal_plan_ids?.map((mealPlanId) => mealPlanId.toString()),
-          course_ids: data.course_ids?.map((courseId) => courseId.toString()),
-          course_format: data.course_format as 'video' | 'live' | 'both',
-        }
+      ? (() => {
+          const isYoutube = typeof data.cover_image === 'string' && data.cover_image.includes('youtube.com')
+          return {
+            ...data,
+            meal_plan_ids: data.meal_plan_ids?.map((mealPlanId) => mealPlanId.toString()),
+            course_ids: data.course_ids.map((courseId) => courseId.toString()),
+            cover_image: isYoutube ? defaultImageUrl : data.cover_image,
+            youtube_url: isYoutube ? data.cover_image : defaultYoutubeUrl,
+            course_format: data.course_format as 'video' | 'live' | 'both',
+          }
+        })()
       : {
           name: '',
           course_format: 'video',
           course_ids: [],
           prices: [],
           gifts: [],
+          cover_image: defaultImageUrl,
+          youtube_url: defaultYoutubeUrl,
           result_checkup: '',
-          cover_image: '',
           thumbnail_image: '',
           description_1: '',
           description_2: '',
@@ -136,6 +147,10 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
           meal_plan_description: '',
         },
   })
+
+  const [showYoutubeUrlInput, setShowYoutubeUrlInput] = useState(
+    isEdit && data?.cover_image?.includes('youtube.com') ? true : false
+  )
 
   // Setup field arrays for gifts and prices
   const {
@@ -205,11 +220,20 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
   async function onSubmit(values: FormValues) {
     startTransition(async () => {
       try {
-        console.log('values', values)
-        if (isEdit) {
-          await handleEditMembership(values, data)
+        let submitValues
+
+        if (showYoutubeUrlInput && values.youtube_url) {
+          const { youtube_url, ...valueWithoutYoutubeUrl } = values
+          valueWithoutYoutubeUrl.cover_image = youtube_url
+          submitValues = valueWithoutYoutubeUrl
         } else {
-          await handleCreateMembership(values)
+          submitValues = values
+        }
+
+        if (isEdit) {
+          await handleEditMembership(submitValues, data)
+        } else {
+          await handleCreateMembership(submitValues)
           router.push('/admin/membership')
         }
       } catch (error) {
@@ -336,42 +360,12 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                 withAsterisk
               />
 
-              {/* {data?.cover_image && (
-                <FormField
-                  control={form.control}
-                  name="cover_image"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Hình ảnh</FormLabel>
-                      <FormControl>
-                        {typeof data?.cover_image === 'string' ? (
-                          <div className="relative w-full h-48 overflow-hidden rounded-md">
-                            <img src={data.cover_image} alt={data.name} className="object-cover w-full h-full" />
-                          </div>
-                        ) : (
-                          <FileUploader
-                            value={field.value}
-                            onValueChange={field.onChange}
-                            maxFileCount={1}
-                            accept={{
-                              'image/*': [],
-                            }}
-                          />
-                        )}
-                      </FormControl>
-                      <FormDescription>{'Tải lên hình ảnh minh họa cho gói thành viên'}</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )} */}
-
-              <ImageUploader
+              <CoverMediaSelector
                 form={form}
-                name="cover_image"
-                label="Hình ảnh minh họa"
-                accept={{ 'image/*': [] }}
-                maxFileCount={1}
+                showYoutubeUrlInput={showYoutubeUrlInput}
+                setShowYoutubeUrlInput={setShowYoutubeUrlInput}
+                coverImageName="cover_image"
+                youtubeUrlName="youtube_url"
               />
 
               {/* Gifts section */}
@@ -464,53 +458,6 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                                     type="number"
                                   />
                                 )}
-
-                                {/* <div>
-                                  {field.value.image &&
-                                  Array.isArray(field.value.image) &&
-                                  field.value.image.length > 0 ? (
-                                    <div className="space-y-2">
-                                      <div className="flex items-center gap-2">
-                                        <img
-                                          src={URL.createObjectURL(field.value.image[0])}
-                                          alt="Gift preview"
-                                          className="w-24 h-24 object-cover rounded"
-                                        />
-                                        <Button
-                                          variant="ghost"
-                                          size="icon"
-                                          onClick={() => {
-                                            const newGifts = [...form.getValues('gifts')]
-                                            newGifts[index].image = []
-                                            form.setValue('gifts', newGifts, { shouldValidate: true })
-                                          }}
-                                        >
-                                          <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  ) : null}
-                                  <FormField
-                                    control={form.control}
-                                    name={`gifts.${index}.image`}
-                                    render={({ field: imageField }) => (
-                                      <FormItem>
-                                        <FormLabel>Hình ảnh quà tặng</FormLabel>
-                                        <FormControl>
-                                          <FileUploader
-                                            value={imageField.value as File[]}
-                                            onValueChange={imageField.onChange}
-                                            maxFileCount={1}
-                                            accept={{
-                                              'image/*': [],
-                                            }}
-                                          />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-                                </div> */}
                               </div>
                             </FormItem>
                           )}

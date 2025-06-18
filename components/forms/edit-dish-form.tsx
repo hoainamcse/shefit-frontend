@@ -6,7 +6,7 @@ import z from 'zod'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createDish, updateDish } from '@/network/client/dishes'
@@ -19,14 +19,15 @@ import { EditDialog } from '../data-table/edit-dialog'
 import { ImageUploader } from '../image-uploader'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
+import { CoverMediaSelector } from './cover-media-selector'
 
 // ! Follow DishPayload model in models/dish.ts
 export const formSchema = z.object({
   name: z.string().min(1, 'Tên món ăn không được để trống'),
   description: z.string(),
-  diet_id: z.number().nullable(),
+  diet_id: z.coerce.number().nullable(),
   image: z.string().url(),
-  youtube_url: z.string().url('Link Youtube không hợp lệ'),
+  youtube_url: z.string().url().optional(),
   calories: z.number().min(0),
   protein: z.number().min(0),
   carb: z.number().min(0),
@@ -41,14 +42,17 @@ type EditDishFormProps = {
   onSuccess?: () => void
 }
 
+const defaultImageUrl = 'https://placehold.co/600x400?text=example'
+const defaultYoutubeUrl = 'https://www.youtube.com/'
+
 export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
   const isEdit = !!data
   const defaultValue = {
     name: '',
     description: '',
     diet_id: null,
-    image: 'https://placehold.co/600x400?text=example',
-    youtube_url: '',
+    image: defaultImageUrl,
+    youtube_url: defaultYoutubeUrl,
     calories: 0,
     protein: 0,
     carb: 0,
@@ -59,20 +63,27 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: isEdit
-      ? {
-          name: data.name,
-          description: data.description,
-          diet_id: data.diet?.id || null,
-          image: data.image,
-          youtube_url: data.youtube_url,
-          calories: data.calories,
-          protein: data.protein,
-          carb: data.carb,
-          fat: data.fat,
-          fiber: data.fiber,
-        }
+      ? (() => {
+          const isYoutube = typeof data.image === 'string' && data.image.includes('youtube.com')
+          return {
+            name: data.name,
+            description: data.description,
+            diet_id: data.diet?.id || null,
+            image: isYoutube ? defaultImageUrl : data.image,
+            youtube_url: isYoutube ? data.image : defaultYoutubeUrl,
+            calories: data.calories,
+            protein: data.protein,
+            carb: data.carb,
+            fat: data.fat,
+            fiber: data.fiber,
+          }
+        })()
       : defaultValue,
   })
+
+  const [showYoutubeUrlInput, setShowYoutubeUrlInput] = useState(
+    isEdit && data?.image?.includes('youtube.com') ? true : false
+  )
 
   const dishMutation = useMutation({
     mutationFn: (values: FormValue) => (isEdit ? updateDish(data.id, values) : createDish(values)),
@@ -87,7 +98,13 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
   })
 
   const onSubmit = (values: FormValue) => {
-    dishMutation.mutate(values)
+    console.log('values', values)
+    if (showYoutubeUrlInput && values.youtube_url) {
+      const { youtube_url, ...submitValues } = values
+      dishMutation.mutate({ ...submitValues, image: youtube_url })
+    } else {
+      dishMutation.mutate(values)
+    }
   }
 
   const [openDietsTable, setOpenDietsTable] = useState(false)
@@ -108,8 +125,13 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
               readOnly
             />
           </div>
-          <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
-          <FormInputField form={form} name="youtube_url" label="Link Youtube" placeholder="Nhập link Youtube" />
+          <CoverMediaSelector
+            form={form}
+            showYoutubeUrlInput={showYoutubeUrlInput}
+            setShowYoutubeUrlInput={setShowYoutubeUrlInput}
+            coverImageName="image"
+            youtubeUrlName="youtube_url"
+          />
 
           <div className="grid grid-cols-2 gap-4">
             <FormNumberField form={form} name="calories" label="Calories (kcal)" placeholder="e.g., 250" />

@@ -71,7 +71,7 @@ const accountSchema = z.object({
       message: 'Bạn phải chọn role',
     })
     .default('normal_user'),
-  new_password: z.string().min(8, { message: 'New password must be at least 8 characters' }).optional(),
+  new_password: z.string().min(1, { message: 'New password must be at least 1 characters' }).optional(),
   subscriptions: z
     .array(
       z.object({
@@ -340,13 +340,15 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
 
   const [isApplyingPassword, setIsApplyingPassword] = useState(false)
 
+  console.log('data', data)
+
   const handleApplyPassword = async () => {
     setIsApplyingPassword(true)
     try {
       const formData = form.getValues()
       const updateData = {
         role: 'admin',
-        username: formData.username,
+        username: data.username,
         new_password: formData.new_password,
       }
 
