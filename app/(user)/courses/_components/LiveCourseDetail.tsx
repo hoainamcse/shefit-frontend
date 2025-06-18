@@ -15,6 +15,20 @@ import { toast } from 'sonner'
 import { UserCourse } from '@/models/user-courses'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
+interface Session {
+  id: number
+  session_number: number
+  name: string
+  description: string
+  start_time: string
+  end_time: string
+  link_zoom: string
+}
+
+interface LiveDayWithSessions extends LiveDay {
+  sessions: Session[]
+}
+
 interface UserCourseItem extends UserCourse {
   is_active: boolean
   start_date: string
@@ -107,6 +121,38 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
     }
   }
 
+  const handleJoinClass = async (e: React.MouseEvent, session_: Session) => {
+    e.preventDefault()
+
+    if (!isLoggedIn) {
+      setShowLoginDialog(true)
+      return
+    }
+
+    setIsCheckingAccess(true)
+    try {
+      await handleStartClick(e)
+
+      const subscriptions = await getUserSubscriptions(session?.userId!.toString())
+      const hasAccess = subscriptions.data?.some((subscription) => {
+        const hasActiveSubscription = subscription.status === 'active' && subscription.subscription.courses
+        if (!hasActiveSubscription) return false
+        return subscription.subscription.courses.some((course) => Number(course.id) === Number(courseId))
+      })
+
+      if (hasAccess) {
+        window.open(session_.link_zoom, '_blank')
+      } else {
+        setShowSubscribeDialog(true)
+      }
+    } catch (error) {
+      console.error('Error checking course access:', error)
+      window.open(session_.link_zoom, '_blank')
+    } finally {
+      setIsCheckingAccess(false)
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -145,114 +191,81 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
         className="[state=active]:bg-[#91EBD5] data-[state=active]:shadow-none"
       >
         <TabsList className="bg-white">
-          {Array.from(new Set(live.data.map((item: LiveDay) => item.day_of_week)) as Set<string>).map((day) => (
-            <TabsTrigger
-              key={day}
-              value={day}
-              className="
+          {Array.from(new Set(live.data.map((item: LiveDayWithSessions) => item.day_of_week)) as Set<string>).map(
+            (day) => (
+              <TabsTrigger
+                key={day}
+                value={day}
+                className="
                     rounded-full mx-[10px] my-5 w-[63px] h-[64px]
                     flex flex-col items-center justify-center
                     font-medium text-xl cursor-pointer
                     data-[state=active]:bg-[#91EBD5] data-[state=active]:text-white
                     bg-transparent hover:bg-[#91EBD5]/10
                     transition-colors duration-200"
-            >
-              Thứ <br />
-              {day === 'Monday'
-                ? '2'
-                : day === 'Tuesday'
-                ? '3'
-                : day === 'Wednesday'
-                ? '4'
-                : day === 'Thursday'
-                ? '5'
-                : day === 'Friday'
-                ? '6'
-                : day === 'Saturday'
-                ? '7'
-                : ''}
-            </TabsTrigger>
-          ))}
+              >
+                Thứ <br />
+                {day === 'Monday'
+                  ? '2'
+                  : day === 'Tuesday'
+                  ? '3'
+                  : day === 'Wednesday'
+                  ? '4'
+                  : day === 'Thursday'
+                  ? '5'
+                  : day === 'Friday'
+                  ? '6'
+                  : day === 'Saturday'
+                  ? '7'
+                  : ''}
+              </TabsTrigger>
+            )
+          )}
         </TabsList>
 
-        {Array.from(new Set(live.data.map((item: LiveDay) => item.day_of_week)) as Set<string>).map((day) => (
-          <TabsContent key={day} value={day} className="ml-2 mt-10">
-            <div className="space-y-2 text-sm leading-7 text-gray-600 dark:text-gray-500 flex flex-col gap-5">
-              {live.data
-                .filter((item: LiveDay) => item.day_of_week === day)
-                .map((item: LiveDay, index: number) => (
-                  <div key={item.id} className="flex justify-between">
-                    <div>
-                      <p className="font-[family-name:var(--font-coiny)] text-[30px] flex gap-2">
-                        Ca
-                        <span>{index + 1}</span>
-                      </p>
-                      <p className="text-[#737373] text-xl">
-                        {item.description} / {formatToVNTime(item.start_time)} - {formatToVNTime(item.end_time)}
-                      </p>
-                    </div>
-                    {isClassAvailable(item.start_time) ? (
-                      <div
-                        className="cursor-pointer"
-                        onClick={async (e) => {
-                          e.preventDefault()
-
-                          if (!isLoggedIn) {
-                            setShowLoginDialog(true)
-                            return
-                          }
-
-                          setIsCheckingAccess(true)
-                          try {
-                            await handleStartClick(e)
-
-                            const subscriptions = await getUserSubscriptions(session?.userId!.toString())
-                            const hasAccess = subscriptions.data?.some((subscription) => {
-                              const hasActiveSubscription =
-                                subscription.status === 'active' && subscription.subscription.courses
-                              if (!hasActiveSubscription) return false
-                              return subscription.subscription.courses.some(
-                                (course) => Number(course.id) === Number(courseId)
-                              )
-                            })
-
-                            if (hasAccess) {
-                              window.open(
-                                'https://us05web.zoom.us/j/85444899811?pwd=PQMxNmwIEaB2cEkQs7i6847VXaiozO.1',
-                                '_blank'
-                              )
-                            } else {
-                              setShowSubscribeDialog(true)
-                            }
-                          } catch (error) {
-                            console.error('Error checking course access:', error)
-                            window.open(
-                              'https://us05web.zoom.us/j/85444899811?pwd=PQMxNmwIEaB2cEkQs7i6847VXaiozO.1',
-                              '_blank'
-                            )
-                          } finally {
-                            setIsCheckingAccess(false)
-                          }
-                        }}
-                      >
-                        <div className="text-primary text-xl">{isCheckingAccess ? 'Đang kiểm tra...' : 'Vào lớp'}</div>
-                      </div>
-                    ) : (
-                      <div className={cn('text-gray-400 text-xl cursor-not-allowed', 'relative group')}>
-                        Vào lớp
-                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                          Lớp học chưa bắt đầu
+        {Array.from(new Set(live.data.map((item: LiveDayWithSessions) => item.day_of_week)) as Set<string>).map(
+          (day) => (
+            <TabsContent key={day} value={day} className="ml-2 mt-10">
+              <div className="space-y-2 text-sm leading-7 text-gray-600 dark:text-gray-500 flex flex-col gap-5">
+                {live.data
+                  .filter((item: LiveDayWithSessions) => item.day_of_week === day)
+                  .map((dayItem: LiveDayWithSessions) =>
+                    dayItem.sessions
+                      .sort((a, b) => a.session_number - b.session_number)
+                      .map((session_: Session) => (
+                        <div key={session_.id} className="flex justify-between">
+                          <div>
+                            <p className="font-[family-name:var(--font-coiny)] text-[30px] flex gap-2">
+                              {session_.name}
+                            </p>
+                            <p className="text-[#737373] text-xl">
+                              {session_.description} / {formatToVNTime(session_.start_time)} -{' '}
+                              {formatToVNTime(session_.end_time)}
+                            </p>
+                          </div>
+                          {isClassAvailable(session_.start_time) ? (
+                            <div className="cursor-pointer" onClick={(e) => handleJoinClass(e, session_)}>
+                              <div className="text-primary text-xl">
+                                {isCheckingAccess ? 'Đang kiểm tra...' : 'Vào lớp'}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className={cn('text-gray-400 text-xl cursor-not-allowed', 'relative group')}>
+                              Vào lớp
+                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                Lớp học chưa bắt đầu
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-            </div>
-          </TabsContent>
-        ))}
+                      ))
+                  )}
+              </div>
+            </TabsContent>
+          )
+        )}
       </Tabs>
 
-      {/* Login Dialog */}
       {showLoginDialog && (
         <Dialog defaultOpen={true} onOpenChange={(open) => !open && setShowLoginDialog(false)}>
           <DialogContent className="bg-white p-6 rounded-2xl shadow-xl border-0 max-w-md">
@@ -278,7 +291,6 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
         </Dialog>
       )}
 
-      {/* Subscribe Dialog */}
       {showSubscribeDialog && (
         <Dialog defaultOpen={true} onOpenChange={(open) => !open && setShowSubscribeDialog(false)}>
           <DialogContent className="bg-white p-6 rounded-2xl shadow-xl border-0 max-w-md">
