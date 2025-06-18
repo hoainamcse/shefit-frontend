@@ -194,7 +194,7 @@ export function ListCourses() {
                     </div>
                   </div>
                   <div className="flex gap-2 justify-end flex-col items-end">
-                    <p>{course.form_categories[0].name}</p>
+                    {course.form_categories?.map((cat) => cat.name).join(', ')}
                   </div>
                 </div>
               </div>
