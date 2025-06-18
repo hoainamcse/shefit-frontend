@@ -42,22 +42,6 @@ const formatToVNTime = (time: string) => {
   return `${vnHour} giờ`
 }
 
-const isClassAvailable = (startTime: string) => {
-  const now = new Date()
-  const currentHour = now.getHours()
-  const currentMinute = now.getMinutes()
-
-  const [startHour, startMinute] = startTime.split(':').map(Number)
-  const vnStartHour = (startHour + 7) % 24
-
-  if (currentHour > vnStartHour) {
-    return true
-  } else if (currentHour === vnStartHour) {
-    return currentMinute >= startMinute
-  }
-  return false
-}
-
 export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] }) {
   const { session } = useSession()
   const { redirectToLogin, redirectToAccount } = useAuthRedirect()
@@ -68,6 +52,25 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
   const [showSubscribeDialog, setShowSubscribeDialog] = useState(false)
   const [isCheckingAccess, setIsCheckingAccess] = useState(false)
   const [courseStatus, setCourseStatus] = useState<'checking' | 'exists' | 'not_found'>('checking')
+
+  const isClassAvailable = (startTime: string) => {
+    if (!isLoggedIn || courseStatus !== 'exists') {
+      return true
+    }
+    const now = new Date()
+    const currentHour = now.getHours()
+    const currentMinute = now.getMinutes()
+
+    const [startHour, startMinute] = startTime.split(':').map(Number)
+    const vnStartHour = (startHour + 7) % 24
+
+    if (currentHour > vnStartHour) {
+      return true
+    } else if (currentHour === vnStartHour) {
+      return currentMinute >= startMinute
+    }
+    return false
+  }
 
   useEffect(() => {
     const checkUserCourse = async () => {
@@ -175,9 +178,13 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
   }
 
   const handleBuyPackageClick = () => {
+    if (typeof window !== 'undefined') {
+      const currentUrl = window.location.pathname + window.location.search
+      const accountUrl = `/account?tab=buy-package&course_id=${courseId}&redirect=${encodeURIComponent(currentUrl)}`
+      window.location.href = accountUrl
+    }
     setShowLoginDialog(false)
     setShowSubscribeDialog(false)
-    redirectToAccount('buy-package')
   }
 
   if (!course || !live) {
