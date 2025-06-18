@@ -71,7 +71,7 @@ export default function MealPlansPage() {
   }, [])
 
   const filteredMealPlans = mealPlans.filter((mealPlan) => {
-    const matchesGoal = filter.goal ? mealPlan.goal === filter.goal : true
+    const matchesGoal = filter.goal ? mealPlan.meal_plan_goal?.name === filter.goal : true
     const matchesCalorie = filter.calorie ? mealPlan.calorie?.id === filter.calorie : true
     return matchesGoal && matchesCalorie
   })

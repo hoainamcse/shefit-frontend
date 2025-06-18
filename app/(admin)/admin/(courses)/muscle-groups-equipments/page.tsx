@@ -1,10 +1,11 @@
-import { ActivityIcon, DumbbellIcon } from 'lucide-react'
+import { ActivityIcon, DumbbellIcon, ShapesIcon } from 'lucide-react'
 
 import { MuscleGroupsTable } from '@/components/data-table/muscle-groups-table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EquipmentsTable } from '@/components/data-table/equipments-table'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { FormCategoryTable } from '@/components/data-table/form-category-table'
 
 export default function MuscleGroupsEquipmentsPage() {
   return (
@@ -26,6 +27,13 @@ export default function MuscleGroupsEquipmentsPage() {
               <DumbbellIcon className="-ms-0.5 me-1.5 opacity-60" size={16} aria-hidden="true" />
               Dụng cụ
             </TabsTrigger>
+            <TabsTrigger
+              value="tab-3"
+              className="data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative overflow-hidden rounded-none border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-s last:rounded-e"
+            >
+              <ShapesIcon className="-ms-0.5 me-1.5 opacity-60" size={16} aria-hidden="true" />
+              Phom dáng
+            </TabsTrigger>
           </TabsList>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
@@ -35,6 +43,9 @@ export default function MuscleGroupsEquipmentsPage() {
         </TabsContent>
         <TabsContent value="tab-2">
           <EquipmentsTable />
+        </TabsContent>
+        <TabsContent value="tab-3">
+          <FormCategoryTable />
         </TabsContent>
       </Tabs>
     </ContentLayout>

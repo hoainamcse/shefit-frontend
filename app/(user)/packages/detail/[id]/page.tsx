@@ -71,7 +71,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                         <div>
                           <div className="text-gray-500 flex justify-end max-w-[200px]">
                             {Array.isArray(course.form_categories)
-                              ? course.form_categories.map((cat) => courseFormLabel[cat]).join(', ')
+                              ? course.form_categories.map((cat) => cat.name).join(', ')
                               : courseFormLabel[course.form_categories]}
                           </div>
                           <div className="flex justify-end">

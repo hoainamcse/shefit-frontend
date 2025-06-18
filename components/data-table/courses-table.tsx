@@ -51,7 +51,7 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
     () => [
       {
         id: 'select',
-        header: ({ table }) => (
+        header: ({ table }: { table: any }) => (
           <Checkbox
             checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
@@ -86,9 +86,9 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
         accessorKey: 'form_categories',
         cell: ({ row }) => (
           <div className="flex flex-wrap gap-2">
-            {row.original.form_categories.map((fc) => (
-              <Badge key={fc} variant="outline" className={getFormColor(fc)}>
-                {courseFormLabel[fc]}
+            {row.original.form_categories.map((c) => (
+              <Badge key={c.id} variant="outline">
+                {c.name}
               </Badge>
             ))}
           </div>
@@ -176,7 +176,7 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
     <DataTable
       data={data?.data}
       columns={columns}
-      state={{ pagination }}
+      state={{ pagination, rowSelection }}
       rowCount={data?.paging.total}
       onPaginationChange={setPagination}
       onRowSelectionChange={setRowSelection}

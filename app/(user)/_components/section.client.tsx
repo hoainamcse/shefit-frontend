@@ -18,32 +18,6 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
   const features = data?.features || []
   const activeFeature = features[activeTabIndex] || null
 
-  const {
-    data: allCoursesData,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['all-feature-courses'],
-    queryFn: async () => {
-      if (!features.length) return []
-      const res = await Promise.all(features.map((feature) => getCourses({ ids: feature.course_ids.join(',') })))
-      return res.map((res) => res.data)
-    },
-    enabled: features.length > 0,
-  })
-
-  if (!data || !Array.isArray(features)) {
-    return <div className="text-center py-8">Dữ liệu không hợp lệ</div>
-  }
-
-  if (isLoading) {
-    return <div className="text-center py-8">Đang tải khóa học...</div>
-  }
-
-  if (error) {
-    return <div className="text-center text-red-500 py-8">Lỗi khi tải dữ liệu khóa học</div>
-  }
-
   if (!features.length) {
     return <div className="text-center py-8">Chưa có dữ liệu hiển thị</div>
   }
@@ -58,7 +32,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
           </div>
           <div className="max-w-2xl mx-auto space-y-6">
             <div className="flex flex-wrap justify-center gap-4">
-              {data.features.map((feature, index) => (
+              {data?.features?.map((feature, index) => (
                 <button
                   key={index}
                   type="button"
@@ -69,7 +43,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                   onClick={() => setActiveTabIndex(index)}
                 >
                   <CheckCircle size={20} />
-                  {feature.title}
+                  {feature.form_category?.name}
                 </button>
               ))}
             </div>
@@ -78,7 +52,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
           <div className="max-w-6xl mx-auto">
             <Carousel>
               <CarouselContent>
-                {allCoursesData?.[activeTabIndex]?.map((course, mIndex) => (
+                {data?.features?.[activeTabIndex]?.courses?.map((course, mIndex) => (
                   <CarouselItem key={course.id} className="basis-4/5 lg:basis-1/4">
                     <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                       <CarouselItem key={course.id} className="basis-2/3 lg:basis-full">

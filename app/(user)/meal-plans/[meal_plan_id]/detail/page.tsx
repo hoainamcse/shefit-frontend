@@ -1,15 +1,15 @@
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Header } from "@/app/(user)/_components/header"
-import Link from "next/link"
-import { BackIcon } from "@/components/icons/BackIcon"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getMealPlan } from "@/network/server/meal-plans"
-import { getMealPlanDishes } from "@/network/server/meal-plans"
-import { getMealPlanDays } from "@/network/server/meal-plans"
-import { dishMealTimeLabel } from "@/lib/label"
-import type { MealPlanDish } from "@/models/meal-plan"
+import Image from 'next/image'
+import { Button } from '@/components/ui/button'
+import { Header } from '@/app/(user)/_components/header'
+import Link from 'next/link'
+import { BackIcon } from '@/components/icons/BackIcon'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { getMealPlan } from '@/network/server/meal-plans'
+import { getMealPlanDishes } from '@/network/server/meal-plans'
+import { getMealPlanDays } from '@/network/server/meal-plans'
+import { dishMealTimeLabel } from '@/lib/label'
+import type { MealPlanDish } from '@/models/meal-plan'
 
 export default async function MealPlanDetailPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   const { meal_plan_id } = await params
@@ -43,7 +43,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
           />
         </div>
         <div className="mr-auto text-xl mt-8 max-lg:p-4">
-          <p className="font-bold">{mealPlan.goal}</p>
+          <p className="font-bold">{mealPlan.meal_plan_goal?.name}</p>
           <p className="text-[#737373]">{mealPlan.title}</p>
           <p className="text-[#737373]">
             Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày

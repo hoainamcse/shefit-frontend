@@ -116,6 +116,7 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
           name: '',
           description: '',
           price: 0,
+          weight: 0,
           image_urls: [],
           features: [],
           variants: [],

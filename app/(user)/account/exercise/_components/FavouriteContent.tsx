@@ -352,7 +352,10 @@ export default function FavouriteContent() {
                         </div>
                       </div>
                       <div className="flex gap-2 justify-end flex-col items-end">
-                        <p>{courseFormLabel[course.form_categories[0]]}</p>
+                        <p>{course.form_categories[0].name}</p>
+                        {/* <Link href={`/courses/${course.course.id}`} className="text-ring underline">
+                          Bắt đầu
+                        </Link> */}
                       </div>
                     </div>
                   </div>

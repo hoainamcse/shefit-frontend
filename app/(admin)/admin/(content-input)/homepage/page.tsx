@@ -32,6 +32,10 @@ import { Form } from '@/components/ui/form'
 import { formSchema as homepageSchema } from './schema'
 import { Subscription } from '@/models/subscription'
 import { SubscriptionsTable } from '@/components/data-table/subscriptions-table'
+import { FormCategory } from '@/models/form-category'
+import { FormCategoryTable } from '@/components/data-table/form-category-table'
+import { Course } from '@/models/course'
+import { CoursesTable } from '@/components/data-table/courses-table'
 
 const configurationID = 3
 
@@ -123,12 +127,18 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
   const [openMealPlansTable, setOpenMealPlansTable] = useState(false)
   const [openProductsTable, setOpenProductsTable] = useState(false)
   const [openCoachesTable, setOpenCoachesTable] = useState(false)
+  const [openFormCategoryTable, setOpenFormCategoryTable] = useState(false)
+  const [openDialogCategoryId, setOpenDialogCategoryId] = useState<string | null>(null)
+
   const [selectedSubscriptions, setSelectedSubscriptions] = useState<Subscription[]>(
     data.data.section_3.subscriptions || []
   )
   const [selectedMealPlans, setSelectedMealPlans] = useState<MealPlan[]>(data.data.section_7.meal_plans || [])
   const [selectedProducts, setSelectedProducts] = useState<Product[]>(data.data.section_8.products || [])
   const [selectedCoaches, setSelectedCoaches] = useState<Coach[]>(data.data.section_9.coaches || [])
+  const [selectedFormCategory, setSelectedFormCategory] = useState<FormCategory[]>(
+    data.data.section_5.features?.map((f: any) => f.form_category) || []
+  )
 
   return (
     <>
@@ -292,6 +302,72 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
             <TabsContent value="tab-5" className="space-y-4">
               <FormInputField form={form} name="data.section_5.title" label="Tiêu đề" placeholder="Nhập tiêu đề" />
               <FormTextareaField form={form} name="data.section_5.description" label="Mô tả" placeholder="Nhập mô tả" />
+              <div className="space-y-2">
+                <Label>Phom dáng</Label>
+                <Input
+                  value={selectedFormCategory.map((c: any) => c?.name).join(', ')}
+                  onFocus={() => setOpenFormCategoryTable(true)}
+                  placeholder="Chọn phom dáng"
+                  readOnly
+                />
+              </div>
+              {selectedFormCategory.length > 0 && (
+                <Tabs defaultValue={selectedFormCategory[0]?.id.toString()} className="mt-4">
+                  <TabsList className="overflow-x-auto">
+                    {selectedFormCategory.map((cat) => (
+                      <TabsTrigger key={cat?.id} value={cat?.id.toString()} className="min-w-[100px]">
+                        {cat?.name}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                  {selectedFormCategory.map((cat: any) => {
+                    const features = form.watch('data.section_5.features') || []
+                    const featureIdx = features.findIndex((f: any) => f.form_category?.id === cat?.id)
+                    const courses = features[featureIdx]?.courses || []
+                    return (
+                      <div key={cat?.id}>
+                        <TabsContent value={cat?.id.toString()} key={cat?.id} className="pt-4">
+                          <FormTextareaField
+                            form={form}
+                            name={`data.section_5.features.${featureIdx}.description`}
+                            label="Mô tả"
+                            placeholder="Nhập mô tả cho phom dáng này"
+                          />
+                          <div className="space-y-2">
+                            <Label>Khoá tập</Label>
+                            <Input
+                              value={courses.map((c: any) => c.course_name).join(', ')}
+                              onFocus={() => setOpenDialogCategoryId(cat?.id.toString())}
+                              placeholder="Chọn khoá tập"
+                              readOnly
+                            />
+                          </div>
+                        </TabsContent>
+                        <EditDialog
+                          title="Chọn Khoá tập"
+                          description="Chọn một hoặc nhiều khoá tập đã có hoặc tạo mới để liên kết với cấu hình này."
+                          open={openDialogCategoryId === cat?.id.toString()}
+                          onOpenChange={(open) => setOpenDialogCategoryId(open ? cat?.id.toString() : null)}
+                        >
+                          <CoursesTable
+                            onConfirmRowSelection={(row) => {
+                              const updatedFeatures = [...features]
+                              updatedFeatures[featureIdx] = {
+                                ...updatedFeatures[featureIdx],
+                                courses: row,
+                              }
+
+                              form.setValue('data.section_5.features', updatedFeatures, { shouldDirty: true })
+                              form.trigger('data.section_5.features')
+                              setOpenDialogCategoryId(null)
+                            }}
+                          />
+                        </EditDialog>
+                      </div>
+                    )
+                  })}
+                </Tabs>
+              )}
             </TabsContent>
             <TabsContent value="tab-6" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -446,6 +522,27 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
             form.setValue('data.section_9.coaches', row, { shouldDirty: true })
             form.trigger('data.section_9.coaches')
             setOpenCoachesTable(false)
+          }}
+        />
+      </EditDialog>
+      <EditDialog
+        title="Chọn Phom dáng"
+        description="Chọn một hoặc nhiều phom dáng đã có hoặc tạo mới để liên kết với cấu hình này."
+        open={openFormCategoryTable}
+        onOpenChange={setOpenFormCategoryTable}
+      >
+        <FormCategoryTable
+          onConfirmRowSelection={(row) => {
+            setSelectedFormCategory(row)
+            // Sync features in form state
+            const currentFeatures = form.getValues('data.section_5.features') || []
+            const newFeatures = row.map((cat: any) => {
+              const existing = currentFeatures.find((f: any) => f.form_category.id === cat.id)
+              return existing || { form_category: cat, description: '', courses: [] }
+            })
+            form.setValue('data.section_5.features', newFeatures, { shouldDirty: true })
+            form.trigger('data.section_5.features')
+            setOpenFormCategoryTable(false)
           }}
         />
       </EditDialog>

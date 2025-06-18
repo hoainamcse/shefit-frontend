@@ -23,13 +23,14 @@ import { ImageUploader } from '../image-uploader'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 import { Form } from '../ui/form'
+import { GoalTable } from '../data-table/goal-table'
 
 // ! Follow MealPlanPayload model in models/meal-plan.ts
 const formSchema = z.object({
   title: z.string().min(1, 'Tiêu đề thực đơn không được để trống'),
   subtitle: z.string(),
   chef_name: z.string(),
-  goal: z.enum(['weight_loss', 'energy', 'recovery', 'hormonal_balance', 'muscle_tone']),
+  meal_plan_goal_id: z.number().nullable(),
   image: z.string().url(),
   youtube_url: z.string().url('Link Youtube không hợp lệ'),
   description: z.string(),
@@ -59,7 +60,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
     title: '',
     subtitle: '',
     chef_name: '',
-    goal: 'weight_loss',
+    meal_plan_goal_id: null,
     image: 'https://placehold.co/600x400?text=example',
     youtube_url: '',
     description: '',
@@ -78,7 +79,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
           title: data.title,
           subtitle: data.subtitle,
           chef_name: data.chef_name,
-          goal: data.goal,
+          meal_plan_goal_id: data.meal_plan_goal?.id || null,
           image: data.image,
           youtube_url: data.youtube_url,
           description: data.description,
@@ -115,8 +116,10 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
 
   const [openCaloriesTable, setOpenCaloriesTable] = useState(false)
   const [openDietsTable, setOpenDietsTable] = useState(false)
+  const [openGoalsTable, setOpenGoalsTable] = useState(false)
   const [selectedCalorie, setSelectedCalorie] = useState(data?.calorie || null)
   const [selectedDiet, setSelectedDiet] = useState(data?.diet || null)
+  const [selectedGoal, setSelectedGoal] = useState(data?.meal_plan_goal || null)
 
   return (
     <>
@@ -127,13 +130,15 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
           <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
           <div className="grid grid-cols-2 gap-4">
             <FormInputField form={form} name="chef_name" label="Tên đầu bếp" placeholder="Nhập tên đầu bếp" />
-            <FormSelectField
-              form={form}
-              name="goal"
-              label="Mục tiêu"
-              placeholder="Chọn mục tiêu"
-              data={mealPlanGoalOptions}
-            />
+            <div className="space-y-2">
+              <Label>Mục tiêu</Label>
+              <Input
+                value={selectedGoal ? `${selectedGoal.name}` : ''}
+                onFocus={() => setOpenGoalsTable(true)}
+                placeholder="Chọn mục tiêu"
+                readOnly
+              />
+            </div>
           </div>
           <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
           <FormInputField form={form} name="youtube_url" label="Link Youtube" placeholder="Nhập link Youtube" />
@@ -259,6 +264,25 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
             form.setValue('calorie_id', row[0].id, { shouldDirty: true })
             form.trigger('calorie_id')
             setOpenCaloriesTable(false)
+          }}
+        />
+      </EditDialog>
+      <EditDialog
+        title="Chọn Mục tiêu"
+        description="Chọn một mục tiêu đã có hoặc tạo mới để liên kết với thực đơn này."
+        open={openGoalsTable}
+        onOpenChange={setOpenGoalsTable}
+      >
+        <GoalTable
+          onConfirmRowSelection={(row) => {
+            if (row.length > 1) {
+              toast.error('Vui lòng chỉ chọn một mục tiêu')
+              return
+            }
+            setSelectedGoal(row[0])
+            form.setValue('meal_plan_goal_id', row[0].id, { shouldDirty: true })
+            form.trigger('meal_plan_goal_id')
+            setOpenGoalsTable(false)
           }}
         />
       </EditDialog>

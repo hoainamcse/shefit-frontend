@@ -133,7 +133,7 @@ export default function CoursesPage() {
       const matchesFormCategory =
         formCategory.length === 0 ||
         (Array.isArray(course.form_categories)
-          ? course.form_categories.some((cat) => formCategory.includes(cat))
+          ? course.form_categories.some((cat) => formCategory.includes(cat.name))
           : formCategory.includes(course.form_categories))
 
       const matchesSubscription =
@@ -223,9 +223,7 @@ export default function CoursesPage() {
                         </div>
                         <div>
                           <div className="text-gray-500 flex justify-end">
-                            {Array.isArray(course.form_categories)
-                              ? course.form_categories.map((cat) => courseFormLabel[cat]).join(', ')
-                              : courseFormLabel[course.form_categories]}
+                            {course.form_categories.map((cat) => cat.name).join(', ')}
                           </div>
                           <div className="flex justify-end">
                             {course.is_free ? (
@@ -272,9 +270,7 @@ export default function CoursesPage() {
                         </div>
                         <div>
                           <div className="text-gray-500 flex justify-end">
-                            {Array.isArray(course.form_categories)
-                              ? course.form_categories.map((cat) => courseFormLabel[cat]).join(', ')
-                              : courseFormLabel[course.form_categories]}
+                            {course.form_categories.map((cat) => cat.name).join(', ')}
                           </div>
                           <div className="flex justify-end">
                             {course.is_free ? (

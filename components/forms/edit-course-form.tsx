@@ -29,6 +29,7 @@ import { MuscleGroupsTable } from '../data-table/muscle-groups-table'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { SubscriptionsTable } from '../data-table/subscriptions-table'
+import { FormCategoryTable } from '../data-table/form-category-table'
 
 // ! Follow CoursePayload model in models/course.ts
 const formSchema = z.object({
@@ -37,7 +38,7 @@ const formSchema = z.object({
   course_name: z.string().min(1, 'Tên khoá tập không được để trống'),
   course_format: z.enum(['video', 'live']),
   trainer: z.string(),
-  form_categories: z.array(z.enum(['pear', 'apple', 'rectangle', 'hourglass', 'inverted_triangle'])),
+  form_category_ids: z.array(z.string()),
   difficulty_level: z.enum(['beginner', 'intermediate', 'advanced']),
   is_public: z.boolean(),
   is_popular: z.boolean(),
@@ -68,7 +69,7 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
     course_name: '',
     course_format: courseFormat,
     trainer: '',
-    form_categories: [],
+    form_category_ids: [],
     difficulty_level: 'beginner',
     is_public: true,
     is_popular: false,
@@ -91,7 +92,7 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
           course_name: data.course_name,
           course_format: data.course_format,
           trainer: data.trainer,
-          form_categories: data.form_categories,
+          form_category_ids: data.relationships?.form_categories.map((mg) => mg.id.toString()) || [],
           difficulty_level: data.difficulty_level,
           is_public: data.is_public,
           is_popular: data.is_popular,
@@ -126,9 +127,11 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
   const [openMuscleGroupsTable, setOpenMuscleGroupsTable] = useState(false)
   const [openEquipmentsTable, setOpenEquipmentsTable] = useState(false)
   const [openSubscriptionsTable, setOpenSubscriptionsTable] = useState(false)
+  const [openFormCategoryTable, setOpenFormCategoryTable] = useState(false)
   const [selectedMuscleGroups, setSelectedMuscleGroups] = useState(data?.relationships?.muscle_groups || [])
   const [selectedEquipments, setSelectedEquipments] = useState(data?.relationships?.equipments || [])
   const [selectedSubscriptions, setSelectedSubscriptions] = useState(data?.relationships?.subscriptions || [])
+  const [selectedFormCategory, setSelectedFormCategory] = useState(data?.relationships?.form_categories || [])
 
   return (
     <>
@@ -182,17 +185,27 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
               />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label>Gói tập</Label>
-            <Input
-              value={selectedSubscriptions.map((e) => e.name).join(', ')}
-              onFocus={() => setOpenSubscriptionsTable(true)}
-              placeholder="Chọn gói tập"
-              readOnly
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Gói tập</Label>
+              <Input
+                value={selectedSubscriptions.map((e) => e.name).join(', ')}
+                onFocus={() => setOpenSubscriptionsTable(true)}
+                placeholder="Chọn gói tập"
+                readOnly
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Phom dáng</Label>
+              <Input
+                value={selectedFormCategory.map((e) => e.name).join(', ')}
+                onFocus={() => setOpenFormCategoryTable(true)}
+                placeholder="Chọn phom dáng"
+                readOnly
+              />
+            </div>
           </div>
           <div className="grid grid-cols-3 gap-4">
-            <FormCheckboxField form={form} name="form_categories" label="Phom dáng" data={courseFormOptions} />
             <FormRadioField form={form} name="difficulty_level" label="Độ khó" data={courseLevelOptions} />
             <FormSwitchField
               form={form}
@@ -277,6 +290,25 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
             )
             form.trigger('subscription_ids')
             setOpenSubscriptionsTable(false)
+          }}
+        />
+      </EditDialog>
+      <EditDialog
+        title="Chọn Phom dáng"
+        description="Chọn một hoặc nhiều dụng cụ đã có hoặc tạo mới để liên kết với khoá tập này."
+        open={openFormCategoryTable}
+        onOpenChange={setOpenFormCategoryTable}
+      >
+        <FormCategoryTable
+          onConfirmRowSelection={(row) => {
+            setSelectedFormCategory(row)
+            form.setValue(
+              'form_category_ids',
+              row.map((r) => r.id.toString()),
+              { shouldDirty: true }
+            )
+            form.trigger('form_category_ids')
+            setOpenFormCategoryTable(false)
           }}
         />
       </EditDialog>

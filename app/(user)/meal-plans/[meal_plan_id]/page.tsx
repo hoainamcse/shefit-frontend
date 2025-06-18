@@ -1,19 +1,19 @@
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Header } from "@/app/(user)/_components/header"
-import { BackIcon } from "@/components/icons/BackIcon"
-import { getMealPlan } from "@/network/server/meal-plans"
-import { createUserMealPlan } from "@/network/server/user-meal-plans"
-import { mealPlanGoalLabel } from "@/lib/label"
-import ActionButtons from "./ActionButtons"
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Header } from '@/app/(user)/_components/header'
+import { BackIcon } from '@/components/icons/BackIcon'
+import { getMealPlan } from '@/network/server/meal-plans'
+import { createUserMealPlan } from '@/network/server/user-meal-plans'
+import { mealPlanGoalLabel } from '@/lib/label'
+import ActionButtons from './ActionButtons'
 export default async function MealPlanPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   try {
     const { meal_plan_id } = await params
     const { data: mealPlan } = await getMealPlan(meal_plan_id)
 
     if (!mealPlan) {
-      throw new Error("Không tìm thấy thông tin thực đơn")
+      throw new Error('Không tìm thấy thông tin thực đơn')
     }
 
     return (
@@ -38,7 +38,7 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
             />
           </div>
           <div className="mr-auto text-xl mt-8 max-lg:p-4">
-            <p className="font-bold">{mealPlanGoalLabel[mealPlan.goal]}</p>
+            <p className="font-bold">{mealPlan.meal_plan_goal?.name}</p>
             <p className="text-[#737373]">{mealPlan.title}</p>
             <p className="text-[#737373]">
               Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
@@ -67,7 +67,7 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
             </div>
             <Carousel
               opts={{
-                align: "start",
+                align: 'start',
               }}
               className="w-full"
             >
@@ -92,13 +92,13 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
       </div>
     )
   } catch (error) {
-    console.error("Error fetching meal plan:", error)
+    console.error('Error fetching meal plan:', error)
 
     return (
       <div className="flex h-[50vh] flex-col items-center justify-center gap-4">
         <h2 className="text-xl font-semibold">Đã có lỗi xảy ra</h2>
         <p className="text-muted-foreground">
-          {error instanceof Error ? error.message : "Không thể tải thông tin thực đơn"}
+          {error instanceof Error ? error.message : 'Không thể tải thông tin thực đơn'}
         </p>
       </div>
     )

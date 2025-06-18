@@ -45,9 +45,9 @@ export const formSchema = z.object({
     description: z.string(),
     features: z.array(
       z.object({
-        title: z.string(),
+        form_category: z.any(),
         description: z.string(),
-        course_ids: z.array(z.string()),
+        courses: z.array(z.any()),
       })
     ),
   }),

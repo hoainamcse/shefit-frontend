@@ -105,7 +105,7 @@ export async function removeCart(cartId: number, productVariantId: number): Prom
 export async function getProduct(product_id: string): Promise<Product> {
     const response = await fetchData(`/v1/products/${product_id}/`, {
         next: {
-            revalidate: 3600,
+            revalidate: 0,
             tags: ["products"],
         },
     })

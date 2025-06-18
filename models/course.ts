@@ -1,6 +1,7 @@
 import type { Subscription } from './subscription'
 import type { MuscleGroup } from './muscle-group'
 import type { Equipment } from './equipment'
+import { FormCategory } from './form-category'
 
 type CourseFormat = 'video' | 'live'
 type CourseForm = 'pear' | 'apple' | 'rectangle' | 'hourglass' | 'inverted_triangle'
@@ -13,7 +14,6 @@ type Course = {
   course_name: string
   course_format: CourseFormat
   trainer: string
-  form_categories: CourseForm[]
   difficulty_level: CourseLevel
   is_public: boolean
   is_popular: boolean
@@ -26,21 +26,24 @@ type Course = {
   is_one_on_one: boolean
   // muscle_groups: MuscleGroup[]
   // equipments: Equipment[]
+  form_categories: FormCategory[]
   subscriptions: Subscription[]
   relationships?: {
     equipments: Equipment[]
     muscle_groups: MuscleGroup[]
     subscriptions: Subscription[]
+    form_categories: FormCategory[]
   }
 }
 
 type CoursePayload = Omit<
   Course,
-  'id' | 'created_at' | 'updated_at' | 'muscle_groups' | 'equipments' | 'subscriptions' | 'relationships'
+  'id' | 'created_at' | 'updated_at' | 'muscle_groups' | 'equipments' | 'subscriptions' | 'relationships' | 'form_categories'
 > & {
   muscle_group_ids: MuscleGroup['id'][]
   equipment_ids: Equipment['id'][]
   subscription_ids: Subscription['id'][]
+  form_category_ids: FormCategory['id'][]
 }
 
 export type { CourseFormat, CourseForm, CourseLevel, Course }

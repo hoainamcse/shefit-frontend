@@ -1,18 +1,18 @@
-"use client"
+'use client'
 
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-import Image from "next/image"
-import { useEffect, useState } from "react"
-import { getCoursesByType } from "@/network/server/courses"
-import type { Course } from "@/models/course"
-import Link from "next/link"
-import { courseFormLabel } from "@/lib/label"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
+import Image from 'next/image'
+import { useEffect, useState } from 'react'
+import { getCoursesByType } from '@/network/server/courses'
+import type { Course } from '@/models/course'
+import Link from 'next/link'
+import { courseFormLabel } from '@/lib/label'
 export default function PopularCoursesCarousel() {
   const [popularCourses, setPopularCourses] = useState<Course[]>([])
 
   useEffect(() => {
     const fetchPopularCourses = async () => {
-      const [videoCourses, liveCourses] = await Promise.all([getCoursesByType("video"), getCoursesByType("live")])
+      const [videoCourses, liveCourses] = await Promise.all([getCoursesByType('video'), getCoursesByType('live')])
 
       const allCourses = [...videoCourses.data, ...liveCourses.data]
       const popular = allCourses.filter((course) => course.is_popular)
@@ -32,7 +32,7 @@ export default function PopularCoursesCarousel() {
       </p>
       <Carousel
         opts={{
-          align: "start",
+          align: 'start',
         }}
         className="w-full"
       >
@@ -52,9 +52,7 @@ export default function PopularCoursesCarousel() {
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>
                   <p className="font-medium">{course.course_name}</p>
-                  <p className="text-[#737373]">
-                    {course.form_categories?.map((cat) => courseFormLabel[cat]).join(", ")}
-                  </p>
+                  <p className="text-[#737373]">{course.form_categories.map((cat) => cat.name).join(', ')}</p>
                   <p className="text-[#737373]">{course.trainer}</p>
                 </div>
               </Link>

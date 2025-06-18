@@ -3,11 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
-import {
-  FormInputField,
-  FormSelectField,
-  FormMultiSelectPaginatedField,
-} from '@/components/forms/fields'
+import { FormInputField, FormSelectField, FormMultiSelectPaginatedField } from '@/components/forms/fields'
 
 import { Course } from '@/models/course'
 import {
@@ -53,6 +49,7 @@ import { Dish } from '@/models/dish'
 import { getExercises } from '@/network/client/exercises'
 import { getMealPlans } from '@/network/client/meal-plans'
 import { MultiSelectOptionItem } from '../nyxb-ui/multi-select'
+import { Spinner } from '../spinner'
 
 const accountSchema = z.object({
   id: z.coerce.number().optional(),
@@ -376,11 +373,8 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center w-full py-12">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          <p className="text-sm text-muted-foreground">Loading account data...</p>
-        </div>
+      <div className="flex items-center justify-center">
+        <Spinner className="bg-ring dark:bg-white" />
       </div>
     )
   }
