@@ -19,6 +19,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
   const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [showSubscribeDialog, setShowSubscribeDialog] = useState(false)
+  const [showLoginDialogSave, setShowLoginDialogSave] = useState(false)
   const [hasMealPlanInSubscription, setHasMealPlanInSubscription] = useState(false)
   const [isCheckingSubscription, setIsCheckingSubscription] = useState(true)
 
@@ -37,6 +38,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
     const checkMealPlanInSubscriptions = async () => {
       if (!session) {
         setIsCheckingSubscription(false)
+        setShowLoginDialogSave(true)
         return
       }
 
@@ -63,7 +65,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
 
   const handleSaveMealPlan = async (mealPlanId: number) => {
     if (!session) {
-      setShowLoginDialog(true)
+      setShowLoginDialogSave(true)
       return
     }
 
@@ -155,6 +157,21 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
             <div className="w-full px-10">
               <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>
                 Mua gói Member
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={showLoginDialogSave} onOpenChange={setShowLoginDialogSave}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center text-center gap-6">
+            <p className="text-lg">ĐĂNG NHẬP ĐỂ LƯU THỰC ĐƠN</p>
+            <div className="flex gap-4 justify-center w-full px-10">
+              <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
+                Đăng nhập
               </Button>
             </div>
           </div>

@@ -108,7 +108,11 @@ export default function MealPlansPage() {
         {filteredMealPlans.map((mealPlan) => (
           <div key={`menu-${mealPlan.id}`}>
             <div className="relative group">
-              <img src={mealPlan.image} alt={mealPlan.title} className="aspect-[5/3] object-cover rounded-xl mb-4" />
+              <img
+                src={mealPlan.image}
+                alt={mealPlan.title}
+                className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
+              />
               <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
               <NextButton
                 className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1"

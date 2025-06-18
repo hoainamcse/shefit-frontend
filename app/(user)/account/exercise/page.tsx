@@ -16,13 +16,13 @@ function ExerciseContent() {
     return <FavouriteContent />
   }
   
-  if (isLoading) {
-    return <div className="py-4 text-center">Đang tải dữ liệu...</div>
-  }
+  // if (isLoading) {
+  //   return <div className="py-4 text-center">Đang tải dữ liệu...</div>
+  // }
   
-  if (!selectedSubscription) {
-    return <div className="py-4 text-center">Không tìm thấy gói đăng ký</div>
-  }
+  // if (!selectedSubscription) {
+  //   return <div className="py-4 text-center">Không tìm thấy gói đăng ký</div>
+  // }
 
   return (
     <div className="space-y-10">
