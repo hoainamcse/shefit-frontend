@@ -4,8 +4,6 @@ import { Button } from '@/components/ui/button'
 import { Header } from '@/app/(user)/_components/header'
 import { BackIcon } from '@/components/icons/BackIcon'
 import { getMealPlan } from '@/network/server/meal-plans'
-import { createUserMealPlan } from '@/network/server/user-meal-plans'
-import { mealPlanGoalLabel } from '@/lib/label'
 import ActionButtons from './ActionButtons'
 export default async function MealPlanPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   try {

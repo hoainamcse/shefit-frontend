@@ -6,19 +6,6 @@ type Option<T> = {
   label: string
 }
 
-const mealPlanGoalLabel: Record<MealPlanGoal, string> = {
-  weight_loss: 'Giảm cân',
-  energy: 'Tăng năng lượng',
-  recovery: 'Tăng khả năng phục hồi',
-  hormonal_balance: 'Cân bằng hormone',
-  muscle_tone: 'Tăng cường cơ bắp',
-} as const
-
-const mealPlanGoalOptions = Object.entries(mealPlanGoalLabel).map(([value, label]) => ({
-  value: value as MealPlanGoal,
-  label,
-})) as Option<MealPlanGoal>[]
-
 const courseFormLabel: Record<CourseForm, string> = {
   pear: 'Dáng quả lê',
   apple: 'Dáng quả táo',
@@ -143,5 +130,5 @@ const PROVINCES = [
 ]
 
 export { PROVINCES }
-export { mealPlanGoalLabel, courseFormLabel, courseLevelLabel, dishMealTimeLabel, giftTypeLabel, roleLabel }
-export { mealPlanGoalOptions, courseFormOptions, courseLevelOptions, dishMealTimeOptions, giftTypeOptions, roleOptions }
+export { courseFormLabel, courseLevelLabel, dishMealTimeLabel, giftTypeLabel, roleLabel }
+export { courseFormOptions, courseLevelOptions, dishMealTimeOptions, giftTypeOptions, roleOptions }
