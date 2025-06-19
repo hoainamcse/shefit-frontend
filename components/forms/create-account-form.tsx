@@ -340,8 +340,6 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
 
   const [isApplyingPassword, setIsApplyingPassword] = useState(false)
 
-  console.log('data', data)
-
   const handleApplyPassword = async () => {
     setIsApplyingPassword(true)
     try {
@@ -502,7 +500,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                             value={subscription.subscription_id?.toString() || ''}
                             disabled={isExistingRecord}
                             onValueChange={(value: string) => {
-                              const courseFormat = membershipList.find((m) => m.id === value)?.course_format
+                              const courseFormat = membershipList.find((m) => m.id == value)?.course_format
                               updateSubscription(idx, {
                                 ...subscription,
                                 subscription_id: Number(value),

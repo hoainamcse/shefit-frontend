@@ -23,7 +23,6 @@ type Subscription = {
     id: string
     name: string
     course_format: string
-    course_ids: number[]
     duration: number
     price: number
     prices: {
@@ -39,12 +38,19 @@ type Subscription = {
     created_at: string
     updated_at: string
     result_checkup: string
-    meal_plan_ids?: MealPlan['id'][]
     meal_plan_description?: string
+    courses: Pick<Course, 'id' | 'course_name'>[]
+    meal_plans: Pick<MealPlan, 'id' | 'title'>[]
+    relationships: {
+        courses: Pick<Course, 'id' | 'course_name'>[]
+        meal_plans: Pick<MealPlan, 'id' | 'title'>[]
+    }
 }
 
-type SubscriptionPayload = Omit<Subscription, 'id' | 'created_at' | 'updated_at' | 'gifts'> & {
+type SubscriptionPayload = Omit<Subscription, 'id' | 'created_at' | 'updated_at' | 'gifts' | 'courses' | 'meal_plans' | 'relationships'> & {
   gift_ids: Gift['id'][]
+  course_ids: Course['id'][]
+  meal_plan_ids: MealPlan['id'][]
 }
 
 export type { Subscription, Gift, SubscriptionPrice }

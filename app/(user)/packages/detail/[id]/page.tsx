@@ -46,14 +46,14 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
               </div>
               <p className="mb-5">Các khóa tập bạn được truy cập khi mua gói member này</p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                {subscriptionData?.course_ids?.map((courseId) => {
-                  const course = courses?.data?.find((course) => course.id === courseId)
+                {subscriptionData?.relationships?.courses.map((c) => {
+                  const course = courses?.data?.find((course) => course.id === c.id)
                   return course ? (
-                    <div key={`${courseId}`}>
+                    <div key={`${c.id}`}>
                       <div className="relative group">
                         <img
                           src={course.cover_image || subscriptionData?.cover_image}
-                          alt={course.course_name || courseId.toString()}
+                          alt={course.course_name || c.id.toString()}
                           className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
@@ -86,17 +86,17 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                 })}
               </div>
             </div>
-            {subscriptionData?.meal_plan_ids && subscriptionData.meal_plan_ids.length > 0 && (
+            {subscriptionData?.relationships?.meal_plans && subscriptionData?.relationships?.meal_plans.length > 0 && (
               <div>
                 <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
                   Thực đơn
                 </div>
                 <p dangerouslySetInnerHTML={{ __html: subscriptionData?.meal_plan_description || '' }} />
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  {subscriptionData.meal_plan_ids.map((mealPlanId) => {
-                    const mealPlan = mealPlans?.data?.find((plan: any) => plan.id === mealPlanId)
+                  {subscriptionData?.relationships?.meal_plans.map((ml) => {
+                    const mealPlan = mealPlans?.data?.find((plan: any) => plan.id === ml.id)
                     return mealPlan ? (
-                      <div key={`menu-${mealPlanId}`}>
+                      <div key={`menu-${ml.id}`}>
                         <div className="relative group">
                           <img
                             src={mealPlan.image}
@@ -104,7 +104,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                             className="aspect-[5/3] object-cover rounded-xl mb-4"
                           />
                           <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-                          <Link href={`/meal-plans/${mealPlanId}`}>
+                          <Link href={`/meal-plans/${ml.id}`}>
                             <NextButton className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1" />
                           </Link>
                         </div>

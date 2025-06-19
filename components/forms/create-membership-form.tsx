@@ -8,17 +8,14 @@ import { useEffect, useMemo, useState, useTransition } from 'react'
 
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { FileUploader } from '@/components/file-uploader'
 import { toast } from 'sonner'
 import { MainButton } from '@/components/buttons/main-button'
-import { AddButton } from '@/components/buttons/add-button'
 import { Button } from '@/components/ui/button'
 import { Trash2, Plus } from 'lucide-react'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent } from '../ui/card'
 import { Subscription } from '@/models/subscription'
-import { FormInputField, FormMultiSelectField, FormSelectField, FormRichTextField } from './fields'
+import { FormInputField, FormSelectField, FormRichTextField } from './fields'
 import { useRouter } from 'next/navigation'
 import { createSubscription, updateSubscription, updateSubscriptionPrices } from '@/network/client/subscriptions'
 import { createGift, updateGift } from '@/network/client/subscriptions'
@@ -26,6 +23,10 @@ import { getCourses } from '@/network/client/courses'
 import { giftTypeOptions } from '@/lib/label'
 import { ImageUploader } from '../image-uploader'
 import { CoverMediaSelector } from './cover-media-selector'
+import { Label } from '../ui/label'
+import { EditDialog } from '../data-table/edit-dialog'
+import { CoursesTable } from '../data-table/courses-table'
+import { MealPlansTable } from '../data-table/meal-plans-table'
 // Define the form schema
 const formSchema = z.object({
   name: z.string().min(3, {
@@ -97,24 +98,13 @@ const defaultYoutubeUrl = 'https://www.youtube.com/'
 
 export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
   const [isPending, startTransition] = useTransition()
-  const [courseList, setCourseList] = useState<any[]>([])
 
   const router = useRouter()
 
-  const AVAILABLE_COURSES = useMemo(
-    () => courseList.map((course) => ({ value: course.id.toString(), label: course.course_name })),
-    [courseList]
-  )
-
-  const fetchCourses = async (format?: 'video' | 'live' | 'both') => {
-    if (format === 'both') {
-      const response = await getCourses()
-      setCourseList(response.data || [])
-    } else {
-      const response = await getCourses({ course_format: format })
-      setCourseList(response.data || [])
-    }
-  }
+  const [openCoursesTable, setOpenCoursesTable] = useState(false)
+  const [openMealPlansTable, setOpenMealPlansTable] = useState(false)
+  const [selectedCourses, setSelectedCourses] = useState(data?.relationships?.courses || [])
+  const [selectedMealPlans, setSelectedMealPlans] = useState(data?.relationships?.meal_plans || [])
 
   // Initialize the form with default values
   const form = useForm<FormValues>({
@@ -124,8 +114,8 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
           const isYoutube = typeof data.cover_image === 'string' && data.cover_image.includes('youtube.com')
           return {
             ...data,
-            meal_plan_ids: data.meal_plan_ids?.map((mealPlanId) => mealPlanId.toString()),
-            course_ids: data.course_ids.map((courseId) => courseId.toString()),
+            meal_plan_ids: data.relationships?.meal_plans?.map((mp) => mp.id.toString()) || [],
+            course_ids: data.relationships?.courses?.map((c) => c.id.toString()) || [],
             cover_image: isYoutube ? defaultImageUrl : data.cover_image,
             youtube_url: isYoutube ? data.cover_image : defaultYoutubeUrl,
             course_format: data.course_format as 'video' | 'live' | 'both',
@@ -212,10 +202,6 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
   }
 
   const courseFormat = form.watch('course_format')
-
-  useEffect(() => {
-    fetchCourses(courseFormat)
-  }, [courseFormat])
 
   async function onSubmit(values: FormValues) {
     startTransition(async () => {
@@ -326,29 +312,11 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                 withAsterisk
               />
 
-              <FormMultiSelectField
-                form={form}
-                name="course_ids"
-                label="Khoá tập IDs"
-                data={[]}
-                placeholder="Khoá tập"
-                withAsterisk
-              />
-
               <FormRichTextField
                 form={form}
                 name="meal_plan_description"
                 label="Thông tin chi tiết thực đơn"
                 placeholder="Nhập thông tin chi tiết thực đơn"
-                withAsterisk
-              />
-
-              <FormMultiSelectField
-                form={form}
-                name="meal_plan_ids"
-                label="Thực đơn IDs"
-                data={[]}
-                placeholder="Thực đơn"
                 withAsterisk
               />
 
@@ -359,6 +327,27 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                 placeholder="Nhập thông tin theo dõi kết quả"
                 withAsterisk
               />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Gói tập</Label>
+                  <Input
+                    value={selectedCourses.map((c) => c.course_name).join(', ')}
+                    onFocus={() => setOpenCoursesTable(true)}
+                    placeholder="Chọn gói tập"
+                    readOnly
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Thực đơn</Label>
+                  <Input
+                    value={selectedMealPlans.map((mp) => mp.title).join(', ')}
+                    onFocus={() => setOpenMealPlansTable(true)}
+                    placeholder="Chọn thực đơn"
+                    readOnly
+                  />
+                </div>
+              </div>
 
               <CoverMediaSelector
                 form={form}
@@ -575,6 +564,45 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
           </Form>
         </CardContent>
       </Card>
+      <EditDialog
+        title="Chọn Gói tập"
+        description="Chọn một hoặc nhiều gói tập đã có hoặc tạo mới để liên kết với khoá tập này."
+        open={openCoursesTable}
+        onOpenChange={setOpenCoursesTable}
+      >
+        <CoursesTable
+          courseFormat={courseFormat === 'video' ? 'video' : courseFormat === 'live' ? 'live' : undefined}
+          onConfirmRowSelection={(row) => {
+            setSelectedCourses(row)
+            form.setValue(
+              'course_ids',
+              row.map((r) => r.id.toString()),
+              { shouldDirty: true }
+            )
+            form.trigger('course_ids')
+            setOpenCoursesTable(false)
+          }}
+        />
+      </EditDialog>
+      <EditDialog
+        title="Chọn Bữa ăn"
+        description="Chọn một hoặc nhiều bữa ăn đã có hoặc tạo mới để liên kết với gói thành viên này."
+        open={openMealPlansTable}
+        onOpenChange={setOpenMealPlansTable}
+      >
+        <MealPlansTable
+          onConfirmRowSelection={(row) => {
+            setSelectedMealPlans(row)
+            form.setValue(
+              'meal_plan_ids',
+              row.map((r) => r.id.toString()),
+              { shouldDirty: true }
+            )
+            form.trigger('meal_plan_ids')
+            setOpenMealPlansTable(false)
+          }}
+        />
+      </EditDialog>
     </div>
   )
 }

@@ -23,7 +23,7 @@ export async function createSubscription(
 }
 
 export async function getSubscription(id: Subscription['id']): Promise<ApiResponse<Subscription>> {
-  const response = await fetchData(`/v1/subscriptions/${id}`)
+  const response = await fetchData(`/v1/subscriptions/${id}?include_relationships=true`)
   return response.json()
 }
 
