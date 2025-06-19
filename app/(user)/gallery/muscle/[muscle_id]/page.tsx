@@ -1,9 +1,12 @@
+
+
 import { cn } from '@/lib/utils'
-import React from 'react'
+import React, { Suspense } from 'react'
 import Link from 'next/link'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getMuscleGroupExercises, getMuscleGroups } from '@/network/server/muscle-groups'
 import { getYoutubeThumbnail } from '@/lib/youtube'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default async function Muscle({ params }: { params: Promise<{ muscle_id: string }> }) {
   const resolvedParams = await params
@@ -12,9 +15,17 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
   const muscleGroupExercises = await getMuscleGroupExercises(muscle_id)
 
   const selectedMuscleGroup = muscleGroups.data?.find((group) => group.id.toString() === muscle_id)
-
+  
+  // Loading state
+  if (!selectedMuscleGroup || !muscleGroupExercises.data) {
+    return (
+      <div className="flex justify-center items-center h-40">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
   return (
-    <div className="flex flex-col gap-10 mt-10">
+    <div className="flex flex-col gap-10 mt-10 animate-fade-in">
       <div className="mb-20">
         <div className="flex flex-col justify-center text-center gap-5 mb-14">
           <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] mb-5">

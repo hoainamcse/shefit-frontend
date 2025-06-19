@@ -21,6 +21,7 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [exerciseId, setExerciseId] = useState<string>('')
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const unwrapParams = async () => {
@@ -30,7 +31,7 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
       } catch (err) {
         console.error('Error unwrapping params:', err)
         setError('Lỗi khi tải thông tin bài tập')
-        setLoading(false)
+        setIsLoading(false)
       }
     }
 
@@ -48,13 +49,13 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
         console.error('Error fetching exercise:', err)
         setError('Không thể tải thông tin bài tập')
       } finally {
-        setLoading(false)
+        setIsLoading(false)
       }
     }
 
     fetchExercise()
   }, [exerciseId])
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>

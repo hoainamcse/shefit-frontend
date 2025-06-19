@@ -106,7 +106,10 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                   </div>
                 </Link>
                 <div className="flex-1 flex items-center">
-                  <p className="text-center text-neutral-500 w-full">{sub.description_1}</p>
+                  <p
+                    dangerouslySetInnerHTML={{ __html: sub.description_1 }}
+                    className="text-center text-neutral-500 w-full"
+                  />
                 </div>
                 <Carousel className="mx-4">
                   <CarouselContent>

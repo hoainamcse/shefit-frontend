@@ -89,7 +89,9 @@ export default function PurchasedPackage() {
       <div className="text-[#737373] text-base md:text-xl mb-6">Các gói bạn đã đăng ký</div>
 
       {isLoading ? (
-        <div className="text-center py-10">Đang tải...</div>
+        <div className="flex justify-center items-center h-40">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        </div>
       ) : subscriptions.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 h">
           {subscriptions.map((subscription) => (

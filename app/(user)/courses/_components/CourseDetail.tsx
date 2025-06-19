@@ -22,6 +22,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
   const [showDetails, setShowDetails] = useState(false)
   const [course, setCourse] = useState<any>(null)
   const [isFooterVisible, setIsFooterVisible] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   const footerRef = useRef<HTMLDivElement>(null)
 
@@ -34,6 +35,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
       try {
         const courseData = await getCourse(courseId)
         setCourse(courseData)
+        setIsLoading(false)
       } catch (error) {
         console.error('Error fetching data:', error)
       }
@@ -72,6 +74,14 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
       }
     }
   }, [])
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-40">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full pb-24 relative">

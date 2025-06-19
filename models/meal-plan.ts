@@ -3,8 +3,6 @@ import type { Diet } from './diet'
 import type { Dish } from './dish'
 import { Goal } from './goal'
 
-type MealPlanGoal = 'weight_loss' | 'energy' | 'recovery' | 'hormonal_balance' | 'muscle_tone'
-
 type MealPlanIngredient = {
   name: string
   image: string
@@ -25,6 +23,11 @@ type MealPlan = {
   free_days: number
   diet: Diet | null
   calorie: Calorie | null
+}
+
+type MealPlanGoal = {
+  id: string
+  name: string
 }
 
 type MealPlanPayload = Omit<MealPlan, 'id' | 'diet' | 'calorie' | 'meal_plan_goal' | 'number_of_days'> & {

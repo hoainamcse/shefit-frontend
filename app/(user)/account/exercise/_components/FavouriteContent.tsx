@@ -304,14 +304,6 @@ export default function FavouriteContent() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-40">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#13D8A7]"></div>
-      </div>
-    )
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-32">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     )
@@ -326,7 +318,7 @@ export default function FavouriteContent() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
           {isLoading ? (
             <div className="flex justify-center items-center h-40">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#13D8A7]"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
             </div>
           ) : (
             courses.map((course) => (

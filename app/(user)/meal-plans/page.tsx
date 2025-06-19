@@ -1,17 +1,17 @@
 'use client'
 
 import Layout from '@/app/(user)/_components/layout'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { MultiSelect } from '@/components/ui/select'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import React, { useState, useEffect } from 'react'
-import { getMealPlans } from '@/network/server/meal-plans'
-import { mealPlanGoalOptions } from '@/lib/label'
-import type { MealPlan } from '@/models/meal-plan'
+import { getMealPlans, getMealPlanGoals } from '@/network/server/meal-plans'
+import { getCalories } from '@/network/server/calories'
+import type { MealPlan, MealPlanGoal } from '@/models/meal-plan'
 import { Button } from '@/components/ui/button'
 import { Calorie } from '@/models/calorie'
 
-function SelectHero({
+function MultiSelectHero({
   placeholder,
   options,
   value,
@@ -19,22 +19,18 @@ function SelectHero({
 }: {
   placeholder: string
   options: { value: string; label: string }[]
-  value: string
-  onChange: (value: string) => void
+  value: string[]
+  onChange: (value: string[]) => void
 }) {
   return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger>
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map((item) => (
-          <SelectItem key={item.value} value={item.value}>
-            {item.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <MultiSelect
+      options={options}
+      value={value}
+      onValueChange={onChange}
+      placeholder={placeholder}
+      selectAllLabel="Tất cả"
+      maxDisplay={2}
+    />
   )
 }
 
@@ -50,29 +46,53 @@ const NextButton = ({ href, className }: { href: string; className?: string }) =
 
 export default function MealPlansPage() {
   const [calories, setCalories] = useState<Calorie[]>([])
+  const [mealPlanGoals, setMealPlanGoals] = useState<Array<{ id: string; name: string }>>([])
   const [filter, setFilter] = useState({
-    goal: '',
-    calorie: 0,
+    goals: [] as string[],
+    calories: [] as string[],
   })
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const fetchMealPlans = async () => {
-      const response = await getMealPlans()
-      setMealPlans(response.data || [])
+    const fetchData = async () => {
+      try {
+        setIsLoading(true)
 
-      const uniqueCalories = Array.from(new Set(response.data?.map((mealPlan) => mealPlan.calorie?.id)))
-        .map((id) => response.data?.find((mealPlan) => mealPlan.calorie?.id === id)?.calorie)
-        .filter((calorie): calorie is Calorie => calorie !== null && calorie !== undefined)
-      setCalories(uniqueCalories)
-      // console.log('Unique Calories:', uniqueCalories)
+        const [mealPlansResponse, goalsResponse, caloriesResponse] = await Promise.all([
+          getMealPlans(),
+          getMealPlanGoals(),
+          getCalories(),
+        ])
+
+        setMealPlans(mealPlansResponse.data || [])
+        const formattedGoals = (goalsResponse.data || []).map((goal) => ({
+          id: goal.id.toString(),
+          name: goal.name,
+        }))
+        setMealPlanGoals(formattedGoals)
+        setCalories(caloriesResponse.data || [])
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      } finally {
+        setIsLoading(false)
+      }
     }
-    fetchMealPlans()
+
+    fetchData()
   }, [])
 
   const filteredMealPlans = mealPlans.filter((mealPlan) => {
-    const matchesGoal = filter.goal ? mealPlan.meal_plan_goal?.name === filter.goal : true
-    const matchesCalorie = filter.calorie ? mealPlan.calorie?.id === filter.calorie : true
+    const goalId = mealPlan.meal_plan_goal
+      ? typeof mealPlan.meal_plan_goal === 'string'
+        ? mealPlan.meal_plan_goal
+        : mealPlan.meal_plan_goal.id?.toString()
+      : null
+
+    const matchesGoal = filter.goals.length === 0 || (goalId && filter.goals.includes(goalId))
+
+    const matchesCalorie =
+      filter.calories.length === 0 || (mealPlan.calorie && filter.calories.includes(mealPlan.calorie.id.toString()))
     return matchesGoal && matchesCalorie
   })
 
@@ -86,22 +106,29 @@ export default function MealPlansPage() {
           Lựa chọn thực đơn phù hợp với mục tiêu, với các món ăn đơn giản, dễ chuẩn bị hàng ngày. Ăn ngon miệng mà vẫn
           đảm bảo tăng cơ, giảm mỡ hiệu quả!
         </p>
-        <div className="flex gap-4">
-          <SelectHero
-            placeholder="Mục tiêu"
-            options={mealPlanGoalOptions}
-            value={filter.goal}
-            onChange={(goal) => setFilter((prev) => ({ ...prev, goal }))}
-          />
-          <SelectHero
-            placeholder="Lượng calo"
-            options={calories.map((calorie) => ({
-              value: calorie.id.toString(),
-              label: calorie.name,
-            }))}
-            value={filter.calorie.toString()}
-            onChange={(calorie) => setFilter((prev) => ({ ...prev, calorie: Number(calorie) }))}
-          />
+        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-4xl mx-auto">
+          <div className="w-full">
+            <MultiSelectHero
+              placeholder="Mục tiêu"
+              options={mealPlanGoals.map((goal) => ({
+                value: goal.id.toString(),
+                label: goal.name,
+              }))}
+              value={filter.goals}
+              onChange={(goals) => setFilter((prev) => ({ ...prev, goals }))}
+            />
+          </div>
+          <div className="w-full">
+            <MultiSelectHero
+              placeholder="Lượng calo"
+              options={calories.map((calorie) => ({
+                value: calorie.id.toString(),
+                label: calorie.name,
+              }))}
+              value={filter.calories}
+              onChange={(calories) => setFilter((prev) => ({ ...prev, calories }))}
+            />
+          </div>
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-screen-xl mx-auto mt-6">

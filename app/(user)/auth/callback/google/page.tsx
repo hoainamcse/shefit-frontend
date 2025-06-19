@@ -1,10 +1,10 @@
-"use client"
+'use client'
 
-import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect } from "react"
-import { handleGoogleCallback, signIn } from "@/network/server/auth"
-import { toast } from "sonner"
-import { Suspense } from "react"
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect } from 'react'
+import { handleGoogleCallback, signIn } from '@/network/server/auth'
+import { toast } from 'sonner'
+import { Suspense } from 'react'
 
 function GoogleCallback() {
   const searchParams = useSearchParams()
@@ -14,13 +14,13 @@ function GoogleCallback() {
     try {
       const res = await handleGoogleCallback(
         searchParams?.toString() +
-          `&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI || "")}`
+          `&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI || '')}`
       )
       await signIn(res)
-      router.push("/")
+      router.push('/')
     } catch (error) {
       console.error(error)
-      toast.error("Đăng nhập thất bại!")
+      toast.error('Đăng nhập thất bại!')
     }
   }
   useEffect(() => {
@@ -41,7 +41,9 @@ export default function GoogleCallbackPage() {
     <Suspense
       fallback={
         <div className="flex justify-center items-center h-screen">
-          <p>Đang tải...</p>
+          <div className="flex justify-center items-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
         </div>
       }
     >

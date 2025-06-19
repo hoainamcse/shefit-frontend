@@ -51,7 +51,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
           </div>
           <div className="max-w-6xl mx-auto">
             <Carousel>
-              <CarouselContent>
+              <CarouselContent className="flex justify-center">
                 {data?.features?.[activeTabIndex]?.courses?.map((course, mIndex) => (
                   <CarouselItem key={course.id} className="basis-4/5 lg:basis-1/4">
                     <Link href={`/courses/${course.id}/${course.course_format}-classes`}>

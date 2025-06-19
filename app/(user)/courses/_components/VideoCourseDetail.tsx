@@ -69,6 +69,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [courseStatus, setCourseStatus] = useState<'checking' | 'exists' | 'not_found'>('checking')
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
 
   const checkUserCourse = async () => {
     if (!session) {
@@ -189,6 +190,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
       try {
         const courseResponse = await getCourse(courseId)
         setIsFreeCourse(courseResponse?.data?.is_free || false)
+        setIsLoading(false)
       } catch (error) {
         console.error('Error checking course:', error)
       }
@@ -251,7 +253,19 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
   }
 
   if (!weeks || !days) {
-    return <div>Loading...</div>
+    return (
+      <div className="flex justify-center items-center h-40">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-40">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    )
   }
 
   return (

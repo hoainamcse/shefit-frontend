@@ -53,7 +53,9 @@ export default function PurchasePackage() {
         <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
           Mua Gói Độ Dáng
         </div>
-        <div className="text-[#737373] text-base md:text-xl mb-6">Đang tải...</div>
+        <div className="flex justify-center items-center h-40">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        </div>
       </div>
     )
   }
