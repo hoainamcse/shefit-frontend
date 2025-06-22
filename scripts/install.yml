@@ -16,3 +16,22 @@
       docker rm stg_shefit;
       docker run -d --name=stg_shefit -m 1500m --memory-reservation 1000m --network=nginx --pull always --restart unless-stopped ${IMAGE_NAME}:${TAG};
       docker image prune -af;"
+
+.install-prod:
+  script:
+    - apt-get update -qq && apt-get install -qq curl
+    - which ssh-agent || apt-get install -qq openssh-client
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY_ROCKSHIP")
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - touch ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - ssh $SERVER "
+      aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin ${ECR_URL};
+      docker pull ${IMAGE_NAME}:${TAG};
+      docker stop shefit_frontend;
+      docker rm shefit_frontend;
+      docker run -d --name=shefit_frontend -m 1500m --memory-reservation 1000m --network=shefit --pull always --restart unless-stopped ${IMAGE_NAME}:${TAG};
+      docker image prune -af;"

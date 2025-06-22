@@ -29,6 +29,28 @@ build_and_export-stg:
   only:
     - main
 
+build_and_export-prod:
+  image: node:18
+  tags:
+    - builder
+  stage: pre-build
+  when: manual
+  script:
+    - rm -rf .env
+    - apt install -y curl
+    - 'curl --header "PRIVATE-TOKEN: ${BOT_PRIVATE_TOKEN}" "https://gitlab.rockship.co/api/v4/projects/16/repository/files/frontend%2Fshefit%2Fprod%2F.env/raw?ref=master" > .env'
+    - corepack enable pnpm
+    - pnpm install
+    - pnpm run build
+  artifacts:
+    paths:
+      - ./.next/static
+      - ./.next/standalone
+      - ./build
+    expire_in: 1 hour
+  only:
+    - main
+
 build-stg:
   stage: build
   tags:
@@ -61,5 +83,40 @@ install-with-ssh-stg:
     SERVER: '${STG_SERVER}'
   script:
     - !reference [.install-stg, script]
+  only:
+    - main
+
+build-prod:
+  stage: build
+  tags:
+    - builder
+  needs:
+    - job: build_and_export-prod
+      artifacts: true
+  image:
+    name: gcr.io/kaniko-project/executor:v1.10.0-debug
+    entrypoint: ['']
+  variables:
+    TAG: 'prod'
+    IMAGE_NAME: '${ECR_URL}/shefit'
+    BUILD_ARG: '--build-arg BOT_PRIVATE_TOKEN=${BOT_PRIVATE_TOKEN} --build-arg TAG=prod'
+  script:
+    - !reference [.build_docker_image, script]
+  only:
+    - main
+
+install-with-ssh-prod:
+  stage: deploy
+  needs:
+    - job: build-prod
+      artifacts: false
+  tags:
+    - builder
+  variables:
+    TAG: 'prod'
+    IMAGE_NAME: '${ECR_URL}/shefit'
+    SERVER: '${PROD_SERVER}'
+  script:
+    - !reference [.install-prod, script]
   only:
     - main
