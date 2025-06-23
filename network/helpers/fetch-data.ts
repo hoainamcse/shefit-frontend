@@ -34,20 +34,20 @@ export async function fetchData(input: RequestInfo, init: RequestInit = {}, json
   try {
     response = await fetch(baseURL + input, init)
 
-    if (response.status === 401 && session) {
-      const newSession = await refreshToken(session.refreshToken)
+    // if (response.status === 401 && session) {
+    //   const newSession = await refreshToken(session.refreshToken)
 
-      if (newSession) {
-        await updateSession({ accessToken: newSession.access_token, refreshToken: newSession.refresh_token })
+    //   if (newSession) {
+    //     await updateSession({ accessToken: newSession.access_token, refreshToken: newSession.refresh_token })
 
-        init.headers = {
-          ...init.headers,
-          Authorization: `Bearer ${newSession.access_token}`,
-        }
+    //     init.headers = {
+    //       ...init.headers,
+    //       Authorization: `Bearer ${newSession.access_token}`,
+    //     }
 
-        response = await fetch(baseURL + input, init)
-      }
-    }
+    //     response = await fetch(baseURL + input, init)
+    //   }
+    // }
   } catch (error) {
     console.error('Failed to fetch data: ', error)
     throw new Error('Failed to fetch data')

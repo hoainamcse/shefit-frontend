@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 import { verifySession } from '@/lib/dal'
 
 const SUB_ADMIN_ALLOWED_ROUTES = [
-  // '/admin',
+  '/admin',
   '/admin/courses',
   '/admin/exercises',
   '/admin/muscle-groups-equipments',
@@ -14,7 +14,7 @@ const SUB_ADMIN_ALLOWED_ROUTES = [
   '/admin/users',
 ]
 
-export async function middleware(request: NextRequest) {
+async function roleMiddleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   if (pathname.startsWith('/admin')) {
@@ -52,6 +52,27 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next()
 }
 
-export const config = {
-  matcher: ['/admin/:path*'],
+export async function middleware(request: NextRequest) {
+  if (process.env.NODE_ENV !== 'production') {
+    return roleMiddleware(request)
+  }
+
+  const host = request.headers.get('host') || ''
+  const { pathname } = request.nextUrl
+  const isAdminDomain = host.startsWith('admin.')
+  const isAppRoute = pathname.startsWith('/admin')
+
+  if (isAdminDomain) {
+    if (isAppRoute) {
+      return roleMiddleware(request)
+    }
+
+    return NextResponse.redirect(new URL('/unauthorized', request.url))
+  }
+
+  if (isAppRoute) {
+    return NextResponse.redirect(new URL('/unauthorized', request.url))
+  }
+
+  return NextResponse.rewrite(new URL(pathname, request.url))
 }
