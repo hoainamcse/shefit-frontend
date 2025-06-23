@@ -1,7 +1,7 @@
 import { updateSession, verifySession } from '@/lib/dal'
 
 import { statusCodeErrorMap } from '../errors/httpErrors'
-import { refreshToken } from '../server/auth'
+// import { refreshToken } from '../server/auth'
 
 const public_url = process.env.NEXT_PUBLIC_SERVER_URL
 
