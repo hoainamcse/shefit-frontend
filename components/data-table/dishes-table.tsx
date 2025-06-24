@@ -6,7 +6,7 @@ import type { Dish } from '@/models/dish'
 import { toast } from 'sonner'
 import { ImportIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
 import { createDish, deleteDish, getDishes, queryKeyDishes } from '@/network/client/dishes'
 import { RowActions } from '@/components/data-table/row-actions'
@@ -81,7 +81,7 @@ export function DishesTable() {
             <div>
               <img
                 src={imgSrc}
-                alt={`${row.getValue('title')} thumbnail`}
+                alt={`${row.getValue('name')} thumbnail`}
                 className="h-16 w-28 rounded-md object-cover"
               />
             </div>
@@ -181,37 +181,60 @@ export function DishesTable() {
 function ImportDialog({ onSuccess }: { onSuccess?: () => void }) {
   const [isOpen, setIsOpen] = useState(false)
   const [data, setData] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
-  const dishMutation = useMutation({
-    mutationFn: (data: any[]) => Promise.all(data.map((item) => createDish(item))),
-    onSuccess: () => {
+  const onSubmit = async () => {
+    setIsLoading(true)
+    try {
+      const dietNames = new Set<string>()
+
+      for (const item of data) {
+        const dietList = (item.diets || '')
+          .split(';')
+          .map((d: string) => d.trim())
+          .filter(Boolean)
+
+        dietList.forEach((eq: string) => dietNames.add(eq))
+      }
+
+      const dietsMap = new Map()
+
+      for (const name of dietNames) {
+        const response = await createDiet({
+          diets: [{ name, description: '', image: 'https://placehold.co/600x400?text=example' }],
+        })
+        dietsMap.set(name, response.data[0].id)
+      }
+
+      const dataWithIds = data.map((item) => {
+        const dietsIds = (item.diets || '')
+          .split(';')
+          .map((d: string) => d.trim())
+          .filter(Boolean)
+          .map((d: string) => dietsMap.get(d))
+          .filter(Boolean)
+
+        const { diets, ...rest } = item
+
+        return {
+          ...rest,
+          diet_ids: [...new Set(dietsIds)],
+          image: 'https://placehold.co/600x400?text=example',
+        }
+      })
+
+      for (const dish of dataWithIds) {
+        await createDish(dish)
+      }
+
       toast.success('Nhập món ăn thành công')
       onSuccess?.()
       setIsOpen(false)
-    },
-    onError: (error) => {
-      toast.error(`Lỗi khi nhập món ăn: ${error.message}`)
-    },
-  })
-
-  const onSubmit = async () => {
-    const uniqueDietNames = Array.from(new Set(data.map((item) => item.diet))).filter(Boolean)
-    const diets = await Promise.all(
-      uniqueDietNames.map((diet) =>
-        createDiet({ diets: [{ name: diet, description: '', image: 'https://placehold.co/600x400?text=example' }] })
-      )
-    )
-
-    const dataWithDietId = data.map((item) => {
-      const _diet = diets.find((d) => d.data[0].name === item.diet)
-      const { diet, ...rest } = item
-      return {
-        ...rest,
-        diet_id: _diet ? _diet.data[0].id : null,
-        image: 'https://placehold.co/600x400?text=example',
-      }
-    })
-    dishMutation.mutateAsync(dataWithDietId)
+    } catch (error: any) {
+      toast.error(`Lỗi khi chuẩn bị dữ liệu: ${error.message}`)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -225,9 +248,7 @@ function ImportDialog({ onSuccess }: { onSuccess?: () => void }) {
           <DialogDescription>Chức năng này sẽ cho phép nhập danh sách món ăn từ tệp Excel</DialogDescription>
         </DialogHeader>
         <ExcelReader specificHeaders={['calories', 'protein', 'carb', 'fat', 'fiber']} onSuccess={setData} />
-        {data.length > 0 && (
-          <MainButton text="Nhập món ăn" className="mt-4" onClick={onSubmit} loading={dishMutation.isPending} />
-        )}
+        {data.length > 0 && <MainButton text="Nhập món ăn" className="mt-4" onClick={onSubmit} loading={isLoading} />}
       </DialogContent>
     </Dialog>
   )
