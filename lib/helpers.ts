@@ -124,3 +124,12 @@ export function formatDateString(dateString: string): string {
     .toString()
     .padStart(2, '0')}/${date.getFullYear()}`
 }
+
+export const formatDuration = (duration: number) => {
+  if (duration !== 0 && duration % 35 === 0) {
+    return `${duration / 35} tháng`
+  }
+  return `${duration} ngày`
+}
+
+

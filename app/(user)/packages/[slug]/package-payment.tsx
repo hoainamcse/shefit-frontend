@@ -22,6 +22,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { CloseIcon } from '@/components/icons/CloseIcon'
+import { formatDuration } from '@/lib/helpers'
 
 interface Price {
   id: number
@@ -188,7 +189,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
                 try {
                   const now = new Date()
                   const endDate = new Date(now)
-                  endDate.setMonth(endDate.getMonth() + (prices.find((p) => p.id === selectedPriceId)?.duration || 1))
+                  endDate.setDate(endDate.getDate() + (prices.find((p) => p.id === selectedPriceId)?.duration || 1))
                   const subscriptionData = {
                     user_id: session?.userId,
                     subscription_id: Number(params?.slug),
@@ -244,7 +245,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
                 checked={selectedPriceId === price.id}
                 onCheckedChange={() => handlePriceSelect(price.id, price.price)}
               />
-              <div className="text-base md:text-xl text-[#737373]">{price.duration} tháng</div>
+              <div className="text-base md:text-xl text-[#737373]">{formatDuration(price.duration)}</div>
             </div>
           ))}
         </div>

@@ -27,6 +27,8 @@ import { Label } from '../ui/label'
 import { EditDialog } from '../data-table/edit-dialog'
 import { CoursesTable } from '../data-table/courses-table'
 import { MealPlansTable } from '../data-table/meal-plans-table'
+import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
+
 // Define the form schema
 const formSchema = z.object({
   name: z.string().min(3, {
@@ -57,8 +59,8 @@ const formSchema = z.object({
       z.discriminatedUnion('type', [
         z.object({
           id: z.number().optional(),
-          type: z.literal('membership_month'),
-          month_count: z.coerce.number().min(1, { message: 'Số tháng phải lớn hơn 0' }),
+          type: z.literal('membership_plan'),
+          duration: z.coerce.number().min(1, { message: 'Số tháng phải lớn hơn 0' }),
         }),
         z.object({
           id: z.number().optional(),
@@ -119,6 +121,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
             cover_image: isYoutube ? defaultImageUrl : data.cover_image,
             youtube_url: isYoutube ? data.cover_image : defaultYoutubeUrl,
             course_format: data.course_format as 'video' | 'live' | 'both',
+            gifts: data.relationships?.gifts || [],
           }
         })()
       : {
@@ -175,10 +178,10 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
     const currentGifts = form.getValues('gifts') || []
     const updatedGifts = [...currentGifts]
 
-    if (value === 'membership_month') {
+    if (value === 'membership_plan') {
       updatedGifts[index] = {
-        type: 'membership_month',
-        month_count: 1,
+        type: 'membership_plan',
+        duration: 1,
         id: updatedGifts[index].id,
       }
     } else {
@@ -439,12 +442,73 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                                   </>
                                 )}
 
-                                {field.value.type === 'membership_month' && (
-                                  <FormInputField
-                                    form={form}
-                                    name={`gifts.${index}.month_count`}
-                                    label="Số tháng"
-                                    type="number"
+                                {field.value.type === 'membership_plan' && (
+                                  <FormField
+                                    control={form.control}
+                                    name={`gifts.${index}.duration`}
+                                    render={({ field: durationField }) => {
+                                      const initialIsMonthMode =
+                                        durationField.value % 35 === 0 && durationField.value !== 0
+                                      const [isMonthMode, setIsMonthMode] = useState(initialIsMonthMode)
+
+                                      const displayedValue =
+                                        durationField.value === undefined || durationField.value === null
+                                          ? ''
+                                          : isMonthMode
+                                          ? durationField.value / 35
+                                          : durationField.value
+
+                                      return (
+                                        <FormItem>
+                                          <div className="flex items-center">
+                                            <FormLabel>Thời gian</FormLabel>
+                                            <div className="flex items-center space-x-2">
+                                              <ToggleGroup
+                                                type="single"
+                                                value={isMonthMode ? 'month' : 'day'}
+                                                onValueChange={(value) => {
+                                                  if (value === 'month') {
+                                                    setIsMonthMode(true)
+                                                  } else if (value === 'day') {
+                                                    setIsMonthMode(false)
+                                                  }
+                                                }}
+                                                aria-label="Chọn đơn vị thời gian"
+                                              >
+                                                <ToggleGroupItem value="day" aria-label="Chọn Ngày">
+                                                  Ngày
+                                                </ToggleGroupItem>
+                                                <ToggleGroupItem value="month" aria-label="Chọn Tháng">
+                                                  Tháng
+                                                </ToggleGroupItem>
+                                              </ToggleGroup>
+                                            </div>
+                                          </div>
+                                          <FormControl>
+                                            <Input
+                                              type="number"
+                                              min="1"
+                                              value={displayedValue}
+                                              onChange={(e) => {
+                                                const value = parseInt(e.target.value)
+                                                if (isNaN(value)) {
+                                                  durationField.onChange(0)
+                                                  return
+                                                }
+                                                if (isMonthMode) {
+                                                  durationField.onChange(value * 35)
+                                                } else {
+                                                  durationField.onChange(value)
+                                                }
+                                              }}
+                                              placeholder={isMonthMode ? 'Nhập số tháng' : 'Nhập số ngày'}
+                                              className="mt-1"
+                                            />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )
+                                    }}
                                   />
                                 )}
                               </div>
@@ -491,28 +555,72 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                                 </Button>
                               </div>
 
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
                                 <FormField
                                   control={form.control}
                                   name={`prices.${index}.duration`}
-                                  render={({ field: monthsField }) => (
-                                    <FormItem>
-                                      <FormLabel>Số tháng</FormLabel>
-                                      <FormControl>
-                                        <Input
-                                          type="number"
-                                          min="1"
-                                          {...monthsField}
-                                          onChange={(e) => {
-                                            monthsField.onChange(parseInt(e.target.value) || 1)
-                                          }}
-                                          placeholder="Nhập số tháng"
-                                          className="mt-1"
-                                        />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
+                                  render={({ field: durationField }) => {
+                                    const initialIsMonthMode = price.duration % 35 === 0 && price.duration !== 0
+                                    const [isMonthMode, setIsMonthMode] = useState(initialIsMonthMode)
+
+                                    const displayedValue =
+                                      durationField.value === undefined || durationField.value === null
+                                        ? ''
+                                        : isMonthMode
+                                        ? durationField.value / 35
+                                        : durationField.value
+
+                                    return (
+                                      <FormItem>
+                                        <div className="flex items-center">
+                                          <FormLabel>Thời gian</FormLabel>
+                                          <div className="flex items-center space-x-2">
+                                            <ToggleGroup
+                                              type="single"
+                                              value={isMonthMode ? 'month' : 'day'}
+                                              onValueChange={(value) => {
+                                                if (value === 'month') {
+                                                  setIsMonthMode(true)
+                                                } else if (value === 'day') {
+                                                  setIsMonthMode(false)
+                                                }
+                                              }}
+                                              aria-label="Chọn đơn vị thời gian"
+                                            >
+                                              <ToggleGroupItem value="day" aria-label="Chọn Ngày">
+                                                Ngày
+                                              </ToggleGroupItem>
+                                              <ToggleGroupItem value="month" aria-label="Chọn Tháng">
+                                                Tháng
+                                              </ToggleGroupItem>
+                                            </ToggleGroup>
+                                          </div>
+                                        </div>
+                                        <FormControl>
+                                          <Input
+                                            type="number"
+                                            min="1"
+                                            value={displayedValue}
+                                            onChange={(e) => {
+                                              const value = parseInt(e.target.value)
+                                              if (isNaN(value)) {
+                                                durationField.onChange(0)
+                                                return
+                                              }
+                                              if (isMonthMode) {
+                                                durationField.onChange(value * 35)
+                                              } else {
+                                                durationField.onChange(value)
+                                              }
+                                            }}
+                                            placeholder={isMonthMode ? 'Nhập số tháng' : 'Nhập số ngày'}
+                                            className="mt-1"
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )
+                                  }}
                                 />
 
                                 <FormField

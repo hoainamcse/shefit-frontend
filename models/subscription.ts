@@ -3,10 +3,10 @@ import type { MealPlan } from './meal-plan'
 
 type Gift = {
   id: number
-  type: 'item' | 'membership_month'
+  type: 'item' | 'membership_plan'
   name: string
   image: string
-  month_count: number
+  duration: number
   created_at: string
   updated_at: string
 }
@@ -20,6 +20,7 @@ type SubscriptionPrice = {
 }
 
 type Subscription = {
+    original_subscription_end_at?: string;
     id: string
     name: string
     course_format: string
@@ -44,6 +45,7 @@ type Subscription = {
     relationships: {
         courses: Pick<Course, 'id' | 'course_name'>[]
         meal_plans: Pick<MealPlan, 'id' | 'title'>[]
+        gifts: Gift[]
     }
 }
 

@@ -43,8 +43,8 @@ const dishMealTimeOptions = Object.entries(dishMealTimeLabel).map(([value, label
 })) as Option<DishMealTime>[]
 
 const giftTypeLabel: Record<string, string> = {
-  membership_month: 'MEMBERSHIP_MONTH',
-  item: 'ITEM',
+  membership_plan: 'Thời gian',
+  item: 'Vật dụng',
 } as const
 
 const giftTypeOptions = Object.entries(giftTypeLabel).map(([value, label]) => ({

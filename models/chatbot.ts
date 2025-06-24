@@ -1,3 +1,5 @@
+type GreetingStatus = 'ACTIVE' | 'INACTIVE'
+
 export type Message = {
   id: string
   content: string
@@ -11,7 +13,12 @@ export type Message = {
 export type Greeting = {
   id: number
   message: string
-  status: string
+  prompt: string
+  status: GreetingStatus
   created_at: string
   updated_at: string
 }
+
+export type GreetingPayload = Omit<Greeting, 'id' | 'created_at' | 'updated_at'>
+
+

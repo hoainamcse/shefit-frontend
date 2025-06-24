@@ -8,6 +8,7 @@ import {
   CreditCardIcon,
   ChartPieIcon,
   RssIcon,
+  Brain,
   User2Icon,
   HomeIcon,
 } from 'lucide-react'
@@ -59,6 +60,11 @@ export function getMenuList(pathname: string): Group[] {
               label: 'Chính sách',
             },
           ],
+        },
+        {
+          href: '/admin/ai-hub',
+          label: 'AI Hub',
+          icon: Brain,
         },
       ],
     },

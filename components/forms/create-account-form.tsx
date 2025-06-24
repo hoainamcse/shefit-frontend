@@ -611,17 +611,36 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                             disabled={!subscription.subscription_id}
                             onValueChange={(value: string) => {
                               const newGiftId = value ? Number(value) : undefined
-                              let newEndAt = subscription.subscription_end_at || ''
+
+                              const previousGift = gifts.find((g) => g.id === subscription.gift_id)
                               const selectedGift = gifts.find((g) => g.id === newGiftId)
+
+                              let baseEndDate: Date | null = subscription.subscription_end_at
+                                ? new Date(subscription.subscription_end_at)
+                                : null
+
                               if (
-                                selectedGift &&
-                                selectedGift.type === 'membership_month' &&
-                                selectedGift.month_count &&
-                                subscription.subscription_end_at
+                                baseEndDate &&
+                                previousGift &&
+                                previousGift.type === 'membership_plan' &&
+                                previousGift.duration
                               ) {
-                                const endDate = new Date(subscription.subscription_end_at)
-                                newEndAt = formatDate(addDaysForMonths(endDate, selectedGift.month_count))
+                                baseEndDate.setDate(baseEndDate.getDate() - previousGift.duration)
                               }
+
+                              let newEndAt = baseEndDate ? formatDate(baseEndDate) : ''
+
+                              if (
+                                baseEndDate &&
+                                selectedGift &&
+                                selectedGift.type === 'membership_plan' &&
+                                selectedGift.duration
+                              ) {
+                                const adjustedDate = new Date(baseEndDate)
+                                adjustedDate.setDate(adjustedDate.getDate() + selectedGift.duration)
+                                newEndAt = formatDate(adjustedDate)
+                              }
+
                               updateSubscription(idx, {
                                 ...subscription,
                                 gift_id: newGiftId,
@@ -635,7 +654,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
                             <SelectContent>
                               {/* Group for item type gifts */}
                               <SelectGroup>
-                                <SelectLabel>Quà tặng</SelectLabel>
+                                <SelectLabel>Vật dụng</SelectLabel>
                                 {gifts
                                   .filter((g) => g.type === 'item')
                                   .map((g) => (
@@ -647,12 +666,14 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
 
                               {/* Group for membership_month type gifts */}
                               <SelectGroup>
-                                <SelectLabel>Tháng thành viên</SelectLabel>
+                                <SelectLabel>Thời gian</SelectLabel>
                                 {gifts
-                                  .filter((g) => g.type === 'membership_month')
+                                  .filter((g) => g.type === 'membership_plan')
                                   .map((g) => (
                                     <SelectItem key={g.id} value={g.id.toString()}>
-                                      {g.month_count} tháng
+                                      {g.duration !== 0 && g.duration % 35 === 0
+                                        ? `${g.duration / 35} tháng`
+                                        : `${g.duration} ngày`}
                                     </SelectItem>
                                   ))}
                               </SelectGroup>

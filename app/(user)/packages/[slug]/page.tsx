@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { BackIcon } from '@/components/icons/BackIcon'
 import { Checkbox } from '@/components/ui/checkbox'
-import { getSubscription } from '@/network/server/subscriptions'
+
 import { PackagePayment } from './package-payment'
 import Link from 'next/link'
 import ShefitLogo from '@/public/logo-vertical-dark.png'
+import { formatDuration } from '@/lib/helpers'
+import { getSubscription } from '@/network/server/subscriptions'
 
 export default function PackageDetail({ params }: { params: Promise<{ slug: string }> }) {
   const [selectedGiftId, setSelectedGiftId] = useState<number | null>(null)
@@ -16,7 +18,7 @@ export default function PackageDetail({ params }: { params: Promise<{ slug: stri
   useEffect(() => {
     const fetchData = async () => {
       const slug = (await params).slug
-      const data = await getSubscription(Number(slug))
+      const data = await getSubscription(Number(slug), { include_relationships: true })
       setSubscription(data)
     }
     fetchData()
@@ -70,13 +72,13 @@ export default function PackageDetail({ params }: { params: Promise<{ slug: stri
         />
 
         <div>
-          {subscription.data.gifts?.length > 0 && (
+          {subscription.data.relationships.gifts?.length > 0 && (
             <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[Coiny] mb-[14px]">
               Chọn quà tặng
               <div className="text-base md:text-xl text-[#737373] mb-7">Được ship đến tận nhà!</div>
               <div className="flex flex-col gap-7 mb-7">
-                {subscription.data.gifts?.map(
-                  (gift: { id: number; type: string; name?: string; image?: string; month_count?: number }) => (
+                {subscription.data.relationships.gifts?.map(
+                  (gift: { id: number; type: string; name?: string; image?: string; duration?: number }) => (
                     <div key={gift.id}>
                       <div className="flex justify-between">
                         <div className="flex gap-2">
@@ -103,9 +105,11 @@ export default function PackageDetail({ params }: { params: Promise<{ slug: stri
                                 />
                               </div>
                               <div>
-                                <div className="text-[#000000] text-base md:text-xl font-medium mb-2">
-                                  {gift.month_count} tháng tập
-                                </div>
+                                {gift.duration && (
+                                  <div className="text-[#000000] text-base md:text-xl font-medium mb-2">
+                                    {formatDuration(gift.duration)}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           )}
