@@ -33,5 +33,5 @@
       docker pull ${IMAGE_NAME}:${TAG};
       docker stop shefit_frontend;
       docker rm shefit_frontend;
-      docker run -d --name=shefit_frontend -m 1500m --memory-reservation 1000m --network=shefit --pull always --restart unless-stopped ${IMAGE_NAME}:${TAG};
+      docker run -d --name=shefit_frontend§ --network=shefit --pull always --restart unless-stopped ${IMAGE_NAME}:${TAG};
       docker image prune -af;"
