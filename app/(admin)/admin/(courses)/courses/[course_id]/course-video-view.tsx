@@ -30,6 +30,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { sortByKey } from '@/lib/helpers'
 import { Badge } from '@/components/ui/badge'
 import { transformExercise } from '@/lib/xlsx'
 import { Button } from '@/components/ui/button'
@@ -179,6 +180,10 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
     }
   }
 
+  const weeksData = sortByKey(weeks?.data || [], 'week_number')
+  const daysData = sortByKey(days?.data || [], 'day_number')
+  const circuitsData = sortByKey(circuits?.data || [], 'created_at', { transform: (val) => new Date(val).getTime() })
+
   return (
     <div className="flex h-full items-stretch">
       {/* Sidebar */}
@@ -200,11 +205,11 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
               <div key={i} className="h-12 bg-muted rounded animate-pulse" />
             ))}
           </div>
-        ) : weeks?.data.length === 0 ? (
+        ) : weeksData.length === 0 ? (
           <p className="text-muted-foreground text-sm">Chưa có tuần nào được thêm</p>
         ) : (
           <div className="space-y-4">
-            {weeks?.data.map((week) => (
+            {weeksData.map((week) => (
               <Card
                 key={week.id}
                 className={`cursor-pointer transition-colors ${selectedWeek === week.id ? 'ring-2 ring-primary' : ''}`}
@@ -256,7 +261,7 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold">
-                    Tuần {weeks?.data.find((w) => w.id === selectedWeek)?.week_number}
+                    Tuần {weeksData.find((w) => w.id === selectedWeek)?.week_number}
                   </h2>
                   <p className="text-muted-foreground">Quản lý ngày và circuits cho tuần này</p>
                 </div>
@@ -277,7 +282,7 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
                     <div key={i} className="h-32 bg-muted rounded animate-pulse" />
                   ))}
                 </div>
-              ) : days?.data.length === 0 ? (
+              ) : daysData.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12">
                   <Calendar className="w-12 h-12 text-muted-foreground mb-4" />
                   <h3 className="text-lg font-medium mb-2">Chưa có ngày nào được thêm</h3>
@@ -285,7 +290,7 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
                 </div>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {days?.data.map((day) => (
+                  {daysData.map((day) => (
                     <Card
                       key={day.id}
                       className={`cursor-pointer transition-colors ${
@@ -329,7 +334,7 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
                 <div className="mt-8">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold">
-                      Ngày {days?.data.find((d) => d.id === selectedDay)?.day_number} Circuits
+                      Ngày {daysData.find((d) => d.id === selectedDay)?.day_number} Circuits
                     </h3>
                     <AddButton
                       onClick={() => {
@@ -346,7 +351,7 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
                         <div key={i} className="h-24 bg-muted rounded animate-pulse" />
                       ))}
                     </div>
-                  ) : circuits?.data.length === 0 ? (
+                  ) : circuitsData.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12">
                       <ClipboardPen className="w-12 h-12 text-muted-foreground mb-4" />
                       <h3 className="text-lg font-medium mb-2">Chưa có circuit nào được thêm</h3>
@@ -354,7 +359,7 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {circuits?.data.map((circuit) => (
+                      {circuitsData.map((circuit) => (
                         <Card key={circuit.id}>
                           <CardHeader>
                             <div className="flex items-center justify-between">
@@ -586,35 +591,26 @@ function ImportDialog({ courseID, onSuccess }: { courseID: Course['id']; onSucce
           const weekResponse = await createCourseWeek(courseID, { week_number: w.week_number })
 
           for (const d of w.days) {
-            const dayResponse = await createWeekDay(courseID, weekResponse.data.id, {
-              day_number: d.day_number,
-              description: '',
-            })
+            try {
+              const dayResponse = await createWeekDay(courseID, weekResponse.data.id, {
+                day_number: d.day_number,
+                description: '',
+              })
 
-            await Promise.all(
-              d.circuits.map(
-                async (c) =>
-                  await createDayCircuit(courseID, weekResponse.data.id, dayResponse.data.id, {
-                    name: c.name,
-                    description: c.description,
-                    auto_replay_count: c.auto_replay_count,
-                    circuit_exercises: c.circuit_exercises,
-                  })
-              )
-            )
-
-            // for (const c of d.circuits) {
-            //   await createDayCircuit(courseID, weekResponse.data.id, dayResponse.data.id, {
-            //     name: c.name,
-            //     description: c.description,
-            //     auto_replay_count: c.auto_replay_count,
-            //     circuit_exercises: c.circuit_exercises,
-            //   })
-            // }
+              for (const c of d.circuits) {
+                await createDayCircuit(courseID, weekResponse.data.id, dayResponse.data.id, {
+                  name: c.name,
+                  description: c.description,
+                  auto_replay_count: c.auto_replay_count,
+                  circuit_exercises: c.circuit_exercises,
+                })
+              }
+            } catch (error) {
+              console.error(`Error processing day ${d.day_number} for week ${w.week_number}:`, error)
+            }
           }
         } catch (error) {
           console.error(`Error processing week ${w.week_number}:`, error)
-          // throw error
         }
       }
 

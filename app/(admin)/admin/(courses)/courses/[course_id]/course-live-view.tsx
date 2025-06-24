@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Calendar, Clock, Video, Edit, Trash2 } from 'lucide-react'
 
+import { sortByKey } from '@/lib/helpers'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { AddButton } from '@/components/buttons/add-button'
@@ -93,9 +94,7 @@ export function CourseLiveView({ courseID }: { courseID: Course['id'] }) {
     })
   }
 
-  const sortedDays = liveDays
-    ? [...liveDays.data].sort((a, b) => dayOrder.indexOf(a.day_of_week) - dayOrder.indexOf(b.day_of_week))
-    : []
+  const daysData = sortByKey(liveDays?.data || [], 'day_of_week', { transform: (day) => dayOrder.indexOf(day) })
 
   return (
     <div className="space-y-4">
@@ -111,7 +110,7 @@ export function CourseLiveView({ courseID }: { courseID: Course['id'] }) {
         </div>
       ) : (
         <div className="space-y-4">
-          {sortedDays.map((day) => (
+          {daysData.map((day) => (
             <Card key={day.id}>
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -137,63 +136,61 @@ export function CourseLiveView({ courseID }: { courseID: Course['id'] }) {
                   {day.sessions.length === 0 ? (
                     <p className="text-muted-foreground text-sm">Chưa có session nào được lên lịch cho ngày này</p>
                   ) : (
-                    day.sessions
-                      .sort((a, b) => a.session_number - b.session_number)
-                      .map((session) => (
-                        <div
-                          key={session.id}
-                          className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-muted/50 rounded-lg"
-                        >
-                          <div className="flex-1 mb-4 md:mb-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <Badge variant="outline">{session.session_number}</Badge>
-                              <h4 className="font-medium">{session.name}</h4>
-                            </div>
-                            <p className="text-sm text-muted-foreground">{session.description}</p>
+                    sortByKey(day.sessions, 'session_number').map((session) => (
+                      <div
+                        key={session.id}
+                        className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-muted/50 rounded-lg"
+                      >
+                        <div className="flex-1 mb-4 md:mb-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Badge variant="outline">{session.session_number}</Badge>
+                            <h4 className="font-medium">{session.name}</h4>
                           </div>
-                          <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-                            <div className="flex items-center gap-1">
-                              <Clock className="w-4 h-4 text-muted-foreground" />
-                              <span className="text-sm">
-                                {formatTime(session.start_time)} - {formatTime(session.end_time)}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Button size="sm" variant="outline" asChild>
-                                <a
-                                  href={session.link_zoom}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-1"
-                                >
-                                  <Video className="w-4 h-4 mr-1" />
-                                  Join Zoom
-                                </a>
-                              </Button>
-                              <MainButton
-                                size="icon"
-                                variant="ghost"
-                                onClick={() => handleEditSession(session, day)}
-                                icon={Edit}
-                              />
-                              <MainButton
-                                size="icon"
-                                variant="ghost"
-                                onClick={() => handleDeleteSession(day.id, session)}
-                                icon={Trash2}
-                                className="hover:text-destructive"
-                              />
-                            </div>
+                          <p className="text-sm text-muted-foreground">{session.description}</p>
+                        </div>
+                        <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm">
+                              {formatTime(session.start_time)} - {formatTime(session.end_time)}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button size="sm" variant="outline" asChild>
+                              <a
+                                href={session.link_zoom}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1"
+                              >
+                                <Video className="w-4 h-4 mr-1" />
+                                Join Zoom
+                              </a>
+                            </Button>
+                            <MainButton
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => handleEditSession(session, day)}
+                              icon={Edit}
+                            />
+                            <MainButton
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => handleDeleteSession(day.id, session)}
+                              icon={Trash2}
+                              className="hover:text-destructive"
+                            />
                           </div>
                         </div>
-                      ))
+                      </div>
+                    ))
                   )}
                 </div>
               </CardContent>
             </Card>
           ))}
 
-          {sortedDays.length === 0 && (
+          {daysData.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12">
               <Calendar className="w-12 h-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">Chưa có ngày nào được lên lịch</h3>

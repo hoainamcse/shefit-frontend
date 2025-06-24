@@ -1,3 +1,46 @@
+/**
+ * Sorts an array of objects by a specified key
+ * @param arr Array to sort
+ * @param key Object key to sort by
+ * @param options Additional sorting options
+ * @returns Sorted array (modifies original array)
+ */
+export function sortByKey<T extends Record<string, any>>(
+  arr: T[],
+  key: keyof T,
+  options?: {
+    direction?: 'asc' | 'desc'
+    transform?: (val: any) => number | string
+    nullsPosition?: 'first' | 'last'
+  }
+): T[] {
+  const {
+    direction = 'asc',
+    transform,
+    nullsPosition = 'last'
+  } = options || {};
+
+  return arr.sort((a, b) => {
+    // Handle undefined/null values
+    const aIsNil = a[key] === undefined || a[key] === null;
+    const bIsNil = b[key] === undefined || b[key] === null;
+
+    if (aIsNil && bIsNil) return 0;
+    if (aIsNil) return nullsPosition === 'first' ? -1 : 1;
+    if (bIsNil) return nullsPosition === 'first' ? 1 : -1;
+
+    // Apply transformation if provided
+    const aVal = transform ? transform(a[key]) : a[key];
+    const bVal = transform ? transform(b[key]) : b[key];
+
+    // Compare values
+    const compareResult = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+
+    // Apply sort direction
+    return direction === 'asc' ? compareResult : -compareResult;
+  });
+}
+
 export const removeAccents = (str: string): string => {
   return str
     .normalize('NFD')

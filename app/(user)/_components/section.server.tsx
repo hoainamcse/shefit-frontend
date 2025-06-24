@@ -5,15 +5,15 @@ import { ArrowRight } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { CupIcon } from '@/components/icons/CupIcon'
+import { getCourses } from '@/network/server/courses'
 import { BodyIcon } from '@/components/icons/BodyIcon'
+import { HtmlContent } from '@/components/html-content'
 import { ArrowIcon } from '@/components/icons/ArrowIcon'
 import { PersonIcon } from '@/components/icons/PersonIcon'
 import { MainButton } from '@/components/buttons/main-button'
 import { DumbbellIcon } from '@/components/icons/DumbbellIcon'
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import { formSchema } from '@/app/(admin)/admin/(content-input)/homepage/schema'
-import { getSubscriptions } from '@/network/server/subscriptions'
-import { getCourses } from '@/network/server/courses'
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 
 type DataType = z.infer<typeof formSchema>
 
@@ -105,11 +105,8 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                     </span>
                   </div>
                 </Link>
-                <div className="flex-1 flex items-center">
-                  <p
-                    dangerouslySetInnerHTML={{ __html: sub.description_1 }}
-                    className="text-center text-neutral-500 w-full"
-                  />
+                <div className="flex-1 flex items-center justify-center">
+                  <HtmlContent content={sub.description_1} />
                 </div>
                 <Carousel className="mx-4">
                   <CarouselContent>
@@ -130,7 +127,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                                 mIndex === 2 && 'bg-[#B60606]'
                               )}
                             >
-                              <p className="uppercase text-sm lg:text-base font-semibold">{course.course_name}</p>
+                              <p className="uppercase text-sm lg:text-base font-semibold max-w-[75%] truncate">{course.course_name}</p>
                               <p className="capitalize text-sm lg:text-base">{course.difficulty_level}</p>
                             </div>
                           </div>

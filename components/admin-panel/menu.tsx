@@ -1,19 +1,17 @@
 'use client'
 
 import Link from 'next/link'
-import { Ellipsis, LogOut } from 'lucide-react'
+import { Ellipsis } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 import { cn } from '@/lib/utils'
 import { getMenuList } from '@/lib/menu-list'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { CollapseMenuButton } from '@/components/admin-panel/collapse-menu-button'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { CollapseMenuButton } from '@/components/admin-panel/collapse-menu-button'
+
 import { useSession } from '../providers/session-provider'
-import { signOut } from '@/network/server/auth'
-import { Badge } from '../ui/badge'
-import { roleLabel } from '@/lib/label'
 import { Spinner } from '../spinner'
 
 interface MenuProps {
@@ -109,22 +107,6 @@ export function Menu({ isOpen }: MenuProps) {
               )}
             </li>
           ))}
-          <li className="w-full grow flex flex-col items-center justify-end">
-            {session && <Badge className="uppercase py-2 px-3">{roleLabel[session.role]}</Badge>}
-            <Tooltip disableHoverableContent>
-              <TooltipTrigger asChild>
-                <Button onClick={signOut} variant="outline" className="w-full justify-center h-10 mt-5">
-                  <span className={cn(isOpen === false ? '' : 'mr-4')}>
-                    <LogOut size={18} />
-                  </span>
-                  <p className={cn('whitespace-nowrap', isOpen === false ? 'opacity-0 hidden' : 'opacity-100')}>
-                    Đăng xuất
-                  </p>
-                </Button>
-              </TooltipTrigger>
-              {isOpen === false && <TooltipContent side="right">Đăng xuất</TooltipContent>}
-            </Tooltip>
-          </li>
         </ul>
       </nav>
     </ScrollArea>

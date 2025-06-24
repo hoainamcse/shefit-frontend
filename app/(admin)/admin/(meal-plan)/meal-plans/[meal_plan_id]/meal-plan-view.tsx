@@ -17,6 +17,7 @@ import { dishMealTimeLabel } from '@/lib/label'
 import { Spinner } from '@/components/spinner'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
+import { sortByKey } from '@/lib/helpers'
 import {
   createMealPlanDay,
   createMealPlanDish,
@@ -42,6 +43,8 @@ interface MealPlanViewProps {
   mealPlanID: MealPlan['id']
 }
 
+const mealTimeOrder: DishMealTime[] = ['breakfast', 'lunch', 'dinner', 'snack']
+
 export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
   const [isEditDayOpen, setIsEditDayOpen] = useState(false)
   const [isEditDishOpen, setIsEditDishOpen] = useState(false)
@@ -53,7 +56,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
   const isEditDish = !!selectedDish
 
   const {
-    data: daysData,
+    data: days,
     isLoading: isDaysLoading,
     error: daysError,
     refetch: daysRefetch,
@@ -69,7 +72,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
   // }, [daysData, selectedDay])
 
   const {
-    data: dishesData,
+    data: dishes,
     isLoading: isDishesLoading,
     error: dishesError,
     refetch: dishesRefetch,
@@ -95,14 +98,8 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
     )
   }
 
-  const days = daysData?.data || []
-  const dishes = dishesData?.data || []
-
-  const sortedDays = [...days].sort((a: MealPlanDay, b: MealPlanDay) => a.day_number - b.day_number)
-  const mealTimeOrder: DishMealTime[] = ['breakfast', 'lunch', 'dinner', 'snack']
-  const sortedDishes = [...dishes].sort((a: MealPlanDish, b: MealPlanDish) => {
-    return mealTimeOrder.indexOf(a.meal_time) - mealTimeOrder.indexOf(b.meal_time)
-  })
+  const daysData = sortByKey(days?.data || [], 'day_number')
+  const dishesData = sortByKey(dishes?.data || [], 'meal_time', { transform: (val) => mealTimeOrder.indexOf(val) })
 
   const onAddDay = () => {
     setIsAddingDay(true)
@@ -190,7 +187,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
           </div>
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2">
-          {sortedDays.map((day: MealPlanDay) => (
+          {daysData.map((day: MealPlanDay) => (
             <button
               type="button"
               key={day.id}
@@ -204,7 +201,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
             </button>
           ))}
         </div>
-        {sortedDays.length === 0 && (
+        {daysData.length === 0 && (
           <div className="text-center text-muted-foreground">Chưa có ngày nào trong thực đơn</div>
         )}
       </div>
@@ -214,7 +211,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
         <div>
           <div className="flex items-center justify-between mb-4">
             <Label className="text-base">
-              Danh sách món ăn ngày {sortedDays.find((d: MealPlanDay) => d.id === selectedDay.id)?.day_number}
+              Danh sách món ăn ngày {daysData.find((d: MealPlanDay) => d.id === selectedDay.id)?.day_number}
             </Label>
             <AddButton text="Thêm món ăn" onClick={onAddDish} />
           </div>
@@ -227,11 +224,11 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
             <div className="flex items-center justify-center">
               <p className="text-destructive">{dishesError.message}</p>
             </div>
-          ) : sortedDishes.length === 0 ? (
+          ) : dishesData.length === 0 ? (
             <div className="text-center text-muted-foreground">Chưa có món ăn trong ngày</div>
           ) : (
             <div className="space-y-4">
-              {sortedDishes.map((dish, index) => (
+              {dishesData.map((dish, index) => (
                 <div key={`dish-${index}`} className="border rounded-lg p-4">
                   <div className="flex justify-between items-start">
                     <div className="space-y-2">
