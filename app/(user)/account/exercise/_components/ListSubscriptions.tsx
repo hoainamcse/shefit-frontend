@@ -23,6 +23,10 @@ export default function ListSubscriptions() {
   } = useSubscription()
 
   useEffect(() => {
+    setShowFavorites(true)
+  }, [])
+
+  useEffect(() => {
     async function fetchData() {
       if (!session) return
 
@@ -35,8 +39,6 @@ export default function ListSubscriptions() {
           )
 
           setUserSubscriptions(sortedSubscriptions)
-
-          // Only set the selected subscription if it's not already set
           if (!selectedSubscription) {
             setSelectedSubscription(sortedSubscriptions[0])
           }
@@ -62,7 +64,6 @@ export default function ListSubscriptions() {
 
           setSubscriptionNames(namesMap)
         } else {
-          // No subscriptions found
           setSelectedSubscription(undefined)
         }
       } catch (error) {
@@ -83,10 +84,8 @@ export default function ListSubscriptions() {
       return
     }
 
-    // Reset favorites view when selecting a subscription
     setShowFavorites(false)
 
-    // Find and set the selected subscription
     const subscriptionId = parseInt(value)
     const subscription = userSubscriptions.find((sub) => sub.id === subscriptionId)
     if (subscription) {

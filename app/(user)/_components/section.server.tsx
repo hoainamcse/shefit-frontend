@@ -85,10 +85,19 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
           <h2 className="text-2xl lg:text-3xl font-bold">{data.title}</h2>
           <p className="text-primary">{data.description}</p>
         </div>
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div
+            className={cn(
+              'grid grid-cols-1 gap-8 items-stretch',
+              data.subscriptions.length === 1
+                ? 'lg:grid-cols-1 max-w-md mx-auto'
+                : data.subscriptions.length === 2
+                ? 'lg:grid-cols-2 max-w-xl mx-auto'
+                : 'lg:grid-cols-3'
+            )}
+          >
             {data.subscriptions.map((sub, mIndex) => (
-              <div key={mIndex} className="flex flex-col h-full space-y-4">
+              <div key={mIndex} className="flex flex-col h-full w-full max-w-sm space-y-4">
                 <Link href={'#'}>
                   <div
                     className={cn(
@@ -127,7 +136,9 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                                 mIndex === 2 && 'bg-[#B60606]'
                               )}
                             >
-                              <p className="uppercase text-sm lg:text-base font-semibold max-w-[75%] truncate">{course.course_name}</p>
+                              <p className="uppercase text-sm lg:text-base font-semibold max-w-[75%] truncate">
+                                {course.course_name}
+                              </p>
                               <p className="capitalize text-sm lg:text-base">{course.difficulty_level}</p>
                             </div>
                           </div>

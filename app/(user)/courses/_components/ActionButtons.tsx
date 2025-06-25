@@ -8,6 +8,7 @@ import { Course } from '@/models/course'
 import { UserCourse } from '@/models/user-courses'
 import { addFavouriteCourse } from '@/network/server/favourite-course'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { getUserSubscriptions } from '@/network/server/user-subscriptions'
 interface UserCourseItem extends UserCourse {
   is_active: boolean
   start_date: string
@@ -36,10 +37,26 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
       }
 
       try {
-        const response = await getUserCourses(session.userId.toString())
-        const userCourse = (response.data as UserCourseItem[])?.find((course) => {
+        // First check in user subscriptions
+        const subscriptionsResponse = await getUserSubscriptions(session.userId.toString())
+        const currentCourseId = Number(courseId)
+        
+        // Check if the course exists in any subscription's courses
+        const courseInSubscription = subscriptionsResponse.data?.some(subscription => 
+          subscription.subscription?.courses?.some(course => 
+            Number(course.id) === currentCourseId
+          )
+        )
+        
+        if (courseInSubscription) {
+          setCourseStatus('exists')
+          return
+        }
+        
+        // If not found in subscriptions, check in user courses as a fallback
+        const coursesResponse = await getUserCourses(session.userId.toString())
+        const userCourse = (coursesResponse.data as UserCourseItem[])?.find((course) => {
           const userCourseId = Number(course.course_id)
-          const currentCourseId = Number(courseId)
           return userCourseId === currentCourseId && course.is_active === true
         })
 
@@ -85,24 +102,26 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
             >
               Bắt đầu
             </Button>
-            <Button
-              onClick={async () => {
-                if (!session) {
-                  setShowLoginDialog(true)
-                  return
-                }
-                try {
-                  await addFavouriteCourse(session.userId.toString(), courseId.toString())
-                  toast.success('Đã thêm vào danh sách yêu thích thành công!')
-                } catch (error) {
-                  console.error('Error saving to favorites:', error)
-                  toast.error('Có lỗi xảy ra khi lưu vào danh sách yêu thích!')
-                }
-              }}
-              className="w-full rounded-full text-xl bg-white text-[#13D8A7] h-14 border-2 border-[#13D8A7]"
-            >
-              Lưu
-            </Button>
+            {courseStatus !== 'exists' && (
+              <Button
+                onClick={async () => {
+                  if (!session) {
+                    setShowLoginDialog(true)
+                    return
+                  }
+                  try {
+                    await addFavouriteCourse(session.userId.toString(), courseId.toString())
+                    toast.success('Đã thêm vào danh sách yêu thích thành công!')
+                  } catch (error) {
+                    console.error('Error saving to favorites:', error)
+                    toast.error('Có lỗi xảy ra khi lưu vào danh sách yêu thích!')
+                  }
+                }}
+                className="w-full rounded-full text-xl bg-white text-[#13D8A7] h-14 border-2 border-[#13D8A7]"
+              >
+                Lưu
+              </Button>
+            )}
           </>
         )}
       </div>

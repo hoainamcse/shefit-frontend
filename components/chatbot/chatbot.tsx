@@ -541,7 +541,7 @@ export function ChatBotButton() {
   return (
     <>
       <MainButton
-        className={`fixed z-50 bottom-4 right-4 rounded-full`}
+        className={`fixed z-50 bottom-20 right-4 rounded-full`}
         style={{
           background: 'linear-gradient(45deg,rgba(255, 174, 176, 1) 40%, rgba(19, 216, 167, 1) 90%)',
         }}

@@ -100,7 +100,7 @@ export default function BodyQuiz() {
           <div className="text-[#FF7873] text-[30px] leading-[33px] font-[Coiny] mb-10">Kết quả</div>
           <div className="flex flex-col gap-[18px]">
             {loading ? (
-              <div className="text-center py-4">
+              <div className="text-center py-4 w-full justify-center items-center mx-auto flex">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
               </div>
             ) : userBodyQuizzes.data && userBodyQuizzes.data.length > 0 ? (

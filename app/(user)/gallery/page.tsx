@@ -96,9 +96,7 @@ export default function Gallery() {
                     <img
                       src={muscleGroup.image ?? undefined}
                       alt=""
-                      className="aspect-[5/3] object-cover rounded-xl mb-4"
-                      width={585}
-                      height={373}
+                      className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
                     />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>
@@ -171,13 +169,7 @@ export default function Gallery() {
               <Link href={`/gallery/meal/${diet.id}`} key={diet.id}>
                 <div key={`menu-${diet.id}`} className="text-xl">
                   <div className="relative group">
-                    <img
-                      src={diet.image}
-                      alt=""
-                      className="aspect-[5/3] object-cover rounded-xl mb-4"
-                      width={585}
-                      height={373}
-                    />
+                    <img src={diet.image} alt="" className="aspect-[5/3] object-cover rounded-xl mb-4 w-full" />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>
                   <p className="font-bold">{diet.name}</p>
