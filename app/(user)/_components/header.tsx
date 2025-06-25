@@ -30,10 +30,10 @@ export function Header() {
   const { session } = useSession()
 
   const authButton = session ? (
-    <MainButton onClick={signOut} className="rounded-full w-44" text="Đăng xuất" variant="secondary" />
+    <MainButton onClick={signOut} className="rounded-full w-32 md:w-36 lg:w-40 xl:w-44" text="Đăng xuất" variant="secondary" />
   ) : (
     <Link href="/auth/login">
-      <MainButton className="rounded-full w-44" text="Đăng nhập" />
+      <MainButton className="rounded-full w-32 md:w-36 lg:w-40 xl:w-44" text="Đăng nhập" />
     </Link>
   )
 
@@ -88,24 +88,28 @@ export function Header() {
   return (
     <header className="bg-primary sticky top-0 inset-x-0 z-50">
       <div className="container mx-auto flex justify-between items-center p-3">
-        <Link href="/">
+        <Link href="/" className="flex-shrink-0">
           <Image src="/logo-mono-horizontal.png" alt="logo-mono-horizontal" width={136} height={40} />
         </Link>
-        <div className="justify-center items-center gap-6 text-background hidden lg:flex">
+        <div className="justify-center items-center gap-2 xl:gap-6 text-background hidden lg:flex">
           {navItems.map((item, index) =>
             item.label === "Gói Member" ? (
               <button
                 key={`navItem-${index}`}
                 onClick={() => (window.location.href = item.url)}
-                className="flex flex-col items-center gap-1 bg-transparent border-none text-white cursor-pointer"
+                className="flex flex-col items-center gap-1 bg-transparent border-none text-white cursor-pointer whitespace-nowrap text-xs md:text-sm lg:text-base xl:text-lg"
               >
-                <item.icon />
-                {item.label}
+                <div className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 flex items-center justify-center">
+                  <item.icon />
+                </div>
+                <span className="whitespace-nowrap">{item.label}</span>
               </button>
             ) : (
               <Link key={`navItem-${index}`} href={item.url} className="flex flex-col items-center gap-1">
-                <item.icon />
-                {item.label}
+                <div className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 flex items-center justify-center">
+                  <item.icon />
+                </div>
+                <span className="whitespace-nowrap text-xs md:text-sm lg:text-base xl:text-lg">{item.label}</span>
               </Link>
             )
           )}

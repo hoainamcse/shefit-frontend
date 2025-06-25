@@ -137,11 +137,36 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
       await handleStartClick(e)
 
       const subscriptions = await getUserSubscriptions(session?.userId!.toString())
-      const hasAccess = subscriptions.data?.some((subscription) => {
-        const hasActiveSubscription = subscription.status === 'active' && subscription.subscription.courses
-        if (!hasActiveSubscription) return false
-        return subscription.subscription.courses.some((course) => Number(course.id) === Number(courseId))
-      })
+      
+      // Find all subscriptions that contain the current course
+      const subscriptionsWithCourse = subscriptions.data?.filter((subscription) => {
+        const hasCourses = subscription.subscription && subscription.subscription.courses
+        if (!hasCourses) return false
+        
+        return subscription.subscription.courses.some(course => Number(course.id) === Number(courseId))
+      }) || []
+      
+      let hasAccess = false
+      
+      // If user has subscriptions with this course
+      if (subscriptionsWithCourse.length > 0) {
+        // Sort subscriptions by end date (latest first)
+        const sortedSubscriptions = [...subscriptionsWithCourse].sort((a, b) => {
+          const dateA = new Date(a.subscription_end_at)
+          const dateB = new Date(b.subscription_end_at)
+          return dateB.getTime() - dateA.getTime() // Latest end date first
+        })
+        
+        // Check if the latest subscription is still active and not expired
+        const latestSubscription = sortedSubscriptions[0]
+        const endDate = new Date(latestSubscription.subscription_end_at)
+        const currentDate = new Date()
+        
+        const isActive = latestSubscription.status === 'active'
+        const isNotExpired = endDate > currentDate
+        
+        hasAccess = isActive && isNotExpired
+      }
 
       if (hasAccess) {
         window.open(session_.link_zoom, '_blank')

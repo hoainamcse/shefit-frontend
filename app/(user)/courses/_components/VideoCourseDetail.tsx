@@ -161,22 +161,44 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
       const subscriptions = await getUserSubscriptions(session.userId)
       console.log('Subscriptions data:', subscriptions.data)
 
-      const hasAccess = subscriptions.data.some((sub: any) => {
-        const isActive = sub.status === 'active'
-        const hasCourse =
-          sub.courses?.some((course: any) => {
-            const match = course.id == courseId
-            console.log(
-              `Checking course: ${course.id} (${typeof course.id}) vs ${courseId} (${typeof courseId}), match: ${match}`
-            )
-            return match
-          }) || false
-        console.log(`Subscription ${sub.id}: active=${isActive}, hasCourse=${hasCourse}`)
-        return isActive && hasCourse
+      // Find all subscriptions that contain the course
+      const subscriptionsWithCourse = subscriptions.data.filter((sub: any) => {
+        return sub.subscription?.courses?.some((course: any) => {
+          const match = course.id == courseId
+          console.log(
+            `Checking course: ${course.id} (${typeof course.id}) vs ${courseId} (${typeof courseId}), match: ${match}`
+          )
+          return match
+        })
       })
 
-      console.log('Final access check result:', hasAccess)
-      return hasAccess
+      console.log('Subscriptions with this course:', subscriptionsWithCourse.length)
+
+      // Check if there are any active subscriptions with this course
+      if (subscriptionsWithCourse.length > 0) {
+        // Sort subscriptions by end date (descending)
+        const sortedSubscriptions = [...subscriptionsWithCourse].sort((a: any, b: any) => {
+          const dateA = new Date(a.subscription_end_at)
+          const dateB = new Date(b.subscription_end_at)
+          return dateB.getTime() - dateA.getTime() // Latest end date first
+        })
+
+        // Check if the subscription with the latest end date is still active
+        const latestSubscription = sortedSubscriptions[0]
+        const endDate = new Date(latestSubscription.subscription_end_at)
+        const currentDate = new Date()
+        
+        const isActive = latestSubscription.status === 'active'
+        const isNotExpired = endDate > currentDate
+
+        console.log(`Latest subscription (ID: ${latestSubscription.id}): active=${isActive}, expired=${!isNotExpired}, ends at ${endDate}`)
+        
+        const hasAccess = isActive && isNotExpired
+        console.log('Final access check result:', hasAccess)
+        return hasAccess
+      }
+
+      return false
     } catch (error) {
       console.error('Error checking course access:', error)
       return false

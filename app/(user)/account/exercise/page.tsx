@@ -15,11 +15,11 @@ function ExerciseContent() {
   if (showFavorites) {
     return <FavouriteContent />
   }
-  
+
   // if (isLoading) {
   //   return <div className="py-4 text-center">Đang tải dữ liệu...</div>
   // }
-  
+
   // if (!selectedSubscription) {
   //   return <div className="py-4 text-center">Không tìm thấy gói đăng ký</div>
   // }
@@ -72,7 +72,7 @@ function ExerciseContent() {
 
 export default function Exercise() {
   return (
-    <div className="px-14">
+    <div className="px-6 lg:px-14">
       <SubscriptionProvider>
         <ListSubscriptions />
         <ExerciseContent />

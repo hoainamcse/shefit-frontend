@@ -58,7 +58,7 @@ export default function PurchasedOrder() {
       <div className="flex flex-col items-center justify-center mt-20 w-full">
         <p className="text-2xl mb-6 text-center">Bạn chưa có đơn hàng nào, xem sản phẩm của chúng tôi</p>
         <Link href="/products">
-          <Button className="h-[60px] w-[586px] bg-[#13D8A7] text-white px-6 py-2 rounded-full text-lg transition-colors">
+          <Button className="h-[60px] w-full max-w-[586px] bg-[#13D8A7] text-white px-6 py-2 rounded-full text-lg transition-colors">
             Mua ngay
           </Button>
         </Link>
@@ -83,7 +83,7 @@ export default function PurchasedOrder() {
 
         return (
           <div key={`cart-${cart.id}`} className="flex items-center border-b border-gray-100 py-4 justify-between">
-            <div className="flex items-center gap-10 text-xl">
+            <div className="flex items-center gap-2 lg:gap-10 text-lg">
               <div className="size-[148px] relative mr-4">
                 <img src={thumbnailImage} alt="Product thumbnail" className="object-cover aspect-square rounded-lg" />
               </div>
@@ -91,13 +91,15 @@ export default function PurchasedOrder() {
                 <div className="font-bold">Đơn Hàng Ngày</div>
                 <div className="text-gray-500">{formatDate(cart.created_at)}</div>
               </div>
-              <div className="text-center px-8">
-                <div className="font-bold text-[#737373]">{cart.total.toLocaleString()} vnđ</div>
+              <div className="flex flex-col lg:flex-row items-center">
+                <div className="text-center px-8">
+                  <div className="font-bold text-[#737373]">{cart.total.toLocaleString()} vnđ</div>
+                </div>
+                <Link href={`/account/cart/${cart.id}`} className="text-[#00C7BE] hover:underline px-4">
+                  Xem chi tiết
+                </Link>
               </div>
             </div>
-            <Link href={`/account/cart/${cart.id}`} className="text-[#00C7BE] hover:underline px-4">
-              Xem chi tiết
-            </Link>
           </div>
         )
       })}
