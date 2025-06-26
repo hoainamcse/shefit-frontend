@@ -47,6 +47,13 @@ export async function deleteMealPlan(id: MealPlan['id']): Promise<ApiResponse<st
   return await response.json()
 }
 
+export async function duplicateMealPlan(id: MealPlan['id']): Promise<ApiResponse<MealPlan>> {
+  const response = await fetchData(`/v1/meal-plans/${id}/duplicate`, {
+    method: 'POST',
+  })
+  return await response.json()
+}
+
 // Meal Plan Day APIs
 export const queryKeyMealPlanDays = 'meal-plan-days'
 

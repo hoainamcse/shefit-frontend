@@ -112,7 +112,7 @@ export function DataTable<T extends { id: string | number }>({
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows
     const updatedData = data.filter((item) => !selectedRows.some((row) => row.original.id === item.id))
-    onDelete?.(updatedData)
+    onDelete?.(selectedRows.map((row) => row.original))
     table.resetRowSelection()
   }
 
@@ -299,7 +299,7 @@ export function DataTable<T extends { id: string | number }>({
         </div>
         <div className="flex items-center gap-3">
           {/* Delete button */}
-          {/* {table.getSelectedRowModel().rows.length > 0 && (
+          {table.getSelectedRowModel().rows.length > 0 && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button className="ml-auto" variant="outline">
@@ -333,7 +333,7 @@ export function DataTable<T extends { id: string | number }>({
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-          )} */}
+          )}
           {/* Add user button */}
           {rightSection}
         </div>

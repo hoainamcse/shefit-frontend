@@ -33,3 +33,12 @@ export async function deleteExercise(id: Exercise['id']): Promise<ApiResponse<st
   })
   return await response.json()
 }
+
+export async function deleteBulkExercise(ids: Exercise['id'][]): Promise<ApiResponse<string>> {
+  const response = await fetchData('/v1/exercises/bulk', {
+    method: 'DELETE',
+    body: JSON.stringify(ids),
+  })
+  return await response.json()
+}
+  

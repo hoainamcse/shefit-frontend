@@ -8,7 +8,7 @@ import { useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { deleteCourse, getCourses, queryKeyCourses } from '@/network/client/courses'
+import { deleteCourse, duplicateCourse, getCourses, queryKeyCourses } from '@/network/client/courses'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -127,7 +127,9 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
-        cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
+        cell: ({ row }) => (
+          <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} onDuplicate={onDuplicateRow} />
+        ),
         size: 60,
         enableHiding: false,
       },
@@ -143,6 +145,19 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
 
   const onEditRow = (row: Course) => {
     router.push(`/admin/courses/${row.id}`)
+  }
+
+  const onDuplicateRow = (row: Course) => {
+    const duplicatePromise = () => duplicateCourse(row.id)
+
+    toast.promise(duplicatePromise, {
+      loading: 'Đang nhân bản...',
+      success: (_) => {
+        refetch()
+        return 'Nhân bản khoá tập thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
   }
 
   const onDeleteRow = async (row: Course) => {

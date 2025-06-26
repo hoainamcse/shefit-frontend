@@ -19,9 +19,15 @@ interface RowActionsProps<T extends { id: string | number }> {
   row: Row<T>
   onEdit?: (data: T) => void
   onDelete?: (data: T) => void
+  onDuplicate?: (data: T) => void
 }
 
-export function RowActions<T extends { id: string | number }>({ row, onEdit, onDelete }: RowActionsProps<T>) {
+export function RowActions<T extends { id: string | number }>({
+  row,
+  onEdit,
+  onDelete,
+  onDuplicate,
+}: RowActionsProps<T>) {
   const { copy, copied } = useClipboard()
 
   function onCopy() {
@@ -53,6 +59,12 @@ export function RowActions<T extends { id: string | number }>({ row, onEdit, onD
             <span>Sao chép ID</span>
             <DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
           </DropdownMenuItem>
+          {onDuplicate && (
+            <DropdownMenuItem onClick={() => onDuplicate(row.original)}>
+              <span>Nhân bản</span>
+              <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => onDelete?.(row.original)}>

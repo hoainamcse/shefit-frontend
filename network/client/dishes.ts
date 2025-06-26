@@ -27,10 +27,10 @@ export async function updateDish(id: Dish['id'], data: DishPayload): Promise<Api
   return await response.json()
 }
 
-export async function deleteDish(id: Dish['id']): Promise<ApiResponse<string>> {
+export async function deleteDish(ids: Dish['id'][]): Promise<ApiResponse<string>> {
   const response = await fetchData(`/v1/dishes:bulkDeleteByIds`, {
     method: 'POST',
-    body: JSON.stringify([id]),
+    body: JSON.stringify(ids),
   })
   return await response.json()
 }

@@ -53,6 +53,13 @@ export async function deleteCourse(id: Course['id']): Promise<ApiResponse<string
   return await response.json()
 }
 
+export async function duplicateCourse(id: Course['id']): Promise<ApiResponse<Course>> {
+  const response = await fetchData(`/v1/courses/${id}/duplicate`, {
+    method: 'POST',
+  })
+  return await response.json()
+}
+
 // Course Week APIs
 export const queryKeyCourseWeeks = 'course-weeks'
 

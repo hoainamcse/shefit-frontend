@@ -8,7 +8,7 @@ import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { deleteMealPlan, getMealPlans, queryKeyMealPlans } from '@/network/client/meal-plans'
+import { deleteMealPlan, duplicateMealPlan, getMealPlans, queryKeyMealPlans } from '@/network/client/meal-plans'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -103,7 +103,9 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
-        cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
+        cell: ({ row }) => (
+          <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} onDuplicate={onDuplicateRow} />
+        ),
         size: 60,
         enableHiding: false,
       },
@@ -119,6 +121,19 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
 
   const onEditRow = (row: MealPlan) => {
     router.push(`/admin/meal-plans/${row.id}`)
+  }
+
+  const onDuplicateRow = (row: MealPlan) => {
+    const duplicatePromise = () => duplicateMealPlan(row.id)
+
+    toast.promise(duplicatePromise, {
+      loading: 'Đang nhân bản...',
+      success: (_) => {
+        refetch()
+        return 'Nhân bản thực đơn thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
   }
 
   const onDeleteRow = async (row: MealPlan) => {

@@ -8,7 +8,13 @@ import { ImportIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { createExercise, deleteExercise, getExercises, queryKeyExercises } from '@/network/client/exercises'
+import {
+  createExercise,
+  deleteBulkExercise,
+  deleteExercise,
+  getExercises,
+  queryKeyExercises,
+} from '@/network/client/exercises'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -153,6 +159,19 @@ export function ExercisesTable() {
     })
   }
 
+  const onDeleteRows = async (selectedRows: Exercise[]) => {
+    const deletePromise = () => deleteBulkExercise(selectedRows.map((row) => row.id))
+
+    toast.promise(deletePromise, {
+      loading: 'Đang xoá...',
+      success: (_) => {
+        refetch()
+        return 'Xoá bài tập thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
+  }
+
   const onEditSuccess = () => {
     setSelectedRow(null)
     setIsEditSheetOpen(false)
@@ -184,6 +203,7 @@ export function ExercisesTable() {
         columns={columns}
         state={{ pagination }}
         rowCount={data?.paging.total}
+        onDelete={onDeleteRows}
         onPaginationChange={setPagination}
         rightSection={
           <>

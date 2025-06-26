@@ -93,7 +93,7 @@ export function DishesTable() {
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
-        cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
+        cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={(row) => onDeleteRows([row])} />,
         size: 60,
         enableHiding: false,
       },
@@ -114,8 +114,9 @@ export function DishesTable() {
     setIsEditSheetOpen(true)
   }
 
-  const onDeleteRow = async (row: Dish) => {
-    const deletePromise = () => deleteDish(row.id)
+  const onDeleteRows = async (selectedRows: Dish[]) => {
+    console.log(selectedRows)
+    const deletePromise = () => deleteDish(selectedRows.map((row) => row.id))
 
     toast.promise(deletePromise, {
       loading: 'Đang xoá...',
@@ -158,6 +159,7 @@ export function DishesTable() {
         columns={columns}
         state={{ pagination }}
         rowCount={data?.paging.total}
+        onDelete={onDeleteRows}
         onPaginationChange={setPagination}
         rightSection={
           <>

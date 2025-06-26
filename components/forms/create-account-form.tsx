@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { FormInputField, FormSelectField, FormMultiSelectPaginatedField } from '@/components/forms/fields'
 
 import { Course } from '@/models/course'
@@ -137,6 +137,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
   })
 
   const userRole = form.watch('role')
+  const watchedSubscriptions = form.watch('subscriptions')
 
   const {
     control,
@@ -267,8 +268,8 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
       await updateUser(userId, userUpdateData)
 
       // 2. Handle subscriptions
+      const currentSubscriptions = await getUserSubscriptions(userId)
       if (values.subscriptions && values.subscriptions.length > 0) {
-        const currentSubscriptions = await getUserSubscriptions(userId)
         const formSubIds = values.subscriptions.filter((sub) => sub.id).map((sub) => sub.id)
         const deletedSubscriptions = currentSubscriptions.data.filter((sub) => !formSubIds.includes(sub.id))
 
@@ -282,6 +283,12 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
         } else {
           await handleCreateUpdateUserSubscription(values.subscriptions, userId)
         }
+      } else if (values.subscriptions?.length === 0) {
+        await Promise.all(
+          currentSubscriptions.data
+            .filter((sub) => sub.id)
+            .map((sub) => deleteUserSubscription(userId, sub.subscription.id.toString()))
+        )
       }
 
       toast.dismiss(toastId)
@@ -453,7 +460,7 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
               <h2 className="text-lg font-semibold">Gói membership</h2>
               <AddButton
                 type="button"
-                disabled={subscriptions.some((sub) => !sub.subscription_id)}
+                disabled={watchedSubscriptions?.some((sub) => !sub.subscription_id)}
                 text="Thêm gói membership"
                 onClick={handleAddMembershipPackage}
               />
@@ -469,220 +476,210 @@ export default function CreateAccountForm({ data }: CreateAccountFormProps) {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                {subscriptions.map((subscription, idx) => {
+                {subscriptions.map((sub, idx) => {
                   const initialSelection =
-                    subscription.subscription_id && initialSelections[subscription.subscription_id]
-                      ? initialSelections[subscription.subscription_id]
+                    sub.subscription_id && initialSelections[sub.subscription_id]
+                      ? initialSelections[sub.subscription_id]
                       : { mealPlans: [], exercises: [], dishes: [] }
 
-                  const isExistingRecord = Boolean(subscription.id) && subscription.id! > 0
-                  const membership = membershipList.find((m) => Number(m.id) === subscription.subscription_id)
-                  const gifts = membership?.gifts || []
+                  const isExistingRecord = Boolean(sub.id) && sub.id! > 0
+                  const selectedSubscriptionId = watchedSubscriptions?.[idx]?.subscription_id ?? sub.subscription_id
+                  const membership = membershipList.find((m) => Number(m.id) === selectedSubscriptionId)
+                  const gifts = membership?.gifts ?? []
 
                   return (
-                    <div
-                      key={subscription.fieldId}
-                      className="rounded-md border p-4 bg-muted/10 flex flex-col isolate overflow-hidden"
-                    >
+                    <div key={sub.fieldId} className="rounded-md border p-4 space-y-4 isolate overflow-hidden">
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="font-medium">{membership?.name || `Gói membership #${idx + 1}`}</h3>
                         <Button type="button" variant="ghost" size="icon" onClick={() => removeSubscription(idx)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
+                      {/* subscription_id */}
+                      <FormField
+                        control={form.control}
+                        name={`subscriptions.${idx}.subscription_id`}
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
+                            <FormLabel>Tên gói membership</FormLabel>
 
-                      {/* Membership Details Section */}
-                      <div className="flex flex-col space-y-4 flex-grow">
-                        {/* Subscription Select */}
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">Tên gói membership</label>
-                          <Select
-                            value={subscription.subscription_id?.toString() || ''}
-                            disabled={isExistingRecord}
-                            onValueChange={(value: string) => {
-                              const courseFormat = membershipList.find((m) => m.id == value)?.course_format
-                              updateSubscription(idx, {
-                                ...subscription,
-                                subscription_id: Number(value),
-                                subscription_end_at: '',
-                                course_format: courseFormat || '',
-                              })
-                            }}
-                          >
-                            <SelectTrigger className={isExistingRecord ? 'cursor-not-allowed opacity-70' : ''}>
-                              <SelectValue placeholder="Chọn gói membership" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {membershipList.map((m) => {
-                                // Check if this membership is already selected in another row
-                                const isAlreadySelected = subscriptions.some(
-                                  (sub, subIdx) => subIdx !== idx && sub.subscription_id === Number(m.id)
-                                )
+                            <Select
+                              disabled={isExistingRecord}
+                              value={field.value ? String(field.value) : ''}
+                              onValueChange={(value) => {
+                                field.onChange(Number(value))
+                                const courseFormat = membershipList.find((m) => m.id == value)?.course_format ?? ''
+                                form.setValue(`subscriptions.${idx}.course_format`, courseFormat)
+                                form.setValue(`subscriptions.${idx}.subscription_end_at`, '')
+                                form.setValue(`subscriptions.${idx}.gift_id`, undefined)
+                              }}
+                            >
+                              <FormControl>
+                                <SelectTrigger className={isExistingRecord ? 'cursor-not-allowed opacity-70' : ''}>
+                                  <SelectValue placeholder="Chọn gói membership" />
+                                </SelectTrigger>
+                              </FormControl>
 
-                                return (
-                                  <SelectItem key={m.id} value={m.id.toString()} disabled={isAlreadySelected}>
-                                    {m.name}
-                                  </SelectItem>
-                                )
-                              })}
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        {/* Start Date */}
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">Ngày bắt đầu</label>
-                          <input
-                            type="date"
-                            value={subscription.subscription_start_at ? subscription.subscription_start_at : ''}
-                            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors"
-                            onChange={(e) => {
-                              const newStart = e.target.value
-                              updateSubscription(idx, {
-                                ...subscription,
-                                subscription_start_at: newStart,
-                                // If end date exists and is now invalid, clear it
-                                subscription_end_at:
-                                  subscription.subscription_end_at &&
-                                  new Date(subscription.subscription_end_at) <= new Date(newStart)
-                                    ? ''
-                                    : subscription.subscription_end_at,
-                              })
-                            }}
-                          />
-                        </div>
-
-                        {/* End Date */}
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">Ngày kết thúc</label>
-                          <input
-                            type="date"
-                            value={subscription.subscription_end_at || ''}
-                            min={
-                              subscription.subscription_start_at
-                                ? new Date(new Date(subscription.subscription_start_at).getTime() + 86400000)
-                                    .toISOString()
-                                    .split('T')[0]
-                                : undefined
-                            }
-                            onChange={(e) => {
-                              const newEnd = e.target.value
-                              const startDate = new Date(subscription.subscription_start_at || '')
-                              const endDate = new Date(newEnd)
-
-                              if (startDate && endDate <= startDate) {
-                                toast.error('Ngày kết thúc phải sau ngày bắt đầu')
-                                return
-                              }
-
-                              updateSubscription(idx, {
-                                ...subscription,
-                                subscription_end_at: newEnd,
-                                gift_id: undefined,
-                              })
-                            }}
-                            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors"
-                          />
-                        </div>
-
-                        {/* Coupon Code Input */}
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">Code khuyến mãi</label>
-                          <input
-                            type="text"
-                            placeholder="Nhập code"
-                            value={subscription.coupon_code || ''}
-                            onChange={(e) => {
-                              const newCouponCode = e.target.value
-                              updateSubscription(idx, {
-                                ...subscription,
-                                coupon_code: newCouponCode,
-                              })
-                            }}
-                            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors"
-                          />
-                        </div>
-
-                        {/* Gift Select */}
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">Quà tặng</label>
-                          <Select
-                            value={subscription.gift_id?.toString() || ''}
-                            disabled={!subscription.subscription_id}
-                            onValueChange={(value: string) => {
-                              const newGiftId = value ? Number(value) : undefined
-
-                              const previousGift = gifts.find((g) => g.id === subscription.gift_id)
-                              const selectedGift = gifts.find((g) => g.id === newGiftId)
-
-                              let baseEndDate: Date | null = subscription.subscription_end_at
-                                ? new Date(subscription.subscription_end_at)
-                                : null
-
-                              if (
-                                baseEndDate &&
-                                previousGift &&
-                                previousGift.type === 'membership_plan' &&
-                                previousGift.duration
-                              ) {
-                                baseEndDate.setDate(baseEndDate.getDate() - previousGift.duration)
-                              }
-
-                              let newEndAt = baseEndDate ? formatDate(baseEndDate) : ''
-
-                              if (
-                                baseEndDate &&
-                                selectedGift &&
-                                selectedGift.type === 'membership_plan' &&
-                                selectedGift.duration
-                              ) {
-                                const adjustedDate = new Date(baseEndDate)
-                                adjustedDate.setDate(adjustedDate.getDate() + selectedGift.duration)
-                                newEndAt = formatDate(adjustedDate)
-                              }
-
-                              updateSubscription(idx, {
-                                ...subscription,
-                                gift_id: newGiftId,
-                                subscription_end_at: newEndAt,
-                              })
-                            }}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Chọn quà tặng" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {/* Group for item type gifts */}
-                              <SelectGroup>
-                                <SelectLabel>Vật dụng</SelectLabel>
-                                {gifts
-                                  .filter((g) => g.type === 'item')
-                                  .map((g) => (
-                                    <SelectItem key={g.id} value={g.id.toString()}>
-                                      {g.name}
+                              <SelectContent>
+                                {membershipList.map((m) => {
+                                  const taken = subscriptions.some(
+                                    (s, i) => i !== idx && s.subscription_id === Number(m.id)
+                                  )
+                                  return (
+                                    <SelectItem key={m.id} value={m.id.toString()} disabled={taken}>
+                                      {m.name}
                                     </SelectItem>
-                                  ))}
-                              </SelectGroup>
+                                  )
+                                })}
+                              </SelectContent>
+                            </Select>
 
-                              {/* Group for membership_month type gifts */}
-                              <SelectGroup>
-                                <SelectLabel>Thời gian</SelectLabel>
-                                {gifts
-                                  .filter((g) => g.type === 'membership_plan')
-                                  .map((g) => (
-                                    <SelectItem key={g.id} value={g.id.toString()}>
-                                      {g.duration !== 0 && g.duration % 35 === 0
-                                        ? `${g.duration / 35} tháng`
-                                        : `${g.duration} ngày`}
-                                    </SelectItem>
-                                  ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                      {/* Assigned Items Section as Accordion */}
+                      {/* subscription_start_at */}
+                      <FormField
+                        control={form.control}
+                        name={`subscriptions.${idx}.subscription_start_at`}
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
+                            <FormLabel>Ngày bắt đầu</FormLabel>
+                            <FormControl>
+                              <input
+                                type="date"
+                                className="flex h-9 w-full rounded-md border border-input px-3 py-1 text-sm"
+                                {...field}
+                                onChange={(e) => {
+                                  const newStart = e.target.value
+                                  field.onChange(newStart)
+                                  // keep end-date valid
+                                  const endPath = `subscriptions.${idx}.subscription_end_at` as const
+                                  const endVal = form.getValues(endPath)
+                                  if (endVal && new Date(endVal) <= new Date(newStart)) {
+                                    form.setValue(endPath, '')
+                                  }
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* subscription_end_at */}
+                      <FormField
+                        control={form.control}
+                        name={`subscriptions.${idx}.subscription_end_at`}
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
+                            <FormLabel>Ngày kết thúc</FormLabel>
+                            <FormControl>
+                              <input
+                                type="date"
+                                min={
+                                  sub.subscription_start_at
+                                    ? new Date(new Date(sub.subscription_start_at).getTime() + 86_400_000)
+                                        .toISOString()
+                                        .split('T')[0]
+                                    : undefined
+                                }
+                                className="flex h-9 w-full rounded-md border border-input px-3 py-1 text-sm"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* coupon_code */}
+                      <FormField
+                        control={form.control}
+                        name={`subscriptions.${idx}.coupon_code`}
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
+                            <FormLabel>Code khuyến mãi</FormLabel>
+                            <FormControl>
+                              <input
+                                type="text"
+                                placeholder="Nhập code"
+                                className="flex h-9 w-full rounded-md border border-input px-3 py-1 text-sm"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* gift_id */}
+                      <FormField
+                        control={form.control}
+                        name={`subscriptions.${idx}.gift_id`}
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
+                            <FormLabel>Quà tặng</FormLabel>
+
+                            <Select
+                              disabled={!selectedSubscriptionId}
+                              value={field.value ? String(field.value) : ''}
+                              onValueChange={(val) => {
+                                field.onChange(val ? Number(val) : undefined)
+
+                                // adjust end-date when gift changes
+                                const baseEnd = form.getValues(`subscriptions.${idx}.subscription_end_at`)
+                                const prevGift = gifts.find((g) => g.id === Number(field.value))
+                                const newGift = gifts.find((g) => g.id === Number(val))
+
+                                let baseDate = baseEnd ? new Date(baseEnd) : null
+                                if (baseDate && prevGift?.type === 'membership_plan')
+                                  baseDate.setDate(baseDate.getDate() - (prevGift.duration ?? 0))
+                                if (baseDate && newGift?.type === 'membership_plan')
+                                  baseDate.setDate(baseDate.getDate() + (newGift.duration ?? 0))
+
+                                form.setValue(
+                                  `subscriptions.${idx}.subscription_end_at`,
+                                  baseDate ? baseDate.toISOString().split('T')[0] : ''
+                                )
+                              }}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Chọn quà tặng" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectLabel>Vật dụng</SelectLabel>
+                                  {gifts
+                                    .filter((g) => g.type === 'item')
+                                    .map((g) => (
+                                      <SelectItem key={g.id} value={g.id.toString()}>
+                                        {g.name}
+                                      </SelectItem>
+                                    ))}
+                                </SelectGroup>
+
+                                <SelectGroup>
+                                  <SelectLabel>Thời gian</SelectLabel>
+                                  {gifts
+                                    .filter((g) => g.type === 'membership_plan')
+                                    .map((g) => (
+                                      <SelectItem key={g.id} value={g.id.toString()}>
+                                        {g.duration % 35 === 0 ? `${g.duration / 35} tháng` : `${g.duration} ngày`}
+                                      </SelectItem>
+                                    ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
                       {userRole !== 'sub_admin' && (
                         <div className="mt-6 border-t pt-4 flex-shrink-0">
                           <Accordion type="single" collapsible className="w-full">
