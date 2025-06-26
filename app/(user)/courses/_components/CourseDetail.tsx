@@ -12,6 +12,8 @@ import { useRouter } from 'next/navigation'
 import ActionButtons from './ActionButtons'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { useSession } from '@/components/providers/session-provider'
+import { getUserSubscriptions } from '@/network/server/user-subscriptions'
 interface CourseDetailProps {
   courseId: Course['id']
   typeCourse: 'video' | 'live'
@@ -19,10 +21,12 @@ interface CourseDetailProps {
 
 export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps) {
   const router = useRouter()
+  const { session } = useSession()
   const [showDetails, setShowDetails] = useState(false)
   const [course, setCourse] = useState<any>(null)
   const [isFooterVisible, setIsFooterVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [userSubscriptions, setUserSubscriptions] = useState<number[]>([])
 
   const footerRef = useRef<HTMLDivElement>(null)
 
@@ -36,13 +40,20 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         const courseData = await getCourse(courseId)
         setCourse(courseData)
         setIsLoading(false)
+        if (session?.userId) {
+          const userSubscriptionsData = await getUserSubscriptions(session.userId.toString())
+          const subscribedIds = userSubscriptionsData.data?.map((sub) => sub.subscription.id) || []
+          setUserSubscriptions(subscribedIds)
+        }
       } catch (error) {
         console.error('Error fetching data:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
     fetchData()
-  }, [courseId])
+  }, [courseId, session?.userId])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -116,21 +127,28 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
             <div className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px]">Gói Member</div>
             <div className="text-[#737373] text-lg">Bạn cần mua các Gói Member sau để truy cập khóa tập</div>
             <div className="flex flex-wrap gap-2 mt-4">
-              {course?.data?.relationships?.subscriptions?.map((subscription: any) => (
-                <Link
-                  key={subscription.id}
-                  href={`/packages/detail/${subscription.id}`}
-                  className="text-lg rounded-full hover:bg-primary/90 bg-[#319F43]"
-                >
-                  <Button
+              {course?.data?.relationships?.subscriptions?.map((subscription: any) => {
+                const hasPurchased = userSubscriptions.includes(subscription.id)
+                return (
+                  <Link
                     key={subscription.id}
-                    variant="default"
-                    className="text-lg rounded-full hover:bg-primary/90 py-2 px-5 bg-[#319F43]"
+                    href={`/packages/detail/${subscription.id}`}
+                    className={`text-lg rounded-full hover:opacity-90 ${
+                      hasPurchased ? 'bg-[#319F43]' : 'bg-[#DA1515]'
+                    }`}
                   >
-                    {subscription.name}
-                  </Button>
-                </Link>
-              ))}
+                    <Button
+                      key={subscription.id}
+                      variant="default"
+                      className={`text-lg rounded-full hover:opacity-90 py-2 px-5 ${
+                        hasPurchased ? 'bg-[#319F43]' : 'bg-[#DA1515]'
+                      }`}
+                    >
+                      {subscription.name}
+                    </Button>
+                  </Link>
+                )
+              })}
             </div>
           </div>
         )}

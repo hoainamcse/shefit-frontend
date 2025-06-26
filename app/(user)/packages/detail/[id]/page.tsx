@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { getMealPlans } from '@/network/server/meal-plans'
 import AcctionButton from './_components/AcctionButton'
+import SubscriptionInfo from './_components/SubscriptionInfo'
+import { BackIcon } from '@/components/icons/BackIcon'
 
 export default async function PackageDetail({ params }: { params: Promise<{ id: string }> }) {
   const subscription = await getSubscription(Number((await params).id))
@@ -20,17 +22,21 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
   }
 
   const subscriptionData = subscription?.data
-  console.log(subscription)
   return (
     <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full pb-24 relative">
+      <Link href="/account?tab=buy-package" className="flex items-center gap-[10px] cursor-pointer">
+        <BackIcon color="#000000" style={{ marginBottom: '4px' }} />
+        <div className="text-xl text-[#000000] font-semibold">Quay về</div>
+      </Link>
       <div className="p-6 mb-20 flex flex-col gap-10">
         <img
           src={subscriptionData?.cover_image}
           alt={`${subscriptionData?.name}`}
           className="rounded-xl mb-4 w-full h-[680px] object-cover"
         />
+        <SubscriptionInfo />
         <div className="flex justify-between text-lg">
-          <div className="flex flex-col gap-10">
+          <div className="flex flex-col gap-10 w-full">
             <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
               {subscriptionData?.name}
             </div>

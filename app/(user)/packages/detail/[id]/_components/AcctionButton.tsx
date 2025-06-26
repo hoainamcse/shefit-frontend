@@ -25,9 +25,7 @@ export default function AcctionButton() {
         const subscriptionId = Number(params?.id)
         const response = await getUserSubscriptions(session.userId.toString())
         const hasSubscription =
-          response.data?.some(
-            (subscription) => subscription.subscription.id === subscriptionId && subscription.status === 'active'
-          ) ?? false
+          response.data?.some((subscription) => subscription.subscription.id === subscriptionId) ?? false
 
         setIsSubscribed(hasSubscription)
       } catch (error) {
@@ -51,13 +49,15 @@ export default function AcctionButton() {
   if (isSubscribed) {
     return (
       <Link href={`/packages/${params?.id}`} className="mx-auto">
-        <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] w-full px-5 text-lg">Gia hạn gói</Button>
+        <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] w-full px-5 text-lg mx-auto">
+          Gia hạn gói
+        </Button>
       </Link>
     )
   }
   return (
     <Link href={`/packages/${params?.id}`} className="mx-auto">
-      <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] w-full px-5 text-lg">Mua gói</Button>
+      <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] w-full px-5 text-lg mx-auto">Mua gói</Button>
     </Link>
   )
 }

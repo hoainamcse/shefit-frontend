@@ -1,8 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useSession } from '@/components/providers/session-provider'
 import { useSubscription } from './SubscriptionContext'
 import { getCourse } from '@/network/server/courses'
@@ -12,6 +10,8 @@ import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import { Lock } from 'lucide-react'
 import { courseFormLabel } from '@/lib/label'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 import type { Course } from '@/models/course'
 
 type CourseWithCategory = Course & {
@@ -24,25 +24,22 @@ export function ListCourses() {
   const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [renewDialogOpen, setRenewDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [courses, setCourses] = useState<CourseWithCategory[]>([])
 
-  // Handle login button click with redirect
   const handleLoginClick = () => {
     setDialogOpen(false)
     redirectToLogin()
   }
 
-  // Handle buy package button click with redirect
   const handleBuyPackageClick = () => {
     setDialogOpen(false)
     redirectToAccount('buy-package')
   }
 
   const subscriptionCourses = useMemo(() => {
-    console.log('Selected Subscription:', selectedSubscription)
     const courses = selectedSubscription?.subscription?.courses || []
-    console.log('Subscription Courses:', courses)
     return courses
   }, [selectedSubscription])
 
@@ -155,6 +152,31 @@ export function ListCourses() {
 
   return (
     <div>
+      <Dialog open={renewDialogOpen} onOpenChange={setRenewDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">Gói đã hết hạn</DialogTitle>
+            <DialogDescription className="text-center">
+              Gói đã hết hạn, hãy gia hạn gói để tiếp tục truy cập
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <Button
+              type="button"
+              variant="default"
+              className="bg-[#13D8A7] hover:bg-[#0fb88e] text-white"
+              onClick={() => {
+                setRenewDialogOpen(false)
+                if (selectedSubscription?.subscription?.id) {
+                  router.push(`/packages/detail/${selectedSubscription.subscription.id}`)
+                }
+              }}
+            >
+              Gia hạn gói
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
         {courses.map((course) => (
           <div key={course.id} className="group">
@@ -165,7 +187,10 @@ export function ListCourses() {
                   : `/courses/${course.id}/${course.course_format}-classes`
               }
               className={selectedSubscription?.status === 'expired' ? 'cursor-not-allowed' : ''}
-              onClick={selectedSubscription?.status === 'expired' ? (e) => e.preventDefault() : undefined}
+              onClick={selectedSubscription?.status === 'expired' ? (e) => {
+                e.preventDefault()
+                setRenewDialogOpen(true)
+              } : undefined}
             >
               <div>
                 <div className="relative group">
