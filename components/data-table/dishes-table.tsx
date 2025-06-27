@@ -249,7 +249,7 @@ function ImportDialog({ onSuccess }: { onSuccess?: () => void }) {
           <DialogTitle>Nhập món ăn</DialogTitle>
           <DialogDescription>Chức năng này sẽ cho phép nhập danh sách món ăn từ tệp Excel</DialogDescription>
         </DialogHeader>
-        <ExcelReader specificHeaders={['calories', 'protein', 'carb', 'fat', 'fiber']} onSuccess={setData} />
+        <ExcelReader onSuccess={setData} />
         {data.length > 0 && <MainButton text="Nhập món ăn" className="mt-4" onClick={onSubmit} loading={isLoading} />}
       </DialogContent>
     </Dialog>

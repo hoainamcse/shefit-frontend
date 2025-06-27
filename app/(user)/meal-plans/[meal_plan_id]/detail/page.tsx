@@ -99,9 +99,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
                           <div className="font-medium">
                             <span className="text-[#91EBD5]">{dishMealTimeLabel[dish.meal_time]}</span>: {dish.name}
                           </div>
-                          <div className="text-[#737373]">
-                            KCAL {dish.calories} Pro {dish.protein} Fat {dish.fat} Carb {dish.carb} Fiber {dish.fiber}
-                          </div>
+                          <div className="text-[#737373]">Dinh dưỡng: {dish.nutrients}</div>
                         </div>
                         {/* <Table className="w-[400px] text-center border border-collapse">
                           <TableHeader>

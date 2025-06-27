@@ -29,7 +29,7 @@ export default async function Food({ params }: { params: Promise<{ meal_id: stri
               <Link href={`/gallery/meal/${meal_id}/${item.id}`} key={index}>
                 <div key={`menu-${index}`} className="text-xl">
                   <div className="relative group">
-                    <Image
+                    <img
                       src={item.image}
                       alt=""
                       className="aspect-[5/3] object-cover rounded-xl mb-4"

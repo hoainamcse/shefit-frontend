@@ -76,11 +76,7 @@ type RawDish = {
   day_number: number
   dish_name: string
   dish_description: string
-  dish_calories: number
-  dish_protein: number
-  dish_fat: number
-  dish_carb: number
-  dish_fiber: number
+  dish_nutrients: string
 }
 
 type TransformedDish = {
@@ -89,11 +85,7 @@ type TransformedDish = {
     dishes: {
       name: string
       description: string
-      calories: number
-      protein: number
-      fat: number
-      carb: number
-      fiber: number
+      nutrients: string
     }[]
   }[]
 }
@@ -113,11 +105,7 @@ export function transformDishes(rawData: RawDish[]): TransformedDish {
     day.dishes.push({
       name: item.dish_name,
       description: item.dish_description,
-      calories: item.dish_calories,
-      protein: item.dish_protein,
-      fat: item.dish_fat,
-      carb: item.dish_carb,
-      fiber: item.dish_fiber,
+      nutrients: item.dish_nutrients,
     })
   }
 

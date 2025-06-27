@@ -78,7 +78,9 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
 
   return (
     <div className="flex flex-col gap-10 mt-10">
-      <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] mb-5 text-center font-bold">{dish?.name}</div>
+      <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] mb-5 text-center font-bold">
+        {dish?.name}
+      </div>
 
       {dish?.youtube_url && (
         <div className="w-full max-w-4xl mx-auto aspect-video bg-black rounded-lg overflow-hidden">
@@ -113,11 +115,7 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
           <div className="font-medium text-xl">{dish?.name}</div>
           <div className="text-[#737373] mt-2">
             <div className="flex flex-wrap gap-4">
-              <span>KCAL: {dish?.calories || 'N/A'}</span>
-              <span>Protein: {dish?.protein || 'N/A'}g</span>
-              <span>Chất béo: {dish?.fat || 'N/A'}g</span>
-              <span>Tinh bột: {dish?.carb || 'N/A'}g</span>
-              <span>Chất xơ: {dish?.fiber || 'N/A'}g</span>
+              <p>Dinh dưỡng: {dish.nutrients}</p>
             </div>
           </div>
         </div>

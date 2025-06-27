@@ -19,11 +19,7 @@ import { FormInputField, FormNumberField, FormSelectField, FormTextareaField } f
 export const formSchema = z.object({
   name: z.string().min(1, 'Tên món ăn không được để trống'),
   description: z.string(),
-  calories: z.number().min(0),
-  protein: z.number().min(0),
-  carb: z.number().min(0),
-  fat: z.number().min(0),
-  fiber: z.number().min(0),
+  nutrients: z.string(),
   meal_time: z.enum(['breakfast', 'lunch', 'dinner', 'snack']),
 })
 
@@ -41,11 +37,7 @@ export function EditMealPlanDishForm({ data, mealPlanID, dayID, onSuccess }: Edi
   const defaultValue = {
     name: '',
     description: '',
-    calories: 0,
-    protein: 0,
-    carb: 0,
-    fat: 0,
-    fiber: 0,
+    nutrients: '',
     meal_time: 'breakfast',
   } as FormValue
 
@@ -55,11 +47,7 @@ export function EditMealPlanDishForm({ data, mealPlanID, dayID, onSuccess }: Edi
       ? {
           name: data.name,
           description: data.description,
-          calories: data.calories,
-          protein: data.protein,
-          carb: data.carb,
-          fat: data.fat,
-          fiber: data.fiber,
+          nutrients: data.nutrients,
           meal_time: data.meal_time,
         }
       : defaultValue,
@@ -94,13 +82,7 @@ export function EditMealPlanDishForm({ data, mealPlanID, dayID, onSuccess }: Edi
           placeholder="Chọn thời gian ăn"
           data={dishMealTimeOptions}
         />
-        <div className="grid grid-cols-2 gap-4">
-          <FormNumberField form={form} name="calories" label="Calories (kcal)" placeholder="e.g., 250" />
-          <FormNumberField form={form} name="protein" label="Protein (g)" step="0.1" placeholder="e.g., 20" />
-          <FormNumberField form={form} name="carb" label="Carbs (g)" step="0.1" placeholder="e.g., 30" />
-          <FormNumberField form={form} name="fat" label="Fat (g)" step="0.1" placeholder="e.g., 10" />
-          <FormNumberField form={form} name="fiber" label="Fiber (g)" step="0.1" placeholder="e.g., 5" />
-        </div>
+        <FormTextareaField form={form} name="nutrients" label="Dinh dưỡng" placeholder="Nhập dinh dưỡng" />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
             <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={mealPlanDishMutation.isPending} />

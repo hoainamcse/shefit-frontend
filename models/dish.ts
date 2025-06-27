@@ -6,11 +6,7 @@ type Dish = {
   description: string
   diet: Diet | null
   image: string
-  calories: number
-  protein: number
-  carb: number
-  fat: number
-  fiber: number
+  nutrients: string
   created_at: string
   updated_at: string
 }

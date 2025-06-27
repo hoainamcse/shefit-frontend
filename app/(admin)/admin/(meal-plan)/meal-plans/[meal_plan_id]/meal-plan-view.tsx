@@ -5,7 +5,7 @@ import type { MealPlan, MealPlanDay, MealPlanDish, DishMealTime } from '@/models
 import { toast } from 'sonner'
 import { useState, useEffect } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { Beef, Droplets, ImportIcon, Leaf, Trash2, Wheat, Zap } from 'lucide-react'
+import { ImportIcon, Sprout, Trash2 } from 'lucide-react'
 
 import { EditMealPlanDishForm } from '@/components/forms/edit-meal-plan-dish-form'
 import { EditMealPlanDayForm } from '@/components/forms/edit-meal-plan-day-form'
@@ -240,31 +240,8 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
 
                       {/* Nutrition information */}
                       <div className="flex gap-3 text-sm">
-                        <div className="flex items-center gap-2">
-                          <Zap className="h-4 w-4 text-orange-500" />
-                          <span className="font-medium">{dish.calories}</span>
-                          <span className="text-muted-foreground">cal</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Beef className="h-4 w-4 text-red-500" />
-                          <span className="font-medium">{dish.protein}g</span>
-                          <span className="text-muted-foreground">protein</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Wheat className="h-4 w-4 text-yellow-500" />
-                          <span className="font-medium">{dish.carb}g</span>
-                          <span className="text-muted-foreground">carbs</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Droplets className="h-4 w-4 text-blue-500" />
-                          <span className="font-medium">{dish.fat}g</span>
-                          <span className="text-muted-foreground">fat</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Leaf className="h-4 w-4 text-green-500" />
-                          <span className="font-medium">{dish.fiber}g</span>
-                          <span className="text-muted-foreground">fiber</span>
-                        </div>
+                        <Sprout className="h-4 w-4 text-emerald-500" />
+                        <p>{dish.nutrients}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -386,10 +363,7 @@ function ImportDialog({ mealPlanID, onSuccess }: { mealPlanID: MealPlan['id']; o
           <DialogTitle>Nhập món ăn</DialogTitle>
           <DialogDescription>Chức năng này sẽ cho phép nhập danh sách món ăn từ tệp Excel</DialogDescription>
         </DialogHeader>
-        <ExcelReader
-          specificHeaders={['day_number', 'dish_calories', 'dish_protein', 'dish_carb', 'dish_fat', 'dish_fiber']}
-          onSuccess={setData}
-        />
+        <ExcelReader specificHeaders={['day_number']} onSuccess={setData} />
         {data.length > 0 && <MainButton text="Nhập thực đơn" className="mt-4" onClick={onSubmit} loading={isLoading} />}
       </DialogContent>
     </Dialog>
