@@ -54,13 +54,13 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
             </div>
           </div>
           <div className="mr-auto text-xl my-20 max-lg:my-0 max-lg:p-4">
-            <div className="font-[family-name:var(--font-coiny)] text-ring text-[40px] max-lg:text-[30px] mb-5">
+            <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-[40px] max-lg:text-[30px] mb-5">
               Thông tin thực đơn
             </div>
             <div className="max-lg:text-base">{mealPlan.description}</div>
           </div>
           <div className="mr-auto text-xl mt-10 w-full max-lg:p-4">
-            <div className="font-[family-name:var(--font-coiny)] text-ring text-[40px] max-lg:text-[30px] mb-5">
+            <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-[40px] max-lg:text-[30px] mb-5">
               Thành phần chính
             </div>
             <Carousel

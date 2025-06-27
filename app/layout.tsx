@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Coiny, Encode_Sans_Semi_Expanded, Signika_Negative } from 'next/font/google'
+import { Roboto_Flex, Encode_Sans_Semi_Expanded, Signika_Negative } from 'next/font/google'
 
 import './globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
@@ -13,7 +13,7 @@ const signika = Signika_Negative({
   subsets: ['latin', 'vietnamese'],
 })
 
-const coiny = Coiny({
+const coiny = Roboto_Flex({
   weight: '400',
   display: 'swap',
   variable: '--font-coiny',

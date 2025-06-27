@@ -274,7 +274,36 @@ export default function FavouriteContent() {
       <div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm khóa tập</Button>
+            <div className="flex flex-col gap-16">
+              <div>
+                <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+                  Khóa tập của bạn
+                </div>
+                <div className="text-gray-500 text-lg">Bạn chưa có khóa tập nào</div>
+                <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm khóa tập</Button>
+              </div>
+              <div>
+                <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+                  Động tác của bạn
+                </div>
+                <div className="text-gray-500 text-lg">Bạn chưa có động tác nào</div>
+                <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm động tác</Button>
+              </div>
+              <div>
+                <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+                  Thực đơn của bạn
+                </div>
+                <div className="text-gray-500 text-lg">Bạn chưa có thực đơn nào</div>
+                <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm thực đơn</Button>
+              </div>
+              <div>
+                <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+                  Món ăn của bạn
+                </div>
+                <div className="text-gray-500 text-lg">Bạn chưa có món ăn nào</div>
+                <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm món ăn</Button>
+              </div>
+            </div>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -312,7 +341,7 @@ export default function FavouriteContent() {
   return (
     <div className="mt-12">
       <div>
-        <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline">
+        <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
           Khóa tập của bạn
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
@@ -361,7 +390,9 @@ export default function FavouriteContent() {
         </Link>
       </div>
       <div className="space-y-6 mt-12">
-        <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline">Động tác</div>
+        <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+          Động tác
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
           {exercises.map((exercise) => (
             <Link href={`/gallery/muscle/${exercise.id}`} key={exercise.id}>
@@ -389,7 +420,9 @@ export default function FavouriteContent() {
         </div>
       </div>
       <div className="space-y-6 mt-12">
-        <h2 className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline">Thực đơn</h2>
+        <h2 className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+          Thực đơn
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
           {mealPlans.map(({ meal_plan }) => (
             <Link href={`/meal-plans/${meal_plan.id}`} key={meal_plan.id}>
@@ -419,7 +452,7 @@ export default function FavouriteContent() {
         </div>
       </div>
       <div className="space-y-6 mt-12">
-        <h2 className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline">Món ăn</h2>
+        <h2 className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">Món ăn</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
           {dishes.map((dish) => (
             <Link href={`/dishes/${dish.id}`} key={dish.id}>

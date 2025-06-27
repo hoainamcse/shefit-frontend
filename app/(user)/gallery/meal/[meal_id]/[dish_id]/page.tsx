@@ -78,7 +78,7 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
 
   return (
     <div className="flex flex-col gap-10 mt-10">
-      <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] mb-5 text-center">{dish?.name}</div>
+      <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] mb-5 text-center font-bold">{dish?.name}</div>
 
       {dish?.youtube_url && (
         <div className="w-full max-w-4xl mx-auto aspect-video bg-black rounded-lg overflow-hidden">

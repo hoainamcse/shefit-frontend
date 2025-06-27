@@ -62,7 +62,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
           </div>
         </div>
         <div className="mr-auto text-xl my-20 max-lg:my-0 max-lg:p-4">
-          <div className="font-[family-name:var(--font-coiny)] text-ring text-[40px] max-lg:text-[30px] mb-5">
+          <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-[40px] max-lg:text-[30px] mb-5">
             Menu theo lịch
           </div>
           <div>{mealPlan.description}</div>

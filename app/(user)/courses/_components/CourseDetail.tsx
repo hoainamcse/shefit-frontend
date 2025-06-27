@@ -124,7 +124,9 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         </div>
         {course?.data?.relationships?.subscriptions?.length > 0 && (
           <div>
-            <div className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px]">Gói Member</div>
+            <div className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px] font-bold uppercase">
+              Gói Member
+            </div>
             <div className="text-[#737373] text-lg">Bạn cần mua các Gói Member sau để truy cập khóa tập</div>
             <div className="flex flex-wrap gap-2 mt-4">
               {course?.data?.relationships?.subscriptions?.map((subscription: any) => {
@@ -168,12 +170,16 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         ) : (
           <>
             <div>
-              <p className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px]">Thông tin</p>
+              <p className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px] font-bold mb-4">
+                Thông tin khóa
+              </p>
               <p className="text-[#737373] text-lg">{course?.data?.description}</p>
             </div>
             {course?.data?.relationship?.equipments?.length > 0 && (
               <div>
-                <p className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px]">Dụng cụ</p>
+                <p className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px] font-bold mb-4">
+                  Dụng cụ
+                </p>
                 <ScrollArea className="w-screen-max-xl">
                   <div className="flex w-max space-x-4 py-4">
                     {course?.data?.equipments?.map((equipment: any, index: number) => (
@@ -197,7 +203,9 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
             )}
             {course?.data?.relationship?.muscle_groups?.length > 0 && (
               <div>
-                <p className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px]">Nhóm cơ</p>
+                <p className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px] font-bold mb-4">
+                  Nhóm cơ
+                </p>
                 <ScrollArea className="w-screen-max-xl">
                   <div className="flex w-max space-x-4 py-4">
                     {course?.data?.relationship?.muscle_groups?.map((muscleGroup: any, index: number) => (

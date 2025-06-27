@@ -9,7 +9,7 @@ export default async function CoachesPage() {
   return (
     <div>
       <div className="max-w-screen-xl mx-auto">
-        <p className="font-[family-name:var(--font-coiny)] sm:text-center text-ring text-3xl my-2 sm:my-4">
+        <p className="font-[family-name:var(--font-coiny)] font-bold sm:text-center text-ring text-3xl my-2 sm:my-4">
           Các HLV của Shefit
         </p>
         <p className="sm:text-center text-[#737373] text-xl mb-20">

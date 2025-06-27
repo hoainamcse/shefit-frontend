@@ -1,19 +1,19 @@
-"use client"
+'use client'
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { getProducts } from "@/network/server/products"
-import { getColors } from "@/network/server/products"
-import { getCategories } from "@/network/server/products"
-import type { Product } from "@/models/product"
-import FilterCategory from "./_components/FilterCategory"
-import { useEffect, useState } from "react"
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { getProducts } from '@/network/server/products'
+import { getColors } from '@/network/server/products'
+import { getCategories } from '@/network/server/products'
+import type { Product } from '@/models/product'
+import FilterCategory from './_components/FilterCategory'
+import { useEffect, useState } from 'react'
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [colors, setColors] = useState<any[]>([])
   const [categories, setCategories] = useState<any[]>([])
-  const [selectedCategory, setSelectedCategory] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState('')
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function ProductsPage() {
       <img src="/body-quiz-image.jpg" className="w-full object-cover xl:h-[628px]" alt="" />
       <div className="mb-20 p-6 mt-20">
         <div className="flex flex-col gap-5 mb-20">
-          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px]">Title</div>
+          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] font-bold">Title</div>
           <p className="text-[#737373] text-xl">
             Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis.
             Molestie nascetur justo sit accumsan nunc quam tincidunt blandit.
@@ -62,7 +62,7 @@ export default function ProductsPage() {
               <div key={`menu-${product.id}`} className="text-xl">
                 <div className="relative group">
                   <img
-                    src={product.image_urls[0] || ""}
+                    src={product.image_urls[0] || ''}
                     alt={product.name}
                     className="aspect-1 object-cover rounded-xl mb-4 w-full h-[373px]"
                   />
@@ -74,7 +74,7 @@ export default function ProductsPage() {
                     return Array.from(uniqueColorIds)
                       .filter(Boolean)
                       .map((colorId) => {
-                        const hex = colors.find((color) => color.id === colorId)?.hex_code || "#fff"
+                        const hex = colors.find((color) => color.id === colorId)?.hex_code || '#fff'
                         const inStock = product.variants.some((v) => v.color_id === colorId && v.in_stock)
                         return (
                           <Button
@@ -92,7 +92,7 @@ export default function ProductsPage() {
                   {Array.from(new Set(product.variants.map((variant) => variant.color_id)))
                     .map((colorId) => colors.find((color) => color.id === colorId)?.name)
                     .filter(Boolean)
-                    .join(", ")}
+                    .join(', ')}
                 </p>
                 <p className="text-[#737373]">{product.price.toLocaleString()} VNĐ</p>
               </div>

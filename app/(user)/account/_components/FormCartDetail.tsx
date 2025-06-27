@@ -8,7 +8,7 @@ export default async function FormCartDetail({ params }: { params: { slug: strin
 
   return (
     <div className="w-full flex flex-col gap-5">
-      <div className="font-[family-name:var(--font-coiny)] text-3xl mb-2">Thông tin vận chuyển</div>
+      <div className="font-[family-name:var(--font-coiny)] font-bold text-3xl mb-2">Thông tin vận chuyển</div>
       <Input value={cartData.user_name} disabled className="mb-2" />
       <Input value={cartData.telephone_number} disabled className="mb-2" />
       <Input value={cartData.city} disabled className="mb-2" />

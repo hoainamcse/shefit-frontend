@@ -32,7 +32,7 @@ export default function PackageDetail({ params }: { params: Promise<{ slug: stri
           <div className="text-xl text-[#000000] font-semibold">Quay về</div>
         </Link>
 
-        <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[Coiny] mb-7">
+        <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[family-name:var(--font-coiny)] mb-7 font-bold">
           Gói {subscription.data.name}
         </div>
 
@@ -73,7 +73,7 @@ export default function PackageDetail({ params }: { params: Promise<{ slug: stri
 
         <div>
           {subscription.data.relationships.gifts?.length > 0 && (
-            <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[Coiny] mb-[14px]">
+            <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[family-name:var(--font-coiny)] mb-[14px] font-bold">
               Chọn quà tặng
               <div className="text-base md:text-xl text-[#737373] mb-7">Được ship đến tận nhà!</div>
               <div className="flex flex-col gap-7 mb-7">
@@ -130,7 +130,7 @@ export default function PackageDetail({ params }: { params: Promise<{ slug: stri
           )}
 
           <div>
-            <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[Coiny] mb-[14px]">
+            <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[family-name:var(--font-coiny)] mb-[14px] font-bold">
               Hướng dẫn
             </div>
 

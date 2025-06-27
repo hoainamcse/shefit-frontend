@@ -37,18 +37,18 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
         <SubscriptionInfo />
         <div className="flex justify-between text-lg">
           <div className="flex flex-col gap-10 w-full">
-            <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
+            <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-6 font-bold">
               {subscriptionData?.name}
             </div>
             <div>
-              <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
-                Thông tin gói
+              <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
+                Thông tin Gói
               </div>
               <p dangerouslySetInnerHTML={{ __html: subscriptionData?.description_2 || '' }} />
             </div>
             <div>
-              <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
-                Khóa tập thuộc gói
+              <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4  font-bold">
+                Khóa Tập Thuộc Gói
               </div>
               <p className="mb-5">Các khóa tập bạn được truy cập khi mua gói member này</p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -94,7 +94,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
             </div>
             {subscriptionData?.relationships?.meal_plans && subscriptionData?.relationships?.meal_plans.length > 0 && (
               <div>
-                <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
+                <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
                   Thực đơn
                 </div>
                 <p dangerouslySetInnerHTML={{ __html: subscriptionData?.meal_plan_description || '' }} />
@@ -135,7 +135,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
               </div>
             )}
             <div>
-              <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
+              <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
                 Theo dõi kết quả
               </div>
               <p dangerouslySetInnerHTML={{ __html: subscriptionData?.result_checkup || '' }} />

@@ -174,25 +174,25 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
 
       console.log('Subscriptions with this course:', subscriptionsWithCourse.length)
 
-      // Check if there are any active subscriptions with this course
       if (subscriptionsWithCourse.length > 0) {
-        // Sort subscriptions by end date (descending)
         const sortedSubscriptions = [...subscriptionsWithCourse].sort((a: any, b: any) => {
           const dateA = new Date(a.subscription_end_at)
           const dateB = new Date(b.subscription_end_at)
-          return dateB.getTime() - dateA.getTime() // Latest end date first
+          return dateB.getTime() - dateA.getTime()
         })
-
-        // Check if the subscription with the latest end date is still active
         const latestSubscription = sortedSubscriptions[0]
         const endDate = new Date(latestSubscription.subscription_end_at)
         const currentDate = new Date()
-        
+
         const isActive = latestSubscription.status === 'active'
         const isNotExpired = endDate > currentDate
 
-        console.log(`Latest subscription (ID: ${latestSubscription.id}): active=${isActive}, expired=${!isNotExpired}, ends at ${endDate}`)
-        
+        console.log(
+          `Latest subscription (ID: ${
+            latestSubscription.id
+          }): active=${isActive}, expired=${!isNotExpired}, ends at ${endDate}`
+        )
+
         const hasAccess = isActive && isNotExpired
         console.log('Final access check result:', hasAccess)
         return hasAccess
@@ -295,7 +295,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
       <Accordion type="multiple" className="mt-3">
         {courseData.map((week, weekIndex) => (
           <AccordionItem key={week.week} value={`week-${week.week}`}>
-            <AccordionTrigger className="font-[family-name:var(--font-coiny)] text-ring text-[30px]">
+            <AccordionTrigger className="font-[family-name:var(--font-coiny)] text-ring text-[30px] cursor-pointer font-bold">
               <div>Tuần {week.week}</div>
             </AccordionTrigger>
             <AccordionContent>

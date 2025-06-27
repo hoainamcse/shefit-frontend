@@ -375,13 +375,13 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
           </div>
         </div>
         <div className="flex flex-col gap-5 mb-20">
-          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] max-lg:text-[30px]">Title</div>
+          <div className="font-[family-name:var(--font-coiny)] font-bold text-ring xl:text-[40px] max-lg:text-[30px]">Title</div>
           <p className="text-[#737373] xl:text-xl max-lg:text-base">{product.description}</p>
         </div>
 
         {muscleGroups.length > 0 && (
           <div>
-            <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] mb-5 max-lg:text-[30px]">
+            <div className="font-[family-name:var(--font-coiny)] font-bold text-ring xl:text-[40px] mb-5 max-lg:text-[30px]">
               Tính năng
             </div>
             <div className="grid xl:grid-cols-12 lg:grid-cols-10 md:grid-cols-6 sm:grid-cols-4 gap-10">

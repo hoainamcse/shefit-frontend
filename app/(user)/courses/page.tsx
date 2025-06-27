@@ -152,7 +152,9 @@ export default function CoursesPage() {
       <PopularCoursesCarousel />
       <div className="max-w-screen-2xl mx-auto">
         <div className="max-w-screen-xl mx-auto my-12 flex flex-col gap-4">
-          <p className="text-center font-[family-name:var(--font-coiny)] text-ring text-2xl">Tất cả khoá tập</p>
+          <p className="text-center font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl uppercase">
+            Tất cả khoá tập
+          </p>
           <p className="text-base text-center text-[#737373]">
             Lựa chọn khóa tập phù hợp với kinh nghiệm, mục tiêu và phom dáng của chị để bắt đầu hành trình độ dáng ngay
             hôm nay!
@@ -299,7 +301,7 @@ export default function CoursesPage() {
       <Dialog open={showAccessDialog} onOpenChange={setShowAccessDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-center font-[Coiny] text-[#FF7873] text-xl"></DialogTitle>
+            <DialogTitle className="text-center font-[family-name:var(--font-coiny)] text-[#FF7873] text-xl"></DialogTitle>
           </DialogHeader>
           <div className="text-center py-4">
             <p className="text-lg text-[#737373] mb-4 ">BẠN ĐÃ MUA GÓI MEMBER CÓ KHÓA TẬP NÀY</p>

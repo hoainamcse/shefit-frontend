@@ -84,7 +84,9 @@ export default function PurchasedPackage() {
 
   return (
     <div>
-      <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">Gói Đã Mua</div>
+      <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
+        Gói Đã Mua
+      </div>
 
       <div className="text-[#737373] text-base md:text-xl mb-6">Các gói bạn đã đăng ký</div>
 
@@ -100,7 +102,7 @@ export default function PurchasedPackage() {
               className="bg-[#FFAEB01A] rounded-[20px] py-5 px-5 grid grid-cols-1 md:grid-cols-2 h-full"
             >
               <div className="flex flex-col gap-5 max-w-[45%] text-lg">
-                <div className="font-[Coiny] text-[#000000] text-xl md:text-2xl mb-[18px]">
+                <div className="font-[family-name:var(--font-coiny)] text-[#000000] text-xl md:text-2xl mb-[18px]">
                   {subscription.name || `Gói #${subscription.subscription.id}`}
                 </div>
                 <div className="flex justify-between text-[#737373]">

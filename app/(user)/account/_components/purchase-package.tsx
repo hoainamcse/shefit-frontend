@@ -50,7 +50,7 @@ export default function PurchasePackage() {
   if (isLoading) {
     return (
       <div className="pb-16 md:pb-16 px-5 sm:px-9 lg:px-[56px] xl:px-[60px]">
-        <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
+        <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
           Mua Gói Độ Dáng
         </div>
         <div className="flex justify-center items-center h-40">
@@ -80,7 +80,7 @@ export default function PurchasePackage() {
           </TabsList>
         )}
         <TabsContent value="all">
-          <div className="font-[Coiny] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-3.5">
+          <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
             Mua Gói Độ Dáng
           </div>
 
@@ -100,7 +100,7 @@ export default function PurchasePackage() {
                 <div key={subscription.id} className="bg-[#FFAEB01A] rounded-[20px] p-5 h-full">
                   <div>
                     <div className="flex justify-between">
-                      <div className="font-[Coiny] text-[#000000] text-xl md:text-2xl mb-[18px]">
+                      <div className="font-[family-name:var(--font-coiny)] text-[#000000] text-xl md:text-2xl mb-[18px]">
                         {subscription.name}
                       </div>
                     </div>

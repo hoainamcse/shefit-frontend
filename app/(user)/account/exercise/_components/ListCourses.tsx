@@ -10,7 +10,15 @@ import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import { Lock } from 'lucide-react'
 import { courseFormLabel } from '@/lib/label'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import type { Course } from '@/models/course'
 
@@ -155,9 +163,9 @@ export function ListCourses() {
       <Dialog open={renewDialogOpen} onOpenChange={setRenewDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-center">Gói đã hết hạn</DialogTitle>
-            <DialogDescription className="text-center">
-              Gói đã hết hạn, hãy gia hạn gói để tiếp tục truy cập
+            <DialogTitle className="text-center"></DialogTitle>
+            <DialogDescription className="text-center text-lg text-[#737373]">
+              GÓI ĐÃ HẾT HẠN HÃY GIA HẠN GÓI ĐỂ TIẾP TỤC TRUY CẬP
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:justify-center">
@@ -187,10 +195,14 @@ export function ListCourses() {
                   : `/courses/${course.id}/${course.course_format}-classes`
               }
               className={selectedSubscription?.status === 'expired' ? 'cursor-not-allowed' : ''}
-              onClick={selectedSubscription?.status === 'expired' ? (e) => {
-                e.preventDefault()
-                setRenewDialogOpen(true)
-              } : undefined}
+              onClick={
+                selectedSubscription?.status === 'expired'
+                  ? (e) => {
+                      e.preventDefault()
+                      setRenewDialogOpen(true)
+                    }
+                  : undefined
+              }
             >
               <div>
                 <div className="relative group">

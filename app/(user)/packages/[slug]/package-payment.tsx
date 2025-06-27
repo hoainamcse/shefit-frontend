@@ -287,7 +287,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
               </AlertDialogCancel>
               {purchaseSuccess ? (
                 <div className="flex flex-col items-center py-6">
-                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] text-xl">
+                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] font-bold text-xl">
                     ĐÃ MUA GÓI THÀNH CÔNG
                   </AlertDialogTitle>
                   <AlertDialogDescription className="text-center text-base">
@@ -306,7 +306,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
                 </div>
               ) : qrData ? (
                 <div className="flex flex-col items-center gap-4 py-4">
-                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] text-2xl">
+                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] font-bold text-2xl">
                     Thanh toán đơn hàng
                   </AlertDialogTitle>
                   <div className="border rounded-md p-4 w-full flex justify-center">
@@ -356,14 +356,14 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
                 </div>
               ) : paymentError ? (
                 <div className="flex flex-col items-center py-6">
-                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] text-xl text-red-500">
+                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] font-bold text-xl text-red-500">
                     Lỗi thanh toán
                   </AlertDialogTitle>
                   <AlertDialogDescription className="text-center mt-4">{paymentError}</AlertDialogDescription>
                 </div>
               ) : (
                 <div className="flex flex-col items-center py-6">
-                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] text-xl">
+                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] font-bold text-xl">
                     Đang tạo đơn hàng
                   </AlertDialogTitle>
                   <AlertDialogDescription className="text-center mt-4">

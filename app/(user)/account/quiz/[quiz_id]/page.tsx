@@ -373,10 +373,10 @@ export default function BodyQuizPage() {
         </DialogContent>
       </Dialog>
 
-      <div className="bg-[#FFF7F8] p-8 rounded-[10px] pb-28">
+      <div className="bg-[#FFF7F8] p-8 rounded-[10px] pb-28 mt-10">
         <Link
           href="/account?tab=body-quiz"
-          className="inline-flex items-center gap-2 text-xl font-semibold transition-colors mb-4 absolute top-5 left-13"
+          className="inline-flex items-center gap-2 text-xl font-semibold transition-colors absolute top-6 left-13"
         >
           <BackIconBlack className="w-5 h-5" />
           <span>Quay về</span>
@@ -386,8 +386,8 @@ export default function BodyQuizPage() {
         </div>
 
         <div className="w-full flex flex-col gap-5 mt-20">
-          <div className="xl:w-[400px] max-lg:w-full mb-10">
-            <div className="font-[family-name:var(--font-coiny)] text-3xl text-ring">
+          <div className="xl:w-[400px] max-lg:w-full mb-10 ">
+            <div className="font-[family-name:var(--font-coiny)] text-3xl text-ring font-bold mb-5">
               {bodyQuiz.title || 'Shefit.vn Body Quiz 1:1'}
             </div>
             {bodyQuiz.description && <p className="text-gray-500">{bodyQuiz.description}</p>}

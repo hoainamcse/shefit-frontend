@@ -130,7 +130,7 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
   }
   return (
     <div className="w-full flex flex-col gap-5">
-      <div className="font-[family-name:var(--font-coiny)] text-3xl">Thông tin vận chuyển</div>
+      <div className="font-[family-name:var(--font-coiny)] font-bold text-3xl">Thông tin vận chuyển</div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmitOrder)} className="space-y-7">
           <FormField
@@ -284,7 +284,7 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
           >
             <DialogContent className="sm:max-w-lg">
               <DialogHeader>
-                <DialogTitle className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px] text-center my-4">
+                <DialogTitle className="font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl xl:text-[40px] text-center my-4">
                   Đặt hàng thành công
                 </DialogTitle>
                 <DialogDescription className="text-center text-lg">
