@@ -3,6 +3,7 @@ import { type UseFormReturn, type FieldValues, type Path } from 'react-hook-form
 
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { CustomInput } from '@/components/ui/custom-input'
 
 type FormInputFieldProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -36,11 +37,15 @@ function FormInputField<
         <FormItem>
           {label && (
             <FormLabel>
-              {label} {withAsterisk && <span className="text-destructive">*</span>}
+              {label} {withAsterisk && <span className='text-destructive'>*</span>}
             </FormLabel>
           )}
           <FormControl>
-            <Input {...inputProps} {...field} />
+            {inputProps.type === 'password' ? (
+              <CustomInput {...inputProps} {...field} />
+            ) : (
+              <Input {...inputProps} {...field} />
+            )}
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />
