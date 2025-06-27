@@ -60,7 +60,7 @@ export async function getCategories(): Promise<ListResponse<ProductCategory>> {
 export async function createProduct(
     data: any
   ): Promise<ApiResponse<Product>> {
-    const response = await fetchDataServer('/v1/products', {
+    const response = await fetchDataServer('/v1/products/', {
       method: 'POST',
       body: JSON.stringify(data),
       credentials: 'include',

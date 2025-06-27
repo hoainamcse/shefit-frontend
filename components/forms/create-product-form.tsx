@@ -24,11 +24,11 @@ import { useRouter } from 'next/navigation'
 // Define the form schema with Zod
 const formSchema = z.object({
   name: z.string().min(1, 'Product name is required'),
-  description: z.string().min(1, 'Description is required'),
-  price: z.coerce.number().min(1, 'Price is required'),
-  weight: z.coerce.number().min(0, 'Weight is required'),
-  category_id: z.coerce.number().min(1, 'Category is required'),
-  image_urls: z.array(z.string()).min(1, 'At least one image is required'),
+  description: z.string(),
+  price: z.coerce.number().min(1, 'Price must be at least 1'),
+  weight: z.coerce.number().min(1, 'Weight must be at least 1'),
+  category_id: z.coerce.number().nullable(),
+  image_urls: z.array(z.string()),
   sizes: z.array(z.string()).optional(),
   colors: z.array(z.string()).optional(),
   variants: z.array(
@@ -117,7 +117,8 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
           description: '',
           price: 0,
           weight: 0,
-          image_urls: [],
+          category_id: null,
+          image_urls: ['https://placehold.co/600x400?text=example'],
           features: [],
           variants: [],
           sizes: [],
@@ -218,7 +219,7 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
     const result = await createProduct(values)
     if (result.status === 'success') {
       toast.success('Product created successfully!')
-      router.push('/admin/products')
+      router.push(`/admin/products/${result.data.id}`)
     }
   }
 
