@@ -41,7 +41,7 @@ export function SectionOne({ data }: { data: DataType['section_1'] }) {
 
 export function SectionTwo({ data }: { data: DataType['section_2'] }) {
   return (
-    <div className="py-8 lg:py-12">
+    <div className="py-8 lg:py-12 px-4 sm:px-6">
       <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
           <h3 className="text-ring text-xl lg:text-2xl font-bold">{data.subtitle}</h3>
@@ -161,7 +161,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
 
 export function SectionFour({ data }: { data: DataType['section_4'] }) {
   return (
-    <div className="py-8 lg:py-12">
+    <div className="py-8 lg:py-12 px-4 sm:px-6">
       <div className="container mx-auto">
         <div className="bg-primary py-8 rounded-xl px-4">
           <div className="max-w-lg mx-auto flex flex-col items-center justify-center text-center gap-4 text-background">
@@ -177,7 +177,7 @@ export function SectionFour({ data }: { data: DataType['section_4'] }) {
 
 export function SectionSix() {
   return (
-    <div className="py-8 lg:py-12">
+    <div className="py-8 lg:py-12 px-4 sm:px-6">
       <div className="container mx-auto">
         <div className="bg-primary py-8 px-4 rounded-xl">
           <div className="max-w-lg mx-auto flex flex-col items-center justify-center text-center gap-4 text-background">
@@ -193,7 +193,7 @@ export function SectionSix() {
 // Todo: carousel indicator
 export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
   return (
-    <div className="py-8 lg:py-12">
+    <div className="py-8 lg:py-12 px-8 sm:px-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
           <h3 className="text-ring text-xl lg:text-2xl font-bold">Ăn uống khoa học</h3>
@@ -246,7 +246,7 @@ export async function SectionEight({ data }: { data: DataType['section_8'] }) {
   })
 
   return (
-    <div className="py-8 lg:py-12">
+    <div className="py-8 lg:py-12 px-8 sm:px-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
           <h2 className="text-ring text-2xl lg:text-3xl font-bold">{data.title}</h2>
@@ -287,7 +287,7 @@ export async function SectionEight({ data }: { data: DataType['section_8'] }) {
 
 export async function SectionNine({ data }: { data: DataType['section_9'] }) {
   return (
-    <div className="py-8 lg:py-12">
+    <div className="py-8 lg:py-12 px-4 sm:px-6">
       <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-2xl lg:text-3xl font-bold">Dẫn dắt bởi chuyên gia hàng đầu</h2>
@@ -356,7 +356,7 @@ export function SectionTen({ data }: { data: DataType['section_10'] }) {
 
 export function SectionEleven({ data }: { data: DataType['section_11'] }) {
   return (
-    <div className="py-8 lg:py-12">
+    <div className="py-8 lg:py-12 px-4 lg:px-6">
       <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-2xl lg:text-3xl font-bold">Cộng đồng Shefit Nơi chia sẻ hành trình độ dáng của bạn</h2>

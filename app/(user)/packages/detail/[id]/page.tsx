@@ -23,12 +23,12 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
 
   const subscriptionData = subscription?.data
   return (
-    <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full pb-24 relative">
+    <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full pb-24 relative px-4 lg:px-14">
       <Link href="/account?tab=buy-package" className="flex items-center gap-[10px] cursor-pointer">
         <BackIcon color="#000000" style={{ marginBottom: '4px' }} />
         <div className="text-xl text-[#000000] font-semibold">Quay về</div>
       </Link>
-      <div className="p-6 mb-20 flex flex-col gap-10">
+      <div className="mb-20 flex flex-col gap-10">
         <img
           src={subscriptionData?.cover_image}
           alt={`${subscriptionData?.name}`}
@@ -37,7 +37,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
         <SubscriptionInfo />
         <div className="flex justify-between text-lg">
           <div className="flex flex-col gap-10 w-full">
-            <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-6 font-bold">
+            <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-8 font-bold text-center">
               {subscriptionData?.name}
             </div>
             <div>

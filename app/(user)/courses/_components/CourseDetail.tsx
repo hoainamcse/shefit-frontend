@@ -96,7 +96,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
 
   return (
     <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full pb-24 relative">
-      <div className="p-6 flex flex-col gap-10">
+      <div className="flex flex-col gap-10">
         <div className="flex items-center gap-[10px] cursor-pointer" onClick={() => router.back()}>
           <BackIcon color="#000000" style={{ marginBottom: '4px' }} />
           <div className="text-xl text-[#000000] font-semibold">Quay về</div>

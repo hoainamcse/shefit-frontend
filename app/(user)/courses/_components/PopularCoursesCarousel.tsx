@@ -26,7 +26,7 @@ export default function PopularCoursesCarousel() {
   }
 
   return (
-    <div className="max-w-screen-2xl mx-auto">
+    <div className="max-w-screen-2xl mx-auto px-4 lg:px-6">
       <p className="text-center font-[family-name:var(--font-coiny)] text-ring text-2xl my-4 font-bold uppercase">
         Khoá tập hot nhất tháng
       </p>

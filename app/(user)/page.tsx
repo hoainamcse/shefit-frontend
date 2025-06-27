@@ -49,7 +49,7 @@ export default async function HomePage() {
       <SectionTen data={section_10} />
       <SectionEleven data={section_11} />
       <Footer />
-      <BottomNavbar />
+      {/* <BottomNavbar /> */}
     </div>
   );
 }

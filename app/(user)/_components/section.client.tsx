@@ -30,7 +30,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
             <h2 className="text-2xl lg:text-3xl font-bold">{data.title}</h2>
             <p className="text-primary">{data.description}</p>
           </div>
-          <div className="max-w-2xl mx-auto space-y-6">
+          <div className="max-w-2xl mx-auto space-y-6 px-4 lg:px-6">
             <div className="flex flex-wrap justify-center gap-4">
               {data?.features?.map((feature, index) => (
                 <button
@@ -49,7 +49,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
             </div>
             {activeFeature?.description && <p className="text-center">{activeFeature.description}</p>}
           </div>
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl mx-auto px-8 lg:px-12">
             <Carousel>
               <CarouselContent className="flex justify-center">
                 {data?.features?.[activeTabIndex]?.courses?.map((course, mIndex) => (

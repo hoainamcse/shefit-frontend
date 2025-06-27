@@ -99,8 +99,8 @@ export default function ListSubscriptions() {
   const isExpired = endDate ? currentDate > endDate : false
 
   return session ? (
-    <div className="flex gap-5 mb-6">
-      <div className="relative w-[370px]">
+    <div className="flex flex-col lg:flex-row gap-5 mb-6 w-full">
+      <div className="relative w-full lg:w-[370px]">
         <Select
           value={showFavorites ? 'favorites' : selectedSubscription?.id?.toString() || ''}
           onValueChange={handleSubscriptionChange}
@@ -133,25 +133,25 @@ export default function ListSubscriptions() {
             <Button className="w-[160px] h-[54px] bg-[#E61417] text-lg">Hết hạn</Button>
           )}
 
-          <div className="flex gap-5 mt-auto text-lg justify-center text-[#737373] font-bold">
-            <div>
-              Ngày bắt đầu:
+          <div className="flex flex-col lg:flex-row gap-5 mt-auto text-lg justify-center text-[#737373] font-bold">
+            <div className="flex gap-2">
+              <div>Ngày bắt đầu:</div>
               <span>
                 {selectedSubscription?.subscription_start_at
                   ? new Date(selectedSubscription.subscription_start_at).toLocaleDateString('vi-VN')
                   : ''}
               </span>
             </div>
-            <div>
-              Ngày kết thúc:
+            <div className="flex gap-2">
+              <div>Ngày kết thúc:</div>
               <span>
                 {selectedSubscription?.subscription_end_at
                   ? new Date(selectedSubscription.subscription_end_at).toLocaleDateString('vi-VN')
                   : ''}
               </span>
             </div>
-            <div>
-              Promocode:
+            <div className="flex gap-2">
+              <div>Promocode:</div>
               <span>{selectedSubscription?.coupon_code}</span>
             </div>
           </div>

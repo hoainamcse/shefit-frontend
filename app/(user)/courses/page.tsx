@@ -159,7 +159,7 @@ export default function CoursesPage() {
             Lựa chọn khóa tập phù hợp với kinh nghiệm, mục tiêu và phom dáng của chị để bắt đầu hành trình độ dáng ngay
             hôm nay!
           </p>
-          <div className="flex justify-center gap-4 w-full">
+          <div className="grid grid-cols-2 gap-4 w-full justify-center">
             <div className="w-full max-w-lg">
               <MultiSelectHero
                 placeholder="Độ khó"
@@ -223,7 +223,7 @@ export default function CoursesPage() {
                           <p className="text-[#737373]">{courseLevelLabel[course.difficulty_level]}</p>
                           <p className="text-[#737373]">{course.trainer}</p>
                         </div>
-                        <div>
+                        <div className="flex flex-col justify-between">
                           <div className="text-gray-500 flex justify-end">
                             {course.form_categories.map((cat) => cat.name).join(', ')}
                           </div>
@@ -270,7 +270,7 @@ export default function CoursesPage() {
                           <p className="text-[#737373]">{courseLevelLabel[course.difficulty_level]}</p>
                           <p className="text-[#737373]">{course.trainer}</p>
                         </div>
-                        <div>
+                        <div className="flex flex-col justify-between">
                           <div className="text-gray-500 flex justify-end">
                             {course.form_categories.map((cat) => cat.name).join(', ')}
                           </div>

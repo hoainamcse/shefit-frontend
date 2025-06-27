@@ -1,7 +1,7 @@
-import { ZaloIcon } from "@/components/icons/ZaloIcon"
-import { YoutubeIcon } from "@/components/icons/YoutubeIcon"
-import { FacebookIcon } from "@/components/icons/FacebookIcon"
-import Link from "next/link"
+import { ZaloIcon } from '@/components/icons/ZaloIcon'
+import { YoutubeIcon } from '@/components/icons/YoutubeIcon'
+import { FacebookIcon } from '@/components/icons/FacebookIcon'
+import Link from 'next/link'
 export function Footer() {
   return (
     <div>
@@ -9,9 +9,9 @@ export function Footer() {
         className="w-full overflow-hidden max-sm:hidden h-[840px]"
         style={{
           backgroundImage: `url(/footer-image.png)`,
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
         }}
       >
         <div className="relative text-white px-10 pt-44">
@@ -43,7 +43,9 @@ export function Footer() {
                   <li className="text-[#E8E5E5] text-xl">
                     Văn phòng: Khu The Sun Avenue, An Phú, Quận 2, Thành phố Hồ Chí Minh
                   </li>
-                  <li className="text-[#FFEFEF] font-bold text-[60px]">Hotline: +84 90 693 48 21</li>
+                  <li className="text-[#FFEFEF] font-bold text-4xl md:text-5xl lg:text-6xl whitespace-nowrap overflow-hidden">
+                    <span className="text-3xl md:text-4xl lg:text-5xl">Hotline: +84 90 693 48 21</span>
+                  </li>
                   <li className="text-[#E8E5E5] text-xl">Email: info@thehealthyhouse.vn</li>
                   <div className="flex gap-3">
                     {/* <ZaloIcon />
@@ -63,9 +65,9 @@ export function Footer() {
           className="w-full overflow-hidden"
           style={{
             backgroundImage: `url(/footer-mobile.png)`,
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
           }}
         >
           <div className="relative text-white px-5 pt-44">
@@ -93,7 +95,7 @@ export function Footer() {
                     <li className="text-[#E8E5E5] text-base">
                       Văn phòng: Khu The Sun Avenue, An Phú, Quận 2, Thành phố Hồ Chí Minh
                     </li>
-                    <li className="text-[#FFEFEF] font-bold text-[40px]">Hotline: +84 90 693 48 21</li>
+                    <li className="text-[#FFEFEF] font-bold text-[30px]">Hotline: +84 90 693 48 21</li>
                     <li className="text-[#E8E5E5] text-base">Email: info@shefit.vn</li>
                     <div className="flex gap-3">
                       {/* <ZaloIcon />

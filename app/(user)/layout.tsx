@@ -1,4 +1,5 @@
 import { ChatBotButton } from '@/components/chatbot/chatbot'
+import { BottomNavbar } from './_components/bottom-navbar'
 
 export default function UserLayout({
   children,
@@ -9,6 +10,7 @@ export default function UserLayout({
     <div>
       {children}
       <ChatBotButton />
+      <BottomNavbar />
     </div>
   )
 }
