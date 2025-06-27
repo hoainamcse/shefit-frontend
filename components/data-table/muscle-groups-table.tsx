@@ -8,7 +8,12 @@ import { format } from 'date-fns'
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { deleteMuscleGroup, getMuscleGroups, queryKeyMuscleGroups } from '@/network/client/muscle-groups'
+import {
+  deleteBulkMuscleGroup,
+  deleteMuscleGroup,
+  getMuscleGroups,
+  queryKeyMuscleGroups,
+} from '@/network/client/muscle-groups'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -129,6 +134,19 @@ export function MuscleGroupsTable({ onConfirmRowSelection }: MuscleGroupsTablePr
     })
   }
 
+  const onDeleteRows = async (selectedRows: MuscleGroup[]) => {
+    const deletePromise = () => deleteBulkMuscleGroup(selectedRows.map((row) => row.id))
+
+    toast.promise(deletePromise, {
+      loading: 'Đang xoá...',
+      success: (_) => {
+        refetch()
+        return 'Xoá nhóm cơ thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
+  }
+
   const onEditSuccess = () => {
     setSelectedRow(null)
     setIsEditSheetOpen(false)
@@ -160,6 +178,7 @@ export function MuscleGroupsTable({ onConfirmRowSelection }: MuscleGroupsTablePr
         columns={columns}
         state={{ pagination, rowSelection }}
         rowCount={data?.paging.total}
+        onDelete={onDeleteRows}
         onPaginationChange={setPagination}
         onRowSelectionChange={setRowSelection}
         rightSection={

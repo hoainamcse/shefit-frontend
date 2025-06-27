@@ -36,3 +36,11 @@ export async function deleteMuscleGroup(id: MuscleGroup['id']): Promise<ApiRespo
   })
   return await response.json()
 }
+
+export async function deleteBulkMuscleGroup(ids: MuscleGroup['id'][]): Promise<ApiResponse<string>> {
+  const response = await fetchData('/v1/muscle-groups/bulk', {
+    method: 'DELETE',
+    body: JSON.stringify(ids),
+  })
+  return await response.json()
+}

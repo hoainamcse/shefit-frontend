@@ -8,7 +8,7 @@ import { format } from 'date-fns'
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { deleteEquipment, getEquipments, queryKeyEquipments } from '@/network/client/equipments'
+import { deleteBulkEquipment, deleteEquipment, getEquipments, queryKeyEquipments } from '@/network/client/equipments'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -129,6 +129,19 @@ export function EquipmentsTable({ onConfirmRowSelection }: EquipmentsTableProps)
     })
   }
 
+  const onDeleteRows = async (selectedRows: Equipment[]) => {
+    const deletePromise = () => deleteBulkEquipment(selectedRows.map((row) => row.id))
+
+    toast.promise(deletePromise, {
+      loading: 'Đang xoá...',
+      success: (_) => {
+        refetch()
+        return 'Xoá dụng cụ thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
+  }
+
   const onEditSuccess = () => {
     setSelectedRow(null)
     setIsEditSheetOpen(false)
@@ -160,6 +173,7 @@ export function EquipmentsTable({ onConfirmRowSelection }: EquipmentsTableProps)
         columns={columns}
         state={{ pagination, rowSelection }}
         rowCount={data?.paging.total}
+        onDelete={onDeleteRows}
         onPaginationChange={setPagination}
         onRowSelectionChange={setRowSelection}
         rightSection={

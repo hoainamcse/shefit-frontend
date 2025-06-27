@@ -33,3 +33,11 @@ export async function deleteCoach(id: Coach['id']): Promise<ApiResponse<string>>
   })
   return await response.json()
 }
+
+export async function deleteBulkCoach(ids: Coach['id'][]): Promise<ApiResponse<string>> {
+  const response = await fetchData('/v1/coaches/bulk', {
+    method: 'DELETE',
+    body: JSON.stringify(ids),
+  })
+  return await response.json()
+}

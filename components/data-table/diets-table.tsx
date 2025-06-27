@@ -87,7 +87,7 @@ export function DietsTable({ onConfirmRowSelection }: DietsTableProps) {
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
-        cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
+        cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={(row) => onDeleteRows([row])} />,
         size: 60,
         enableHiding: false,
       },
@@ -108,8 +108,8 @@ export function DietsTable({ onConfirmRowSelection }: DietsTableProps) {
     setIsEditSheetOpen(true)
   }
 
-  const onDeleteRow = async (row: Diet) => {
-    const deletePromise = () => deleteDiet(row.id)
+  const onDeleteRows = async (selectedRows: Diet[]) => {
+    const deletePromise = () => deleteDiet(selectedRows.map((row) => row.id))
 
     toast.promise(deletePromise, {
       loading: 'Đang xoá...',
@@ -152,6 +152,7 @@ export function DietsTable({ onConfirmRowSelection }: DietsTableProps) {
         columns={columns}
         state={{ pagination, rowSelection }}
         rowCount={data?.paging.total}
+        onDelete={onDeleteRows}
         onPaginationChange={setPagination}
         onRowSelectionChange={setRowSelection}
         rightSection={

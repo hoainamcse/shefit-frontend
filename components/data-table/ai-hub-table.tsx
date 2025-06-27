@@ -15,7 +15,7 @@ import { AddButton } from '../buttons/add-button'
 import { EditSheet } from './edit-sheet'
 import { EditAIHubForm } from '../forms/edit-ai-hub-form'
 import { Greeting } from '@/models/chatbot'
-import { deleteGreeting, getListGreeting, queryKeyGreetings } from '@/network/client/chatbot'
+import { deleteBulkGreeting, deleteGreeting, getListGreeting, queryKeyGreetings } from '@/network/client/chatbot'
 
 interface AIHubTableProps {
   onConfirmRowSelection?: (selectedRows: Greeting[]) => void
@@ -114,6 +114,19 @@ export function AIHubTable({ onConfirmRowSelection }: AIHubTableProps) {
     })
   }
 
+  const onDeleteRows = async (selectedRows: Greeting[]) => {
+    const deletePromise = () => deleteBulkGreeting(selectedRows.map((row) => row.id))
+
+    toast.promise(deletePromise, {
+      loading: 'Đang xoá...',
+      success: (_) => {
+        refetch()
+        return 'Xoá câu hỏi thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
+  }
+
   const onEditSuccess = () => {
     setSelectedRow(null)
     setIsEditSheetOpen(false)
@@ -145,6 +158,7 @@ export function AIHubTable({ onConfirmRowSelection }: AIHubTableProps) {
         columns={columns}
         state={{ pagination, rowSelection }}
         rowCount={data?.paging.total}
+        onDelete={onDeleteRows}
         onPaginationChange={setPagination}
         onRowSelectionChange={setRowSelection}
         rightSection={

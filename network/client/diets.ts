@@ -27,10 +27,11 @@ export async function updateDiet(id: Diet['id'], data: DietPayload): Promise<Api
   return await response.json()
 }
 
-export async function deleteDiet(id: Diet['id']): Promise<ApiResponse<string>> {
+export async function deleteDiet(ids: Diet['id'][]): Promise<ApiResponse<string>> {
   const response = await fetchData(`/v1/diets:bulkDeleteByIds`, {
     method: 'POST',
-    body: JSON.stringify([id]),
+    body: JSON.stringify(ids),
   })
   return await response.json()
 }
+

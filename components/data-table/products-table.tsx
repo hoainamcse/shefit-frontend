@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { deleteProduct, getProducts, queryKeyProducts } from '@/network/client/products'
+import { deleteBulkProduct, deleteProduct, getProducts, queryKeyProducts } from '@/network/client/products'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -125,6 +125,19 @@ export function ProductsTable({ onConfirmRowSelection }: ProductsTableProps) {
     })
   }
 
+  const onDeleteRows = async (selectedRows: Product[]) => {
+    const deletePromise = () => deleteBulkProduct(selectedRows.map((row) => row.id))
+
+    toast.promise(deletePromise, {
+      loading: 'Đang xoá...',
+      success: (_) => {
+        refetch()
+        return 'Xoá sản phẩm thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center">
@@ -147,6 +160,7 @@ export function ProductsTable({ onConfirmRowSelection }: ProductsTableProps) {
       columns={columns}
       state={{ pagination, rowSelection }}
       rowCount={data?.paging.total}
+      onDelete={onDeleteRows}
       onPaginationChange={setPagination}
       onRowSelectionChange={setRowSelection}
       rightSection={

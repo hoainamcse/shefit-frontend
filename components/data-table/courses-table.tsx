@@ -8,7 +8,7 @@ import { useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { deleteCourse, duplicateCourse, getCourses, queryKeyCourses } from '@/network/client/courses'
+import { deleteBulkCourse, deleteCourse, duplicateCourse, getCourses, queryKeyCourses } from '@/network/client/courses'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -173,6 +173,19 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
     })
   }
 
+  const onDeleteRows = async (selectedRows: Course[]) => {
+    const deletePromise = () => deleteBulkCourse(selectedRows.map((row) => row.id))
+
+    toast.promise(deletePromise, {
+      loading: 'Đang xoá...',
+      success: (_) => {
+        refetch()
+        return 'Xoá khoá tập thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center">
@@ -195,6 +208,7 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
       columns={columns}
       state={{ pagination, rowSelection }}
       rowCount={data?.paging.total}
+      onDelete={onDeleteRows}
       onPaginationChange={setPagination}
       onRowSelectionChange={setRowSelection}
       rightSection={

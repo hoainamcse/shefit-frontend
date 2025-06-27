@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { deleteGoal, getGoals, queryKeyGoals } from '@/network/client/goals'
+import { deleteBulkGoal, deleteGoal, getGoals, queryKeyGoals } from '@/network/client/goals'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -101,6 +101,19 @@ export function GoalTable({ onConfirmRowSelection }: GoalTableProps) {
     })
   }
 
+  const onDeleteRows = async (selectedRows: Goal[]) => {
+    const deletePromise = () => deleteBulkGoal(selectedRows.map((row) => row.id))
+
+    toast.promise(deletePromise, {
+      loading: 'Đang xoá...',
+      success: (_) => {
+        refetch()
+        return 'Xoá mục tiêu thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
+  }
+
   const onEditSuccess = () => {
     setSelectedRow(null)
     setIsEditSheetOpen(false)
@@ -132,6 +145,7 @@ export function GoalTable({ onConfirmRowSelection }: GoalTableProps) {
         columns={columns}
         state={{ pagination, rowSelection }}
         rowCount={data?.paging.total}
+        onDelete={onDeleteRows}
         onPaginationChange={setPagination}
         onRowSelectionChange={setRowSelection}
         rightSection={

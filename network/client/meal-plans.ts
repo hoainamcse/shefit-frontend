@@ -47,6 +47,14 @@ export async function deleteMealPlan(id: MealPlan['id']): Promise<ApiResponse<st
   return await response.json()
 }
 
+export async function deleteBulkMealPlan(ids: MealPlan['id'][]): Promise<ApiResponse<string>> {
+  const response = await fetchData('/v1/meal-plans/bulk', {
+    method: 'DELETE',
+    body: JSON.stringify(ids),
+  })
+  return response.json()
+}
+
 export async function duplicateMealPlan(id: MealPlan['id']): Promise<ApiResponse<MealPlan>> {
   const response = await fetchData(`/v1/meal-plans/${id}/duplicate`, {
     method: 'POST',

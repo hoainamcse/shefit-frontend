@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { deleteCalorie, getCalories, queryKeyCalories } from '@/network/client/calories'
+import { deleteBulkCalorie, deleteCalorie, getCalories, queryKeyCalories } from '@/network/client/calories'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -106,6 +106,19 @@ export function CaloriesTable({ onConfirmRowSelection }: CaloriesTableProps) {
     })
   }
 
+  const onDeleteRows = async (selectedRows: Calorie[]) => {
+    const deletePromise = () => deleteBulkCalorie(selectedRows.map((row) => row.id))
+
+    toast.promise(deletePromise, {
+      loading: 'Đang xoá...',
+      success: (_) => {
+        refetch()
+        return 'Xoá calorie thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
+  }
+
   const onEditSuccess = () => {
     setSelectedRow(null)
     setIsEditSheetOpen(false)
@@ -137,6 +150,7 @@ export function CaloriesTable({ onConfirmRowSelection }: CaloriesTableProps) {
         columns={columns}
         state={{ pagination, rowSelection }}
         rowCount={data?.paging.total}
+        onDelete={onDeleteRows}
         onPaginationChange={setPagination}
         onRowSelectionChange={setRowSelection}
         rightSection={

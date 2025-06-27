@@ -53,6 +53,14 @@ export async function deleteCourse(id: Course['id']): Promise<ApiResponse<string
   return await response.json()
 }
 
+export async function deleteBulkCourse(ids: Course['id'][]): Promise<ApiResponse<string>> {
+  const response = await fetchData('/v1/courses/bulk', {
+    method: 'DELETE',
+    body: JSON.stringify(ids),
+  })
+  return await response.json()
+}
+
 export async function duplicateCourse(id: Course['id']): Promise<ApiResponse<Course>> {
   const response = await fetchData(`/v1/courses/${id}/duplicate`, {
     method: 'POST',

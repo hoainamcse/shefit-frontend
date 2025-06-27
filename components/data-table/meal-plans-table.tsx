@@ -8,7 +8,13 @@ import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { deleteMealPlan, duplicateMealPlan, getMealPlans, queryKeyMealPlans } from '@/network/client/meal-plans'
+import {
+  deleteBulkMealPlan,
+  deleteMealPlan,
+  duplicateMealPlan,
+  getMealPlans,
+  queryKeyMealPlans,
+} from '@/network/client/meal-plans'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -149,6 +155,19 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
     })
   }
 
+  const onDeleteRows = async (selectedRows: MealPlan[]) => {
+    const deletePromise = () => deleteBulkMealPlan(selectedRows.map((row) => row.id))
+
+    toast.promise(deletePromise, {
+      loading: 'Đang xoá...',
+      success: (_) => {
+        refetch()
+        return 'Xoá thực đơn thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center">
@@ -171,6 +190,7 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
       columns={columns}
       state={{ pagination, rowSelection }}
       rowCount={data?.paging.total}
+      onDelete={onDeleteRows}
       onPaginationChange={setPagination}
       onRowSelectionChange={setRowSelection}
       rightSection={

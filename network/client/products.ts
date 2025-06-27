@@ -17,3 +17,12 @@ export async function deleteProduct(id: Product['id']): Promise<ApiResponse<stri
   })
   return await response.json()
 }
+
+export async function deleteBulkProduct(ids: Product['id'][]): Promise<ApiResponse<string>> {
+  const response = await fetchData('/v1/products/bulk', {
+    method: 'DELETE',
+    body: JSON.stringify(ids),
+  })
+  return await response.json()
+}
+

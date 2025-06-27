@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
 import {
+  deleteBulkSubscription,
   deleteSubscription,
   getSubAdminSubscriptions,
   getSubscriptions,
@@ -132,6 +133,19 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
     })
   }
 
+  const onDeleteRows = async (selectedRows: Subscription[]) => {
+    const deletePromise = () => deleteBulkSubscription(selectedRows.map((row) => row.id))
+
+    toast.promise(deletePromise, {
+      loading: 'Đang xoá...',
+      success: (_) => {
+        refetch()
+        return 'Xoá gói tập thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center">
@@ -155,6 +169,7 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
         columns={columns}
         state={{ pagination, rowSelection }}
         rowCount={data?.paging.total}
+        onDelete={onDeleteRows}
         onPaginationChange={setPagination}
         onRowSelectionChange={setRowSelection}
         rightSection={

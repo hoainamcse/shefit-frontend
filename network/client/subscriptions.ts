@@ -45,6 +45,14 @@ export async function deleteSubscription(id: Subscription['id']): Promise<ApiRes
   return response.json()
 }
 
+export async function deleteBulkSubscription(ids: Subscription['id'][]): Promise<ApiResponse<string>> {
+  const response = await fetchData('/v1/subscriptions/bulk', {
+    method: 'DELETE',
+    body: JSON.stringify(ids),
+  })
+  return response.json()
+}
+
 export async function updateSubscriptionPrices(id: Subscription['id'], data: any): Promise<ApiResponse<any>> {
   const response = await fetchData(`/v1/subscriptions/${id}/prices`, {
     method: 'PUT',

@@ -7,7 +7,12 @@ import { toast } from 'sonner'
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { deleteFormCategory, getFormCategories, queryKeyFormCategories } from '@/network/client/form-categories'
+import {
+  deleteBulkFormCategory,
+  deleteFormCategory,
+  getFormCategories,
+  queryKeyFormCategories,
+} from '@/network/client/form-categories'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -101,6 +106,19 @@ export function FormCategoryTable({ onConfirmRowSelection }: FormCategoryTablePr
     })
   }
 
+  const onDeleteRows = async (selectedRows: FormCategory[]) => {
+    const deletePromise = () => deleteBulkFormCategory(selectedRows.map((row) => row.id))
+
+    toast.promise(deletePromise, {
+      loading: 'Đang xoá...',
+      success: (_) => {
+        refetch()
+        return 'Xoá loại phom dáng thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
+  }
+
   const onEditSuccess = () => {
     setSelectedRow(null)
     setIsEditSheetOpen(false)
@@ -132,6 +150,7 @@ export function FormCategoryTable({ onConfirmRowSelection }: FormCategoryTablePr
         columns={columns}
         state={{ pagination, rowSelection }}
         rowCount={data?.paging.total}
+        onDelete={onDeleteRows}
         onPaginationChange={setPagination}
         onRowSelectionChange={setRowSelection}
         rightSection={

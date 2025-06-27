@@ -47,3 +47,12 @@ export async function deleteGreeting(id: Greeting['id']): Promise<ApiResponse<Gr
   return await response.json()
 }
 
+export async function deleteBulkGreeting(ids: Greeting['id'][]): Promise<ApiResponse<string>> {
+  const response = await fetchData('/v1/greeting/bulk', {
+    method: 'DELETE',
+    body: JSON.stringify(ids),
+  })
+  return await response.json()
+}
+
+

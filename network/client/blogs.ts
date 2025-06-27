@@ -38,3 +38,11 @@ export async function deleteBlog(id: Blog['id']): Promise<ApiResponse<string>> {
   })
   return await response.json()
 }
+
+export async function deleteBulkBlog(ids: Blog['id'][]): Promise<ApiResponse<string>> {
+  const response = await fetchData('/v1/blogs/bulk', {
+    method: 'DELETE',
+    body: JSON.stringify(ids),
+  })
+  return await response.json()
+}

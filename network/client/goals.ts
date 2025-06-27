@@ -32,3 +32,12 @@ export async function deleteGoal(id: Goal['id']): Promise<ApiResponse<string>> {
   })
   return response.json()
 }
+
+export async function deleteBulkGoal(ids: Goal['id'][]): Promise<ApiResponse<string>> {
+  const response = await fetchData('/v1/meal_plan_goals/bulk', {
+    method: 'DELETE',
+    body: JSON.stringify(ids),
+  })
+  return response.json()
+}
+

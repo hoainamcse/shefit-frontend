@@ -32,3 +32,12 @@ export async function deleteFormCategory(id: FormCategory['id']): Promise<ApiRes
   })
   return response.json()
 }
+
+export async function deleteBulkFormCategory(ids: FormCategory['id'][]): Promise<ApiResponse<string>> {
+  const response = await fetchData('/v1/form_categories/bulk', {
+    method: 'DELETE',
+    body: JSON.stringify(ids),
+  })
+  return response.json()
+}
+
