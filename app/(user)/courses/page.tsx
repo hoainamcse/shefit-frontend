@@ -159,7 +159,7 @@ export default function CoursesPage() {
             Lựa chọn khóa tập phù hợp với kinh nghiệm, mục tiêu và phom dáng của chị để bắt đầu hành trình độ dáng ngay
             hôm nay!
           </p>
-          <div className="grid grid-cols-2 gap-4 w-full justify-center">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 w-full justify-center">
             <div className="w-full max-w-lg">
               <MultiSelectHero
                 placeholder="Độ khó"
