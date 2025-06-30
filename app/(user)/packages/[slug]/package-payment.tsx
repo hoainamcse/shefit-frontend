@@ -36,8 +36,6 @@ interface PackagePaymentProps {
   packageName: string
 }
 
-const BASIC_AUTH = process.env.NEXT_PUBLIC_VIETQR_BASIC_AUTH
-
 export function PackagePayment({ prices, defaultPrice, packageName }: PackagePaymentProps) {
   const { session } = useSession()
   const { redirectToLogin } = useAuthRedirect()
@@ -89,7 +87,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Basic ${BASIC_AUTH}`,
+          Authorization: `Basic Y3VzdG9tZXItdnNvMjQ3MTRzaGVmaXQtdXNlcjI1MzIzOlkzVnpkRzl0WlhJdGRuTnZNalEzTVRSemFHVm1hWFF0ZFhObGNqSTFNekl6`,
         },
       })
 
