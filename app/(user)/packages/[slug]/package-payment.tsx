@@ -36,6 +36,8 @@ interface PackagePaymentProps {
   packageName: string
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_SERVER_URL
+
 export function PackagePayment({ prices, defaultPrice, packageName }: PackagePaymentProps) {
   const { session } = useSession()
   const { redirectToLogin } = useAuthRedirect()
@@ -83,7 +85,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
       setErrorMessage(null)
       setPaymentError(null)
 
-      const response = await fetch('https://api.shefitvn.com/api/v1/vietqr/generate-qr-token', {
+      const response = await fetch(`${API_BASE_URL}/v1/vietqr/generate-qr-token`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +110,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
       const username = session?.userId || 'guest'
       const content = `${username} ${newOrderId}`
 
-      const directQrResponse = await fetch('https://api.shefitvn.com/api/v1/vietqr/create-qr', {
+      const directQrResponse = await fetch(`${API_BASE_URL}/v1/vietqr/create-qr`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -145,7 +147,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
           const encodedCredentials =
             typeof window !== 'undefined' ? btoa(credentials) : Buffer.from(credentials).toString('base64')
 
-          const tokenResponse = await fetch('https://api.shefitvn.com/api/v1/vietqr/api/token_generate', {
+          const tokenResponse = await fetch(`${API_BASE_URL}/v1/vietqr/api/token_generate`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -164,7 +166,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
           const syncToken = tokenData.access_token || tokenData.data?.access_token
 
           if (syncToken) {
-            const syncResponse = await fetch('https://api.shefitvn.com/api/v1/vietqr/bank/api/transaction-sync', {
+            const syncResponse = await fetch('/v1/vietqr/bank/api/transaction-sync', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
