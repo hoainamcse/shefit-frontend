@@ -87,7 +87,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Basic Y3VzdG9tZXItdnNvMjQ3MTRzaGVmaXQtdXNlcjI1MzIzOlkzVnpkRzl0WlhJdGRuTnZNalEzTVRSemFHVm1hWFF0ZFhObGNqSTFNekl6`,
+          Authorization: `Basic ${process.env.NEXT_PUBLIC_VIETQR_BASIC_AUTH}`,
         },
       })
 
