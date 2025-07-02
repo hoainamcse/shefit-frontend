@@ -82,7 +82,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                           const isSelected = selectedVideoIndex === index
                           return (
                             <CustomCarouselItem key={course.id} index={index} className="px-2">
-                              <div className="relative overflow-hidden rounded-lg flex items-center justify-center transition-all duration-300">
+                              <div className="relative overflow-hidden rounded-lg flex items-center justify-center transition-all duration-300 h-[560px]">
                                 <div
                                   className="relative transition-all duration-300"
                                   style={{
@@ -134,7 +134,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                           const isSelected = selectedZoomIndex === index
                           return (
                             <CustomCarouselItem key={course.id} index={index} className="px-2">
-                              <div className="relative overflow-hidden rounded-lg flex items-center justify-center transition-all duration-300">
+                              <div className="relative overflow-hidden rounded-lg flex items-center justify-center transition-all duration-300 h-[560px]">
                                 <div
                                   className="relative transition-all duration-300"
                                   style={{
@@ -238,7 +238,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
               const isSelected = selectedMethod === methodIndex && localSelectedIndex === index
               return (
                 <CustomCarouselItem key={course.id || index} index={index} className="px-2">
-                  <div className="relative overflow-hidden rounded-lg flex items-center justify-center transition-all duration-300">
+                  <div className="relative overflow-hidden rounded-lg flex items-center justify-center transition-all duration-300 h-[560px]">
                     <div
                       className="relative transition-all duration-300"
                       style={{
