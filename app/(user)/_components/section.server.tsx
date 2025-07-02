@@ -175,21 +175,6 @@ export function SectionFour({ data }: { data: DataType['section_4'] }) {
   )
 }
 
-export function SectionSix() {
-  return (
-    <div className="py-8 lg:py-12 px-4 sm:px-6">
-      <div className="container mx-auto">
-        <div className="bg-primary py-8 px-4 rounded-xl">
-          <div className="max-w-lg mx-auto flex flex-col items-center justify-center text-center gap-4 text-background">
-            <h3 className="text-xl lg:text-2xl font-bold">Bạn không biết mình thuộc loại phom dáng nào?</h3>
-            <MainButton text="Phân tích phom dáng" className="rounded-full w-full" size="lg" href="#" />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 // Todo: carousel indicator
 export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
   return (
