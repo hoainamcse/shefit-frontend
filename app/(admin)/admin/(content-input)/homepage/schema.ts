@@ -45,23 +45,21 @@ export const formSchema = z.object({
     video: z.object({
       description: z.string(),
       courses: z.array(z.any()),
-    }).optional(),
+    }),
     zoom: z.object({
       description: z.string(),
       courses: z.array(z.any()),
-    }).optional(),
+    }),
   }),
   section_6: z.object({
     title: z.string(),
-    description: z.string().optional(),
-    features: z.array(z.object({
-      workout_method: z.object({
-        id: z.number().or(z.string()),
-        name: z.string(),
-      }),
-      description: z.string().optional(),
-      courses: z.array(z.any()),
-    })),
+    features: z.array(
+      z.object({
+        workout_method: z.any(),
+        description: z.string(),
+        courses: z.array(z.any()),
+      })
+    ),
   }),
   section_7: z.object({
     title: z.string(),

@@ -282,9 +282,6 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
         <div className="py-8 lg:py-12 space-y-8 lg:space-y-10">
           <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
             <h2 dangerouslySetInnerHTML={{ __html: data.title }} className="text-2xl lg:text-3xl font-bold" />
-            {data.description && (
-              <p dangerouslySetInnerHTML={{ __html: data.description }} className="text-primary text-center" />
-            )}
           </div>
 
           <div className="mx-auto px-8 lg:px-12">

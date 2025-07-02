@@ -2,6 +2,7 @@ import type { Subscription } from './subscription'
 import type { MuscleGroup } from './muscle-group'
 import type { Equipment } from './equipment'
 import { FormCategory } from './form-category'
+import { WorkoutMethod } from './workout-method'
 
 type CourseFormat = 'video' | 'live'
 type CourseForm = 'pear' | 'apple' | 'rectangle' | 'hourglass' | 'inverted_triangle'
@@ -27,23 +28,29 @@ type Course = {
   // muscle_groups: MuscleGroup[]
   // equipments: Equipment[]
   form_categories: FormCategory[]
+  workout_methods: WorkoutMethod[]
+  description_homepage_1: string
+  description_homepage_2: string
+  image_homepage: string
   subscriptions: Subscription[]
   relationships?: {
     equipments: Equipment[]
     muscle_groups: MuscleGroup[]
     subscriptions: Subscription[]
     form_categories: FormCategory[]
+    workout_methods: WorkoutMethod[]
   }
 }
 
 type CoursePayload = Omit<
   Course,
-  'id' | 'created_at' | 'updated_at' | 'muscle_groups' | 'equipments' | 'subscriptions' | 'relationships' | 'form_categories'
+  'id' | 'created_at' | 'updated_at' | 'muscle_groups' | 'equipments' | 'subscriptions' | 'relationships' | 'form_categories' | 'workout_methods'
 > & {
   muscle_group_ids: MuscleGroup['id'][]
   equipment_ids: Equipment['id'][]
   subscription_ids: Subscription['id'][]
   form_category_ids: FormCategory['id'][]
+  workout_method_ids: WorkoutMethod['id'][]
 }
 
 export type { CourseFormat, CourseForm, CourseLevel, Course }

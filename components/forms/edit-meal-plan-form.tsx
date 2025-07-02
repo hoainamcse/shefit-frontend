@@ -43,6 +43,9 @@ const formSchema = z.object({
   free_days: z.number().min(0),
   diet_id: z.coerce.number().nullable(),
   calorie_id: z.coerce.number().nullable(),
+  description_homepage_1: z.string(),
+  description_homepage_2: z.string(),
+  image_homepage: z.string().url(),
 })
 
 type FormValue = z.infer<typeof formSchema>
@@ -72,6 +75,9 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
     free_days: 0,
     calorie_id: null,
     diet_id: null,
+    description_homepage_1: '',
+    description_homepage_2: '',
+    image_homepage: defaultImageUrl,
   } as FormValue
 
   const form = useForm<FormValue>({
@@ -93,6 +99,9 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
             free_days: data.free_days,
             calorie_id: data.calorie?.id || null,
             diet_id: data.diet?.id || null,
+            description_homepage_1: data.description_homepage_1,
+            description_homepage_2: data.description_homepage_2,
+            image_homepage: isYoutube ? defaultImageUrl : data.image_homepage,
           }
         })()
       : defaultValue,
@@ -148,6 +157,25 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
             setShowYoutubeUrlInput={setShowYoutubeUrlInput}
             coverImageName="image"
             youtubeUrlName="youtube_url"
+          />
+          <FormTextareaField
+            form={form}
+            name="description_homepage_1"
+            label="Mô tả homepage 1"
+            placeholder="Nhập mô tả"
+          />
+          <FormTextareaField
+            form={form}
+            name="description_homepage_2"
+            label="Mô tả homepage 2"
+            placeholder="Nhập mô tả"
+          />
+          <ImageUploader
+            form={form}
+            name="image_homepage"
+            label="Hình ảnh homepage"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
           />
           <div className="grid grid-cols-2 gap-4">
             <FormInputField form={form} name="chef_name" label="Tên đầu bếp" placeholder="Nhập tên đầu bếp" />

@@ -31,6 +31,7 @@ import { Input } from '../ui/input'
 import { SubscriptionsTable } from '../data-table/subscriptions-table'
 import { CoverMediaSelector } from './cover-media-selector'
 import { FormCategoryTable } from '../data-table/form-category-table'
+import { WorkoutMethodsTable } from '../data-table/workout-methods-table'
 
 // ! Follow CoursePayload model in models/course.ts
 const formSchema = z.object({
@@ -52,6 +53,10 @@ const formSchema = z.object({
   equipment_ids: z.array(z.string()),
   muscle_group_ids: z.array(z.string()),
   subscription_ids: z.array(z.string()),
+  description_homepage_1: z.string(),
+  description_homepage_2: z.string(),
+  image_homepage: z.string().url(),
+  workout_method_ids: z.array(z.string()),
 })
 
 type FormValue = z.infer<typeof formSchema>
@@ -87,6 +92,10 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
     muscle_group_ids: [],
     equipment_ids: [],
     subscription_ids: [],
+    description_homepage_1: '',
+    description_homepage_2: '',
+    image_homepage: defaultImageUrl,
+    workout_method_ids: [],
   } as FormValue
 
   const form = useForm<FormValue>({
@@ -110,9 +119,13 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
             summary: data.summary,
             free_amount: data.free_amount,
             is_one_on_one: data.is_one_on_one,
+            description_homepage_1: data.description_homepage_1,
+            description_homepage_2: data.description_homepage_2,
+            image_homepage: data.image_homepage,
             muscle_group_ids: data.relationships?.muscle_groups.map((mg) => mg.id.toString()) || [],
             equipment_ids: data.relationships?.equipments.map((e) => e.id.toString()) || [],
             subscription_ids: data.relationships?.subscriptions.map((s) => s.id.toString()) || [],
+            workout_method_ids: data.relationships?.workout_methods.map((wm) => wm.id.toString()) || [],
           }
         })()
       : defaultValue,
@@ -148,10 +161,12 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
   const [openEquipmentsTable, setOpenEquipmentsTable] = useState(false)
   const [openSubscriptionsTable, setOpenSubscriptionsTable] = useState(false)
   const [openFormCategoryTable, setOpenFormCategoryTable] = useState(false)
+  const [openWorkoutMethodsTable, setOpenWorkoutMethodsTable] = useState(false)
   const [selectedMuscleGroups, setSelectedMuscleGroups] = useState(data?.relationships?.muscle_groups || [])
   const [selectedEquipments, setSelectedEquipments] = useState(data?.relationships?.equipments || [])
   const [selectedSubscriptions, setSelectedSubscriptions] = useState(data?.relationships?.subscriptions || [])
   const [selectedFormCategory, setSelectedFormCategory] = useState(data?.relationships?.form_categories || [])
+  const [selectedWorkoutMethods, setSelectedWorkoutMethods] = useState(data?.relationships?.workout_methods || [])
 
   return (
     <>
@@ -169,6 +184,7 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
           </div>
           <FormTextareaField form={form} name="summary" label="Tóm tắt" placeholder="Nhập tóm tắt" />
           <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
+
           <div className="grid grid-cols-2 gap-4">
             <ImageUploader
               form={form}
@@ -185,6 +201,25 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
               youtubeUrlName="youtube_url"
             />
           </div>
+          <FormTextareaField
+            form={form}
+            name="description_homepage_1"
+            label="Mô tả homepage 1"
+            placeholder="Nhập mô tả"
+          />
+          <FormTextareaField
+            form={form}
+            name="description_homepage_2"
+            label="Mô tả homepage 2"
+            placeholder="Nhập mô tả"
+          />
+          <ImageUploader
+            form={form}
+            name="image_homepage"
+            label="Hình ảnh homepage"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
+          />
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Nhóm cơ</Label>
@@ -221,6 +256,17 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
                 value={selectedFormCategory.map((e) => e.name).join(', ')}
                 onFocus={() => setOpenFormCategoryTable(true)}
                 placeholder="Chọn phom dáng"
+                readOnly
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Loại hình tập luyện</Label>
+              <Input
+                value={selectedWorkoutMethods.map((e) => e.name).join(', ')}
+                onFocus={() => setOpenWorkoutMethodsTable(true)}
+                placeholder="Chọn loại hình tập luyện"
                 readOnly
               />
             </div>
@@ -329,6 +375,25 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
             )
             form.trigger('form_category_ids')
             setOpenFormCategoryTable(false)
+          }}
+        />
+      </EditDialog>
+      <EditDialog
+        title="Chọn loại hình tập luyện"
+        description="Chọn một hoặc nhiều dụng cụ đã có hoặc tạo mới để liên kết với khoá tập này."
+        open={openWorkoutMethodsTable}
+        onOpenChange={setOpenWorkoutMethodsTable}
+      >
+        <WorkoutMethodsTable
+          onConfirmRowSelection={(row) => {
+            setSelectedWorkoutMethods(row)
+            form.setValue(
+              'workout_method_ids',
+              row.map((r) => r.id.toString()),
+              { shouldDirty: true }
+            )
+            form.trigger('workout_method_ids')
+            setOpenWorkoutMethodsTable(false)
           }}
         />
       </EditDialog>

@@ -32,10 +32,10 @@ import { Form } from '@/components/ui/form'
 import { formSchema as homepageSchema } from './schema'
 import { Subscription } from '@/models/subscription'
 import { SubscriptionsTable } from '@/components/data-table/subscriptions-table'
-import { FormCategory } from '@/models/form-category'
-import { FormCategoryTable } from '@/components/data-table/form-category-table'
 import { Course } from '@/models/course'
 import { CoursesTable } from '@/components/data-table/courses-table'
+import { WorkoutMethod } from '@/models/workout-method'
+import { WorkoutMethodsTable } from '@/components/data-table/workout-methods-table'
 
 const configurationID = 3
 
@@ -73,7 +73,8 @@ const labels = [
   'Khoá tập tiêu biểu',
   'Gói tập',
   'CTA',
-  'Phom dáng',
+  'Khoá tập',
+  'Loại hình',
   'Thực đơn',
   'Sản phẩm',
   'Huấn luyện viên',
@@ -127,7 +128,9 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
   const [openMealPlansTable, setOpenMealPlansTable] = useState(false)
   const [openProductsTable, setOpenProductsTable] = useState(false)
   const [openCoachesTable, setOpenCoachesTable] = useState(false)
-  const [openFormCategoryTable, setOpenFormCategoryTable] = useState(false)
+  const [openWorkoutMethodsTable, setOpenWorkoutMethodsTable] = useState(false)
+  const [openVideoCourseTable, setOpenVideoCourseTable] = useState(false)
+  const [openZoomCourseTable, setOpenZoomCourseTable] = useState(false)
   const [openDialogCategoryId, setOpenDialogCategoryId] = useState<string | null>(null)
 
   const [selectedSubscriptions, setSelectedSubscriptions] = useState<Subscription[]>(
@@ -136,9 +139,11 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
   const [selectedMealPlans, setSelectedMealPlans] = useState<MealPlan[]>(data.data.section_7.meal_plans || [])
   const [selectedProducts, setSelectedProducts] = useState<Product[]>(data.data.section_8.products || [])
   const [selectedCoaches, setSelectedCoaches] = useState<Coach[]>(data.data.section_9.coaches || [])
-  const [selectedFormCategory, setSelectedFormCategory] = useState<FormCategory[]>(
-    data.data.section_5.features?.map((f: any) => f.form_category) || []
+  const [selectedWorkoutMethods, setSelectedWorkoutMethods] = useState<WorkoutMethod[]>(
+    data.data.section_6.features?.map((f: any) => f.workout_method) || []
   )
+  const [selectedVideoCourse, setSelectedVideoCourse] = useState<Course[]>(data.data.section_5.video.courses || [])
+  const [selectedZoomCourse, setSelectedZoomCourse] = useState<Course[]>(data.data.section_5.zoom.courses || [])
 
   return (
     <>
@@ -301,37 +306,90 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
             </TabsContent>
             <TabsContent value="tab-5" className="space-y-4">
               <FormInputField form={form} name="data.section_5.title" label="Tiêu đề" placeholder="Nhập tiêu đề" />
-              <FormTextareaField form={form} name="data.section_5.description" label="Mô tả" placeholder="Nhập mô tả" />
+
+              <Tabs defaultValue={'video'} className="mt-4">
+                <TabsList className="overflow-x-auto">
+                  <TabsTrigger key={'video'} value={'video'} className="min-w-[100px]">
+                    Video
+                  </TabsTrigger>
+                  <TabsTrigger key={'zoom'} value={'zoom'} className="min-w-[100px]">
+                    Zoom
+                  </TabsTrigger>
+                </TabsList>
+
+                <div key={'video'}>
+                  <TabsContent value={'video'} key={'video'} className="pt-4">
+                    <FormTextareaField
+                      form={form}
+                      name={`data.section_5.video.description`}
+                      label="Mô tả"
+                      placeholder="Nhập mô tả"
+                    />
+                    <div className="space-y-2">
+                      <Label>Khoá tập</Label>
+                      <Input
+                        value={selectedVideoCourse.map((c: any) => c.course_name).join(', ')}
+                        onFocus={() => setOpenVideoCourseTable(true)}
+                        placeholder="Chọn khoá tập"
+                        readOnly
+                      />
+                    </div>
+                  </TabsContent>
+                </div>
+
+                <div key={'zoom'}>
+                  <TabsContent value={'zoom'} key={'zoom'} className="pt-4">
+                    <FormTextareaField
+                      form={form}
+                      name={`data.section_5.zoom.description`}
+                      label="Mô tả"
+                      placeholder="Nhập mô tả"
+                    />
+                    <div className="space-y-2">
+                      <Label>Khoá tập</Label>
+                      <Input
+                        value={selectedZoomCourse.map((c: any) => c.course_name).join(', ')}
+                        onFocus={() => setOpenZoomCourseTable(true)}
+                        placeholder="Chọn khoá tập"
+                        readOnly
+                      />
+                    </div>
+                  </TabsContent>
+                </div>
+              </Tabs>
+            </TabsContent>
+            <TabsContent value="tab-6" className="space-y-4">
+              <FormInputField form={form} name="data.section_5.title" label="Tiêu đề" placeholder="Nhập tiêu đề" />
               <div className="space-y-2">
-                <Label>Phom dáng</Label>
+                <Label>Loại hình tập luyện</Label>
                 <Input
-                  value={selectedFormCategory.map((c: any) => c?.name).join(', ')}
-                  onFocus={() => setOpenFormCategoryTable(true)}
-                  placeholder="Chọn phom dáng"
+                  value={selectedWorkoutMethods.map((c: any) => c?.name).join(', ')}
+                  onFocus={() => setOpenWorkoutMethodsTable(true)}
+                  placeholder="Chọn loại hình"
                   readOnly
                 />
               </div>
-              {selectedFormCategory.length > 0 && (
-                <Tabs defaultValue={selectedFormCategory[0]?.id.toString()} className="mt-4">
+              {selectedWorkoutMethods.length > 0 && (
+                <Tabs defaultValue={selectedWorkoutMethods[0]?.id.toString()} className="mt-4">
                   <TabsList className="overflow-x-auto">
-                    {selectedFormCategory.map((cat) => (
+                    {selectedWorkoutMethods.map((cat) => (
                       <TabsTrigger key={cat?.id} value={cat?.id.toString()} className="min-w-[100px]">
                         {cat?.name}
                       </TabsTrigger>
                     ))}
                   </TabsList>
-                  {selectedFormCategory.map((cat: any) => {
-                    const features = form.watch('data.section_5.features') || []
-                    const featureIdx = features.findIndex((f: any) => f.form_category?.id === cat?.id)
+                  {selectedWorkoutMethods.map((cat: any) => {
+                    const features = form.watch('data.section_6.features') || []
+                    const featureIdx = features.findIndex((f: any) => f.workout_method?.id === cat?.id)
                     const courses = features[featureIdx]?.courses || []
                     return (
                       <div key={cat?.id}>
                         <TabsContent value={cat?.id.toString()} key={cat?.id} className="pt-4">
                           <FormTextareaField
                             form={form}
-                            name={`data.section_5.features.${featureIdx}.description`}
+                            name={`data.section_6.features.${featureIdx}.description`}
                             label="Mô tả"
-                            placeholder="Nhập mô tả cho phom dáng này"
+                            placeholder="Nhập mô tả cho loại hình này"
                           />
                           <div className="space-y-2">
                             <Label>Khoá tập</Label>
@@ -357,8 +415,8 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
                                 courses: row,
                               }
 
-                              form.setValue('data.section_5.features', updatedFeatures, { shouldDirty: true })
-                              form.trigger('data.section_5.features')
+                              form.setValue('data.section_6.features', updatedFeatures, { shouldDirty: true })
+                              form.trigger('data.section_6.features')
                               setOpenDialogCategoryId(null)
                             }}
                           />
@@ -369,7 +427,7 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
                 </Tabs>
               )}
             </TabsContent>
-            <TabsContent value="tab-6" className="space-y-4">
+            <TabsContent value="tab-7" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <FormInputField form={form} name="data.section_7.title" label="Tiêu đề" placeholder="Nhập tiêu đề" />
                 <FormInputField form={form} name="data.section_7.subtitle" label="Phụ đề" placeholder="Nhập phụ đề" />
@@ -384,7 +442,7 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
                 />
               </div>
             </TabsContent>
-            <TabsContent value="tab-7" className="space-y-4">
+            <TabsContent value="tab-8" className="space-y-4">
               <FormInputField form={form} name="data.section_8.title" label="Tiêu đề" placeholder="Nhập tiêu đề" />
               <FormTextareaField form={form} name="data.section_8.description" label="Mô tả" placeholder="Nhập mô tả" />
               <div className="space-y-2">
@@ -397,7 +455,7 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
                 />
               </div>
             </TabsContent>
-            <TabsContent value="tab-8" className="space-y-4">
+            <TabsContent value="tab-9" className="space-y-4">
               <div className="space-y-2">
                 <Label>Huấn luyện viên</Label>
                 <Input
@@ -408,7 +466,7 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
                 />
               </div>
             </TabsContent>
-            <TabsContent value="tab-9" className="space-y-4">
+            <TabsContent value="tab-10" className="space-y-4">
               <FormInputField
                 form={form}
                 name="data.section_10.top.title"
@@ -436,7 +494,7 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
               />
               <ImageUploader form={form} name="data.section_10.bottom.image" label="Hình ảnh dưới" />
             </TabsContent>
-            <TabsContent value="tab-10" className="space-y-4">
+            <TabsContent value="tab-11" className="space-y-4">
               <ImageUploader form={form} name="data.section_11.image" label="Hình ảnh" />
               <FormTextareaField
                 form={form}
@@ -526,23 +584,55 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
         />
       </EditDialog>
       <EditDialog
-        title="Chọn Phom dáng"
-        description="Chọn một hoặc nhiều phom dáng đã có hoặc tạo mới để liên kết với cấu hình này."
-        open={openFormCategoryTable}
-        onOpenChange={setOpenFormCategoryTable}
+        title="Chọn Loại hình tập luyện"
+        description="Chọn một hoặc nhiều loại hình tập luyện đã có hoặc tạo mới để liên kết với cấu hình này."
+        open={openWorkoutMethodsTable}
+        onOpenChange={setOpenWorkoutMethodsTable}
       >
-        <FormCategoryTable
+        <WorkoutMethodsTable
           onConfirmRowSelection={(row) => {
-            setSelectedFormCategory(row)
+            setSelectedWorkoutMethods(row)
             // Sync features in form state
-            const currentFeatures = form.getValues('data.section_5.features') || []
+            const currentFeatures = form.getValues('data.section_6.features') || []
             const newFeatures = row.map((cat: any) => {
-              const existing = currentFeatures.find((f: any) => f.form_category.id === cat.id)
-              return existing || { form_category: cat, description: '', courses: [] }
+              const existing = currentFeatures.find((f: any) => f.workout_method.id === cat.id)
+              return existing || { workout_method: cat, description: '', courses: [] }
             })
-            form.setValue('data.section_5.features', newFeatures, { shouldDirty: true })
-            form.trigger('data.section_5.features')
-            setOpenFormCategoryTable(false)
+            form.setValue('data.section_6.features', newFeatures, { shouldDirty: true })
+            form.trigger('data.section_6.features')
+            setOpenWorkoutMethodsTable(false)
+          }}
+        />
+      </EditDialog>
+      <EditDialog
+        title="Chọn Khoá tập Video"
+        description="Chọn một hoặc nhiều khoá tập video đã có hoặc tạo mới để liên kết với cấu hình này."
+        open={openVideoCourseTable}
+        onOpenChange={setOpenVideoCourseTable}
+      >
+        <CoursesTable
+          courseFormat="video"
+          onConfirmRowSelection={(row) => {
+            setSelectedVideoCourse(row)
+            form.setValue('data.section_5.video.courses', row, { shouldDirty: true })
+            form.trigger('data.section_5.video.courses')
+            setOpenVideoCourseTable(false)
+          }}
+        />
+      </EditDialog>
+      <EditDialog
+        title="Chọn Khoá tập Zoom"
+        description="Chọn một hoặc nhiều khoá tập zoom đã có hoặc tạo mới để liên kết với cấu hình này."
+        open={openZoomCourseTable}
+        onOpenChange={setOpenZoomCourseTable}
+      >
+        <CoursesTable
+          courseFormat="live"
+          onConfirmRowSelection={(row) => {
+            setSelectedZoomCourse(row)
+            form.setValue('data.section_5.zoom.courses', row, { shouldDirty: true })
+            form.trigger('data.section_5.zoom.courses')
+            setOpenZoomCourseTable(false)
           }}
         />
       </EditDialog>
