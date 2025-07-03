@@ -238,6 +238,10 @@ export default function UsersPage() {
       header: 'Email',
     },
     {
+      accessorKey: 'token_usage',
+      header: 'Token Usage',
+    },
+    {
       accessorKey: 'created_at',
       header: 'Ngày tạo',
     },
@@ -406,9 +410,9 @@ function CreateAccountForm({ onSuccess }: { onSuccess?: () => void }) {
         } else {
           toast.error('Cập nhật thông tin địa chỉ thất bại')
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Account creation error:', error)
-        toast.error('Có lỗi xảy ra khi tạo tài khoản')
+        toast.error(error?.message || 'Có lỗi xảy ra khi tạo tài khoản')
       }
     })
   }
