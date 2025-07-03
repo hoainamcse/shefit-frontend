@@ -14,6 +14,7 @@ import { MainButton } from '@/components/buttons/main-button'
 import { DumbbellIcon } from '@/components/icons/DumbbellIcon'
 import { formSchema } from '@/app/(admin)/admin/(content-input)/homepage/schema'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
+import { FacebookIcon } from '@/components/icons/FacebookIcon'
 
 type DataType = z.infer<typeof formSchema>
 
@@ -273,33 +274,35 @@ export async function SectionEight({ data }: { data: DataType['section_8'] }) {
 export async function SectionNine({ data }: { data: DataType['section_9'] }) {
   return (
     <div className="py-8 lg:py-12 px-4 sm:px-6">
-      <div className="container mx-auto space-y-8 lg:space-y-10">
+      <div className="mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-2xl lg:text-3xl font-bold">Dẫn dắt bởi chuyên gia hàng đầu</h2>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          {data.coaches.map((coach, index) => (
-            <div key={index} className="flex flex-col items-center justify-center gap-4">
-              <div className="relative w-40 lg:w-44">
-                <div className="absolute bottom-0 left-0 size-40 lg:size-44 bg-primary rounded-full -z-10" />
-                <img
-                  src={coach.image || '/temp/homepage-6.png'}
-                  alt={coach.name}
-                  className="size-40 lg:size-44 object-cover"
-                />
+        <div className="relative">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {data.coaches.map((coach, index) => (
+              <div key={index} className={`relative ${index % 2 !== 0 ? 'lg:translate-y-12' : ''}`}>
+                <div className="relative w-full" style={{ paddingBottom: '150%' }}>
+                  <div className="absolute inset-0">
+                    <div className="relative w-full h-full">
+                      <div className="absolute bottom-0 left-0 bg-primary -z-10 w-full h-full" />
+                      <img
+                        src={coach.image || '/temp/homepage-6.png'}
+                        alt={coach.name}
+                        className="object-cover w-full h-full"
+                      />
+                      <div className="text-center space-y-1 absolute bottom-5 left-0 w-full text-white">
+                        <p className="text-[16px] sm:text-[24px] md:text-[32px] lg:text-[40px] font-medium">
+                          HLV {coach.name}
+                        </p>
+                        <p className="text-[14px] sm:text-[20px] md:text-[24px] lg:text-[20px]">{coach.detail}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-
-              <div className="text-center space-y-2">
-                <p className="text-lg font-medium">{coach.name}</p>
-                <p className="text-neutral-500">{coach.detail}</p>
-                {/* <MainButton
-                  text="Liên hệ"
-                  className="rounded-full w-full"
-                  href="#"
-                /> */}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -308,7 +311,7 @@ export async function SectionNine({ data }: { data: DataType['section_9'] }) {
 
 export function SectionTen({ data }: { data: DataType['section_10'] }) {
   return (
-    <div className="py-8 lg:py-12">
+    <div className="py-8 lg:py-20">
       <div
         className="relative w-full h-[400px] lg:h-[600px]"
         style={{ clipPath: 'polygon(0 5%, 100% 0, 100% 100%, 0 90%)' }}
@@ -341,15 +344,26 @@ export function SectionTen({ data }: { data: DataType['section_10'] }) {
 
 export function SectionEleven({ data }: { data: DataType['section_11'] }) {
   return (
-    <div className="py-8 lg:py-12 px-4 lg:px-6">
-      <div className="container mx-auto space-y-8 lg:space-y-10">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl lg:text-3xl font-bold">Cộng đồng Shefit Nơi chia sẻ hành trình độ dáng của bạn</h2>
-        </div>
-        <div className="max-w-6xl mx-auto space-y-4">
+    <div className="py-8 lg:py-12 mb-12">
+      <div className="space-y-8 lg:space-y-10">
+        <h2 className="text-2xl lg:text-4xl font-bold w-full text-black block lg:hidden text-center">
+          Cộng đồng <span className="text-primary">Shefit</span> <br /> Nơi chia sẻ hành trình độ dáng của bạn
+        </h2>
+        <div className="relative">
           <img src={data.image} alt={data.image} className="aspect-video rounded-lg w-full object-cover" />
-          <div className="max-w-2xl mx-auto text-center space-y-4">
-            <p className="text-neutral-500">{data.description}</p>
+          <div className="absolute top-0 right-0 h-full w-1/2 flex-col items-center justify-center px-8 text-background hidden lg:flex">
+            <div className="max-w-xl mx-auto text-center flex flex-col items-center gap-4">
+              <h2 className="text-2xl lg:text-4xl font-bold w-full">
+                Cộng đồng <span className="text-primary">Shefit</span> <br /> Nơi chia sẻ hành trình độ dáng của bạn
+              </h2>
+              <p className="mb-4 text-[16px] lg:text-[20px] w-full">{data.description}</p>
+              <FacebookIcon className="w-12 h-12" />
+              <MainButton text={data.cta.text} className="rounded-full w-44" size="lg" href={data.cta.href} />
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 lg:hidden items-center justify-center text-center">
+            <p className="px-5 mt-4 text-[16px] lg:text-[20px] w-full">{data.description}</p>
+            <FacebookIcon className="w-12 h-12" />
             <MainButton text={data.cta.text} className="rounded-full w-44" size="lg" href={data.cta.href} />
           </div>
         </div>

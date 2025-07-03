@@ -9,7 +9,9 @@ export default function UserLayout({
   return (
     <div>
       {children}
-      <ChatBotButton />
+      <div className="hidden lg:block">
+        <ChatBotButton />
+      </div>
       <BottomNavbar />
     </div>
   )
