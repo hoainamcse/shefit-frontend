@@ -42,10 +42,11 @@ export default function ProductsPage() {
       <img src="/body-quiz-image.jpg" className="w-full object-cover xl:h-[628px]" alt="" />
       <div className="mb-20 p-6 mt-20">
         <div className="flex flex-col gap-5 mb-20">
-          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] font-bold">Title</div>
+          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] font-bold">
+            Dụng Cụ Tập & Thực Phẩm Eat Clean
+          </div>
           <p className="text-[#737373] text-xl">
-            Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis.
-            Molestie nascetur justo sit accumsan nunc quam tincidunt blandit.
+            Dụng cụ tập tại nhà, thực phẩm eat clean & nhiều sản phẩm hỗ trợ tập & ăn uống lành mạnh khác
           </p>
           <div className="flex gap-4 xl:w-1/3">
             <FilterCategory

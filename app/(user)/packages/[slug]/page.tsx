@@ -149,6 +149,8 @@ export default function PackageDetail({ params }: { params: Promise<{ slug: stri
       </div>
     </div>
   ) : (
-    <div className="p-[60px]">Gói này không tồn tại</div>
+    <div className="flex justify-center items-center h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#13D8A7]"></div>
+    </div>
   )
 }

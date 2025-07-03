@@ -69,10 +69,7 @@ export default function PurchasedOrder() {
   return (
     <div className="w-full">
       {deliveredCarts.map((userCart) => {
-        // Access the nested cart object
         const cart = userCart.cart
-
-        // Get the first product variant's image, if available
         const thumbnailImage =
           cart.product_variants &&
           cart.product_variants.length > 0 &&
@@ -83,22 +80,26 @@ export default function PurchasedOrder() {
 
         return (
           <div key={`cart-${cart.id}`} className="flex items-center border-b border-gray-100 py-4 justify-between">
-            <div className="flex items-center gap-2 lg:gap-10 text-lg">
-              <div className="size-[148px] relative mr-4">
-                <img src={thumbnailImage} alt="Product thumbnail" className="object-cover aspect-square rounded-lg" />
-              </div>
-              <div className="flex-grow">
-                <div className="font-bold">Đơn Hàng Ngày</div>
-                <div className="text-gray-500">{formatDate(cart.created_at)}</div>
-              </div>
-              <div className="flex flex-col lg:flex-row items-center">
-                <div className="text-center px-8">
+            <div className="flex items-center gap-2 lg:gap-10 text-lg w-full">
+              <div className="relative mr-4 flex gap-5">
+                <img
+                  src={thumbnailImage}
+                  alt="Product thumbnail"
+                  className="object-cover aspect-square rounded-lg w-[148px] h-[148px]"
+                />
+                <div className="flex flex-col justify-center">
+                  <div className="font-bold">Đơn Hàng Ngày</div>
+                  <div className="text-gray-500">{formatDate(cart.created_at)}</div>
+                </div>
+                <div className="text-center px-8 flex items-center">
                   <div className="font-bold text-[#737373]">{cart.total.toLocaleString()} vnđ</div>
                 </div>
-                <Link href={`/account/cart/${cart.id}`} className="text-[#00C7BE] hover:underline px-4">
-                  Xem chi tiết
-                </Link>
               </div>
+            </div>
+            <div className="flex-shrink-0 ml-4">
+              <Link href={`/account/cart/${cart.id}`} className="text-[#00C7BE] hover:underline whitespace-nowrap">
+                Xem chi tiết
+              </Link>
             </div>
           </div>
         )

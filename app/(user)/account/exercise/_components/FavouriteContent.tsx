@@ -3,13 +3,12 @@ import { getFavouriteExercises } from '@/network/server/favourite-exercise'
 import { getFavouriteCourses } from '@/network/server/favourite-course'
 import { getFavouriteMealPlans } from '@/network/server/favourite-meal-plan'
 import { getFavouriteDishes } from '@/network/server/favourite-dish'
-import { FavouriteCourse, FavouriteExercise, FavouriteMealPlan, FavouriteDish } from '@/models/favourite'
+import { FavouriteExercise, FavouriteMealPlan, FavouriteDish } from '@/models/favourite'
 import { Exercise } from '@/models/exercise'
 import { useSession } from '@/components/providers/session-provider'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { getCourse } from '@/network/server/courses'
-import { courseFormLabel } from '@/lib/label'
 import { Course } from '@/models/course'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import { Button } from '@/components/ui/button'
@@ -18,25 +17,30 @@ import { getExerciseById } from '@/network/server/exercises'
 import { getMealPlan } from '@/network/server/meal-plans'
 import { getDish } from '@/network/server/dishes'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { useSubscription } from './SubscriptionContext'
+import { Lock } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { getDishes } from '@/network/server/dishes'
 
 export default function FavouriteContent() {
   const { session } = useSession()
   const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [renewDialogOpen, setRenewDialogOpen] = useState(false)
+  const { selectedSubscription } = useSubscription()
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
   const [exercises, setExercises] = useState<FavouriteExercise[]>([])
   const [courses, setCourses] = useState<Course[]>([])
   const [mealPlans, setMealPlans] = useState<FavouriteMealPlan[]>([])
   const [dishes, setDishes] = useState<FavouriteDish[]>([])
 
-  // Handle login button click with redirect
   const handleLoginClick = () => {
     setDialogOpen(false)
     redirectToLogin()
   }
 
-  // Handle buy package button click with redirect
   const handleBuyPackageClick = () => {
     setDialogOpen(false)
     redirectToAccount('buy-package')
@@ -248,6 +252,8 @@ export default function FavouriteContent() {
                 id: dishId,
                 title: response.data.name,
                 image: response.data.image,
+                user_id: Number(session.userId),
+                dish: response.data,
               }
             }
             return null
@@ -374,9 +380,6 @@ export default function FavouriteContent() {
                       </div>
                       <div className="flex gap-2 justify-end flex-col items-end">
                         {course.form_categories?.map((cat) => cat.name).join(', ')}
-                        {/* <Link href={`/courses/${course.course.id}`} className="text-ring underline">
-                          Bắt đầu
-                        </Link> */}
                       </div>
                     </div>
                   </div>
@@ -388,36 +391,6 @@ export default function FavouriteContent() {
         <Link href="/courses">
           <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm khóa tập</Button>
         </Link>
-      </div>
-      <div className="space-y-6 mt-12">
-        <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
-          Động tác
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
-          {exercises.map((exercise) => (
-            <Link href={`/gallery/muscle/${exercise.id}`} key={exercise.id}>
-              <div key={exercise.id}>
-                <div className="relative group">
-                  <div className="absolute top-4 right-4 z-10">
-                    <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
-                  </div>
-                  <img
-                    src={getYoutubeThumbnail(exercise.youtube_url)}
-                    alt={exercise.name}
-                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
-                  />
-                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-                </div>
-                <p className="font-medium">{exercise.name}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-        <div className="mt-6">
-          <Link href="/gallery">
-            <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14">Thêm động tác</Button>
-          </Link>
-        </div>
       </div>
       <div className="space-y-6 mt-12">
         <h2 className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
@@ -452,10 +425,44 @@ export default function FavouriteContent() {
         </div>
       </div>
       <div className="space-y-6 mt-12">
+        <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+          Động tác
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
+          {exercises.map((exercise) => (
+            <Link
+              href={`/gallery/muscle/${exercise.exercise?.muscle_groups?.[0]?.id || ''}/${exercise.id}`}
+              key={exercise.id}
+            >
+              <div key={exercise.id}>
+                <div className="relative group">
+                  <div className="absolute top-4 right-4 z-10">
+                    <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
+                  </div>
+                  <img
+                    src={getYoutubeThumbnail(exercise.youtube_url)}
+                    alt={exercise.name}
+                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
+                  />
+                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                </div>
+                <p className="font-medium">{exercise.name}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+        <div className="mt-6">
+          <Link href="/gallery">
+            <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14">Thêm động tác</Button>
+          </Link>
+        </div>
+      </div>
+
+      <div className="space-y-6 mt-12">
         <h2 className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">Món ăn</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
           {dishes.map((dish) => (
-            <Link href={`/dishes/${dish.id}`} key={dish.id}>
+            <Link href={`/gallery/meal/${dish.dish.diet?.id}/${dish.id}`} key={dish.id}>
               <div className="relative group">
                 <div className="absolute top-4 right-4 z-10">
                   <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
@@ -468,7 +475,7 @@ export default function FavouriteContent() {
           ))}
         </div>
         <div className="mt-6">
-          <Link href="/dishes">
+          <Link href="/gallery">
             <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14">Thêm món ăn</Button>
           </Link>
         </div>

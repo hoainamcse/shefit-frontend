@@ -18,8 +18,7 @@ export default async function Food({ params }: { params: Promise<{ meal_id: stri
             Các món theo chế độ {selectedDiet?.name}
           </div>
           <p className="text-[#737373] text-xl">
-            Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis.
-            Molestie
+            {selectedDiet?.description}
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">

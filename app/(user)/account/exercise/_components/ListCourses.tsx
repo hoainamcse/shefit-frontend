@@ -172,7 +172,7 @@ export function ListCourses() {
             <Button
               type="button"
               variant="default"
-              className="bg-[#13D8A7] hover:bg-[#0fb88e] text-white"
+              className="bg-[#13D8A7] hover:bg-[#0fb88e] text-white rounded-full w-full h-14 text-lg"
               onClick={() => {
                 setRenewDialogOpen(false)
                 if (selectedSubscription?.subscription?.id) {

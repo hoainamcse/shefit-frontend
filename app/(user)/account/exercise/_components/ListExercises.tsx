@@ -5,20 +5,37 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useSubscription } from './SubscriptionContext'
 import { useSession } from '@/components/providers/session-provider'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { getExercises } from '@/network/server/exercises'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogDescription,
+} from '@/components/ui/dialog'
+import { getExercises, getExerciseById } from '@/network/server/exercises'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import type { Exercise } from '@/models/exercise'
 import { getYoutubeThumbnail } from '@/lib/youtube'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { getFavouriteExercises } from '@/network/server/favourite-exercise'
+import { FavouriteExercise } from '@/models/favourite'
+import { Lock } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export default function ListExercises() {
   const { session } = useSession()
   const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [renewDialogOpen, setRenewDialogOpen] = useState(false)
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null)
   const [exercises, setExercises] = useState<Exercise[]>([])
+  const [favoriteExercises, setFavoriteExercises] = useState<FavouriteExercise[]>([])
+  const [combinedExercises, setCombinedExercises] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter()
 
   const handleLoginClick = () => {
     setDialogOpen(false)
@@ -33,33 +50,106 @@ export default function ListExercises() {
   useEffect(() => {
     if (!selectedSubscription?.exercises?.length) {
       setExercises([])
-      setIsLoading(false)
-      return
-    }
-
-    const fetchExercises = async () => {
-      try {
-        setIsLoading(true)
-        const response = await getExercises()
-        if (response?.data) {
+    } else {
+      const fetchExercises = async () => {
+        try {
+          setIsLoading(true)
           const subscriptionExerciseIds = selectedSubscription.exercises.map((ex: any) =>
             typeof ex === 'object' ? ex.id : ex
           )
-          const filteredExercises = response.data.filter((exercise: any) =>
-            subscriptionExerciseIds.includes(exercise.id)
-          )
 
+          const exercisePromises = subscriptionExerciseIds.map(async (exerciseId: number | string) => {
+            const response = await getExerciseById(exerciseId.toString())
+            return response?.status === 'success' ? response.data : null
+          })
+
+          const exerciseDetails = await Promise.all(exercisePromises)
+          const filteredExercises = exerciseDetails.filter(Boolean) as Exercise[]
           setExercises(filteredExercises)
+        } catch (error) {
+          console.error('Error fetching exercises:', error)
+        } finally {
+          setIsLoading(false)
         }
+      }
+
+      fetchExercises()
+    }
+  }, [selectedSubscription?.exercises])
+
+  useEffect(() => {
+    const fetchFavoriteExercises = async () => {
+      if (!session?.userId) {
+        return
+      }
+
+      try {
+        const response = await getFavouriteExercises(session.userId)
+
+        if (!response.data || response.data.length === 0) {
+          setFavoriteExercises([])
+          return
+        }
+
+        const favoriteExercises = response.data
+          .map((fav: any) => ({
+            id: fav.exercise?.id || fav.exercise_id,
+            exercise_id: fav.exercise_id || fav.exercise?.id,
+          }))
+          .filter((fav: any) => fav.exercise_id)
+
+        const exercisePromises = favoriteExercises.map(async (fav: any) => {
+          try {
+            const exerciseId = typeof fav.exercise_id === 'string' ? parseInt(fav.exercise_id, 10) : fav.exercise_id
+
+            const response = await getExerciseById(exerciseId.toString())
+            if (response && response.status === 'success' && response.data) {
+              // Return the complete exercise data with all fields needed for rendering
+              return {
+                id: exerciseId,
+                name: response.data.name,
+                youtube_url: response.data.youtube_url,
+                user_id: Number(session.userId),
+                exercise: response.data,
+                muscle_groups: response.data.muscle_groups, // Include complete muscle_groups data
+              }
+            }
+            return null
+          } catch (error) {
+            console.error(`Error fetching exercise ${fav.exercise_id}:`, error)
+            return null
+          }
+        })
+
+        const exercises = (await Promise.all(exercisePromises)).filter(Boolean)
+        setFavoriteExercises(exercises as FavouriteExercise[])
       } catch (error) {
-        console.error('Error fetching exercises:', error)
-      } finally {
-        setIsLoading(false)
+        console.error('Error in fetchFavoriteExercises:', error)
       }
     }
 
-    fetchExercises()
-  }, [selectedSubscription?.exercises])
+    fetchFavoriteExercises()
+  }, [session?.userId])
+
+  useEffect(() => {
+    setIsLoading(true)
+
+    const exercisesMap = new Map()
+
+    exercises.forEach((exercise) => {
+      exercisesMap.set(exercise.id, exercise)
+    })
+
+    favoriteExercises.forEach((exercise) => {
+      if (!exercisesMap.has(exercise.id)) {
+        exercisesMap.set(exercise.id, exercise)
+      }
+    })
+
+    const combined = Array.from(exercisesMap.values())
+    setCombinedExercises(combined)
+    setIsLoading(false)
+  }, [exercises, favoriteExercises])
 
   if (!session) {
     return (
@@ -107,7 +197,7 @@ export default function ListExercises() {
     )
   }
 
-  if (exercises.length === 0) {
+  if (combinedExercises.length === 0) {
     return (
       <Link href="/gallery">
         <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14">Thêm động tác</Button>
@@ -117,24 +207,96 @@ export default function ListExercises() {
 
   return (
     <div className="space-y-6">
+      <Dialog open={renewDialogOpen} onOpenChange={setRenewDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center"></DialogTitle>
+            <DialogDescription className="text-center text-lg text-[#737373]">
+              GÓI ĐÃ HẾT HẠN HÃY GIA HẠN GÓI ĐỂ TIẾP TỤC TRUY CẬP
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <Button
+              type="button"
+              variant="default"
+              className="bg-[#13D8A7] hover:bg-[#0fb88e] text-white rounded-full w-full h-14 text-lg"
+              onClick={() => {
+                setRenewDialogOpen(false)
+                if (selectedSubscription?.subscription?.id) {
+                  router.push(`/packages/detail/${selectedSubscription.subscription.id}`)
+                }
+              }}
+            >
+              Gia hạn gói
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          {selectedVideoUrl && (
+            <iframe
+              src={selectedVideoUrl.replace('watch?v=', 'embed/')}
+              title="YouTube video player"
+              className="w-full aspect-video"
+              allowFullScreen
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
-        {exercises.map((exercise) => (
-          <Link href={`/gallery/muscle/${exercise.id}`} key={exercise.id}>
-            <div key={exercise.id}>
-              <div className="relative group">
-                <div className="absolute top-4 right-4 z-10">
-                  <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
+        {combinedExercises.map((exercise) => (
+          <div key={exercise.id} className="group">
+            <Link
+              href={
+                selectedSubscription?.status === 'expired'
+                  ? '#'
+                  : `/gallery/muscle/${exercise.muscle_groups?.[0]?.id || exercise.muscle?.id || ''}/${exercise.id}`
+              }
+              className={selectedSubscription?.status === 'expired' ? 'cursor-not-allowed' : ''}
+              onClick={
+                selectedSubscription?.status === 'expired'
+                  ? (e) => {
+                      e.preventDefault()
+                      setRenewDialogOpen(true)
+                    }
+                  : undefined
+              }
+            >
+              <div>
+                <div className="relative group">
+                  {selectedSubscription?.status === 'expired' && (
+                    <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50 rounded-xl">
+                      <Lock className="text-white w-12 h-12" />
+                    </div>
+                  )}
+                  <div className="absolute top-4 right-4 z-10">
+                    <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
+                  </div>
+                  <img
+                    src={getYoutubeThumbnail(exercise.youtube_url)}
+                    alt={exercise.name}
+                    className="aspect-video object-cover rounded-xl mb-4 w-full"
+                  />
+                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                  {selectedSubscription?.status !== 'expired' && (
+                    <button
+                      className="absolute inset-0 m-auto w-16 h-16 flex items-center justify-center"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        setSelectedVideoUrl(exercise.youtube_url)
+                        setDialogOpen(true)
+                      }}
+                    ></button>
+                  )}
                 </div>
-                <img
-                  src={getYoutubeThumbnail(exercise.youtube_url)}
-                  alt={exercise.name}
-                  className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
-                />
-                <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                <p className="font-medium">{exercise.name}</p>
               </div>
-              <p className="font-medium">{exercise.name}</p>
-            </div>
-          </Link>
+            </Link>
+          </div>
         ))}
       </div>
       <div className="mt-6">

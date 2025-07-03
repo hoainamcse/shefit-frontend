@@ -1,24 +1,39 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useSubscription } from './SubscriptionContext'
 import { useSession } from '@/components/providers/session-provider'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { getDishes } from '@/network/server/dishes'
-import { useEffect } from 'react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogDescription,
+} from '@/components/ui/dialog'
+import { getDishes, getDish } from '@/network/server/dishes'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
+import type { Dish } from '@/models/dish'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { getFavouriteDishes } from '@/network/server/favourite-dish'
+import { FavouriteDish } from '@/models/favourite'
+import { Lock } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
-export default function ListMealPlans() {
+export default function ListDishes() {
   const { session } = useSession()
-  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
-
-  const [filteredDishes, setFilteredDishes] = useState<any[]>([])
+  const [renewDialogOpen, setRenewDialogOpen] = useState(false)
+  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
+  const [filteredDishes, setFilteredDishes] = useState<Dish[]>([])
+  const [favoriteDishes, setFavoriteDishes] = useState<FavouriteDish[]>([])
+  const [combinedDishes, setCombinedDishes] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter()
 
   const handleLoginClick = () => {
     setDialogOpen(false)
@@ -34,32 +49,98 @@ export default function ListMealPlans() {
     const fetchAndFilterDishes = async () => {
       if (!selectedSubscription?.dishes?.length) {
         setFilteredDishes([])
-        setIsLoading(false)
-        return
-      }
+      } else {
+        try {
+          setIsLoading(true)
+          const response = await getDishes()
 
-      try {
-        setIsLoading(true)
-        const response = await getDishes()
+          if (response?.data) {
+            const subscriptionDishIds = selectedSubscription.dishes.map((mp: any) =>
+              typeof mp === 'object' ? mp.id : mp
+            )
 
-        if (response?.data) {
-          const subscriptionDishIds = selectedSubscription.dishes.map((mp: any) =>
-            typeof mp === 'object' ? mp.id : mp
-          )
-
-          const filtered = response.data.filter((dish: any) => subscriptionDishIds.includes(dish.id))
-
-          setFilteredDishes(filtered)
+            const filtered = response.data.filter((dish: any) => subscriptionDishIds.includes(dish.id))
+            setFilteredDishes(filtered)
+          }
+        } catch (error) {
+          console.error('Error fetching dishes:', error)
         }
-      } catch (error) {
-        console.error('Error fetching dishes:', error)
-      } finally {
-        setIsLoading(false)
       }
     }
 
     fetchAndFilterDishes()
   }, [selectedSubscription?.dishes])
+
+  useEffect(() => {
+    const fetchFavouriteDishes = async () => {
+      if (!session?.userId) {
+        return
+      }
+
+      try {
+        const response = await getFavouriteDishes(session.userId)
+
+        if (!response.data || response.data.length === 0) {
+          setFavoriteDishes([])
+          return
+        }
+
+        const favoriteDishes = response.data
+          .map((fav: any) => ({
+            id: fav.dish?.id || fav.dish_id,
+            dish_id: fav.dish_id || fav.dish?.id,
+          }))
+          .filter((fav: any) => fav.dish_id)
+
+        const dishPromises = favoriteDishes.map(async (fav: any) => {
+          try {
+            const dishId = typeof fav.dish_id === 'string' ? parseInt(fav.dish_id, 10) : fav.dish_id
+
+            const response = await getDish(dishId.toString())
+            if (response && response.status === 'success' && response.data) {
+              return {
+                id: dishId,
+                user_id: Number(session.userId),
+                dish: response.data,
+                name: response.data.name,
+                title: response.data.name,
+                image: response.data.image,
+                diet: response.data.diet,
+              }
+            }
+            return null
+          } catch (error) {
+            console.error(`Error fetching dish ${fav.dish_id}:`, error)
+            return null
+          }
+        })
+
+        const dishes = (await Promise.all(dishPromises)).filter(Boolean)
+        setFavoriteDishes(dishes as FavouriteDish[])
+      } catch (error) {
+        console.error('Error in fetchFavouriteDishes:', error)
+      }
+    }
+
+    fetchFavouriteDishes()
+  }, [session?.userId])
+
+  useEffect(() => {
+    setIsLoading(true)
+    const dishesMap = new Map()
+    filteredDishes.forEach((dish) => {
+      dishesMap.set(dish.id, dish)
+    })
+    favoriteDishes.forEach((dish) => {
+      if (!dishesMap.has(dish.id)) {
+        dishesMap.set(dish.id, dish)
+      }
+    })
+
+    const combined = Array.from(dishesMap.values())
+    setCombinedDishes(combined)
+    setIsLoading(false)
+  }, [filteredDishes, favoriteDishes])
 
   if (!session) {
     return (
@@ -107,38 +188,82 @@ export default function ListMealPlans() {
     )
   }
 
-  if (filteredDishes.length === 0) {
+  if (combinedDishes.length === 0) {
     return (
-      <Link href="/dishes">
+      <Link href="/gallery">
         <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14">Thêm món ăn</Button>
       </Link>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div>
+      <Dialog open={renewDialogOpen} onOpenChange={setRenewDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center"></DialogTitle>
+            <DialogDescription className="text-center text-lg text-[#737373]">
+              GÓI ĐÃ HẾT HẠN HÃY GIA HẠN GÓI ĐỂ TIẾP TỤC TRUY CẬP
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <Button
+              type="button"
+              variant="default"
+              className="bg-[#13D8A7] hover:bg-[#0fb88e] text-white rounded-full w-full h-14 text-lg"
+              onClick={() => {
+                setRenewDialogOpen(false)
+                if (selectedSubscription?.subscription?.id) {
+                  router.push(`/packages/detail/${selectedSubscription.subscription.id}`)
+                }
+              }}
+            >
+              Gia hạn gói
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
-        {filteredDishes.map((dish) => (
-          <Link href={`/dishes/${dish.id}`} key={dish.id}>
-            <div key={dish.id}>
-              <div className="relative group">
-                <div className="absolute top-4 right-4 z-10">
-                  <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
+        {combinedDishes.map((dish) => (
+          <div key={dish.id} className="group">
+            <Link
+              href={
+                selectedSubscription?.status === 'expired'
+                  ? '#'
+                  : `/gallery/meal/${dish.diet?.id || dish.diet_id}/${dish.id}`
+              }
+              className={selectedSubscription?.status === 'expired' ? 'cursor-not-allowed' : ''}
+              onClick={
+                selectedSubscription?.status === 'expired'
+                  ? (e) => {
+                      e.preventDefault()
+                      setRenewDialogOpen(true)
+                    }
+                  : undefined
+              }
+            >
+              <div>
+                <div className="relative group">
+                  {selectedSubscription?.status === 'expired' && (
+                    <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50 rounded-xl">
+                      <Lock className="text-white w-12 h-12" />
+                    </div>
+                  )}
+                  <div className="absolute top-4 right-4 z-10">
+                    <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
+                  </div>
+                  <img src={dish.image} alt={dish.title} className="aspect-[5/3] object-cover rounded-xl mb-4 w-full" />
+                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
-                <img src={dish.image} alt={dish.title} className="aspect-[5/3] object-cover rounded-xl mb-4 w-full" />
-                <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                <p className="font-medium">{dish.title}</p>
               </div>
-              <p className="font-medium">{dish.title}</p>
-              <p className="text-[#737373]">{dish.subtitle}</p>
-              <p className="text-[#737373]">
-                Chef {dish.chef_name} - {dish.number_of_days} ngày
-              </p>
-            </div>
-          </Link>
+            </Link>
+          </div>
         ))}
       </div>
       <div className="mt-6">
-        <Link href="/dishes">
+        <Link href="/gallery">
           <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14">Thêm món ăn</Button>
         </Link>
       </div>

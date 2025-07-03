@@ -52,15 +52,15 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
               </div>
               <p className="mb-5">Các khóa tập bạn được truy cập khi mua gói member này</p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                {subscriptionData?.relationships?.courses.map((c) => {
-                  const course = courses?.data?.find((course) => course.id === c.id)
+                {subscriptionData?.course_ids?.map((courseId: number) => {
+                  const course = courses?.data?.find((course) => course.id === courseId)
                   return course ? (
-                    <div key={`${c.id}`}>
+                    <div key={`course-${course.id}`}>
                       <div className="relative group">
                         <img
                           src={course.cover_image || subscriptionData?.cover_image}
-                          alt={course.course_name || c.id.toString()}
-                          className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
+                          alt={course.course_name || course.id.toString()}
+                          className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
 
@@ -92,25 +92,25 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                 })}
               </div>
             </div>
-            {subscriptionData?.relationships?.meal_plans && subscriptionData?.relationships?.meal_plans.length > 0 && (
+            {subscriptionData?.meal_plan_ids && subscriptionData?.meal_plan_ids.length > 0 && (
               <div>
                 <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
                   Thực đơn
                 </div>
                 <p dangerouslySetInnerHTML={{ __html: subscriptionData?.meal_plan_description || '' }} />
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  {subscriptionData?.relationships?.meal_plans.map((ml) => {
-                    const mealPlan = mealPlans?.data?.find((plan: any) => plan.id === ml.id)
+                  {subscriptionData?.meal_plan_ids.map((mealPlanId: number) => {
+                    const mealPlan = mealPlans?.data?.find((plan: any) => plan.id === mealPlanId)
                     return mealPlan ? (
-                      <div key={`menu-${ml.id}`}>
+                      <div key={`menu-${mealPlan.id}`}>
                         <div className="relative group">
                           <img
                             src={mealPlan.image}
                             alt={mealPlan.title}
-                            className="aspect-[5/3] object-cover rounded-xl mb-4"
+                            className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
                           />
                           <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-                          <Link href={`/meal-plans/${ml.id}`}>
+                          <Link href={`/meal-plans/${mealPlan.id}`}>
                             <NextButton className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1" />
                           </Link>
                         </div>
