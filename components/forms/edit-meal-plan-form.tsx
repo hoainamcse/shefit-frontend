@@ -99,9 +99,9 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
             free_days: data.free_days,
             calorie_id: data.calorie?.id || null,
             diet_id: data.diet?.id || null,
-            description_homepage_1: data.description_homepage_1,
-            description_homepage_2: data.description_homepage_2,
-            image_homepage: isYoutube ? defaultImageUrl : data.image_homepage,
+            description_homepage_1: data.description_homepage_1 || '',
+            description_homepage_2: data.description_homepage_2 || '',
+            image_homepage: data.image_homepage || defaultImageUrl,
           }
         })()
       : defaultValue,
