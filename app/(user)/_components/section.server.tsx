@@ -350,7 +350,7 @@ export function SectionEleven({ data }: { data: DataType['section_11'] }) {
           Cộng đồng <span className="text-primary">Shefit</span> <br /> Nơi chia sẻ hành trình độ dáng của bạn
         </h2>
         <div className="relative">
-          <img src={data.image} alt={data.image} className="aspect-video rounded-lg w-full object-cover" />
+          <img src={data.image} alt={data.image} className="aspect-video w-full object-cover" />
           <div className="absolute top-0 right-0 h-full w-1/2 flex-col items-center justify-center px-8 text-background hidden lg:flex">
             <div className="max-w-xl mx-auto text-center flex flex-col items-center gap-4">
               <h2 className="text-2xl lg:text-4xl font-bold w-full">

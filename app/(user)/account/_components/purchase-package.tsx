@@ -11,6 +11,7 @@ import { useState, useEffect } from 'react'
 import { ListResponse } from '@/models/response'
 import { Subscription } from '@/models/subscription'
 import { useSearchParams } from 'next/navigation'
+import { getUserSubscriptions } from '@/network/server/user-subscriptions'
 
 export default function PurchasePackage() {
   const { session } = useSession()
@@ -23,6 +24,28 @@ export default function PurchasePackage() {
     paging: { page: 1, per_page: 10, total: 0 },
   })
   const [isLoading, setIsLoading] = useState(true)
+  const [purchasedSubscriptionIds, setPurchasedSubscriptionIds] = useState<number[]>([])
+
+  useEffect(() => {
+    async function fetchUserSubscriptions() {
+      if (!session) return
+
+      try {
+        const response = await getUserSubscriptions(session.userId)
+
+        if (response.data && response.data.length > 0) {
+          const subscribedIds = response.data.map((sub) => Number(sub.subscription.id))
+          setPurchasedSubscriptionIds(subscribedIds)
+        }
+      } catch (error) {
+        console.error('Error fetching user subscriptions:', error)
+      }
+    }
+
+    if (session) {
+      fetchUserSubscriptions()
+    }
+  }, [session])
 
   useEffect(() => {
     async function fetchSubscriptions() {
@@ -36,6 +59,13 @@ export default function PurchasePackage() {
           data = await getSubscriptions()
         }
 
+        if (session && purchasedSubscriptionIds.length > 0) {
+          data = {
+            ...data,
+            data: data.data.filter((sub) => !purchasedSubscriptionIds.includes(Number(sub.id))),
+          }
+        }
+
         setSubscriptions(data)
       } catch (error) {
         console.error('Error fetching subscriptions:', error)
@@ -45,7 +75,7 @@ export default function PurchasePackage() {
     }
 
     fetchSubscriptions()
-  }, [courseId])
+  }, [courseId, session, purchasedSubscriptionIds])
 
   if (isLoading) {
     return (

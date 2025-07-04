@@ -17,20 +17,16 @@ import { getExerciseById } from '@/network/server/exercises'
 import { getMealPlan } from '@/network/server/meal-plans'
 import { getDish } from '@/network/server/dishes'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { useSubscription } from './SubscriptionContext'
-import { Lock } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { getDishes } from '@/network/server/dishes'
 
 export default function FavouriteContent() {
   const { session } = useSession()
   const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [renewDialogOpen, setRenewDialogOpen] = useState(false)
-  const { selectedSubscription } = useSubscription()
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingExercises, setIsLoadingExercises] = useState(true)
+  const [isLoadingCourses, setIsLoadingCourses] = useState(true)
+  const [isLoadingMealPlans, setIsLoadingMealPlans] = useState(true)
+  const [isLoadingDishes, setIsLoadingDishes] = useState(true)
   const [exercises, setExercises] = useState<FavouriteExercise[]>([])
   const [courses, setCourses] = useState<Course[]>([])
   const [mealPlans, setMealPlans] = useState<FavouriteMealPlan[]>([])
@@ -49,12 +45,12 @@ export default function FavouriteContent() {
   useEffect(() => {
     const fetchFavouriteExercises = async () => {
       if (!session?.userId) {
-        setIsLoading(false)
+        setIsLoadingExercises(false)
         return
       }
 
       try {
-        setIsLoading(true)
+        setIsLoadingExercises(true)
         const response = await getFavouriteExercises(session.userId)
         console.log('Favorites exercises response:', response)
 
@@ -100,7 +96,7 @@ export default function FavouriteContent() {
       } catch (error) {
         console.error('Error in fetchFavouriteExercises:', error)
       } finally {
-        setIsLoading(false)
+        setIsLoadingExercises(false)
       }
     }
 
@@ -110,12 +106,12 @@ export default function FavouriteContent() {
   useEffect(() => {
     const fetchFavouriteCourses = async () => {
       if (!session?.userId) {
-        setIsLoading(false)
+        setIsLoadingCourses(false)
         return
       }
 
       try {
-        setIsLoading(true)
+        setIsLoadingCourses(true)
         const response = await getFavouriteCourses(session.userId)
         console.log('Favorites response:', response)
 
@@ -151,7 +147,7 @@ export default function FavouriteContent() {
       } catch (error) {
         console.error('Error in fetchFavouriteCourses:', error)
       } finally {
-        setIsLoading(false)
+        setIsLoadingCourses(false)
       }
     }
 
@@ -161,12 +157,12 @@ export default function FavouriteContent() {
   useEffect(() => {
     const fetchFavouriteMealPlans = async () => {
       if (!session?.userId) {
-        setIsLoading(false)
+        setIsLoadingMealPlans(false)
         return
       }
 
       try {
-        setIsLoading(true)
+        setIsLoadingMealPlans(true)
         const response = await getFavouriteMealPlans(session.userId)
 
         if (!response.data || response.data.length === 0) {
@@ -212,7 +208,7 @@ export default function FavouriteContent() {
       } catch (error) {
         console.error('Error in fetchFavouriteMealPlans:', error)
       } finally {
-        setIsLoading(false)
+        setIsLoadingMealPlans(false)
       }
     }
 
@@ -222,12 +218,12 @@ export default function FavouriteContent() {
   useEffect(() => {
     const fetchFavouriteDishes = async () => {
       if (!session?.userId) {
-        setIsLoading(false)
+        setIsLoadingDishes(false)
         return
       }
 
       try {
-        setIsLoading(true)
+        setIsLoadingDishes(true)
         const response = await getFavouriteDishes(session.userId)
 
         if (!response.data || response.data.length === 0) {
@@ -268,7 +264,7 @@ export default function FavouriteContent() {
       } catch (error) {
         console.error('Error in fetchFavouriteDishes:', error)
       } finally {
-        setIsLoading(false)
+        setIsLoadingDishes(false)
       }
     }
 
@@ -336,14 +332,6 @@ export default function FavouriteContent() {
     )
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-40">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-
   return (
     <div className="mt-12">
       <div>
@@ -351,11 +339,11 @@ export default function FavouriteContent() {
           Khóa tập của bạn
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
-          {isLoading ? (
-            <div className="flex justify-center items-center h-40">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          {isLoadingCourses ? (
+            <div className="flex justify-center items-center h-40 col-span-3">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#13D8A7]"></div>
             </div>
-          ) : (
+          ) : courses.length > 0 ? (
             courses.map((course) => (
               <div key={course.id} className="group">
                 <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
@@ -386,6 +374,8 @@ export default function FavouriteContent() {
                 </Link>
               </div>
             ))
+          ) : (
+            <div className="col-span-3 text-center text-gray-500 py-8">Chưa có khóa tập yêu thích</div>
           )}
         </div>
         <Link href="/courses">
@@ -397,33 +387,80 @@ export default function FavouriteContent() {
           Thực đơn
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
-          {mealPlans.map(({ meal_plan }) => (
-            <Link href={`/meal-plans/${meal_plan.id}`} key={meal_plan.id}>
-              <div className="relative group">
-                <div className="absolute top-4 right-4 z-10">
-                  <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
+          {isLoadingMealPlans ? (
+            <div className="flex justify-center items-center h-40 col-span-3">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#13D8A7]"></div>
+            </div>
+          ) : mealPlans.length > 0 ? (
+            mealPlans.map(({ meal_plan }) => (
+              <Link href={`/meal-plans/${meal_plan.id}`} key={meal_plan.id}>
+                <div className="relative group">
+                  <div className="absolute top-4 right-4 z-10">
+                    <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
+                  </div>
+                  <img
+                    src={meal_plan.image}
+                    alt={meal_plan.title}
+                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
+                  />
+                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
-                <img
-                  src={meal_plan.image}
-                  alt={meal_plan.title}
-                  className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
-                />
-                <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-              </div>
-              <p className="font-medium">{meal_plan.title}</p>
-              <p className="text-[#737373]">{meal_plan.subtitle}</p>
-              <p className="text-[#737373]">
-                {meal_plan.chef_name} - {meal_plan.number_of_days} ngày
-              </p>
-            </Link>
-          ))}
+                <p className="font-medium">{meal_plan.title}</p>
+                <p className="text-[#737373]">{meal_plan.subtitle}</p>
+                <p className="text-[#737373]">
+                  {meal_plan.chef_name} - {meal_plan.number_of_days} ngày
+                </p>
+              </Link>
+            ))
+          ) : (
+            <div className="col-span-3 text-center text-gray-500 py-8">Chưa có thực đơn yêu thích</div>
+          )}
         </div>
-        <div className="mt-6">
-          <Link href="/meal-plans">
-            <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14">Thêm thực đơn</Button>
-          </Link>
-        </div>
+        <Link href="/meal-plans">
+          <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14">Thêm thực đơn</Button>
+        </Link>
       </div>
+
+      <div className="space-y-6 mt-12">
+        <h2 className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+          Động tác
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
+          {isLoadingExercises ? (
+            <div className="flex justify-center items-center h-40 col-span-3">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#13D8A7]"></div>
+            </div>
+          ) : exercises.length > 0 ? (
+            exercises.map((exercise) => (
+              <Link
+                href={`/gallery/muscle/${exercise.exercise?.muscle_groups?.[0]?.id || ''}/${exercise.id}`}
+                key={exercise.id}
+              >
+                <div>
+                  <div className="relative group">
+                    <div className="absolute top-4 right-4 z-10">
+                      <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
+                    </div>
+                    <img
+                      src={getYoutubeThumbnail(exercise.exercise?.youtube_url || '')}
+                      alt={exercise.exercise?.name || ''}
+                      className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
+                    />
+                    <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                  </div>
+                  <p className="font-medium">{exercise.exercise?.name}</p>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div className="col-span-3 text-center text-gray-500 py-8">Chưa có động tác yêu thích</div>
+          )}
+        </div>
+        <Link href="/gallery">
+          <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm động tác</Button>
+        </Link>
+      </div>
+
       <div className="space-y-6 mt-12">
         <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
           Động tác
@@ -461,24 +498,30 @@ export default function FavouriteContent() {
       <div className="space-y-6 mt-12">
         <h2 className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">Món ăn</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
-          {dishes.map((dish) => (
-            <Link href={`/gallery/meal/${dish.dish.diet?.id}/${dish.id}`} key={dish.id}>
-              <div className="relative group">
-                <div className="absolute top-4 right-4 z-10">
-                  <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
+          {isLoadingDishes ? (
+            <div className="flex justify-center items-center h-40 col-span-3">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#13D8A7]"></div>
+            </div>
+          ) : dishes.length > 0 ? (
+            dishes.map((dish) => (
+              <Link href={`/dishes/${dish.dish?.id || ''}`} key={dish.id}>
+                <div className="relative group">
+                  <div className="absolute top-4 right-4 z-10">
+                    <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
+                  </div>
+                  <img src={dish.image} alt={dish.title} className="aspect-[5/3] object-cover rounded-xl mb-4 w-full" />
+                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
-                <img src={dish.image} alt={dish.title} className="aspect-[5/3] object-cover rounded-xl mb-4 w-full" />
-                <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-              </div>
-              <p className="font-medium">{dish.title}</p>
-            </Link>
-          ))}
+                <p className="font-medium">{dish.title}</p>
+              </Link>
+            ))
+          ) : (
+            <div className="col-span-3 text-center text-gray-500 py-8">Chưa có món ăn yêu thích</div>
+          )}
         </div>
-        <div className="mt-6">
-          <Link href="/gallery">
-            <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14">Thêm món ăn</Button>
-          </Link>
-        </div>
+        <Link href="/dishes">
+          <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm món ăn</Button>
+        </Link>
       </div>
     </div>
   )

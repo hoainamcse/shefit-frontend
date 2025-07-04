@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import ListMealPlans from './_components/ListMealPlans'
 import ListExercises from './_components/ListExercises'
@@ -10,20 +11,12 @@ import ListDishes from './_components/ListDishes'
 import FavouriteContent from './_components/FavouriteContent'
 
 function ExerciseContent() {
-  const { showFavorites, selectedSubscription, isLoading } = useSubscription()
+  const { showFavorites } = useSubscription()
 
   if (showFavorites) {
     return <FavouriteContent />
   }
-
-  // if (isLoading) {
-  //   return <div className="py-4 text-center">Đang tải dữ liệu...</div>
-  // }
-
-  // if (!selectedSubscription) {
-  //   return <div className="py-4 text-center">Không tìm thấy gói đăng ký</div>
-  // }
-
+  
   return (
     <div className="space-y-10">
       <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
@@ -70,7 +63,7 @@ function ExerciseContent() {
   )
 }
 
-export default function Exercise() {
+function ExercisePage() {
   return (
     <div className="px-6 lg:px-14">
       <SubscriptionProvider>
@@ -80,3 +73,5 @@ export default function Exercise() {
     </div>
   )
 }
+
+export default ExercisePage

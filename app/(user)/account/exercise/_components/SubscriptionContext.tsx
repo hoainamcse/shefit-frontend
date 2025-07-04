@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, ReactNode, useState } from 'react'
+import React, { createContext, useContext, ReactNode, useState } from 'react'
 
 interface Subscription {
   id: number
@@ -40,17 +40,18 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const [showFavorites, setShowFavorites] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
+  // Memoize the context value to prevent unnecessary re-renders of consuming components
+  const contextValue = React.useMemo(() => ({
+    selectedSubscription,
+    setSelectedSubscription,
+    showFavorites,
+    setShowFavorites,
+    isLoading,
+    setIsLoading,
+  }), [selectedSubscription, showFavorites, isLoading])
+
   return (
-    <SubscriptionContext.Provider
-      value={{
-        selectedSubscription,
-        setSelectedSubscription,
-        showFavorites,
-        setShowFavorites,
-        isLoading,
-        setIsLoading,
-      }}
-    >
+    <SubscriptionContext.Provider value={contextValue}>
       {children}
     </SubscriptionContext.Provider>
   )

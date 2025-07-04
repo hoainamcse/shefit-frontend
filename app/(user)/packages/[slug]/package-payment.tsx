@@ -8,7 +8,7 @@ import { useSession } from '@/components/providers/session-provider'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { createUserSubscription } from '@/network/server/user-subscriptions'
+import { createUserSubscription, updateUserSubscription } from '@/network/server/user-subscriptions'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 import { useQRCode } from 'next-qrcode'
@@ -54,6 +54,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
   const [paymentError, setPaymentError] = useState<string | null>(null)
 
   const [purchaseSuccess, setPurchaseSuccess] = useState(false)
+  const [paymentVerified, setPaymentVerified] = useState(false)
   useState<number | null>(null)
 
   const handleLoginClick = () => {
@@ -67,165 +68,199 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
 
   const handleBuyNow = () => {
     if (!session) {
+      setIsLoginDialogOpen(true)
       return
     }
-    setQrData(null)
-    setAccessToken(null)
-    setOrderId('')
-    setPaymentError(null)
+
+    if (!selectedPriceId || !totalPrice) {
+      return
+    }
+
     setIsPaymentDialogOpen(true)
-    getQrTokenAndCreateQr()
+    setIsLoading(true)
+    setQrData(null)
+    setErrorMessage(null)
+    setPaymentError(null)
+
+    const generatedOrderId = generateOrderId()
+    setOrderId(generatedOrderId)
+
+    getQrTokenAndCreateQr(generatedOrderId)
   }
 
-  const getQrTokenAndCreateQr = useCallback(async () => {
-    try {
-      setIsLoading(true)
-      setErrorMessage(null)
-      setPaymentError(null)
+  const getQrTokenAndCreateQr = useCallback(
+    async (providedOrderId: string) => {
+      try {
+        setIsLoading(true)
+        setErrorMessage(null)
+        setPaymentError(null)
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/v1/vietqr/generate-qr-token`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${process.env.NEXT_PUBLIC_VIETQR_BASIC_AUTH}`,
-        },
-      })
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/v1/vietqr/generate-qr-token`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Basic ${process.env.NEXT_PUBLIC_VIETQR_BASIC_AUTH}`,
+          },
+        })
+        if (!response.ok) {
+          throw new Error(`Failed to generate QR token: ${response.status} ${response.statusText}`)
+        }
+        const tokenData = await response.json()
+        const token = tokenData.access_token
+        setAccessToken(token)
+        const username = session?.userId || 'guest'
+        const content = `${username} ${providedOrderId}`
 
-      if (!response.ok) {
-        throw new Error(`Failed to generate QR token: ${response.status} ${response.statusText}`)
-      }
+        const directQrResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/v1/vietqr/create-qr`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            amount: totalPrice,
+            content: content,
+            order_id: providedOrderId,
+          }),
+        })
 
-      const tokenData = await response.json()
-      const token = tokenData.access_token
-      console.log('QR Token Access Token:', token)
-      setAccessToken(token)
+        if (!directQrResponse.ok) {
+          throw new Error(`Failed to create QR: ${directQrResponse.status} ${directQrResponse.statusText}`)
+        }
 
-      console.log('Full token before createQr:', token)
+        const qrResponse = await directQrResponse.json()
 
-      const newOrderId = generateOrderId()
-      setOrderId(newOrderId)
+        const responseData = qrResponse.data || qrResponse
+        const qrCode = responseData.qrCode || null
 
-      const username = session?.userId || 'guest'
-      const content = `${username} ${newOrderId}`
+        setQrData({
+          ...responseData,
+          qrCode: qrCode,
+        })
 
-      const directQrResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/v1/vietqr/create-qr`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          amount: totalPrice,
-          content: content,
-          order_id: newOrderId,
-        }),
-      })
+        if (qrCode) {
+          try {
+            const credentials = 'shefit-vietqr:IlhtYFpFkh1ztl2hkJXuRgTpr+Ef9BZbL9Z9oYXk'
+            const encodedCredentials =
+              typeof window !== 'undefined' ? btoa(credentials) : Buffer.from(credentials).toString('base64')
 
-      if (!directQrResponse.ok) {
-        throw new Error(`Failed to create QR: ${directQrResponse.status} ${directQrResponse.statusText}`)
-      }
-
-      const qrResponse = await directQrResponse.json()
-
-      console.log('QR Creation Response:', qrResponse)
-
-      const responseData = qrResponse.data || qrResponse
-      const qrCode = responseData.qrCode || null
-
-      setQrData({
-        ...responseData,
-        qrCode: qrCode,
-      })
-
-      if (qrCode) {
-        console.log('Received QR Code string for rendering:', qrCode)
-
-        try {
-          const credentials = 'shefit-vietqr:IlhtYFpFkh1ztl2hkJXuRgTpr+Ef9BZbL9Z9oYXk'
-          const encodedCredentials =
-            typeof window !== 'undefined' ? btoa(credentials) : Buffer.from(credentials).toString('base64')
-
-          const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/v1/vietqr/api/token_generate`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Basic ${encodedCredentials}`,
-            },
-            body: JSON.stringify({ qrToken: qrCode }),
-          })
-
-          if (!tokenResponse.ok) {
-            throw new Error('Failed to generate transaction token')
-          }
-
-          const tokenData = await tokenResponse.json()
-          console.log('Token generate response:', tokenData)
-
-          const syncToken = tokenData.access_token || tokenData.data?.access_token
-
-          if (syncToken) {
-            const syncResponse = await fetch('/v1/vietqr/bank/api/transaction-sync', {
+            const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/v1/vietqr/api/token_generate`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${syncToken}`,
+                Authorization: `Basic ${encodedCredentials}`,
               },
-              body: JSON.stringify({
-                bankaccount: responseData.bankAccount || 'string',
-                amount: totalPrice,
-                transType: 'string',
-                content: `${session?.userId} ${orderId}`,
-                orderId: orderId,
-              }),
+              body: JSON.stringify({ qrToken: qrCode }),
             })
 
-            if (!syncResponse.ok) {
-              console.warn('Transaction sync warning:', await syncResponse.text())
-            } else {
-              const syncData = await syncResponse.json()
-              console.log('Transaction sync response:', syncData)
+            if (!tokenResponse.ok) {
+              throw new Error('Failed to generate transaction token')
+            }
 
-              if (syncData.error === false || (syncData.data && syncData.data.error === false)) {
-                try {
-                  const now = new Date()
-                  const endDate = new Date(now)
-                  endDate.setDate(endDate.getDate() + (prices.find((p) => p.id === selectedPriceId)?.duration || 1))
-                  const subscriptionData = {
-                    user_id: session?.userId,
-                    subscription_id: Number(params?.slug),
-                    course_format: 'video',
-                    coupon_code: '',
-                    status: 'active',
-                    subscription_start_at: now.toISOString(),
-                    subscription_end_at: endDate.toISOString(),
-                    order_number: `ORDER-${Date.now()}`,
-                    total_price: totalPrice,
+            const tokenData = await tokenResponse.json()
+            const syncToken = tokenData.access_token || tokenData.data?.access_token
+
+            if (syncToken) {
+              try {
+                await new Promise((resolve) => setTimeout(resolve, 5000))
+                const checkTransactionStatus = async () => {
+                  try {
+                    const syncResponse = await fetch(
+                      `${process.env.NEXT_PUBLIC_SERVER_URL}/v1/vietqr/bank/api/transaction-sync`,
+                      {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          Authorization: `Bearer ${syncToken}`,
+                        },
+                        body: JSON.stringify({
+                          bankaccount: responseData.bankAccount || 'string',
+                          amount: totalPrice,
+                          transType: 'string',
+                          content: `${session?.userId} ${providedOrderId}`,
+                          orderId: providedOrderId,
+                        }),
+                      }
+                    )
+
+                    if (!syncResponse.ok) {
+                      console.warn('Transaction sync warning:', await syncResponse.text())
+                      return { success: false, retry: true }
+                    }
+
+                    const syncData = await syncResponse.json()
+                    const refTransactionId = syncData?.object?.reftransactionid || null
+                    if (refTransactionId === providedOrderId) {
+                      setPaymentVerified(true)
+                      return { success: true, retry: false }
+                    } else {
+                      return { success: false, retry: true }
+                    }
+                  } catch (error) {
+                    return { success: false, retry: true }
                   }
-                  if (session?.userId) {
-                    await createUserSubscription(subscriptionData, session.userId.toString())
-                    setPurchaseSuccess(true)
-                  } else {
-                    throw new Error('User ID is not available')
-                  }
-                } catch (error) {
-                  console.error('Error creating subscription:', error)
-                  setPaymentError('Payment successful but failed to activate subscription. Please contact support.')
-                  setPurchaseSuccess(false)
                 }
+
+                let checkResult = await checkTransactionStatus()
+
+                let attempts = 0
+                const maxAttempts = 10
+
+                while (checkResult.retry && attempts < maxAttempts) {
+                  await new Promise((resolve) => setTimeout(resolve, 5000))
+                  checkResult = await checkTransactionStatus()
+                  attempts++
+                }
+
+                if (checkResult.success) {
+                  try {
+                    const now = new Date()
+                    const endDate = new Date(now)
+                    endDate.setDate(endDate.getDate() + (prices.find((p) => p.id === selectedPriceId)?.duration || 1))
+                    const subscriptionData = {
+                      user_id: session?.userId,
+                      subscription_id: Number(params?.slug),
+                      course_format: 'video',
+                      coupon_code: '',
+                      status: 'active',
+                      subscription_start_at: now.toISOString(),
+                      subscription_end_at: endDate.toISOString(),
+                      order_number: `ORDER-${Date.now()}`,
+                      total_price: totalPrice,
+                    }
+                    if (session?.userId) {
+                      await createUserSubscription(subscriptionData, session.userId.toString())
+                      setPurchaseSuccess(true)
+                    } else {
+                      throw new Error('User ID is not available')
+                    }
+                  } catch (error) {
+                    console.error('Error creating subscription:', error)
+                    setPaymentError('Payment successful but failed to activate subscription. Please contact support.')
+                    setPurchaseSuccess(false)
+                  }
+                } else {
+                  console.log('Transaction verification failed after multiple attempts')
+                  setPaymentError('Payment verification failed. Please try again or contact support.')
+                }
+              } catch (transactionError) {
+                console.error('Error in transaction verification process:', transactionError)
+                setPaymentError('Error verifying payment. Please try again or contact support.')
               }
             }
+          } catch (syncError) {
+            console.error('Error in transaction sync process:', syncError)
           }
-        } catch (syncError) {
-          console.error('Error in transaction sync process:', syncError)
         }
+      } catch (error: any) {
+        console.error('Error in QR process:', error)
+        setErrorMessage(error.message || 'Failed to generate QR code')
+      } finally {
+        setIsLoading(false)
       }
-    } catch (error: any) {
-      console.error('Error in QR process:', error)
-      setErrorMessage(error.message || 'Failed to generate QR code')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [session, totalPrice])
+    },
+    [session, totalPrice]
+  )
 
   const handlePriceSelect = (priceId: number, price: number) => {
     if (selectedPriceId === priceId) return
@@ -280,98 +315,88 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
               {isLoading ? 'Đang xử lý...' : 'Mua gói'}
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogContent className="max-w-md">
+          <AlertDialogContent className="max-w-lg">
             <AlertDialogHeader>
               <AlertDialogCancel className="absolute top-4 right-4 border-none hover:bg-white shadow-none active:bg-none">
                 <CloseIcon />
               </AlertDialogCancel>
-              {purchaseSuccess ? (
-                <div className="flex flex-col items-center py-6">
-                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] font-bold text-xl">
-                    ĐÃ MUA GÓI THÀNH CÔNG
-                  </AlertDialogTitle>
-                  <AlertDialogDescription className="text-center text-base">
-                    Hãy vào trang tài khoản của bạn để bắt đầu làm bảng khảo sát số đo, các khóa tập & thực đơn
-                  </AlertDialogDescription>
-                  <Link href="/account">
-                    <Button
-                      onClick={() => {
-                        setIsPaymentDialogOpen(false)
-                      }}
-                      className="mt-6 bg-[#13D8A7] hover:bg-[#11c296] text-white rounded-full px-8"
-                    >
-                      Tài khoản
-                    </Button>
-                  </Link>
-                </div>
-              ) : qrData ? (
-                <div className="flex flex-col items-center gap-4 py-4">
-                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] font-bold text-2xl">
-                    Thanh toán đơn hàng
-                  </AlertDialogTitle>
-                  <div className="border rounded-md p-4 w-full flex justify-center">
-                    {qrData.qrCode ? (
-                      <Canvas
-                        text={qrData.qrCode}
-                        options={{
-                          errorCorrectionLevel: 'M',
-                          margin: 3,
-                          scale: 4,
-                          width: 300,
-                        }}
-                      />
-                    ) : (
-                      <div className="p-8 text-center text-gray-500">QR code không khả dụng</div>
-                    )}
-                  </div>
-                  <div className="w-full space-y-3 text-left">
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Ngân hàng:</span>
-                      <span className="font-medium">{qrData.bankName}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Số tài khoản:</span>
-                      <span className="font-medium">{qrData.bankAccount}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Chủ tài khoản:</span>
-                      <span className="font-medium">{qrData.userBankName}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Số tiền:</span>
-                      <span className="font-medium text-[#00C7BE]">{Number(qrData.amount).toLocaleString()} VNĐ</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Mã đơn hàng:</span>
-                      <span className="font-medium">{qrData.orderId}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Nội dung:</span>
-                      <span className="font-medium">{qrData.content}</span>
-                    </div>
-                  </div>
-                  <AlertDialogDescription className="text-center mt-4">
-                    Quét mã QR để thanh toán đơn hàng của bạn.
-                  </AlertDialogDescription>
-                </div>
-              ) : paymentError ? (
-                <div className="flex flex-col items-center py-6">
-                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] font-bold text-xl text-red-500">
-                    Lỗi thanh toán
-                  </AlertDialogTitle>
-                  <AlertDialogDescription className="text-center mt-4">{paymentError}</AlertDialogDescription>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center py-6">
-                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] font-bold text-xl">
-                    Đang tạo đơn hàng
-                  </AlertDialogTitle>
-                  <AlertDialogDescription className="text-center mt-4">
-                    Vui lòng đợi trong giây lát...
-                  </AlertDialogDescription>
-                </div>
-              )}
             </AlertDialogHeader>
+            {purchaseSuccess ? (
+              <div className="flex flex-col items-center py-6">
+                <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] font-bold text-3xl mb-4">
+                  ĐÃ MUA GÓI THÀNH CÔNG
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-center text-lg">
+                  Hãy vào trang tài khoản của bạn để bắt đầu làm bảng khảo sát số đo, các khóa tập & thực đơn
+                </AlertDialogDescription>
+                <Link href="/account?tab=shape">
+                  <Button
+                    onClick={() => {
+                      setIsPaymentDialogOpen(false)
+                    }}
+                    className="mt-6 bg-[#13D8A7] hover:bg-[#11c296] text-white rounded-full px-8 text-lg"
+                  >
+                    Tài khoản
+                  </Button>
+                </Link>
+              </div>
+            ) : qrData ? (
+              <div className="flex flex-col items-center gap-4 py-4">
+                <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] font-bold text-2xl">
+                  Thanh toán đơn hàng
+                </AlertDialogTitle>
+                <div className="border rounded-md p-4 w-full flex justify-center">
+                  {qrData.qrCode ? (
+                    <Canvas
+                      text={qrData.qrCode}
+                      options={{
+                        errorCorrectionLevel: 'M',
+                        margin: 3,
+                        scale: 4,
+                        width: 300,
+                      }}
+                    />
+                  ) : (
+                    <div className="p-8 text-center text-gray-500">QR code không khả dụng</div>
+                  )}
+                </div>
+                <div className="w-full space-y-3 text-left">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Ngân hàng:</span>
+                    <span className="font-medium">{qrData.bankName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Số tài khoản:</span>
+                    <span className="font-medium">{qrData.bankAccount}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Chủ tài khoản:</span>
+                    <span className="font-medium">{qrData.userBankName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Số tiền:</span>
+                    <span className="font-medium text-[#00C7BE]">{Number(qrData.amount).toLocaleString()} VNĐ</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Mã đơn hàng:</span>
+                    <span className="font-medium">{qrData.orderId}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Nội dung:</span>
+                    <span className="font-medium">{qrData.content}</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center py-6">
+                <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] font-bold text-xl">
+                  Đang tạo đơn hàng
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-center mt-4">
+                  Vui lòng đợi trong giây lát...
+                </AlertDialogDescription>
+              </div>
+            )}
           </AlertDialogContent>
         </AlertDialog>
       </div>

@@ -24,7 +24,7 @@ export default function ListSubscriptions() {
 
   useEffect(() => {
     setShowFavorites(true)
-  }, [])
+  }, [setShowFavorites])
 
   useEffect(() => {
     async function fetchData() {
@@ -39,10 +39,13 @@ export default function ListSubscriptions() {
           )
 
           setUserSubscriptions(sortedSubscriptions)
+          
+          // Only set the selected subscription if it's not already set
           if (!selectedSubscription) {
             setSelectedSubscription(sortedSubscriptions[0])
           }
 
+          // Fetch subscription names only once
           const namesPromises = sortedSubscriptions.map(async (sub) => {
             try {
               const subResponse = await getSubscription(sub.subscription.id)
@@ -73,8 +76,11 @@ export default function ListSubscriptions() {
       }
     }
 
+    // Only run this effect when session changes
+    // We don't need to include selectedSubscription or setSelectedSubscription in the dependency array
+    // as we're checking selectedSubscription inside conditionally
     fetchData()
-  }, [session])
+  }, [session, setContextLoading])
 
   const router = useRouter()
 

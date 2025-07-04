@@ -8,9 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import BodyQuiz from "./_components/body-quiz"
 import PurchasePackage from "./_components/purchase-package"
 import AccountInformation from "./_components/account-information"
-import Exercise from "./exercise/page"
 import Cart from "./_components/cart"
 import UserGreeting from "./_components/user-greeting"
+import Exercise from "./exercise/page"
 const TABS = [
   { value: "body-quiz", label: "Body Quiz", icon: <QuizIcon /> },
   {
@@ -35,11 +35,11 @@ const TABS = [
 
 export default async function Account(props: { searchParams: Promise<{ tab: string }> }) {
   const searchParams = await props.searchParams
-  const tab = searchParams.tab
+  const tab = searchParams.tab || "body-quiz"
 
   return (
     <div>
-      <Tabs defaultValue={tab || "body-quiz"}>
+      <Tabs value={tab} defaultValue="body-quiz">
         <div className="pt-16 sm:pt-24 lg:pt-[120px] px-5 sm:px-9 lg:px-[56px] xl:px-[60px] pb-8 sm:pb-14 lg:pb-[80px]">
           <UserGreeting />
           <TabsList className="w-full lg:w-fit flex-wrap bg-background gap-y-3 sm:gap-y-5 gap-x-7 pl-0 h-fit lg:h-9">
