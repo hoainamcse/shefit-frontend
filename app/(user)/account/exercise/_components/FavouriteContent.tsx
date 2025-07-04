@@ -462,40 +462,6 @@ export default function FavouriteContent() {
       </div>
 
       <div className="space-y-6 mt-12">
-        <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
-          Động tác
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
-          {exercises.map((exercise) => (
-            <Link
-              href={`/gallery/muscle/${exercise.exercise?.muscle_groups?.[0]?.id || ''}/${exercise.id}`}
-              key={exercise.id}
-            >
-              <div key={exercise.id}>
-                <div className="relative group">
-                  <div className="absolute top-4 right-4 z-10">
-                    <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
-                  </div>
-                  <img
-                    src={getYoutubeThumbnail(exercise.youtube_url)}
-                    alt={exercise.name}
-                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
-                  />
-                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-                </div>
-                <p className="font-medium">{exercise.name}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-        <div className="mt-6">
-          <Link href="/gallery">
-            <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14">Thêm động tác</Button>
-          </Link>
-        </div>
-      </div>
-
-      <div className="space-y-6 mt-12">
         <h2 className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">Món ăn</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
           {isLoadingDishes ? (

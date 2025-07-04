@@ -13,7 +13,6 @@ import { getUserCart, createUserCart } from '@/network/server/user-cart'
 import { toast } from 'sonner'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import { useSession } from '@/components/providers/session-provider'
-import { useRouter } from 'next/navigation'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 export default function ProductPage({ params }: { params: Promise<{ product_id: string }> }) {
@@ -29,7 +28,8 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
   const [cartId, setCartId] = useState<number | null>(null)
   const [isAdding, setIsAdding] = useState(false)
   const [isBuyingNow, setIsBuyingNow] = useState(false)
-  const router = useRouter()
+  const [hasDefaultVariant, setHasDefaultVariant] = useState(false)
+  const [defaultVariantId, setDefaultVariantId] = useState<number | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [loginDialogOpen, setLoginDialogOpen] = useState(false)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
@@ -37,10 +37,27 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
 
   useEffect(() => {
     if (product && product.variants && product.variants.length > 0) {
-      const uniqueColorIds = Array.from<number>(new Set(product.variants.map((variant: any) => variant.color_id)))
+      const defaultVariant = product.variants.find(
+        (variant: any) => variant.color_id === null && variant.size_id === null
+      )
+
+      if (defaultVariant) {
+        setHasDefaultVariant(true)
+        setDefaultVariantId(defaultVariant.id)
+        setSelectedVariantId(defaultVariant.id)
+      } else {
+        setHasDefaultVariant(false)
+        setDefaultVariantId(null)
+      }
+
+      const uniqueColorIds = Array.from<number>(
+        new Set(
+          product.variants.filter((variant: any) => variant.color_id !== null).map((variant: any) => variant.color_id)
+        )
+      )
       setColorOptions(uniqueColorIds)
 
-      if (uniqueColorIds.length > 0 && selectedColorId === null) {
+      if (uniqueColorIds.length > 0 && selectedColorId === null && !defaultVariant) {
         const inStockColorIds = uniqueColorIds.filter((colorId) =>
           product.variants.some((variant: any) => variant.color_id === colorId && variant.in_stock)
         )
@@ -59,16 +76,12 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
       try {
         const productResponse = await getProduct(product_id)
         setProduct(productResponse.data)
-
         const colorsResponse = await getColors()
         setColors(colorsResponse.data)
-
         const sizesResponse = await getSizes()
         setSizes(sizesResponse.data)
-
         const muscleGroup = await getMuscleGroups()
         setMuscleGroups(muscleGroup.data.filter((mg: any) => productResponse.data.muscle_group_ids))
-
         const carts = await getCarts()
         if (carts.data && carts.data.length > 0) {
           setCartId(carts.data[0].id)
@@ -97,37 +110,38 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
     )
 
   const handleBuyNow = async () => {
-    if (!selectedVariantId || !product) return
+    let variantIdToUse = selectedVariantId
 
+    if (hasDefaultVariant && defaultVariantId) {
+      variantIdToUse = defaultVariantId
+    } else if (!selectedVariantId) {
+      return
+    }
+
+    if (!product) return
     setIsBuyingNow(true)
     try {
       const cartResponse = await createCart()
       if (!cartResponse?.data?.id) {
         throw new Error('Không thể tạo giỏ hàng mới')
       }
-
       const newCartId = cartResponse.data.id
-      console.log('Successfully created empty cart with ID:', newCartId)
-
       if (session) {
         try {
           await new Promise((resolve) => setTimeout(resolve, 500))
           const userCartResponse = await createUserCart(Number(session.userId), newCartId)
-          console.log('User cart link response for Buy Now:', userCartResponse)
           if (userCartResponse?.cart?.id) {
-            console.log('Successfully linked cart to user, new cart ID:', userCartResponse.cart.id)
           }
-        } catch (linkError) {
-          console.error('Error linking cart to user during Buy Now:', linkError)
-        }
+        } catch (linkError) {}
       }
-
       const currentQuantity = Math.max(1, Number(quantity))
-      await addCart(newCartId, selectedVariantId, currentQuantity)
-
+      const variantIdToUse = hasDefaultVariant && defaultVariantId ? defaultVariantId : selectedVariantId
+      if (variantIdToUse === null) {
+        throw new Error('Không có biến thể sản phẩm hợp lệ')
+      }
+      await addCart(newCartId, variantIdToUse, currentQuantity)
       window.location.href = `/products/${product_id}/buy-now?cart_id=${newCartId}`
     } catch (error: any) {
-      console.error('Buy now error:', error)
       let message = 'Không thể mua ngay. Vui lòng thử lại!'
       if (error?.response?.data?.message) {
         message = error.response.data.message
@@ -138,55 +152,40 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
   }
 
   const handleAddToCart = async () => {
-    if (!selectedVariantId) return
-
+    let variantIdToUse = selectedVariantId
+    if (hasDefaultVariant && defaultVariantId) {
+      variantIdToUse = defaultVariantId
+    } else if (!selectedVariantId) {
+      return
+    }
     if (!session) {
       setLoginDialogOpen(true)
       return
     }
-
     const currentQuantity = Math.max(1, Number(quantity))
-    console.log('Current state values:', {
-      cartId,
-      selectedVariantId,
-      quantity,
-      currentQuantity,
-      typeOfQuantity: typeof quantity,
-    })
-
     setIsAdding(true)
     try {
       const cartsRes = await getUserCart(Number(session.userId))
-
       let currentCartId = cartId
       let pendingCart = Array.isArray(cartsRes?.data)
         ? cartsRes.data.find((item) => item?.cart?.status === 'pending' || item?.cart?.status === 'not_decided')
         : null
-
       if (!pendingCart) {
-        console.log('No pending cart found, creating a new one')
-
         const emptyCartResponse = await createCart()
-        console.log('Empty cart response:', emptyCartResponse)
 
         if (!emptyCartResponse?.data?.id) {
-          console.error('Invalid empty cart response structure:', emptyCartResponse)
           throw new Error('Không thể tạo giỏ hàng mới')
         }
 
         const newCartId = emptyCartResponse.data.id
-        console.log('Successfully created empty cart with ID:', newCartId)
-
         await new Promise((resolve) => setTimeout(resolve, 500))
 
         const userCartResponse = await createUserCart(Number(session.userId), newCartId)
-        console.log('User cart response:', userCartResponse)
 
         if (userCartResponse?.cart?.id) {
           currentCartId = userCartResponse.cart.id
           setCartId(currentCartId)
         } else {
-          console.error('Cannot extract cart ID from response:', userCartResponse)
           throw new Error('Không thể liên kết giỏ hàng với người dùng')
         }
       } else {
@@ -198,11 +197,11 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
         throw new Error('Không có giỏ hàng hợp lệ')
       }
 
-      console.log(
-        `Adding product variant ${selectedVariantId} to cart ${currentCartId} with quantity ${currentQuantity}`
-      )
-      const result = await addCart(currentCartId, selectedVariantId, currentQuantity)
-      console.log('Add to cart result:', result)
+      if (variantIdToUse === null) {
+        throw new Error('Không có biến thể sản phẩm hợp lệ')
+      }
+
+      const result = await addCart(currentCartId, variantIdToUse, currentQuantity)
       toast.success(`Đã thêm ${currentQuantity} sản phẩm vào giỏ hàng!`)
     } catch (error: any) {
       console.error('Add to cart error:', error)
@@ -249,40 +248,53 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
             </Carousel>
           </div>
           <div className="xl:w-1/5 max-lg:w-full xl:text-xl flex flex-col gap-3">
-            <div className="flex flex-col gap-2 mb-4">
-              <div className="flex gap-2">
-                {Array.from(new Set(product.variants.map((variant: any) => variant.color_id))).map((colorId: any) => {
-                  const color = colors.find((c: any) => c.id === colorId)
-                  const hex = color?.hex_code || '#fff'
-                  const isSelected = selectedColorId === colorId
-                  const hasInStockVariants = product.variants.some(
-                    (variant: any) => variant.color_id === colorId && variant.in_stock
-                  )
+            {product.variants.some((variant: any) => variant.color_id !== null) && (
+              <div className="flex flex-col gap-2 mb-4">
+                <div className="flex gap-2">
+                  {Array.from(
+                    new Set(
+                      product.variants
+                        .filter((variant: any) => variant.color_id !== null)
+                        .map((variant: any) => variant.color_id)
+                    )
+                  ).map((colorId: any) => {
+                    const color = colors.find((c: any) => c.id === colorId)
+                    const hex = color?.hex_code || '#fff'
+                    const colorName = color?.name || ''
+                    const isSelected = selectedColorId === colorId
+                    const hasInStockVariants = product.variants.some(
+                      (variant: any) => variant.color_id === colorId && variant.in_stock
+                    )
 
-                  return (
-                    <Button
-                      key={colorId}
-                      style={{
-                        backgroundColor: hex,
-                        border: isSelected ? '2px solid #00C7BE' : '1px solid #ddd',
-                      }}
-                      className="rounded-full w-10 h-10 relative"
-                      disabled={!hasInStockVariants}
-                      onClick={() => {
-                        setSelectedColorId(colorId)
-                        setSelectedVariantId(null)
-                      }}
-                    >
-                      {isSelected && (
-                        <div className="absolute inset-0 rounded-full flex items-center justify-center">
-                          <div className="w-3 h-3 rounded-full bg-white opacity-80"></div>
+                    return (
+                      <div key={colorId} className="relative group">
+                        <Button
+                          style={{
+                            backgroundColor: hex,
+                            border: isSelected ? '2px solid #00C7BE' : '1px solid #ddd',
+                          }}
+                          className="rounded-full w-10 h-10 relative"
+                          disabled={!hasInStockVariants}
+                          onClick={() => {
+                            setSelectedColorId(colorId)
+                            setSelectedVariantId(null)
+                          }}
+                        >
+                          {isSelected && (
+                            <div className="absolute inset-0 rounded-full flex items-center justify-center">
+                              <div className="w-3 h-3 rounded-full bg-white opacity-80"></div>
+                            </div>
+                          )}
+                        </Button>
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 -translate-y-2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                          {colorName}
                         </div>
-                      )}
-                    </Button>
-                  )
-                })}
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
+            )}
 
             <p className="font-medium xl:text-[30px] max-lg:text-xl">{product.name}</p>
             <p className="text-[#737373] text-xl mt-1">
@@ -290,47 +302,54 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
             </p>
             <p className="text-[#00C7BE] text-2xl font-semibold">{product.price.toLocaleString()} vnđ</p>
 
-            <div className="flex gap-2 my-4 items-center">
-              <div className="text-xl">Size:</div>
-              <div className="flex flex-wrap gap-2">
-                {Array.from(
-                  new Set(
-                    product.variants
-                      .filter((variant: any) => !selectedColorId || variant.color_id === selectedColorId)
-                      .map((variant: any) => variant.size_id)
-                  )
-                ).map((sizeId: any) => {
-                  const size = sizes.find((s: any) => s.id === sizeId)?.size || sizeId
-                  const variantsWithSize = product.variants.filter(
-                    (variant: any) =>
-                      variant.size_id === sizeId && (!selectedColorId || variant.color_id === selectedColorId)
-                  )
-                  const hasInStockVariant = variantsWithSize.some((v: any) => v.in_stock)
-                  const variant = selectedColorId
-                    ? product.variants.find((v: any) => v.color_id === selectedColorId && v.size_id === sizeId)
-                    : variantsWithSize[0]
+            {product.variants.some(
+              (variant: any) => variant.size_id !== null && (!selectedColorId || variant.color_id === selectedColorId)
+            ) && (
+              <div className="flex gap-2 my-4 items-center">
+                <div className="text-xl">Size:</div>
+                <div className="flex flex-wrap gap-2">
+                  {Array.from(
+                    new Set(
+                      product.variants
+                        .filter(
+                          (variant: any) =>
+                            variant.size_id !== null && (!selectedColorId || variant.color_id === selectedColorId)
+                        )
+                        .map((variant: any) => variant.size_id)
+                    )
+                  ).map((sizeId: any) => {
+                    const size = sizes.find((s: any) => s.id === sizeId)?.size || sizeId
+                    const variantsWithSize = product.variants.filter(
+                      (variant: any) =>
+                        variant.size_id === sizeId && (!selectedColorId || variant.color_id === selectedColorId)
+                    )
+                    const hasInStockVariant = variantsWithSize.some((v: any) => v.in_stock)
+                    const variant = selectedColorId
+                      ? product.variants.find((v: any) => v.color_id === selectedColorId && v.size_id === sizeId)
+                      : variantsWithSize[0]
 
-                  return (
-                    <Button
-                      key={sizeId}
-                      className="w-10 h-10 text-xl font-semibold"
-                      disabled={!hasInStockVariant || !selectedColorId}
-                      onClick={() => {
-                        if (variant) {
-                          setSelectedVariantId(variant.id)
-                        }
-                      }}
-                      style={{
-                        border: selectedVariantId === variant?.id ? '2px solid #00C7BE' : '1px solid #ddd',
-                        color: selectedVariantId === variant?.id ? '#fff' : '#fff',
-                      }}
-                    >
-                      {size}
-                    </Button>
-                  )
-                })}
+                    return (
+                      <Button
+                        key={sizeId}
+                        className="w-10 h-10 text-xl font-semibold"
+                        disabled={!hasInStockVariant || !selectedColorId}
+                        onClick={() => {
+                          if (variant) {
+                            setSelectedVariantId(variant.id)
+                          }
+                        }}
+                        style={{
+                          border: selectedVariantId === variant?.id ? '2px solid #00C7BE' : '1px solid #ddd',
+                          color: selectedVariantId === variant?.id ? '#fff' : '#fff',
+                        }}
+                      >
+                        {size}
+                      </Button>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
+            )}
             <div className="flex gap-3 items-center">
               <div className="text-nowrap">Số lượng:</div>
               <div className="flex items-center gap-2">
@@ -359,14 +378,14 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
               <Button
                 variant="outline"
                 className="w-full rounded-full bg-[#13D8A7] hover:bg-[#11c296] text-white hover:text-white"
-                disabled={!selectedVariantId || isBuyingNow}
+                disabled={!(hasDefaultVariant || selectedVariantId) || isBuyingNow}
                 onClick={handleBuyNow}
               >
                 {isBuyingNow ? 'Đang xử lý...' : 'Mua ngay'}
               </Button>
               <Button
                 className="border-[#13D8A7] border-2 text-[#13D8A7] rounded-full w-full bg-white hover:bg-[#11c29628]"
-                disabled={!selectedVariantId || isAdding}
+                disabled={!(hasDefaultVariant || selectedVariantId) || isAdding}
                 onClick={handleAddToCart}
               >
                 {isAdding ? 'Đang thêm...' : 'Lưu'}
@@ -375,7 +394,9 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
           </div>
         </div>
         <div className="flex flex-col gap-5 mb-20">
-          <div className="font-[family-name:var(--font-coiny)] font-bold text-ring xl:text-[40px] max-lg:text-[30px]">Title</div>
+          <div className="font-[family-name:var(--font-coiny)] font-bold text-ring xl:text-[40px] max-lg:text-[30px]">
+            Title
+          </div>
           <p className="text-[#737373] xl:text-xl max-lg:text-base">{product.description}</p>
         </div>
 
