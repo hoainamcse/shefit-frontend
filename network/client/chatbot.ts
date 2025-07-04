@@ -1,6 +1,6 @@
 import { ApiResponse, ListResponse } from '@/models/response'
 import { fetchData } from '../helpers/fetch-data'
-import { Message, Greeting, GreetingPayload } from '@/models/chatbot'
+import { Message, Greeting, GreetingPayload, UserChatbotSettings, TotalTokenUsage, UserTokenUsage } from '@/models/chatbot'
 
 export const queryKeyGreetings = 'greeting'
 
@@ -54,5 +54,35 @@ export async function deleteBulkGreeting(ids: Greeting['id'][]): Promise<ApiResp
   })
   return await response.json()
 }
+
+export async function getTotalTokenUsage(): Promise<ApiResponse<TotalTokenUsage>> {
+  const response = await fetchData('/v1/chatbot/token-usage/total', {
+    method: 'GET',
+  })
+  return await response.json()
+}
+
+export async function getUserTokenUsage(userId: string): Promise<ApiResponse<UserTokenUsage>> {
+  const response = await fetchData(`/v1/chatbot/token-usage/users/${userId}`, {
+    method: 'GET',
+  })
+  return await response.json()
+}
+
+export async function getUserChatbotSettings(userId: string): Promise<ApiResponse<UserChatbotSettings>> {
+  const response = await fetchData(`/v1/users/${userId}/chatbot/setting`, {
+    method: 'GET',
+  })
+  return await response.json()
+}
+
+export async function updateUserChatbotSettings(userId: string, data: Omit<UserChatbotSettings, 'id'>): Promise<ApiResponse<UserChatbotSettings>> {
+  const response = await fetchData(`/v1/users/${userId}/chatbot/setting`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+  return await response.json()
+}
+
 
 

@@ -14,8 +14,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Form } from '@/components/ui/form'
-import { FormInputField, FormTextareaField, FormSelectField } from '@/components/forms/fields'
-import { Copy, Edit, Ellipsis, Eye, Import, Trash2, FolderDown } from 'lucide-react'
+import { FormInputField, FormSelectField } from '@/components/forms/fields'
+import { Copy, Edit, Ellipsis, FolderDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { MainButton } from '@/components/buttons/main-button'
@@ -28,43 +28,60 @@ import { formatDateString, generateUsername, generatePassword } from '@/lib/help
 import { PROVINCES } from '@/lib/label'
 import { DeleteMenuItem } from '@/components/buttons/delete-menu-item'
 import { User } from '@/models/user'
-import { getUserSubscriptions } from '@/network/server/user-subscriptions'
-import { getUserCourses } from '@/network/server/user-courses'
-import { getUserMealPlans } from '@/network/server/user-meal-plans'
-import { getUserExercises } from '@/network/server/user-exercises'
-import { getUserDishes } from '@/network/server/user-dishes'
 import { getSubAdminUsers, getSubscription } from '@/network/client/subscriptions'
-import { UserCourse } from '@/models/user-courses'
-import { UserMealPlan } from '@/models/user-meal-plans'
-import { UserExercise } from '@/models/user-exercises'
-import { UserDish } from '@/models/user-dishes'
-import { Subscription } from '@/models/subscription'
-import { UserSubscription } from '@/models/user-subscriptions'
 import { useSession } from '@/components/providers/session-provider'
 import { roleLabel } from '@/lib/label'
 import { Badge } from '@/components/ui/badge'
+import { Spinner } from '@/components/spinner'
+import { getUserTokenUsage, getUserChatbotSettings, updateUserChatbotSettings } from '@/network/client/chatbot'
+import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { Switch } from '@/components/ui/switch'
 
+type UserRow = User & { token_usage: number; is_enable_chatbot: boolean }
 export default function UsersPage() {
   const router = useRouter()
-  const [accountTable, setAccountTable] = useState<User[]>([])
+  const [accountTable, setAccountTable] = useState<UserRow[]>([])
   const [isExporting, setIsExporting] = useState(false)
   const { session } = useSession()
+  const [isLoadingAccounts, setIsLoadingAccounts] = useState(false)
+  const [fetchError, setFetchError] = useState<string | null>(null)
 
   const fetchAccounts = async () => {
-    let userData
-    if (session?.role === 'sub_admin') {
-      userData = (await getSubAdminUsers()).data.filter((item) => item.id !== Number(session?.userId))
-    } else {
-      userData = (await getUsers()).data
-    }
-
-    const mapped = (userData || []).map((item: any) => {
-      return {
-        ...item,
-        created_at: formatDateString(item.created_at),
+    setIsLoadingAccounts(true)
+    setFetchError(null)
+    try {
+      let userData
+      if (session?.role === 'sub_admin') {
+        userData = (await getSubAdminUsers()).data.filter((item) => item.id !== Number(session?.userId))
+      } else {
+        userData = (await getUsers()).data
       }
-    })
-    setAccountTable(mapped)
+
+      const mapped = (userData || []).map((item: any) => {
+        return {
+          ...item,
+          created_at: formatDateString(item.created_at),
+        }
+      })
+      const enriched = await Promise.all(
+        mapped.map(async (row) => {
+          const [tokenResp, settingResp] = await Promise.all([
+            getUserTokenUsage(row.id.toString()),
+            getUserChatbotSettings(row.id.toString()),
+          ])
+          const usage = tokenResp.data?.total_tokens ?? 0
+          const is_enable_chatbot = settingResp.data?.is_enable_chatbot ?? false
+          return { ...row, token_usage: usage, is_enable_chatbot }
+        })
+      )
+      setAccountTable(enriched)
+    } catch (error: any) {
+      console.error(error)
+      setFetchError('Có lỗi khi tải danh sách tài khoản')
+      toast.error('Lỗi khi tải danh sách tài khoản')
+    } finally {
+      setIsLoadingAccounts(false)
+    }
   }
 
   const handleExportCsv = async () => {
@@ -216,7 +233,7 @@ export default function UsersPage() {
     }
   }
 
-  const columns: ColumnDef<User>[] = [
+  const columns: ColumnDef<UserRow>[] = [
     {
       accessorKey: 'id',
       header: 'STT',
@@ -240,6 +257,35 @@ export default function UsersPage() {
     {
       accessorKey: 'token_usage',
       header: 'Token Usage',
+    },
+    {
+      accessorKey: 'is_enable_chatbot',
+      header: 'Enable Chatbot',
+      render: ({ row }) => (
+        <Switch
+          className="transform scale-75"
+          checked={row.is_enable_chatbot}
+          onCheckedChange={async (checked) => {
+            const prev = row.is_enable_chatbot
+            // Optimistic update
+            setAccountTable((prevTable) =>
+              prevTable.map((r) => (r.id === row.id ? { ...r, is_enable_chatbot: checked } : r))
+            )
+            try {
+              console.log('checked', checked)
+              await updateUserChatbotSettings(row.id.toString(), { is_enable_chatbot: checked })
+              toast.success('Đã cập nhật trạng thái chatbot')
+            } catch (error: any) {
+              console.error(error)
+              toast.error('Lỗi khi cập nhật trạng thái chatbot')
+              // Revert
+              setAccountTable((prevTable) =>
+                prevTable.map((r) => (r.id === row.id ? { ...r, is_enable_chatbot: prev } : r))
+              )
+            }
+          }}
+        />
+      ),
     },
     {
       accessorKey: 'created_at',
@@ -303,13 +349,21 @@ export default function UsersPage() {
         </div>
       )}
       <ContentLayout title="Danh sách tài khoản">
-        <DataTable
-          headerExtraContent={session?.role === 'admin' ? headerExtraContent : null}
-          searchPlaceholder="Tìm kiếm theo sdt"
-          data={accountTable}
-          columns={columns}
-          onSelectChange={() => {}}
-        />
+        {fetchError ? (
+          <div className="p-4 text-destructive">{fetchError}</div>
+        ) : isLoadingAccounts ? (
+          <div className="flex justify-center p-4">
+            <Spinner className="bg-ring dark:bg-white" />
+          </div>
+        ) : (
+          <DataTable
+            headerExtraContent={session?.role === 'admin' ? headerExtraContent : null}
+            searchPlaceholder="Tìm kiếm theo sdt"
+            data={accountTable}
+            columns={columns}
+            onSelectChange={() => {}}
+          />
+        )}
       </ContentLayout>
     </>
   )

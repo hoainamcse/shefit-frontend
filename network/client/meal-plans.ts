@@ -153,3 +153,15 @@ export async function deleteMealPlanDish(
   })
   return await response.json()
 }
+
+//Import meal plan excel
+export async function importMealPlanExcel(meal_plan_id: MealPlan['id'], file: File): Promise<ApiResponse<MealPlan>> {
+  const formData = new FormData()
+  formData.append('file', file, file.name)
+  const response = await fetchData(`/v1/meal-plans/import-excel/${meal_plan_id}`, {
+    method: 'POST',
+    body: formData,
+  }, false)
+  return await response.json()
+}
+
