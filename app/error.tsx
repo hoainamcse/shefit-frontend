@@ -1,6 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 
-export default function UnauthorizedPage() {
+export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-emerald-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-md">
@@ -23,10 +25,17 @@ export default function UnauthorizedPage() {
               </svg>
             </div>
           </div>
-          <h2 className="mt-6 text-center text-2xl font-extrabold text-gray-900">403 - Unauthorized</h2>
-          <p className="mt-2 text-center text-gray-600">Bạn không có quyền truy cập tài nguyên này</p>
+          <h2 className="mt-6 text-center text-2xl font-extrabold text-gray-900">Có điều gì đó không ổn!</h2>
+          <p className="mt-2 text-center text-gray-600">{error.message || 'Đã xảy ra lỗi không mong muốn'}</p>
+          {error.digest && <p className="mt-2 text-center text-sm text-gray-500">Error ID: {error.digest}</p>}
         </div>
         <div className="flex flex-col items-center space-y-4">
+          <button
+            onClick={reset}
+            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-emerald-400 hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-300 transition-colors duration-200"
+          >
+            Thử lại
+          </button>
           <Link
             href="/"
             className="text-sm font-medium text-emerald-400 hover:text-emerald-300 transition-colors duration-200"

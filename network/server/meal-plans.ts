@@ -11,7 +11,7 @@ export async function getMealPlans(query?: any): Promise<ListResponse<MealPlan>>
   return await response.json()
 }
 
-export async function getMealPlan(meal_plan_id: string): Promise<ApiResponse<MealPlan>> {
+export async function getMealPlan(meal_plan_id: any): Promise<ApiResponse<MealPlan>> {
   const response = await fetchDataServer(`/v1/meal-plans/${meal_plan_id}`, {
     next: {
       revalidate: 0,

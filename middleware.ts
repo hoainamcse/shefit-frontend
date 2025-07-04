@@ -3,15 +3,14 @@ import type { NextRequest } from 'next/server'
 import { verifySession } from '@/lib/dal'
 
 const SUB_ADMIN_ALLOWED_ROUTES = [
-  '/admin',
-  '/admin/courses',
-  '/admin/exercises',
-  '/admin/muscle-groups-equipments',
-  '/admin/diets-calories',
-  '/admin/dishes',
-  '/admin/meal-plans',
-  '/admin/membership',
-  '/admin/users',
+  '/courses',
+  '/exercises',
+  '/muscle-groups-equipments',
+  '/diets-calories',
+  '/dishes',
+  '/meal-plans',
+  '/membership',
+  '/users',
 ]
 
 export async function middleware(request: NextRequest) {
@@ -32,9 +31,8 @@ export async function middleware(request: NextRequest) {
       }
 
       if (userRole === 'sub_admin') {
-        const isAllowedRoute = SUB_ADMIN_ALLOWED_ROUTES.some(
-          (route) => pathname === route || pathname.startsWith(route + '/')
-        )
+        const isAllowedRoute =
+          SUB_ADMIN_ALLOWED_ROUTES.some((route) => pathname.startsWith('/admin' + route)) || pathname === '/admin'
 
         if (isAllowedRoute) {
           return NextResponse.next()

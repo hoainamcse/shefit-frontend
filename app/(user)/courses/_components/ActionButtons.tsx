@@ -15,7 +15,7 @@ interface UserCourseItem extends UserCourse {
   end_date: string
   course_id: number
 }
-import { useSession } from '@/components/providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 interface ActionButtonsProps {
   courseId: Course['id']
@@ -40,19 +40,19 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
         // First check in user subscriptions
         const subscriptionsResponse = await getUserSubscriptions(session.userId.toString())
         const currentCourseId = Number(courseId)
-        
+
         // Check if the course exists in any subscription's courses
-        const courseInSubscription = subscriptionsResponse.data?.some(subscription => 
-          subscription.subscription?.courses?.some(course => 
+        const courseInSubscription = subscriptionsResponse.data?.some(subscription =>
+          subscription.subscription?.courses?.some(course =>
             Number(course.id) === currentCourseId
           )
         )
-        
+
         if (courseInSubscription) {
           setCourseStatus('exists')
           return
         }
-        
+
         // If not found in subscriptions, check in user courses as a fallback
         const coursesResponse = await getUserCourses(session.userId.toString())
         const userCourse = (coursesResponse.data as UserCourseItem[])?.find((course) => {

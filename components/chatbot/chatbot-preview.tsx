@@ -22,7 +22,7 @@ import { z } from 'zod'
 import { MainButton } from '../buttons/main-button'
 import { cn } from '@/lib/utils'
 import BotMessage from './bot-message'
-import { useSession } from '../providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import PromptSuggestions from './prompt-suggestions'
 import Link from 'next/link'
 

@@ -12,7 +12,7 @@ export async function getSubscriptions(query?: any): Promise<ListResponse<Subscr
     return await response.json()
 }
 
-export async function getSubscription(id: number, params?: any): Promise<ApiResponse<Subscription>> {
+export async function getSubscription(id: any, params?: any): Promise<ApiResponse<Subscription>> {
     const queryParams = new URLSearchParams(params).toString()
     const response = await fetchData(`/v1/subscriptions/${id}?${queryParams}`)
     return await response.json()

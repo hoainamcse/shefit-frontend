@@ -12,7 +12,7 @@ import type { BodyQuiz } from '@/models/body-quiz'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { useSession } from '@/components/providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import {
   Dialog,
   DialogContent,

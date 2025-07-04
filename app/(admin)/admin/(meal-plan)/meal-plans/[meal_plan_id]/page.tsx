@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EditMealPlanForm } from '@/components/forms/edit-meal-plan-form'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { getMealPlan } from '@/network/client/meal-plans'
+import { getMealPlan } from '@/network/server/meal-plans'
 
 import { MealPlanView } from './meal-plan-view'
 

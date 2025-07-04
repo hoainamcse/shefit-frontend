@@ -17,7 +17,7 @@ import PopularCoursesCarousel from './_components/PopularCoursesCarousel'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { useRouter } from 'next/navigation'
-import { useSession } from '@/components/providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { UserSubscriptionDetail } from '@/models/user-subscriptions'
 
 function MultiSelectHero({

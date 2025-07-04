@@ -9,7 +9,7 @@ import { MuscleGroup } from '@/models/muscle-group'
 import { Diet } from '@/models/diet'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { useSession } from '@/components/providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 export const dynamic = 'force-dynamic'

@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import { useSession } from '@/components/providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { addFavouriteDish } from '@/network/server/favourite-dish'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'

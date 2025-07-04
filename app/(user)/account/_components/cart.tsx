@@ -3,7 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import CurrentCart from './current-cart'
 import PurchasedOrder from './purchased-order'
-import { useSession } from '@/components/providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { Button } from '@/components/ui/button'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 

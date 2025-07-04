@@ -1,7 +1,7 @@
 import type { Subscription } from '@/models/subscription'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { CreateMembershipForm } from '@/components/forms/create-membership-form'
-import { getSubscription } from '@/network/client/subscriptions'
+import { getSubscription } from '@/network/server/subscriptions'
 
 export default async function EditMembershipPage({
   params,

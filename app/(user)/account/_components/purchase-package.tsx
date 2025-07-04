@@ -6,7 +6,7 @@ import { getSubscriptions, getSubscriptionsByCourseId } from '@/network/server/s
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import PurchasedPackage from './purchased-package'
 import { cn } from '@/lib/utils'
-import { useSession } from '@/components/providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { useState, useEffect } from 'react'
 import { ListResponse } from '@/models/response'
 import { Subscription } from '@/models/subscription'

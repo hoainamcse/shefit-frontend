@@ -23,7 +23,7 @@ import {
 import { GalleryIcon } from "@/components/icons/GalleryIcon"
 import { MemberShipIcon } from "@/components/icons/MemberShipIcon"
 import { FacebookIcon } from "@/components/icons/FacebookIcon"
-import { useSession } from "@/components/providers/session-provider"
+import { useSession } from "@/hooks/use-session"
 import { signOut } from "@/network/server/auth"
 
 export function Header() {

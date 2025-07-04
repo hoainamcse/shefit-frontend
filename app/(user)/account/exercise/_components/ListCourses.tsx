@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useSession } from '@/components/providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { useSubscription } from './SubscriptionContext'
 import { getCourse } from '@/network/server/courses'
 import { useRouter } from 'next/navigation'

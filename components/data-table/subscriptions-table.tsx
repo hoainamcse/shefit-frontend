@@ -21,7 +21,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
 
 import { AddButton } from '../buttons/add-button'
-import { useSession } from '../providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { MainButton } from '../buttons/main-button'
 
 interface SubscriptionsTableProps {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useSession } from '@/components/providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { getUserSubscriptions } from '@/network/server/user-subscriptions'
 import { useParams } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'

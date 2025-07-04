@@ -7,7 +7,7 @@ import FormDelivery from './FormDelivery'
 import { removeCart } from '@/network/server/cart'
 import { getUserCart } from '@/network/server/user-cart'
 import { toast } from 'sonner'
-import { useSession } from '@/components/providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { useEffect, useState } from 'react'
 import { UserCart } from '@/models/user-cart'
 import {

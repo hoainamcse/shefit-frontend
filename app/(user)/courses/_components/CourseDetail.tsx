@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation'
 import ActionButtons from './ActionButtons'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { useSession } from '@/components/providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { getUserSubscriptions } from '@/network/server/user-subscriptions'
 interface CourseDetailProps {
   courseId: Course['id']

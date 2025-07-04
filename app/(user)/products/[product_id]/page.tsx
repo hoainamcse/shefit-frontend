@@ -12,7 +12,7 @@ import { addCart, getCarts, createCart } from '@/network/server/cart'
 import { getUserCart, createUserCart } from '@/network/server/user-cart'
 import { toast } from 'sonner'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
-import { useSession } from '@/components/providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 export default function ProductPage({ params }: { params: Promise<{ product_id: string }> }) {

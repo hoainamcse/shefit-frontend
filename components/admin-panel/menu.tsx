@@ -11,7 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { CollapseMenuButton } from '@/components/admin-panel/collapse-menu-button'
 
-import { useSession } from '../providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { Spinner } from '../spinner'
 
 interface MenuProps {
@@ -19,11 +19,11 @@ interface MenuProps {
 }
 
 export function Menu({ isOpen }: MenuProps) {
-  const { session, status } = useSession()
+  const { session, isLoading } = useSession()
   const pathname = usePathname()
   const menuList = getMenuList(pathname || '')
 
-  if (status === 'loading') {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center">
         <Spinner className="bg-ring dark:bg-white" />

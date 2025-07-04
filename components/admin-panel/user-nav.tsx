@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-import { useSession } from '../providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { roleLabel } from '@/lib/label'
 
 export function UserNav() {

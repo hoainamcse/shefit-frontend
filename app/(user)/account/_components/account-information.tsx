@@ -11,7 +11,7 @@ import { getValuable } from "@/lib/helpers"
 
 import { getUserById } from "@/network/server/user"
 import { PROVINCES } from "@/lib/label"
-import { useSession } from "@/components/providers/session-provider"
+import { useSession } from "@/hooks/use-session"
 
 export default function AccountInformation() {
   const [showNewForm, setShowNewForm] = useState(false)

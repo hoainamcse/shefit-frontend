@@ -1,12 +1,13 @@
-import { updateSession, verifySession } from '@/lib/dal'
 import { statusCodeErrorMap } from '../errors/httpErrors'
-import { refreshToken } from '../server/auth'
 
-const PUBLIC_URL = process.env.NEXT_PUBLIC_SERVER_URL
-const SERVER_URL = process.env.SERVER_URL || PUBLIC_URL
+const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL
+
+if (!baseUrl) {
+  throw new Error('NEXT_PUBLIC_SERVER_URL is not set.')
+}
 
 /**
- * Fetches data from the server with authentication and automatic token refresh.
+ * Client-side fetch function with automatic token refresh.
  * @param endpoint - The API endpoint to fetch.
  * @param options - The optional RequestInit object for additional configuration.
  * @param useJson - Whether to add content-type header as application/json (defaults to true).
@@ -14,39 +15,57 @@ const SERVER_URL = process.env.SERVER_URL || PUBLIC_URL
  * @throws Error if the base URL is not set, if fetching data fails, or if an HTTP error occurs.
  */
 export async function fetchData(endpoint: RequestInfo, options: RequestInit = {}, useJson = true): Promise<Response> {
-  if (!SERVER_URL) {
-    throw new Error('Base URL is not set.')
-  }
-
-  const url = `${SERVER_URL}${endpoint}`
+  const url = `${baseUrl}${endpoint}`
   console.log('Fetching data from:', url)
 
-  const session = await verifySession()
-
-  const headers: HeadersInit = {
+  let headers: HeadersInit = {
     ...options.headers,
     ...(useJson && { 'Content-Type': 'application/json' }),
-    ...(session?.accessToken && { Authorization: `Bearer ${session.accessToken}` }),
+  }
+
+  // Get session from API
+  let session = null
+  try {
+    const sessionResponse = await fetch('/api/session')
+    if (sessionResponse.ok) {
+      session = await sessionResponse.json()
+    }
+  } catch (error) {
+    console.warn('Failed to get session:', error)
+  }
+
+  // Add authorization header if session exists
+  if (session?.accessToken) {
+    headers = {
+      ...headers,
+      Authorization: `Bearer ${session.accessToken}`,
+    }
   }
 
   try {
     let response = await fetch(url, { ...options, headers })
 
+    // Handle token refresh for 401 errors
     if (response.status === 401 && session?.refreshToken) {
-      const newSession = await refreshToken(session.refreshToken)
+      console.log('Access token expired, attempting to refresh...')
 
-      if (newSession) {
-        await updateSession({
-          accessToken: newSession.access_token,
-          refreshToken: newSession.refresh_token,
-        })
+      const refreshedTokens = await refreshTokens(session.refreshToken)
 
+      if (refreshedTokens) {
+        console.log('Token refreshed successfully, retrying request...')
+
+        // Update session via API call
+        await updateSession(refreshedTokens)
+
+        // Retry with new token
         const refreshedHeaders = {
           ...headers,
-          Authorization: `Bearer ${newSession.access_token}`,
+          Authorization: `Bearer ${refreshedTokens.access_token}`,
         }
 
         response = await fetch(url, { ...options, headers: refreshedHeaders })
+      } else {
+        console.log('Token refresh failed')
       }
     }
 
@@ -70,5 +89,48 @@ export async function fetchData(endpoint: RequestInfo, options: RequestInit = {}
     const message = error instanceof Error ? error.message : 'Unknown error occurred'
     console.error('Failed to fetch data:', message)
     throw new Error(`Failed to fetch data: ${message}`)
+  }
+}
+
+/**
+ * Refresh tokens using the refresh token
+ */
+async function refreshTokens(refreshToken: string): Promise<{ access_token: string; refresh_token: string } | null> {
+  try {
+    const response = await fetch(`${baseUrl}/v1/auth/token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+      }),
+    })
+
+    if (response.ok) {
+      return await response.json()
+    }
+
+    return null
+  } catch (error) {
+    console.error('Token refresh failed:', error)
+    return null
+  }
+}
+
+/**
+ * Update session with new tokens
+ */
+async function updateSession(tokens: { access_token: string; refresh_token: string }): Promise<void> {
+  try {
+    await fetch('/api/session', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+      }),
+    })
+  } catch (error) {
+    console.error('Failed to update session:', error)
   }
 }

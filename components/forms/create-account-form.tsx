@@ -41,7 +41,7 @@ import { MealPlan } from '@/models/meal-plan'
 import { Exercise } from '@/models/exercise'
 
 import { PROVINCES } from '@/lib/label'
-import { useSession } from '../providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { roleOptions } from '@/lib/label'
 import { getCourses } from '@/network/client/courses'
 import { getDishes } from '@/network/client/dishes'

@@ -2,7 +2,7 @@ import type { Blog } from '@/models/blog'
 
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { EditBlogForm } from '@/components/forms/edit-blog-form'
-import { getBlog } from '@/network/client/blogs'
+import { getBlog } from '@/network/server/blogs'
 
 export default async function EditBlogPage({ params }: { params: Promise<{ blog_id: Blog['id'] }> }) {
   const { blog_id } = await params

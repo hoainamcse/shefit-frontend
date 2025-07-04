@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { getUserSubscriptions } from '@/network/server/user-subscriptions'
 import { useRouter } from 'next/navigation'
 import { getSubscription } from '@/network/server/subscriptions'
-import { useSession } from '@/components/providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { useEffect, useState } from 'react'
 import { useSubscription } from './SubscriptionContext'
 
@@ -39,7 +39,7 @@ export default function ListSubscriptions() {
           )
 
           setUserSubscriptions(sortedSubscriptions)
-          
+
           // Only set the selected subscription if it's not already set
           if (!selectedSubscription) {
             setSelectedSubscription(sortedSubscriptions[0])

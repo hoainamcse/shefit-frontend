@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { getUserCart } from '@/network/server/user-cart'
 import { Button } from '@/components/ui/button'
 import { useEffect, useState } from 'react'
-import { useSession } from '@/components/providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 
 export default function PurchasedOrder() {
   const { session } = useSession()

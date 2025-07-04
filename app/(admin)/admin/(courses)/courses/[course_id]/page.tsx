@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { EditCourseForm } from '@/components/forms/edit-course-form'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { getCourse } from '@/network/client/courses'
+import { getCourse } from '@/network/server/courses'
 
 import { CourseVideoView } from './course-video-view'
 import { CourseLiveView } from './course-live-view'

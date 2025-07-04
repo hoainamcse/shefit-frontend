@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getLiveDays } from '@/network/server/courses'
 import { Course, LiveDay } from '@/models/course'
 import { cn } from '@/lib/utils'
-import { useSession } from '@/components/providers/session-provider'
+import { useSession } from '@/hooks/use-session'
 import { getUserSubscriptions } from '@/network/server/user-subscriptions'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -137,17 +137,17 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
       await handleStartClick(e)
 
       const subscriptions = await getUserSubscriptions(session?.userId!.toString())
-      
+
       // Find all subscriptions that contain the current course
       const subscriptionsWithCourse = subscriptions.data?.filter((subscription) => {
         const hasCourses = subscription.subscription && subscription.subscription.courses
         if (!hasCourses) return false
-        
+
         return subscription.subscription.courses.some(course => Number(course.id) === Number(courseId))
       }) || []
-      
+
       let hasAccess = false
-      
+
       // If user has subscriptions with this course
       if (subscriptionsWithCourse.length > 0) {
         // Sort subscriptions by end date (latest first)
@@ -156,15 +156,15 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
           const dateB = new Date(b.subscription_end_at)
           return dateB.getTime() - dateA.getTime() // Latest end date first
         })
-        
+
         // Check if the latest subscription is still active and not expired
         const latestSubscription = sortedSubscriptions[0]
         const endDate = new Date(latestSubscription.subscription_end_at)
         const currentDate = new Date()
-        
+
         const isActive = latestSubscription.status === 'active'
         const isNotExpired = endDate > currentDate
-        
+
         hasAccess = isActive && isNotExpired
       }
 
