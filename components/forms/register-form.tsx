@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { MainButton } from '@/components/buttons/main-button'
 import { register } from '@/network/server/auth'
-import { SendOTP, VerifyOTP } from '@/network/server/verify-email'
+import { sendOTP, verifyOTP } from '@/network/client/emails'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useState, useEffect } from 'react'
@@ -107,7 +107,7 @@ function RegisterForm() {
 
     setIsLoading(true)
     try {
-      const response = await SendOTP(email)
+      const response = await sendOTP(email)
       if (response && response.status === 'success') {
         setOtpCounter(response.data.otp_counter)
         setIsOtpSent(true)
@@ -137,7 +137,7 @@ function RegisterForm() {
         let otpVerified = false
 
         try {
-          const verifyResponse = await VerifyOTP(emailValue, otpValue, otpCounter)
+          const verifyResponse = await verifyOTP(emailValue, otpValue, otpCounter)
 
           if (!verifyResponse || verifyResponse.status !== 'success') {
             toast.error('Xác thực OTP thất bại!')

@@ -23,9 +23,9 @@ import {
   createColor,
   updateColor,
   deleteColor,
-} from '@/network/server/category'
+} from '@/network/client/products'
 import { Coupon } from '@/models/coupon'
-import { getListCoupons, deleteCoupon } from '@/network/server/coupon'
+import { getListCoupons, deleteCoupon } from '@/network/server/coupons'
 import { DeleteButton } from '@/components/buttons/delete-button'
 
 export default function CategoriesPage() {

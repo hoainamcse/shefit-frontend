@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { getSubscriptions, getSubscriptionsByCourseId } from '@/network/server/subscriptions'
+import { getSubscriptions } from '@/network/client/subscriptions'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import PurchasedPackage from './purchased-package'
 import { cn } from '@/lib/utils'
@@ -11,7 +11,7 @@ import { useState, useEffect } from 'react'
 import { ListResponse } from '@/models/response'
 import { Subscription } from '@/models/subscription'
 import { useSearchParams } from 'next/navigation'
-import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { getUserSubscriptions } from '@/network/client/users'
 
 export default function PurchasePackage() {
   const { session } = useSession()
@@ -54,7 +54,7 @@ export default function PurchasePackage() {
         let data
 
         if (courseId) {
-          data = await getSubscriptionsByCourseId(parseInt(courseId))
+          data = await getSubscriptions({ course_id: parseInt(courseId) })
         } else {
           data = await getSubscriptions()
         }

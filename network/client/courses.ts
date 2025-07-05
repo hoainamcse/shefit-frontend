@@ -19,10 +19,10 @@ import { fetchData } from '../helpers/fetch-data'
 // Course APIs
 export const queryKeyCourses = 'courses'
 
-export async function getCourses(params?: any): Promise<ListResponse<Course>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData('/v1/courses/' + '?' + queryParams)
-  return await response.json()
+export async function getCourses(query?: any): Promise<ListResponse<Course>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData('/v1/courses/' + '?' + searchParams)
+  return response.json()
 }
 
 export async function createCourse(data: CoursePayload): Promise<ApiResponse<Course>> {
@@ -30,12 +30,12 @@ export async function createCourse(data: CoursePayload): Promise<ApiResponse<Cou
     method: 'POST',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function getCourse(id: Course['id']): Promise<ApiResponse<Course>> {
   const response = await fetchData(`/v1/courses/${id}?include_relationships=true`)
-  return await response.json()
+  return response.json()
 }
 
 export async function updateCourse(id: Course['id'], data: CoursePayload): Promise<ApiResponse<Course>> {
@@ -43,14 +43,14 @@ export async function updateCourse(id: Course['id'], data: CoursePayload): Promi
     method: 'PATCH',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteCourse(id: Course['id']): Promise<ApiResponse<string>> {
   const response = await fetchData(`/v1/courses/${id}`, {
     method: 'DELETE',
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteBulkCourse(ids: Course['id'][]): Promise<ApiResponse<string>> {
@@ -58,23 +58,23 @@ export async function deleteBulkCourse(ids: Course['id'][]): Promise<ApiResponse
     method: 'DELETE',
     body: JSON.stringify(ids),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function duplicateCourse(id: Course['id']): Promise<ApiResponse<Course>> {
   const response = await fetchData(`/v1/courses/${id}/duplicate`, {
     method: 'POST',
   })
-  return await response.json()
+  return response.json()
 }
 
 // Course Week APIs
 export const queryKeyCourseWeeks = 'course-weeks'
 
-export async function getCourseWeeks(course_id: Course['id'], params?: any): Promise<ListResponse<CourseWeek>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData(`/v1/courses/${course_id}/video-classes/weeks/` + '?' + queryParams)
-  return await response.json()
+export async function getCourseWeeks(course_id: Course['id'], query?: any): Promise<ListResponse<CourseWeek>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData(`/v1/courses/${course_id}/video-classes/weeks/` + '?' + searchParams)
+  return response.json()
 }
 
 export async function createCourseWeek(
@@ -85,7 +85,7 @@ export async function createCourseWeek(
     method: 'POST',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function updateCourseWeek(
@@ -97,7 +97,7 @@ export async function updateCourseWeek(
     method: 'PATCH',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteCourseWeek(
@@ -107,7 +107,7 @@ export async function deleteCourseWeek(
   const response = await fetchData(`/v1/courses/${course_id}/video-classes/weeks/${week_id}`, {
     method: 'DELETE',
   })
-  return await response.json()
+  return response.json()
 }
 
 // Week Day APIs
@@ -116,11 +116,11 @@ export const queryKeyWeekDays = 'week-days'
 export async function getWeekDays(
   course_id: Course['id'],
   week_id: CourseWeek['id'],
-  params?: any
+  query?: any
 ): Promise<ListResponse<WeekDay>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData(`/v1/courses/${course_id}/video-classes/weeks/${week_id}/days` + '?' + queryParams)
-  return await response.json()
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData(`/v1/courses/${course_id}/video-classes/weeks/${week_id}/days` + '?' + searchParams)
+  return response.json()
 }
 
 export async function createWeekDay(
@@ -132,7 +132,7 @@ export async function createWeekDay(
     method: 'POST',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function updateWeekDay(
@@ -145,7 +145,7 @@ export async function updateWeekDay(
     method: 'PATCH',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteWeekDay(
@@ -156,7 +156,7 @@ export async function deleteWeekDay(
   const response = await fetchData(`/v1/courses/${course_id}/video-classes/weeks/${week_id}/days/${day_id}`, {
     method: 'DELETE',
   })
-  return await response.json()
+  return response.json()
 }
 
 // Day Circuit APIs
@@ -166,13 +166,13 @@ export async function getDayCircuits(
   course_id: Course['id'],
   week_id: CourseWeek['id'],
   day_id: WeekDay['id'],
-  params?: any
+  query?: any
 ): Promise<ListResponse<DayCircuit>> {
-  const queryParams = new URLSearchParams(params).toString()
+  const searchParams = new URLSearchParams(query).toString()
   const response = await fetchData(
-    `/v1/courses/${course_id}/video-classes/weeks/${week_id}/days/${day_id}/circuits` + '?' + queryParams
+    `/v1/courses/${course_id}/video-classes/weeks/${week_id}/days/${day_id}/circuits` + '?' + searchParams
   )
-  return await response.json()
+  return response.json()
 }
 
 export async function createDayCircuit(
@@ -185,7 +185,7 @@ export async function createDayCircuit(
     method: 'POST',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function updateDayCircuit(
@@ -202,7 +202,7 @@ export async function updateDayCircuit(
       body: JSON.stringify(data),
     }
   )
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteDayCircuit(
@@ -217,16 +217,16 @@ export async function deleteDayCircuit(
       method: 'DELETE',
     }
   )
-  return await response.json()
+  return response.json()
 }
 
 // Course Live APIs
 export const queryKeyLiveDays = 'live-days'
 
-export async function getLiveDays(course_id: Course['id'], params?: any): Promise<ListResponse<LiveDay>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData(`/v1/courses/${course_id}/live-classes/` + '?' + queryParams)
-  return await response.json()
+export async function getLiveDays(course_id: Course['id'], query?: any): Promise<ListResponse<LiveDay>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData(`/v1/courses/${course_id}/live-classes/` + '?' + searchParams)
+  return response.json()
 }
 
 export async function createLiveDay(
@@ -237,7 +237,7 @@ export async function createLiveDay(
     method: 'POST',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function updateLiveDay(
@@ -249,7 +249,7 @@ export async function updateLiveDay(
     method: 'PATCH',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteLiveDay(
@@ -259,7 +259,7 @@ export async function deleteLiveDay(
   const response = await fetchData(`/v1/courses/${course_id}/live-classes/${class_id}`, {
     method: 'DELETE',
   })
-  return await response.json()
+  return response.json()
 }
 
 // Live Session APIs
@@ -274,7 +274,7 @@ export async function createDaySession(
     method: 'POST',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function updateDaySession(
@@ -287,7 +287,7 @@ export async function updateDaySession(
     method: 'PATCH',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteDaySession(
@@ -298,5 +298,5 @@ export async function deleteDaySession(
   const response = await fetchData(`/v1/courses/${course_id}/live-classes/${class_id}/sessions/${session_id}`, {
     method: 'DELETE',
   })
-  return await response.json()
+  return response.json()
 }

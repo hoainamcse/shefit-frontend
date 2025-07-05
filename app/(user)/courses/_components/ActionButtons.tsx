@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { createUserCourse, getUserCourses } from '@/network/server/user-courses'
+import { getUserCourses } from '@/network/client/users'
 import { toast } from 'sonner'
 import { Course } from '@/models/course'
 import { UserCourse } from '@/models/user-courses'
-import { addFavouriteCourse } from '@/network/server/favourite-course'
+import { addFavouriteCourse } from '@/network/client/user-favourites'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { getUserSubscriptions } from '@/network/client/users'
 interface UserCourseItem extends UserCourse {
   is_active: boolean
   start_date: string

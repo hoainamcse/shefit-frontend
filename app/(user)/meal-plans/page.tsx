@@ -5,8 +5,9 @@ import { MultiSelect } from '@/components/ui/select'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import React, { useState, useEffect } from 'react'
-import { getMealPlans, getMealPlanGoals } from '@/network/server/meal-plans'
-import { getCalories } from '@/network/server/calories'
+import { getMealPlans } from '@/network/client/meal-plans'
+import { getGoals } from '@/network/client/goals'
+import { getCalories } from '@/network/client/calories'
 import type { MealPlan, MealPlanGoal } from '@/models/meal-plan'
 import { Button } from '@/components/ui/button'
 import { Calorie } from '@/models/calorie'
@@ -61,7 +62,7 @@ export default function MealPlansPage() {
 
         const [mealPlansResponse, goalsResponse, caloriesResponse] = await Promise.all([
           getMealPlans(),
-          getMealPlanGoals(),
+          getGoals(),
           getCalories(),
         ])
 

@@ -5,7 +5,7 @@ import { FileText, Upload, X } from 'lucide-react'
 import Dropzone, { type DropzoneProps, type FileRejection } from 'react-dropzone'
 import { type UseFormReturn, type FieldValues, type Path, type PathValue, useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
-import { getS3FileUrl, uploadImageApi } from '@/network/server/upload'
+import { getS3FileUrl, uploadImageApi } from '@/network/client/upload'
 
 import { cn } from '@/lib/utils'
 import { formatBytes } from '@/lib/helpers'

@@ -1,3 +1,5 @@
+import { MuscleGroup } from "./muscle-group"
+
 type Product = {
   data: any
   id: number
@@ -9,6 +11,7 @@ type Product = {
   image_urls: string[]
   variants: Variant[]
   features: Feature[]
+  muscle_groups: MuscleGroup[]
   created_at: string
   updated_at: string
 }

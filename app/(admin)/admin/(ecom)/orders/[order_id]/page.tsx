@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { formatCurrency } from '@/lib/helpers'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { Cart } from '@/models/cart'
-import { getCart } from '@/network/server/cart'
+import { getCart } from '@/network/server/carts'
 
 const AVAILABLE_PAYMENT_METHODS = [
   { value: 'not_decided', label: 'Not decided' },

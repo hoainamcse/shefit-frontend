@@ -5,10 +5,10 @@ import { fetchData } from '../helpers/fetch-data'
 
 export const queryKeyMuscleGroups = 'muscle-groups'
 
-export async function getMuscleGroups(params?: any): Promise<ListResponse<MuscleGroup>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData('/v1/muscle-groups' + '?' + queryParams)
-  return await response.json()
+export async function getMuscleGroups(query?: any): Promise<ListResponse<MuscleGroup>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData('/v1/muscle-groups' + '?' + searchParams)
+  return response.json()
 }
 
 export async function createMuscleGroup(data: MuscleGroupPayload): Promise<ApiResponse<MuscleGroup>> {
@@ -16,7 +16,7 @@ export async function createMuscleGroup(data: MuscleGroupPayload): Promise<ApiRe
     method: 'POST',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function updateMuscleGroup(
@@ -27,14 +27,14 @@ export async function updateMuscleGroup(
     method: 'PUT',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteMuscleGroup(id: MuscleGroup['id']): Promise<ApiResponse<string>> {
   const response = await fetchData(`/v1/muscle-groups/${id}`, {
     method: 'DELETE',
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteBulkMuscleGroup(ids: MuscleGroup['id'][]): Promise<ApiResponse<string>> {
@@ -42,5 +42,5 @@ export async function deleteBulkMuscleGroup(ids: MuscleGroup['id'][]): Promise<A
     method: 'DELETE',
     body: JSON.stringify(ids),
   })
-  return await response.json()
+  return response.json()
 }

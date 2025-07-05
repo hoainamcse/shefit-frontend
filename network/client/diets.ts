@@ -5,10 +5,10 @@ import { fetchData } from '../helpers/fetch-data'
 
 export const queryKeyDiets = 'diets'
 
-export async function getDiets(params?: any): Promise<ListResponse<Diet>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData('/v1/diets/' + '?' + queryParams)
-  return await response.json()
+export async function getDiets(query?: any): Promise<ListResponse<Diet>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData('/v1/diets/' + '?' + searchParams)
+  return response.json()
 }
 
 export async function createDiet(data: { diets: DietPayload[] }): Promise<ApiResponse<Diet[]>> {
@@ -16,7 +16,7 @@ export async function createDiet(data: { diets: DietPayload[] }): Promise<ApiRes
     method: 'POST',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function updateDiet(id: Diet['id'], data: DietPayload): Promise<ApiResponse<Diet>> {
@@ -24,7 +24,7 @@ export async function updateDiet(id: Diet['id'], data: DietPayload): Promise<Api
     method: 'PUT',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteDiet(ids: Diet['id'][]): Promise<ApiResponse<string>> {
@@ -32,6 +32,6 @@ export async function deleteDiet(ids: Diet['id'][]): Promise<ApiResponse<string>
     method: 'POST',
     body: JSON.stringify(ids),
   })
-  return await response.json()
+  return response.json()
 }
 

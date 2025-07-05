@@ -1,5 +1,5 @@
 import { Input } from '@/components/ui/input'
-import { getCart } from '@/network/server/cart'
+import { getCart } from '@/network/server/carts'
 
 export default async function FormCartDetail({ params }: { params: { slug: string } }) {
   const { slug } = params

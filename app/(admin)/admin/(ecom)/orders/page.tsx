@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Cart } from '@/models/cart'
-import { deleteCart, editCart, getCarts } from '@/network/server/cart'
+import { deleteCart, editCart, getCarts } from '@/network/client/carts'
 import { CheckCircle2, ChevronDown, Clock, Copy, CreditCard, Edit, Ellipsis, Eye, Trash2, XCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'

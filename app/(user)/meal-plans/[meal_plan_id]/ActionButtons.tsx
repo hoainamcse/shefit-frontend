@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { addFavouriteMealPlan } from '@/network/server/favourite-meal-plan'
+import { addFavouriteMealPlan } from '@/network/client/user-favourites'
 import { toast } from 'sonner'
 import { useSession } from '@/hooks/use-session'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { getUserSubscriptions } from '@/network/client/users'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 interface ActionButtonsProps {

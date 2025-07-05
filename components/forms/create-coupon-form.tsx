@@ -10,7 +10,7 @@ import { MainButton } from '../buttons/main-button'
 import { FormInputField, FormSelectField } from './fields'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
-import { createCoupon, updateCoupon } from '@/network/server/coupon'
+import { createCoupon, updateCoupon } from '@/network/server/coupons'
 import { Coupon } from '@/models/coupon'
 
 const AVAILABLE_DISCOUNT_TYPE = [

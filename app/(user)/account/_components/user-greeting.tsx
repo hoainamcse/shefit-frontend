@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useSession } from '@/hooks/use-session'
-import { getUserById } from '@/network/server/user'
+import { getUser } from '@/network/client/users'
 
 export default function UserGreeting() {
   const { session } = useSession()
@@ -13,7 +13,7 @@ export default function UserGreeting() {
     const fetchUser = async () => {
       if (session) {
         try {
-          const userData = await getUserById(session.userId)
+          const userData = await getUser(session.userId)
           setFullname(userData?.data?.fullname || '')
         } catch (error) {
           console.error('Failed to fetch user:', error)

@@ -9,7 +9,7 @@ import { PackagePayment } from './package-payment'
 import Link from 'next/link'
 import ShefitLogo from '@/public/logo-vertical-dark.png'
 import { formatDuration } from '@/lib/helpers'
-import { getSubscription } from '@/network/server/subscriptions'
+import { getSubscription } from '@/network/client/subscriptions'
 
 export default function PackageDetail({ params }: { params: Promise<{ slug: string }> }) {
   const [selectedGiftId, setSelectedGiftId] = useState<number | null>(null)
@@ -18,7 +18,7 @@ export default function PackageDetail({ params }: { params: Promise<{ slug: stri
   useEffect(() => {
     const fetchData = async () => {
       const slug = (await params).slug
-      const data = await getSubscription(Number(slug), { include_relationships: true })
+      const data = await getSubscription(slug)
       setSubscription(data)
     }
     fetchData()

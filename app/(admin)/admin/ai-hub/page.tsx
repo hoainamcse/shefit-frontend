@@ -3,7 +3,7 @@ import { AIHubTable } from '@/components/data-table/ai-hub-table'
 import ChatBotPreview from '@/components/chatbot/chatbot-preview'
 import { TokenUsage } from '@/components/chatbot/token-usage'
 import { Card, CardContent } from '@/components/ui/card'
-import { getTotalTokenUsage } from '@/network/client/chatbot'
+import { getTotalTokenUsage } from '@/network/server/chatbot'
 
 export default async function AIHubPage() {
   const tokensData = await getTotalTokenUsage()

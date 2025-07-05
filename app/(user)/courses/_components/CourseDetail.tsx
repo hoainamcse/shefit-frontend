@@ -1,7 +1,7 @@
 'use client'
 
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { getCourse } from '@/network/server/courses'
+import { getCourse } from '@/network/client/courses'
 import { courseFormLabel, courseLevelLabel } from '@/lib/label'
 import { useState, useEffect, useRef } from 'react'
 import { CourseLevel, CourseForm, Course } from '@/models/course'
@@ -13,7 +13,7 @@ import ActionButtons from './ActionButtons'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useSession } from '@/hooks/use-session'
-import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { getUserSubscriptions } from '@/network/client/users'
 interface CourseDetailProps {
   courseId: Course['id']
   typeCourse: 'video' | 'live'

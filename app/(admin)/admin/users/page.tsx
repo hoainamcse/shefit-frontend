@@ -20,7 +20,8 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { MainButton } from '@/components/buttons/main-button'
 import { useEffect, useState, useTransition } from 'react'
-import { deleteUser, getUserById, getUsers, register, updateUser } from '@/network/server/user'
+import { deleteUser, getUser, getUsers, updateUser  } from '@/network/client/users'
+import { register } from '@/network/client/auth'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -34,7 +35,7 @@ import { roleLabel } from '@/lib/label'
 import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/spinner'
 import { getUserTokenUsage, getUserChatbotSettings, updateUserChatbotSettings } from '@/network/client/chatbot'
-import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { getUserSubscriptions } from '@/network/client/users'
 import { Switch } from '@/components/ui/switch'
 
 type UserRow = User & { token_usage: number; is_enable_chatbot: boolean }
@@ -445,7 +446,7 @@ function CreateAccountForm({ onSuccess }: { onSuccess?: () => void }) {
           return
         }
 
-        const userData = await getUserById(userId)
+        const userData = await getUser(userId)
         if (userData.status !== 'success') {
           toast.error('Không nhận được thông tin người dùng')
           return

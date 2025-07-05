@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import FormCartDetail from '@/app/(user)/account/_components/FormCartDetail'
-import { getCart } from '@/network/server/cart'
+import { getCart } from '@/network/server/carts'
 import { getProduct } from '@/network/server/products'
 
 export default async function CartDetail({ params }: { params: Promise<{ slug: number }> }) {

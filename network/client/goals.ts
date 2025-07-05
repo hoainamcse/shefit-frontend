@@ -4,10 +4,10 @@ import { ApiResponse, ListResponse } from '@/models/response'
 
 export const queryKeyGoals = 'goals'
 
-export async function getGoals(params?: any): Promise<ListResponse<Goal>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData('/v1/meal_plan_goals' + '?' + queryParams)
-  return await response.json()
+export async function getGoals(query?: any): Promise<ListResponse<Goal>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData('/v1/meal_plan_goals' + '?' + searchParams)
+  return response.json()
 }
 
 export async function createGoal(data: GoalPayload): Promise<ApiResponse<Goal>> {

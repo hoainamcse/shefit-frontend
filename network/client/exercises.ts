@@ -5,10 +5,10 @@ import { fetchData } from '../helpers/fetch-data'
 
 export const queryKeyExercises = 'exercises'
 
-export async function getExercises(params?: any): Promise<ListResponse<Exercise>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData('/v1/exercises' + '?' + queryParams)
-  return await response.json()
+export async function getExercises(query?: any): Promise<ListResponse<Exercise>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData('/v1/exercises' + '?' + searchParams)
+  return response.json()
 }
 
 export async function createExercise(data: ExercisePayload): Promise<ApiResponse<Exercise>> {
@@ -16,7 +16,7 @@ export async function createExercise(data: ExercisePayload): Promise<ApiResponse
     method: 'POST',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function updateExercise(id: Exercise['id'], data: ExercisePayload): Promise<ApiResponse<Exercise>> {
@@ -24,14 +24,14 @@ export async function updateExercise(id: Exercise['id'], data: ExercisePayload):
     method: 'PUT',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteExercise(id: Exercise['id']): Promise<ApiResponse<string>> {
   const response = await fetchData(`/v1/exercises/${id}`, {
     method: 'DELETE',
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteBulkExercise(ids: Exercise['id'][]): Promise<ApiResponse<string>> {
@@ -39,6 +39,6 @@ export async function deleteBulkExercise(ids: Exercise['id'][]): Promise<ApiResp
     method: 'DELETE',
     body: JSON.stringify(ids),
   })
-  return await response.json()
+  return response.json()
 }
-  
+

@@ -1,5 +1,5 @@
 import CreateProductForm from '@/components/forms/create-product-form'
-import { getProduct } from '@/network/server/cart'
+import { getProduct } from '@/network/server/products'
 
 // Mock data for testing update form
 const mockProductData = {

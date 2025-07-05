@@ -3,13 +3,12 @@
 import { use, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
-import { getCart } from '@/network/server/cart'
-import { getProduct } from '@/network/server/products'
+import { getCart, deleteCart, editCart } from '@/network/client/carts'
+import { getProduct } from '@/network/client/products'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import { deleteCart, editCart } from '@/network/server/cart'
 import { useSession } from '@/hooks/use-session'
-import { getUserById } from '@/network/server/user'
+import { getUser } from '@/network/client/users'
 import { Form, FormItem, FormLabel, FormControl, FormMessage, FormField } from '@/components/ui/form'
 import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
@@ -18,24 +17,7 @@ import { ArrowLeftIcon } from 'lucide-react'
 import { PROVINCES } from '@/lib/label'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-
-interface Variant {
-  id: number
-  product_id: number
-  color_id: number
-  size_id: number
-  in_stock: boolean
-}
-
-interface Product {
-  id: number
-  name: string
-  description: string
-  price: number
-  price_currency: string
-  image_urls: string[]
-  variants: Variant[]
-}
+import { Product, Variant } from '@/models/product'
 
 export default function BuyNowPage({ params }: { params: Promise<{ product_id: string }> }) {
   const { product_id } = use(params)
@@ -152,7 +134,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
       if (!session) return
 
       try {
-        const userResponse = await getUserById(session.userId)
+        const userResponse = await getUser(session.userId)
         const userData = userResponse?.data
 
         if (userData) {

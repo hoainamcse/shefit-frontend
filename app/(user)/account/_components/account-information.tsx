@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { FormInputField, FormSelectField } from "@/components/forms/fields"
 import { getValuable } from "@/lib/helpers"
 
-import { getUserById } from "@/network/server/user"
+import { getUser } from "@/network/client/users"
 import { PROVINCES } from "@/lib/label"
 import { useSession } from "@/hooks/use-session"
 
@@ -22,7 +22,7 @@ export default function AccountInformation() {
   useEffect(() => {
     async function fetchUser() {
       if (!session) return
-      const res = await getUserById(session.userId as string)
+      const res = await getUser(session.userId as string)
       if (res && res.data) {
         setData({
           username: res.data.username || "",

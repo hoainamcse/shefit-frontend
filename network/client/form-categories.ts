@@ -4,10 +4,10 @@ import { ApiResponse, ListResponse } from '@/models/response'
 
 export const queryKeyFormCategories = 'form-categories'
 
-export async function getFormCategories(params?: any): Promise<ListResponse<FormCategory>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData('/v1/form_categories' + '?' + queryParams)
-  return await response.json()
+export async function getFormCategories(query?: any): Promise<ListResponse<FormCategory>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData('/v1/form_categories' + '?' + searchParams)
+  return response.json()
 }
 
 export async function createFormCategory(data: FormCategoryPayload): Promise<ApiResponse<FormCategory>> {
@@ -15,7 +15,7 @@ export async function createFormCategory(data: FormCategoryPayload): Promise<Api
     method: 'POST',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function updateFormCategory(id: FormCategory['id'], data: FormCategoryPayload): Promise<ApiResponse<FormCategory>> {
@@ -23,7 +23,7 @@ export async function updateFormCategory(id: FormCategory['id'], data: FormCateg
     method: 'PUT',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteFormCategory(id: FormCategory['id']): Promise<ApiResponse<string>> {

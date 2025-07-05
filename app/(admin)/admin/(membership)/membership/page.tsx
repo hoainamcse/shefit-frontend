@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { CreateCouponForm } from '@/components/forms/create-coupon-form'
 import { Coupon } from '@/models/coupon'
 import { useEffect, useState } from 'react'
-import { deleteCoupon, getListCoupons } from '@/network/server/coupon'
+import { deleteCoupon, getListCoupons } from '@/network/server/coupons'
 import { toast } from 'sonner'
 import { DeleteButton } from '@/components/buttons/delete-button'
 import { useClipboard } from '@/hooks/use-clipboard'

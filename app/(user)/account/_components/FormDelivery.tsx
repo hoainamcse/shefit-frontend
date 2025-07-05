@@ -6,11 +6,11 @@ import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
-import { editCart } from '@/network/server/cart'
+import { editCart } from '@/network/client/carts'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 import { PROVINCES } from '@/lib/label'
 import { useSession } from '@/hooks/use-session'
-import { getUserById } from '@/network/server/user'
+import { getUser } from '@/network/client/users'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import router from 'next/router'
@@ -70,7 +70,7 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
       if (!session) return
 
       try {
-        const userResponse = await getUserById(session.userId)
+        const userResponse = await getUser(session.userId)
         const userData = userResponse?.data
 
         if (userData) {

@@ -22,7 +22,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { createBodyQuizByUser } from '@/network/server/body-quizzes'
-import { getUserById } from '@/network/server/user'
+import { getUser } from '@/network/client/users'
 import { toast } from 'sonner'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import Link from 'next/link'
@@ -150,7 +150,7 @@ export default function BodyQuizPage() {
     const fetchUserInfo = async () => {
       if (!session) return
       try {
-        const response = await getUserById(session.userId)
+        const response = await getUser(session.userId)
         if (response.data) {
           const userData = response.data
 

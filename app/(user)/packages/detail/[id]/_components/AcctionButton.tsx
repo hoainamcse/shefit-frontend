@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { useSession } from '@/hooks/use-session'
-import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { getUserSubscriptions } from '@/network/client/users'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'

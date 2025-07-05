@@ -2,9 +2,9 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { getUserSubscriptions } from '@/network/client/users'
 import { useRouter } from 'next/navigation'
-import { getSubscription } from '@/network/server/subscriptions'
+import { getSubscription } from '@/network/client/subscriptions'
 import { useSession } from '@/hooks/use-session'
 import { useEffect, useState } from 'react'
 import { useSubscription } from './SubscriptionContext'
@@ -48,7 +48,7 @@ export default function ListSubscriptions() {
           // Fetch subscription names only once
           const namesPromises = sortedSubscriptions.map(async (sub) => {
             try {
-              const subResponse = await getSubscription(sub.subscription.id)
+              const subResponse = await getSubscription(sub.subscription.id.toString())
               return { id: sub.subscription.id, name: subResponse.data?.name || `Gói tập ${sub.subscription.id}` }
             } catch (error) {
               console.error('Error fetching subscription:', error)

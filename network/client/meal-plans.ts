@@ -13,10 +13,10 @@ import { fetchData } from '../helpers/fetch-data'
 // Meal Plan APIs
 export const queryKeyMealPlans = 'meal-plans'
 
-export async function getMealPlans(params?: any): Promise<ListResponse<MealPlan>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData('/v1/meal-plans' + '?' + queryParams)
-  return await response.json()
+export async function getMealPlans(query?: any): Promise<ListResponse<MealPlan>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData('/v1/meal-plans' + '?' + searchParams)
+  return response.json()
 }
 
 export async function createMealPlan(data: MealPlanPayload): Promise<ApiResponse<MealPlan>> {
@@ -24,12 +24,12 @@ export async function createMealPlan(data: MealPlanPayload): Promise<ApiResponse
     method: 'POST',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function getMealPlan(id: MealPlan['id']): Promise<ApiResponse<MealPlan>> {
   const response = await fetchData(`/v1/meal-plans/${id}`)
-  return await response.json()
+  return response.json()
 }
 
 export async function updateMealPlan(id: MealPlan['id'], data: MealPlanPayload): Promise<ApiResponse<MealPlan>> {
@@ -37,14 +37,14 @@ export async function updateMealPlan(id: MealPlan['id'], data: MealPlanPayload):
     method: 'PUT',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteMealPlan(id: MealPlan['id']): Promise<ApiResponse<string>> {
   const response = await fetchData(`/v1/meal-plans/${id}`, {
     method: 'DELETE',
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteBulkMealPlan(ids: MealPlan['id'][]): Promise<ApiResponse<string>> {
@@ -59,16 +59,16 @@ export async function duplicateMealPlan(id: MealPlan['id']): Promise<ApiResponse
   const response = await fetchData(`/v1/meal-plans/${id}/duplicate`, {
     method: 'POST',
   })
-  return await response.json()
+  return response.json()
 }
 
 // Meal Plan Day APIs
 export const queryKeyMealPlanDays = 'meal-plan-days'
 
-export async function getMealPlanDays(meal_plan_id: MealPlan['id'], params?: any): Promise<ListResponse<MealPlanDay>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData(`/v1/meal-plans/${meal_plan_id}/days` + '?' + queryParams)
-  return await response.json()
+export async function getMealPlanDays(meal_plan_id: MealPlan['id'], query?: any): Promise<ListResponse<MealPlanDay>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData(`/v1/meal-plans/${meal_plan_id}/days` + '?' + searchParams)
+  return response.json()
 }
 
 export async function createMealPlanDay(
@@ -79,7 +79,7 @@ export async function createMealPlanDay(
     method: 'POST',
     body: JSON.stringify([data]),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function updateMealPlanDay(
@@ -91,7 +91,7 @@ export async function updateMealPlanDay(
     method: 'PUT',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteMealPlanDay(
@@ -102,7 +102,7 @@ export async function deleteMealPlanDay(
     method: 'DELETE',
     body: JSON.stringify([day_id]),
   })
-  return await response.json()
+  return response.json()
 }
 
 // Meal Plan Dish APIs
@@ -111,11 +111,11 @@ export const queryKeyMealPlanDishes = 'meal-plan-dishes'
 export async function getMealPlanDishes(
   meal_plan_id: MealPlan['id'],
   day_id: MealPlanDay['id'],
-  params?: any
+  query?: any
 ): Promise<ListResponse<MealPlanDish>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData(`/v1/meal-plans/${meal_plan_id}/days/${day_id}/dishes` + '?' + queryParams)
-  return await response.json()
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData(`/v1/meal-plans/${meal_plan_id}/days/${day_id}/dishes` + '?' + searchParams)
+  return response.json()
 }
 
 export async function createMealPlanDish(
@@ -127,7 +127,7 @@ export async function createMealPlanDish(
     method: 'POST',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function updateMealPlanDish(
@@ -140,7 +140,7 @@ export async function updateMealPlanDish(
     method: 'PUT',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteMealPlanDish(
@@ -151,7 +151,7 @@ export async function deleteMealPlanDish(
   const response = await fetchData(`/v1/meal-plans/${meal_plan_id}/days/${day_id}/dishes/${dish_id}`, {
     method: 'DELETE',
   })
-  return await response.json()
+  return response.json()
 }
 
 //Import meal plan excel
@@ -162,6 +162,6 @@ export async function importMealPlanExcel(meal_plan_id: MealPlan['id'], file: Fi
     method: 'POST',
     body: formData,
   }, false)
-  return await response.json()
+  return response.json()
 }
 

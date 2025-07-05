@@ -6,12 +6,12 @@ import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import React, { useState, useEffect } from 'react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { getCoursesByType } from '@/network/server/courses'
+import { getCourses } from '@/network/client/courses'
 import { cn } from '@/lib/utils'
 import { courseLevelLabel, courseLevelOptions, courseFormLabel, courseFormOptions } from '@/lib/label'
 import type { Course } from '@/models/course'
-import { getSubscriptions } from '@/network/server/subscriptions'
-import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { getSubscriptions } from '@/network/client/subscriptions'
+import { getUserSubscriptions } from '@/network/client/users'
 import type { Subscription } from '@/models/subscription'
 import PopularCoursesCarousel from './_components/PopularCoursesCarousel'
 import { Button } from '@/components/ui/button'
@@ -77,8 +77,8 @@ export default function CoursesPage() {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      const videoCourses = await getCoursesByType('video')
-      const zoomCourses = await getCoursesByType('live')
+      const videoCourses = await getCourses({ course_format: 'video' })
+      const zoomCourses = await getCourses({ course_format: 'live' })
       setCourses(videoCourses.data)
       setCoursesZoom(zoomCourses.data)
     }

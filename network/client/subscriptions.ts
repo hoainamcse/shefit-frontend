@@ -6,9 +6,9 @@ import { fetchData } from '../helpers/fetch-data'
 
 export const queryKeySubscriptions = 'subscriptions'
 
-export async function getSubscriptions(params?: any): Promise<ListResponse<Subscription>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData('/v1/subscriptions' + '?' + queryParams)
+export async function getSubscriptions(query?: any): Promise<ListResponse<Subscription>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData('/v1/subscriptions' + '?' + searchParams)
   return response.json()
 }
 
@@ -23,7 +23,7 @@ export async function createSubscription(
 }
 
 export async function getSubscription(id: Subscription['id']): Promise<ApiResponse<Subscription>> {
-  const response = await fetchData(`/v1/subscriptions/${id}?include_relationships=true`)
+  const response = await fetchData(`/v1/subscriptions/${id}` + '?include_relationships=true')
   return response.json()
 }
 
@@ -88,14 +88,14 @@ export async function deleteGift(id: Gift['id']): Promise<ApiResponse<string>> {
 }
 
 // Sub Admin specific subscriptions
-export async function getSubAdminSubscriptions(params?: any): Promise<ListResponse<Subscription>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData('/v1/sub_admin/subscriptions' + '?' + queryParams)
+export async function getSubAdminSubscriptions(query?: any): Promise<ListResponse<Subscription>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData('/v1/sub_admin/subscriptions' + '?' + searchParams)
   return response.json()
 }
 
-export async function getSubAdminUsers(params?: any): Promise<ListResponse<User>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData('/v1/sub_admin/user-subscriptions' + '?' + queryParams)
+export async function getSubAdminUsers(query?: any): Promise<ListResponse<User>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData('/v1/sub_admin/user-subscriptions' + '?' + searchParams)
   return response.json()
 }

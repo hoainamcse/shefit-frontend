@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import Link from 'next/link'
 import { useSession } from '@/hooks/use-session'
-import { getUserSubscriptions } from '@/network/server/user-subscriptions'
-import { getSubscription } from '@/network/server/subscriptions'
+import { getUserSubscriptions } from '@/network/client/users'
+import { getSubscription } from '@/network/client/subscriptions'
 import { useEffect, useState } from 'react'
 import { UserSubscriptionDetail } from '@/models/user-subscriptions'
 
@@ -37,7 +37,7 @@ export default function PurchasedPackage() {
               response.data.map(async (sub) => {
                 try {
                   if (sub.subscription.id) {
-                    const detailsResponse = await getSubscription(sub.subscription.id)
+                    const detailsResponse = await getSubscription(sub.subscription.id.toString())
                     if (detailsResponse.data) {
                       return {
                         ...sub,

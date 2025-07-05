@@ -26,7 +26,7 @@ import { useState, useEffect } from 'react'
 // import { memberships } from '@/data'
 import { User } from '@/models/user'
 import { generatePassword, generateUsername } from '@/lib/helpers'
-import { updatePassword, updateUser } from '@/network/server/user'
+import { updatePassword, updateUser } from '@/network/client/users'
 import { getSubAdminSubscriptions, getSubscriptions } from '@/network/client/subscriptions'
 import { Subscription } from '@/models/subscription'
 import { UserSubscriptionDetail } from '@/models/user-subscriptions'
@@ -35,7 +35,7 @@ import {
   createUserSubscription,
   updateUserSubscription,
   deleteUserSubscription,
-} from '@/network/server/user-subscriptions'
+} from '@/network/client/users'
 
 import { MealPlan } from '@/models/meal-plan'
 import { Exercise } from '@/models/exercise'

@@ -14,10 +14,10 @@ import { fetchData } from '../helpers/fetch-data'
 // Body Quiz APIs
 export const queryKeyBodyQuizzes = 'body-quizzes'
 
-export async function getBodyQuizzes(params?: any): Promise<ListResponse<BodyQuiz>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData('/v1/body-quizzes' + '?' + queryParams)
-  return await response.json()
+export async function getBodyQuizzes(query?: any): Promise<ListResponse<BodyQuiz>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData('/v1/body-quizzes' + '?' + searchParams)
+  return response.json()
 }
 
 export async function createBodyQuiz(data: BodyQuizPayload): Promise<ApiResponse<BodyQuiz>> {
@@ -25,12 +25,12 @@ export async function createBodyQuiz(data: BodyQuizPayload): Promise<ApiResponse
     method: 'POST',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function getBodyQuiz(id: BodyQuiz['id']): Promise<ApiResponse<BodyQuiz>> {
   const response = await fetchData(`/v1/body-quizzes/${id}`)
-  return await response.json()
+  return response.json()
 }
 
 export async function updateBodyQuiz(id: BodyQuiz['id'], data: BodyQuizPayload): Promise<ApiResponse<BodyQuiz>> {
@@ -38,14 +38,14 @@ export async function updateBodyQuiz(id: BodyQuiz['id'], data: BodyQuizPayload):
     method: 'PUT',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteBodyQuiz(id: BodyQuiz['id']): Promise<ApiResponse<string>> {
   const response = await fetchData(`/v1/body-quizzes/${id}`, {
     method: 'DELETE',
   })
-  return await response.json()
+  return response.json()
 }
 
 // Question APIs
@@ -56,7 +56,7 @@ export async function createQuestion(data: QuestionPayload): Promise<ApiResponse
     method: 'POST',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function updateQuestion(id: Question['id'], data: QuestionPayload): Promise<ApiResponse<Question>> {
@@ -64,23 +64,23 @@ export async function updateQuestion(id: Question['id'], data: QuestionPayload):
     method: 'PUT',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteQuestion(id: Question['id']): Promise<ApiResponse<string>> {
   const response = await fetchData(`/v1/questions/${id}`, {
     method: 'DELETE',
   })
-  return await response.json()
+  return response.json()
 }
 
 // Body Quiz User APIs
 export const queryKeyBodyQuizUsers = 'body-quiz-users'
 
-export async function getBodyQuizUsers(params?: any): Promise<ListResponse<BodyQuizUser>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData('/v1/users/body-quizzes-summary' + '?' + queryParams)
-  return await response.json()
+export async function getBodyQuizUsers(query?: any): Promise<ListResponse<BodyQuizUser>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData('/v1/users/body-quizzes-summary' + '?' + searchParams)
+  return response.json()
 }
 
 // User Body Quiz APIs
@@ -88,11 +88,11 @@ export const queryKeyUserBodyQuizzes = 'user-body-quizzes'
 
 export async function getUserBodyQuizzes(
   user_id: BodyQuizUser['id'],
-  params?: any
+  query?: any
 ): Promise<ListResponse<UserBodyQuiz>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData(`/v1/users/${user_id}/body-quizzes` + '?' + queryParams)
-  return await response.json()
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData(`/v1/users/${user_id}/body-quizzes` + '?' + searchParams)
+  return response.json()
 }
 
 export async function updateUserBodyQuiz(
@@ -103,5 +103,5 @@ export async function updateUserBodyQuiz(
     method: 'PUT',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }

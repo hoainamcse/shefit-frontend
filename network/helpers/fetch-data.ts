@@ -107,7 +107,7 @@ async function refreshTokens(refreshToken: string): Promise<{ access_token: stri
     })
 
     if (response.ok) {
-      return await response.json()
+      return response.json()
     }
 
     return null

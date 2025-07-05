@@ -6,22 +6,21 @@ import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { AddIcon } from '@/components/icons/AddIcon'
 import { MinusIcon } from '@/components/icons/MinusIcon'
-import { getProduct, getColors, getSizes } from '@/network/server/products'
-import { getMuscleGroups } from '@/network/server/muscle-groups'
-import { addCart, getCarts, createCart } from '@/network/server/cart'
-import { getUserCart, createUserCart } from '@/network/server/user-cart'
+import { getProduct, getColors, getSizes } from '@/network/client/products'
+import { addCart, getCarts, createCart } from '@/network/client/carts'
+import { getUserCart, createUserCart } from '@/network/client/users'
 import { toast } from 'sonner'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import { useSession } from '@/hooks/use-session'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { Product } from '@/models/product'
 
 export default function ProductPage({ params }: { params: Promise<{ product_id: string }> }) {
   const { product_id } = use(params)
   const { session } = useSession()
-  const [product, setProduct] = useState<any>(null)
+  const [product, setProduct] = useState<Product | null>(null)
   const [colors, setColors] = useState<any[]>([])
   const [sizes, setSizes] = useState<any[]>([])
-  const [muscleGroups, setMuscleGroups] = useState<any[]>([])
   const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null)
   const [selectedColorId, setSelectedColorId] = useState<number | null>(null)
   const [colorOptions, setColorOptions] = useState<number[]>([])
@@ -80,8 +79,6 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
         setColors(colorsResponse.data)
         const sizesResponse = await getSizes()
         setSizes(sizesResponse.data)
-        const muscleGroup = await getMuscleGroups()
-        setMuscleGroups(muscleGroup.data.filter((mg: any) => productResponse.data.muscle_group_ids))
         const carts = await getCarts()
         if (carts.data && carts.data.length > 0) {
           setCartId(carts.data[0].id)
@@ -400,13 +397,13 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
           <p className="text-[#737373] xl:text-xl max-lg:text-base">{product.description}</p>
         </div>
 
-        {muscleGroups.length > 0 && (
+        {product.muscle_groups.length > 0 && (
           <div>
             <div className="font-[family-name:var(--font-coiny)] font-bold text-ring xl:text-[40px] mb-5 max-lg:text-[30px]">
               Tính năng
             </div>
             <div className="grid xl:grid-cols-12 lg:grid-cols-10 md:grid-cols-6 sm:grid-cols-4 gap-10">
-              {muscleGroups.map((muscleGroup) => (
+              {product.muscle_groups.map((muscleGroup) => (
                 <div key={muscleGroup.id} className="xl:text-xl max-lg:text-base">
                   <div className="group">
                     <img

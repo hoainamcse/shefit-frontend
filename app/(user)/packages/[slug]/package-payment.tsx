@@ -8,7 +8,7 @@ import { useSession } from '@/hooks/use-session'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { createUserSubscription, updateUserSubscription } from '@/network/server/user-subscriptions'
+import { createUserSubscription } from '@/network/client/users'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 import { useQRCode } from 'next-qrcode'

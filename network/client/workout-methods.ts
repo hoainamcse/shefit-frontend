@@ -4,10 +4,10 @@ import { ApiResponse, ListResponse } from '@/models/response'
 
 export const queryKeyWorkoutMethods = 'workout-methods'
 
-export async function getWorkoutMethods(params?: any): Promise<ListResponse<WorkoutMethod>> {
-  const queryParams = new URLSearchParams(params).toString()
-  const response = await fetchData('/v1/workout-methods' + '?' + queryParams)
-  return await response.json()
+export async function getWorkoutMethods(query?: any): Promise<ListResponse<WorkoutMethod>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData('/v1/workout-methods' + '?' + searchParams)
+  return response.json()
 }
 
 export async function createWorkoutMethod(data: WorkoutMethodPayload): Promise<ApiResponse<WorkoutMethod>> {
@@ -15,7 +15,7 @@ export async function createWorkoutMethod(data: WorkoutMethodPayload): Promise<A
     method: 'POST',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function updateWorkoutMethod(id: WorkoutMethod['id'], data: WorkoutMethodPayload): Promise<ApiResponse<WorkoutMethod>> {
@@ -23,7 +23,7 @@ export async function updateWorkoutMethod(id: WorkoutMethod['id'], data: Workout
     method: 'PUT',
     body: JSON.stringify(data),
   })
-  return await response.json()
+  return response.json()
 }
 
 export async function deleteWorkoutMethod(id: WorkoutMethod['id']): Promise<ApiResponse<string>> {

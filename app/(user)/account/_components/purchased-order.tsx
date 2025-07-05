@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { getUserCart } from '@/network/server/user-cart'
+import { getUserCart } from '@/network/client/users'
 import { Button } from '@/components/ui/button'
 import { useEffect, useState } from 'react'
 import { useSession } from '@/hooks/use-session'

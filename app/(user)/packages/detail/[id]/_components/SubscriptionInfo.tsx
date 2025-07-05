@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useSession } from '@/hooks/use-session'
-import { getUserSubscriptions } from '@/network/server/user-subscriptions'
+import { getUserSubscriptions } from '@/network/client/users'
 import { useParams } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import { formatDate } from '@/lib/utils'

@@ -2,16 +2,15 @@
 
 import { ArrowPinkIcon } from '@/components/icons/ArrowPinkIcon'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { getWeeks, getDays } from '@/network/server/courses'
+import { getCourseWeeks, getWeekDays, getCourse } from '@/network/client/courses'
 import { useState, useEffect } from 'react'
 import { useSession } from '@/hooks/use-session'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Course } from '@/models/course'
-import { getUserSubscriptions } from '@/network/server/user-subscriptions'
-import { getCourse } from '@/network/server/courses'
+import { getUserSubscriptions } from '@/network/client/users'
 import { UserCourse } from '@/models/user-courses'
-import { createUserCourse, getUserCourses } from '@/network/server/user-courses'
+import { createUserCourse, getUserCourses } from '@/network/client/users'
 import { useRouter } from 'next/navigation'
 
 interface UserCourseItem extends UserCourse {
@@ -130,11 +129,11 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const weeksData = await getWeeks(courseId)
+        const weeksData = await getCourseWeeks(courseId)
         setWeeks(weeksData)
 
         if (weeksData.data && weeksData.data.length > 0) {
-          const daysData = await getDays(courseId, weeksData.data[0]?.id)
+          const daysData = await getWeekDays(courseId, weeksData.data[0]?.id)
           setDays(daysData)
 
           const totalWeeks = weeksData.data.length

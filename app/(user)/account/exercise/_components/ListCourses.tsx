@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useSession } from '@/hooks/use-session'
 import { useSubscription } from './SubscriptionContext'
-import { getCourse } from '@/network/server/courses'
+import { getCourse } from '@/network/client/courses'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect, useMemo } from 'react'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'

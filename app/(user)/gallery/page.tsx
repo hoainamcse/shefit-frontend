@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { getMuscleGroups } from '@/network/server/muscle-groups'
+import { getMuscleGroups } from '@/network/client/muscle-groups'
 import { getDiets } from '@/network/server/diets'
 import { useState, useEffect } from 'react'
 import { ListResponse } from '@/models/response'
