@@ -165,32 +165,27 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
                 await new Promise((resolve) => setTimeout(resolve, 5000))
                 const checkTransactionStatus = async () => {
                   try {
-                    const syncResponse = await fetch(
-                      `${process.env.NEXT_PUBLIC_SERVER_URL}/v1/vietqr/bank/api/transaction-sync`,
+                    const paymentResponse = await fetch(
+                      `${process.env.NEXT_PUBLIC_SERVER_URL}/v1/payments/${providedOrderId}`,
                       {
-                        method: 'POST',
+                        method: 'GET',
                         headers: {
                           'Content-Type': 'application/json',
                           Authorization: `Bearer ${syncToken}`,
                         },
-                        body: JSON.stringify({
-                          bankaccount: responseData.bankAccount || 'string',
-                          amount: totalPrice,
-                          transType: 'string',
-                          content: `${session?.userId} ${providedOrderId}`,
-                          orderId: providedOrderId,
-                        }),
                       }
                     )
 
-                    if (!syncResponse.ok) {
-                      console.warn('Transaction sync warning:', await syncResponse.text())
+                    if (!paymentResponse.ok) {
+                      console.warn('Payment check warning:', await paymentResponse.text())
                       return { success: false, retry: true }
                     }
 
-                    const syncData = await syncResponse.json()
-                    const refTransactionId = syncData?.object?.reftransactionid || null
-                    if (refTransactionId === providedOrderId) {
+                    const paymentData = await paymentResponse.json()
+                    
+                    if (paymentData.status === 'success' && 
+                        paymentData.data && 
+                        paymentData.data.order_number === providedOrderId) {
                       setPaymentVerified(true)
                       return { success: true, retry: false }
                     } else {
