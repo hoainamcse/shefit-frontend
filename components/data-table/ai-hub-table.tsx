@@ -68,14 +68,12 @@ export function AIHubTable({ onConfirmRowSelection }: AIHubTableProps) {
         accessorKey: 'prompt',
         cell: ({ row }) => <div className="font-medium">{row.getValue('prompt')}</div>,
         size: 180,
-        enableHiding: false,
       },
       {
         header: 'Status',
         accessorKey: 'status',
         cell: ({ row }) => <div className="font-medium">{row.getValue('status')}</div>,
         size: 180,
-        enableHiding: false,
       },
       {
         id: 'actions',

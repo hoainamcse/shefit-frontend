@@ -360,7 +360,7 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
       <div className='w-full h-full max-h-full bg-primary rounded-xl shadow-md flex flex-col p-3'>
         {/* Header */}
         <div className='flex items-center justify-between'>
-          <p className='text-background font-semibold'>Chat cùng HLV 24/7</p>
+          <p className='text-background font-semibold'>HLV 24/7 - Đồng hành cùng vóc dáng đẹp</p>
           <Button variant='link' size='icon' onClick={onClose} className='text-background'>
             <X className='size-5' />
           </Button>
@@ -452,8 +452,36 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
                   </div>
                 )}
                 {messages?.length === 0 && !isLoadingMessages && isFirstFetchDone && !fetchError && (
-                  <div className='w-full text-center text-foreground'>
-                    Hãy hỏi tôi về tập luyện và thực đơn của bạn !
+                  <div className="w-full text-center">
+                    <div className="bg-pink-50 p-4 rounded-xl flex flex-col gap-6">
+                      <h2 className="text-xl font-bold text-center">Chị muốn được tư vấn gì</h2>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          onClick={() => sendMessage('Tư vấn phom dáng', true)}
+                          className="bg-pink-100 hover:bg-pink-200 transition-colors text-pink-900 rounded-xl p-3 text-sm font-medium"
+                        >
+                          Tư vấn phom dáng
+                        </button>
+                        <button
+                          onClick={() => sendMessage('Lên Thực Đơn', true)}
+                          className="bg-pink-100 hover:bg-pink-200 transition-colors text-pink-900 rounded-xl p-3 text-sm font-medium"
+                        >
+                          Lên Thực Đơn
+                        </button>
+                        <button
+                          onClick={() => sendMessage('Lên Khóa Tập', true)}
+                          className="bg-pink-100 hover:bg-pink-200 transition-colors text-pink-900 rounded-xl p-3 text-sm font-medium"
+                        >
+                          Lên Khóa Tập
+                        </button>
+                        <button
+                          onClick={() => sendMessage('Hỏi Đáp', true)}
+                          className="bg-pink-100 hover:bg-pink-200 transition-colors text-pink-900 rounded-xl p-3 text-sm font-medium"
+                        >
+                          Hỏi Đáp
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
