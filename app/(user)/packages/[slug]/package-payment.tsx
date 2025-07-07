@@ -166,7 +166,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
                 const checkTransactionStatus = async () => {
                   try {
                     const paymentResponse = await fetch(
-                      `${process.env.NEXT_PUBLIC_SERVER_URL}/v1/payments/${providedOrderId}`,
+                      `${process.env.NEXT_PUBLIC_SERVER_URL}/v1/payments/order-number/${providedOrderId}`,
                       {
                         method: 'GET',
                         headers: {

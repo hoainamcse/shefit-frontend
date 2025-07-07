@@ -126,7 +126,7 @@ export default function CoursesPage() {
     }
   }
 
-  const filterCourses = (courseList: Course[]) => {
+  const filterCourses = (courseList: Course[], onlyFree = false) => {
     return courseList.filter((course) => {
       const matchesDifficulty = difficulty.length === 0 || difficulty.includes(course.difficulty_level)
 
@@ -140,12 +140,18 @@ export default function CoursesPage() {
         subscriptionId.length === 0 ||
         course.subscriptions.some((subscription) => subscriptionId.includes(String(subscription.id)))
 
-      return matchesDifficulty && matchesFormCategory && matchesSubscription
+      const matchesFree = !onlyFree || course.is_free === true
+
+      return matchesDifficulty && matchesFormCategory && matchesSubscription && matchesFree
     })
   }
 
   const filteredCourses = filterCourses(courses)
   const filteredCoursesZoom = filterCourses(coursesZoom)
+  const filteredFreeVideoCourses = filterCourses(courses, true)
+  const filteredFreeZoomCourses = filterCourses(coursesZoom, true)
+  const filteredFreeCourses = [...filteredFreeVideoCourses, ...filteredFreeZoomCourses]
+  const filteredAllCourses = [...filteredCourses, ...filteredCoursesZoom]
 
   return (
     <Layout>
@@ -189,14 +195,20 @@ export default function CoursesPage() {
             </div>
           </div>
           <div className="flex justify-center gap-4 mt-4">
-            <Tabs defaultValue="video" onValueChange={setActiveTab}>
+            <Tabs defaultValue="all" onValueChange={setActiveTab}>
               <div className="flex justify-center gap-4 mb-10">
                 <TabsList className="bg-white">
+                  <TabsTrigger value="all" className={cn('underline text-ring bg-white !shadow-none')}>
+                    Tất cả
+                  </TabsTrigger>
                   <TabsTrigger value="video" className={cn('underline text-ring bg-white !shadow-none')}>
                     Video
                   </TabsTrigger>
                   <TabsTrigger value="live" className={cn('underline text-ring bg-white !shadow-none')}>
                     Zoom
+                  </TabsTrigger>
+                  <TabsTrigger value="free" className={cn('underline text-ring bg-white !shadow-none')}>
+                    Free
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -269,6 +281,100 @@ export default function CoursesPage() {
                           <p className="font-medium">{course.course_name}</p>
                           <p className="text-[#737373]">{courseLevelLabel[course.difficulty_level]}</p>
                           <p className="text-[#737373]">{course.trainer}</p>
+                        </div>
+                        <div className="flex flex-col justify-between">
+                          <div className="text-gray-500 flex justify-end">
+                            {course.form_categories.map((cat) => cat.name).join(', ')}
+                          </div>
+                          <div className="flex justify-end">
+                            {course.is_free ? (
+                              <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                            ) : (
+                              <Button
+                                className="bg-[#737373] text-white w-[136px] rounded-full"
+                                onClick={() => handleMembershipClick(course)}
+                                disabled={isCheckingAccess}
+                              >
+                                {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="free">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  {filteredFreeCourses.map((course) => (
+                    <div key={`free-${course.id}`}>
+                      <div className="relative group">
+                        <img
+                          src={course.cover_image}
+                          alt={course.course_name}
+                          className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
+                          width={585}
+                          height={373}
+                        />
+                        <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                        <Link
+                          href={`/courses/${course.id}/${course.course_format === 'video' ? 'video' : 'live'}-classes`}
+                        >
+                          <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
+                        </Link>
+                      </div>
+                      <div className="flex justify-between">
+                        <div>
+                          <p className="font-medium">{course.course_name}</p>
+                          <p className="text-[#737373]">{courseLevelLabel[course.difficulty_level]}</p>
+                          <p className="text-[#737373]">{course.trainer}</p>
+                          <p className="text-[#737373] text-sm">
+                            {course.course_format === 'video' ? 'Video' : 'Zoom'}
+                          </p>
+                        </div>
+                        <div className="flex flex-col justify-between">
+                          <div className="text-gray-500 flex justify-end">
+                            {course.form_categories.map((cat) => cat.name).join(', ')}
+                          </div>
+                          <div className="flex justify-end">
+                            <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="all">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  {filteredAllCourses.map((course) => (
+                    <div key={`all-${course.id}`}>
+                      <div className="relative group">
+                        <img
+                          src={course.cover_image}
+                          alt={course.course_name}
+                          className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
+                          width={585}
+                          height={373}
+                        />
+                        <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                        <Link
+                          href={`/courses/${course.id}/${course.course_format === 'video' ? 'video' : 'live'}-classes`}
+                        >
+                          <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
+                        </Link>
+                      </div>
+                      <div className="flex justify-between">
+                        <div>
+                          <p className="font-medium">{course.course_name}</p>
+                          <p className="text-[#737373]">{courseLevelLabel[course.difficulty_level]}</p>
+                          <p className="text-[#737373]">{course.trainer}</p>
+                          <p className="text-[#737373] text-sm">
+                            {course.course_format === 'video' ? 'Video' : 'Zoom'}
+                          </p>
                         </div>
                         <div className="flex flex-col justify-between">
                           <div className="text-gray-500 flex justify-end">

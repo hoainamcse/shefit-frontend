@@ -467,7 +467,16 @@ export default function FavouriteContent() {
             </div>
           ) : dishes.length > 0 ? (
             dishes.map((dish) => (
-              <Link href={`/dishes/${dish.dish?.id || ''}`} key={dish.id}>
+              <Link 
+                href={`/gallery/meal/${dish.dish?.diet?.id || '#'}/${dish.id}`}
+                key={dish.id}
+                onClick={(e) => {
+                  if (!dish.dish?.diet?.id) {
+                    e.preventDefault();
+                    alert('Diet information not available');
+                  }
+                }}
+              >
                 <div className="relative group">
                   <div className="absolute top-4 right-4 z-10">
                     <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />

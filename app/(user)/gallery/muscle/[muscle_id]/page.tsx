@@ -1,5 +1,3 @@
-
-
 import { cn } from '@/lib/utils'
 import React, { Suspense } from 'react'
 import Link from 'next/link'
@@ -15,7 +13,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
   const muscleGroupExercises = await getMuscleGroupExercises(muscle_id)
 
   const selectedMuscleGroup = muscleGroups.data?.find((group) => group.id.toString() === muscle_id)
-  
+
   // Loading state
   if (!selectedMuscleGroup || !muscleGroupExercises.data) {
     return (
@@ -33,9 +31,12 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
           </div>
         </div>
         <div className="mb-20">
-          <Tabs defaultValue="with-equipment" className="w-full">
+          <Tabs defaultValue="all" className="w-full">
             <div className="flex justify-center mb-10">
               <TabsList className="bg-white mx-auto">
+                <TabsTrigger value="all" className={cn('underline text-ring bg-white !shadow-none')}>
+                  Tất cả
+                </TabsTrigger>
                 <TabsTrigger value="with-equipment" className={cn('underline text-ring bg-white !shadow-none')}>
                   Có dụng cụ
                 </TabsTrigger>
@@ -44,6 +45,28 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                 </TabsTrigger>
               </TabsList>
             </div>
+            <TabsContent value="all">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
+                {muscleGroupExercises.data?.map((exercise) => (
+                  <Link href={`/gallery/muscle/${muscle_id}/${exercise.id}`} key={exercise.id}>
+                    <div key={`menu-${exercise.id}`} className="text-xl">
+                      <div className="relative group">
+                        <img
+                          src={getYoutubeThumbnail(exercise.youtube_url)}
+                          alt={exercise.name}
+                          className="aspect-[5/3] object-cover rounded-xl mb-4"
+                          width={585}
+                          height={373}
+                        />
+                        <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                      </div>
+                      <p className="font-bold">{exercise.name}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </TabsContent>
+
             <TabsContent value="with-equipment">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
                 {muscleGroupExercises.data
