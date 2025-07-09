@@ -1,10 +1,11 @@
 'use client'
 import { BinIcon } from '@/components/icons/BinIcon'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import FormDelivery from './FormDelivery'
-import { removeCart } from '@/network/client/carts'
+import { removeCart, updateProductVariantQuantity } from '@/network/client/carts'
 import { getUserCart } from '@/network/client/users'
 import { toast } from 'sonner'
 import { useSession } from '@/hooks/use-session'
@@ -20,14 +21,18 @@ import {
   DialogDescription,
   DialogClose,
 } from '@/components/ui/dialog'
+import { AddIcon } from '@/components/icons/AddIcon'
+import { MinusIcon } from '@/components/icons/MinusIcon'
 
 export default function CurrentCart() {
   const [pendingCarts, setPendingCarts] = useState<UserCart[]>([])
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState(false)
   const [selectedCart, setSelectedCart] = useState<any>(null)
-  const { session } = useSession()
+  const [quantityUpdating, setQuantityUpdating] = useState<Record<number, boolean>>({})
+  const [variantQuantities, setVariantQuantities] = useState<Record<number, number>>({})
   const router = useRouter()
+  const { session } = useSession()
 
   useEffect(() => {
     async function fetchCartData() {
@@ -45,6 +50,12 @@ export default function CurrentCart() {
         setPendingCarts(pending)
         if (pending.length > 0 && pending[0]?.cart) {
           setSelectedCart(pending[0]?.cart)
+
+          const quantities: Record<number, number> = {}
+          pending[0]?.cart?.product_variants?.forEach((variant: any) => {
+            quantities[variant.id] = variant.quantity || 1
+          })
+          setVariantQuantities(quantities)
         }
       } catch (error) {
         toast.error('Không thể tải giỏ hàng. Vui lòng thử lại!')
@@ -54,6 +65,53 @@ export default function CurrentCart() {
     }
     fetchCartData()
   }, [session])
+
+  const handleUpdateQuantity = async (variantId: number, newQuantity: number) => {
+    if (!session) {
+      toast.error('Vui lòng đăng nhập để thực hiện thao tác này')
+      return
+    }
+
+    const validQuantity = Math.max(1, newQuantity)
+
+    if (variantQuantities[variantId] === validQuantity) return
+
+    try {
+      setQuantityUpdating({ ...quantityUpdating, [variantId]: true })
+
+      await updateProductVariantQuantity(pendingCarts[0]?.cart?.id, variantId, validQuantity)
+
+      setVariantQuantities({ ...variantQuantities, [variantId]: validQuantity })
+
+      const cartsRes = await getUserCart(Number(session.userId))
+      const userCarts = (cartsRes?.data as UserCart[]) || []
+      const pending = userCarts.filter(
+        (item) => item?.cart?.status === 'pending' || item?.cart?.status === 'not_decided'
+      )
+
+      setPendingCarts(pending)
+      if (pending.length > 0 && pending[0]?.cart) {
+        setSelectedCart(pending[0]?.cart)
+      }
+
+      toast.success('Đã cập nhật số lượng sản phẩm!')
+    } catch (error) {
+      toast.error('Không thể cập nhật số lượng. Vui lòng thử lại!')
+      const cartsRes = await getUserCart(Number(session.userId))
+      const userCarts = (cartsRes?.data as UserCart[]) || []
+      const pending = userCarts.filter(
+        (item) => item?.cart?.status === 'pending' || item?.cart?.status === 'not_decided'
+      )
+
+      const quantities: Record<number, number> = { ...variantQuantities }
+      pending[0]?.cart?.product_variants?.forEach((variant: any) => {
+        quantities[variant.id] = variant.quantity || 1
+      })
+      setVariantQuantities(quantities)
+    } finally {
+      setQuantityUpdating({ ...quantityUpdating, [variantId]: false })
+    }
+  }
 
   const handleBuyNow = () => {
     router.push('/products')
@@ -121,15 +179,38 @@ export default function CurrentCart() {
             />
             <div className="w-full text-xl lg:text-md">
               <div className="font-medium">{variant.name || 'Sản phẩm'}</div>
-              <div className="text-[#737373]">Size: {variant.size?.size}</div>
-              <div className="text-[#737373]">Số lượng: {variant.quantity}</div>
+              {variant.size && <div className="text-[#737373]">Size: {variant.size.size}</div>}
+              {variant.color && <div className="text-[#737373]">Color: {variant.color.name}</div>}
+              <div className="flex gap-3 items-center">
+                <div className="flex items-center gap-2">
+                  <Button
+                    className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-xl font-bold items-center flex border-2"
+                    onClick={() => handleUpdateQuantity(variant.id, (variantQuantities[variant.id] || 1) - 1)}
+                    disabled={quantityUpdating[variant.id]}
+                  >
+                    <MinusIcon />
+                  </Button>
+                  <Input
+                    className="w-24 text-center border-2 border-[#737373] text-2xl font-bold pr-0"
+                    type="number"
+                    min={1}
+                    value={variantQuantities[variant.id] || 1}
+                    onChange={(e) => handleUpdateQuantity(variant.id, Number(e.target.value) || 1)}
+                    disabled={quantityUpdating[variant.id]}
+                  />
+                  <Button
+                    className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-xl font-bold items-center flex border-2"
+                    onClick={() => handleUpdateQuantity(variant.id, (variantQuantities[variant.id] || 1) + 1)}
+                    disabled={quantityUpdating[variant.id]}
+                  >
+                    <AddIcon />
+                  </Button>
+                </div>
+              </div>
             </div>
             <div className="text-[#737373] w-full text-xl lg:text-md">
               <div>
                 <span>{variant.price?.toLocaleString()}</span> VNĐ
-              </div>
-              <div>
-                Color: <span>{variant.color?.name}</span>
               </div>
             </div>
             <Dialog>

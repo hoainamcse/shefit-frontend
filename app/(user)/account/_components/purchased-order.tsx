@@ -5,11 +5,13 @@ import { getUserCart } from '@/network/client/users'
 import { Button } from '@/components/ui/button'
 import { useEffect, useState } from 'react'
 import { useSession } from '@/hooks/use-session'
+import { useRouter } from 'next/navigation'
 
 export default function PurchasedOrder() {
   const { session } = useSession()
   const [deliveredCarts, setDeliveredCarts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,6 +47,10 @@ export default function PurchasedOrder() {
       .padStart(2, '0')}/${date.getFullYear()}`
   }
 
+  const handleBuyNow = () => {
+    router.push('/products')
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center mt-20">
@@ -57,11 +63,12 @@ export default function PurchasedOrder() {
     return (
       <div className="flex flex-col items-center justify-center mt-20 w-full">
         <p className="text-2xl mb-6 text-center">Bạn chưa có đơn hàng nào, xem sản phẩm của chúng tôi</p>
-        <Link href="/products">
-          <Button className="h-[60px] w-full max-w-[586px] bg-[#13D8A7] text-white px-6 py-2 rounded-full text-lg transition-colors">
-            Mua ngay
-          </Button>
-        </Link>
+        <Button
+          onClick={handleBuyNow}
+          className="h-[60px] w-full max-w-[586px] bg-[#13D8A7] text-white px-6 py-2 rounded-full text-lg transition-colors"
+        >
+          Mua ngay
+        </Button>
       </div>
     )
   }
