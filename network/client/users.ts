@@ -6,8 +6,12 @@ import { UserCart } from '@/models/user-cart'
 import { UserCourse } from '@/models/user-courses'
 import { UserSubscriptionDetail } from '@/models/user-subscriptions'
 
-export async function getUsers(): Promise<ListResponse<User>> {
-  const response = await fetchData(`/v1/users`)
+// Body Quiz APIs
+export const queryKeyUsers = 'users'
+
+export async function getUsers(query?: any): Promise<ListResponse<User>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData(`/v1/users` + '?' + searchParams)
   return response.json()
 }
 
@@ -29,6 +33,14 @@ export async function updateUser(user_id: string, data: any): Promise<ApiRespons
 export async function deleteUser(user_id: string): Promise<ApiResponse<any>> {
   const response = await fetchData(`/v1/users/${user_id}`, {
     method: 'DELETE',
+  })
+  return response.json()
+}
+
+export async function deleteBulkUser(user_ids: string[]): Promise<ApiResponse<string>> {
+  const response = await fetchData(`/v1/users/bulk`, {
+    method: 'DELETE',
+    body: JSON.stringify(user_ids),
   })
   return response.json()
 }

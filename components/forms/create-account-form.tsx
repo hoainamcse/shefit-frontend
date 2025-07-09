@@ -58,7 +58,7 @@ const accountSchema = z.object({
     .string()
     .min(10, { message: 'Số điện thoại phải có ít nhất 10 ký tự.' })
     .regex(/^0[0-9]{9,10}$/, { message: 'Số điện thoại không hợp lệ.' }),
-  email: z.string().email().optional().nullable(),
+  email: z.string().email().nullable(),
   username: z.string().min(3, { message: 'Username phải có ít nhất 3 ký tự.' }),
   province: z.enum([...PROVINCES.map((province) => province.value)] as [string, ...string[]], {
     message: 'Bạn phải chọn tỉnh/thành phố',
