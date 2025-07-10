@@ -10,6 +10,7 @@ import { getMealPlanDishes } from '@/network/server/meal-plans'
 import { getMealPlanDays } from '@/network/server/meal-plans'
 import { dishMealTimeLabel } from '@/lib/label'
 import type { MealPlanDish } from '@/models/meal-plan'
+import { BackIconBlack } from '@/components/icons/BackIconBlack'
 
 export default async function MealPlanDetailPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   const { meal_plan_id } = await params
@@ -22,32 +23,27 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
     : []
 
   return (
-    <div>
+    <div className="max-w-screen-[1800px] mx-auto">
       <div className="xl:block max-lg:hidden">
         <Header />
       </div>
-      <div className="flex flex-col items-center justify-center mt-16 max-lg:mt-0 mx-auto max-w-screen-2xl px-10">
+      <Link href={`/meal-plans/${meal_plan_id}`} className="mt-8 ml-10">
+        <Button className="flex items-center gap-2 text-xl bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent  text-black shadow-none">
+          <BackIconBlack /> Quay về
+        </Button>
+      </Link>
+      <div className="flex flex-col items-center justify-center mt-16 max-lg:mt-0 mx-auto max-w-[1800px] mb-20">
         <div className="relative w-full">
-          <Link
-            href="#"
-            className="absolute top-0 left-0 mt-8 ml-2 xl:hidden max-lg:block hover:bg-transparent focus:bg-transparent active:bg-transparent"
-          >
-            <Button className="flex items-center gap-2 text-xl bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent">
-              <BackIcon /> Quay về
-            </Button>
-          </Link>
           <img
             src={mealPlan.image}
             alt="Menu detail image"
-            className="xl:block max-lg:hidden w-full h-[680px] object-cover rounded-xl"
+            className="xl:block max-lg:hidden w-full h-[681px] object-cover rounded-xl"
           />
         </div>
         <div className="mr-auto text-xl mt-8 max-lg:p-4">
           <p className="font-bold">{mealPlan.meal_plan_goal?.name}</p>
           <p className="text-[#737373]">{mealPlan.title}</p>
-          <p className="text-[#737373]">
-            Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
-          </p>
+          <p className="text-[#737373]">Chef {mealPlan.chef_name}</p>
         </div>
         <div className="w-full max-lg:p-4">
           <div className="bg-primary py-5 w-full rounded-[20px] my-20 max-lg:my-2">

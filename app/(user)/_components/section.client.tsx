@@ -17,8 +17,14 @@ import { formSchema } from '@/app/(admin)/admin/(content-input)/homepage/schema'
 type DataType = z.infer<typeof formSchema>
 
 export function SectionFive({ data }: { data: DataType['section_5'] }) {
-  const [selectedVideoIndex, setSelectedVideoIndex] = useState(0)
-  const [selectedZoomIndex, setSelectedZoomIndex] = useState(0)
+  const getMiddleIndex = (length: number) => Math.floor(length / 2)
+
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState(() =>
+    data?.video?.courses?.length ? getMiddleIndex(data.video.courses.length) : 0
+  )
+  const [selectedZoomIndex, setSelectedZoomIndex] = useState(() =>
+    data?.zoom?.courses?.length ? getMiddleIndex(data.zoom.courses.length) : 0
+  )
   const [videoEmblaApi, setVideoEmblaApi] = useState<any>(null)
   const [zoomEmblaApi, setZoomEmblaApi] = useState<any>(null)
 
@@ -74,8 +80,8 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                   <p className="text-primary">{data.video?.description}</p>
                 </div>
                 {data.video?.courses?.length ? (
-                  <div className="relative w-full mx-auto py-4 overflow-hidden">
-                    <CustomCarousel setApi={setVideoEmblaApi}>
+                  <div className="relative w-full mx-auto py-4">
+                    <CustomCarousel setApi={setVideoEmblaApi} className="w-full">
                       <CustomCarouselContent className="items-center">
                         {data.video?.courses?.map((course, index) => {
                           const isSelected = selectedVideoIndex === index
@@ -126,8 +132,8 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                   <p className="text-primary">{data.zoom?.description}</p>
                 </div>
                 {data.zoom?.courses?.length ? (
-                  <div className="relative w-full mx-auto py-4 overflow-hidden">
-                    <CustomCarousel setApi={setZoomEmblaApi}>
+                  <div className="relative w-full mx-auto py-4">
+                    <CustomCarousel setApi={setZoomEmblaApi} className="w-full">
                       <CustomCarouselContent className="items-center">
                         {data.zoom?.courses?.map((course, index) => {
                           const isSelected = selectedZoomIndex === index
@@ -182,6 +188,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
 
 export function SectionSix({ data }: { data: DataType['section_6'] }) {
   const [selectedMethod, setSelectedMethod] = useState(0)
+
   if (!data || !data.features || !data.features.length) {
     return <div className="text-center py-8">Chưa có dữ liệu hiển thị</div>
   }
@@ -216,7 +223,9 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
 
   const CarouselComponent = ({ feature, methodIndex }: { feature: any; methodIndex: number }) => {
     const [localApi, setLocalApi] = useState<any>(null)
-    const [localSelectedIndex, setLocalSelectedIndex] = useState(0)
+    const [localSelectedIndex, setLocalSelectedIndex] = useState(() =>
+      feature.courses?.length ? Math.floor(feature.courses.length / 2) : 0
+    )
 
     useEffect(() => {
       if (!localApi) return
@@ -229,9 +238,19 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
       return () => localApi.off('select', onSelect)
     }, [localApi])
 
+    useEffect(() => {
+      if (localApi && selectedMethod === methodIndex && feature.courses?.length) {
+        const middleIndex = Math.floor(feature.courses.length / 2)
+        setTimeout(() => {
+          localApi.scrollTo(middleIndex, false)
+          setLocalSelectedIndex(middleIndex)
+        }, 100)
+      }
+    }, [localApi, selectedMethod, methodIndex, feature.courses?.length])
+
     return (
-      <div className="relative w-full mx-auto py-4 overflow-hidden">
-        <CustomCarousel setApi={setLocalApi}>
+      <div className="relative w-full mx-auto py-4">
+        <CustomCarousel setApi={setLocalApi} className="w-full">
           <CustomCarouselContent className="items-center">
             {feature.courses.map((course: any, index: number) => {
               const isSelected = selectedMethod === methodIndex && localSelectedIndex === index
@@ -286,7 +305,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
           <div className="mx-auto px-8 lg:px-12">
             <Tabs defaultValue={defaultWorkoutMethodId} className="w-full">
               <div className="flex justify-center mb-8">
-                <TabsList className="bg-transparent shadow-none">
+                <TabsList className="bg-transparent shadow-none grid grid-cols-3 lg:grid-cols-5 mb-4">
                   {parsedFeatures.map((feature, index) => (
                     <TabsTrigger
                       key={feature.id || index}

@@ -12,7 +12,10 @@ export default function PopularCoursesCarousel() {
 
   useEffect(() => {
     const fetchPopularCourses = async () => {
-      const [videoCourses, liveCourses] = await Promise.all([getCourses({ course_format: 'video' }), getCourses({ course_format: 'live' })])
+      const [videoCourses, liveCourses] = await Promise.all([
+        getCourses({ course_format: 'video' }),
+        getCourses({ course_format: 'live' }),
+      ])
 
       const allCourses = [...videoCourses.data, ...liveCourses.data]
       const popular = allCourses.filter((course) => course.is_popular)
@@ -26,9 +29,9 @@ export default function PopularCoursesCarousel() {
   }
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-4 lg:px-6">
-      <p className="text-center font-[family-name:var(--font-coiny)] text-ring text-2xl my-4 font-bold uppercase">
-        Khoá tập hot nhất tháng
+    <div className="mx-auto px-4 lg:px-6">
+      <p className="text-center font-[family-name:var(--font-coiny)] text-ring text-2xl my-8 font-bold uppercase">
+        Khoá tập nổi bật trong tháng
       </p>
       <Carousel
         opts={{
@@ -45,9 +48,10 @@ export default function PopularCoursesCarousel() {
                     <img
                       src={course.cover_image}
                       alt={course.course_name}
-                      className="aspect-[2/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
-                      width={585}
-                      height={373}
+                      className="object-cover rounded-xl mb-4"
+                      width={400}
+                      height={566}
+                      style={{ width: '400px', height: '566px', maxWidth: '100%' }}
                     />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>

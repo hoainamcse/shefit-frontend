@@ -26,18 +26,16 @@ export default async function Food({ params }: { params: Promise<{ meal_id: stri
             ?.filter((item) => item.diet && item.diet.id.toString() === meal_id)
             .map((item, index) => (
               <Link href={`/gallery/meal/${meal_id}/${item.id}`} key={index}>
-                <div key={`menu-${index}`} className="text-xl">
+                <div key={`menu-${index}`} className="w-[585px] max-w-[585px] overflow-hidden">
                   <div className="relative group">
                     <img
                       src={item.image}
                       alt=""
-                      className="aspect-[5/3] object-cover rounded-xl mb-4"
-                      width={585}
-                      height={373}
+                      className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
                     />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>
-                  <p className="font-bold">{item.name}</p>
+                  <p className="font-bold text-xl">{item.name}</p>
                 </div>
               </Link>
             ))}

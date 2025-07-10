@@ -2,7 +2,7 @@ import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carouse
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Header } from '@/app/(user)/_components/header'
-import { BackIcon } from '@/components/icons/BackIcon'
+import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { getMealPlan } from '@/network/server/meal-plans'
 import ActionButtons from './ActionButtons'
 export default async function MealPlanPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
@@ -15,41 +15,35 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
     }
 
     return (
-      <div>
+      <div className="max-w-screen-[1800px] mx-auto">
         <div className="xl:block max-lg:hidden">
           <Header />
         </div>
-        <div className="flex flex-col items-center justify-center mt-16 max-lg:mt-0 mx-auto p-10 max-w-screen-3xl mb-20">
+        <Link href="/meal-plans" className="mt-8 ml-10">
+          <Button className="flex items-center gap-2 text-xl bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent  text-black shadow-none">
+            <BackIconBlack /> Quay về
+          </Button>
+        </Link>
+        <div className="flex flex-col items-center justify-center mt-16 max-lg:mt-0 mx-auto max-w-[1800px] mb-20">
           <div className="relative w-full">
-            <Link
-              href="/meal-plans"
-              className="absolute top-0 left-0 mt-8 ml-2 xl:hidden max-lg:block hover:bg-transparent focus:bg-transparent active:bg-transparent"
-            >
-              <Button className="flex items-center gap-2 text-xl bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent">
-                <BackIcon /> Quay về
-              </Button>
-            </Link>
             <img
               src={mealPlan.image}
               alt="Menu detail image"
-              className="xl:block max-lg:hidden w-full h-[680px] object-cover rounded-xl"
+              className="xl:block max-lg:hidden w-full h-[681px] object-cover rounded-xl"
             />
           </div>
           <div className="mr-auto text-xl mt-8 max-lg:p-4">
             <p className="font-bold">{mealPlan.meal_plan_goal?.name}</p>
             <p className="text-[#737373]">{mealPlan.title}</p>
-            <p className="text-[#737373]">
-              Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-[#737373]">Chef {mealPlan.chef_name}</p>
+              {mealPlan.number_of_days > 0 && <p className="text-[#737373]">{mealPlan.number_of_days} ngày</p>}
+            </div>
           </div>
           <div className="w-full max-lg:p-4">
             <div className="bg-primary py-12 w-full rounded-[20px] my-20 max-lg:my-2">
               <div className="xl:px-20 max-lg:w-full mx-auto text-white h-full flex flex-col items-center justify-center">
-                <ul className="text-[#F7F7F7] text-xl list-disc mr-auto max-lg:px-8">
-                  {mealPlan.meal_ingredients.map((ingredient) => (
-                    <li key={ingredient.name}>{ingredient.name}</li>
-                  ))}
-                </ul>
+                <p className="text-[#F7F7F7] text-xl list-disc mr-auto max-lg:px-8">{mealPlan.subtitle}</p>
               </div>
             </div>
           </div>

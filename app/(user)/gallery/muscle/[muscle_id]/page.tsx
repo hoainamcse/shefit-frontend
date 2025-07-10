@@ -49,12 +49,12 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
                 {muscleGroupExercises.data?.map((exercise) => (
                   <Link href={`/gallery/muscle/${muscle_id}/${exercise.id}`} key={exercise.id}>
-                    <div key={`menu-${exercise.id}`} className="text-xl">
+                    <div key={`menu-${exercise.id}`} className="text-xl w-[585px] max-w-[585px] overflow-hidden">
                       <div className="relative group">
                         <img
                           src={getYoutubeThumbnail(exercise.youtube_url)}
                           alt={exercise.name}
-                          className="aspect-[5/3] object-cover rounded-xl mb-4"
+                          className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
                           width={585}
                           height={373}
                         />
@@ -73,12 +73,12 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                   ?.filter((exercise) => exercise.equipments && exercise.equipments.length > 0)
                   .map((exercise) => (
                     <Link href={`/gallery/muscle/${muscle_id}/${exercise.id}`} key={exercise.id}>
-                      <div key={`menu-${exercise.id}`} className="text-xl">
+                      <div key={`menu-${exercise.id}`} className="text-xl w-[585px] max-w-[585px] overflow-hidden">
                         <div className="relative group">
                           <img
                             src={getYoutubeThumbnail(exercise.youtube_url)}
                             alt={exercise.name}
-                            className="aspect-[5/3] object-cover rounded-xl mb-4"
+                            className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
                             width={585}
                             height={373}
                           />
@@ -96,12 +96,12 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                   ?.filter((exercise) => !exercise.equipments || exercise.equipments.length === 0)
                   .map((exercise) => (
                     <Link href={`/gallery/muscle/${muscle_id}/${exercise.id}`} key={exercise.id}>
-                      <div key={`menu-${exercise.id}`} className="text-xl">
+                      <div key={`menu-${exercise.id}`} className="text-xl w-[585px] max-w-[585px] overflow-hidden">
                         <div className="relative group">
                           <img
                             src={getYoutubeThumbnail(exercise.youtube_url)}
                             alt={exercise.name}
-                            className="aspect-[5/3] object-cover rounded-xl mb-4"
+                            className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
                             width={585}
                             height={373}
                           />

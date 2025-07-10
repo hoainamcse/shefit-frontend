@@ -28,6 +28,7 @@ type CustomCarouselContextProps = {
   canScrollNext: boolean
   selectedIndex: number
   scrollSnaps: number[]
+  totalItems: number
 } & CustomCarouselProps
 
 const CustomCarouselContext = React.createContext<CustomCarouselContextProps | null>(null)
@@ -44,13 +45,39 @@ function useCustomCarousel() {
 
 const CustomCarousel = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & CustomCarouselProps>(
   ({ orientation = 'horizontal', opts, setApi, plugins, className, children, ...props }, ref) => {
+    const [totalItems, setTotalItems] = React.useState(0)
+
+    React.useEffect(() => {
+      const countItems = () => {
+        const childrenArray = React.Children.toArray(children)
+        const carouselContent = childrenArray.find(
+          (child) => React.isValidElement(child) && child.type === CustomCarouselContent
+        )
+
+        if (React.isValidElement(carouselContent)) {
+          interface CarouselContentProps {
+            children?: React.ReactNode
+          }
+
+          const contentProps = carouselContent.props as CarouselContentProps
+          const items = React.Children.toArray(contentProps.children || [])
+          setTotalItems(items.length)
+        }
+      }
+
+      countItems()
+    }, [children])
+
     const [carouselRef, api] = useEmblaCarousel(
       {
         ...opts,
-        loop: true,
+        loop: totalItems > 1,
         align: 'center',
         startIndex: 0,
         skipSnaps: false,
+        containScroll: false,
+        dragFree: false,
+        inViewThreshold: 0.7,
         axis: orientation === 'horizontal' ? 'x' : 'y',
       },
       plugins
@@ -60,15 +87,24 @@ const CustomCarousel = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTM
     const [selectedIndex, setSelectedIndex] = React.useState(0)
     const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
 
-    const onSelect = React.useCallback((api: CarouselApi) => {
-      if (!api) {
-        return
-      }
+    const onSelect = React.useCallback(
+      (api: CarouselApi) => {
+        if (!api) {
+          return
+        }
 
-      setCanScrollPrev(api.canScrollPrev())
-      setCanScrollNext(api.canScrollNext())
-      setSelectedIndex(api.selectedScrollSnap())
-    }, [])
+        if (totalItems > 1) {
+          setCanScrollPrev(true)
+          setCanScrollNext(true)
+        } else {
+          setCanScrollPrev(false)
+          setCanScrollNext(false)
+        }
+
+        setSelectedIndex(api.selectedScrollSnap())
+      },
+      [totalItems]
+    )
 
     const scrollPrev = React.useCallback(() => {
       api?.scrollPrev()
@@ -98,25 +134,29 @@ const CustomCarousel = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTM
 
       const onInit = () => {
         setScrollSnaps(api.scrollSnapList())
-        if (api.selectedScrollSnap() === 0) {
-          onSelect(api)
-        }
+        onSelect(api)
       }
 
       onSelect(api)
       onInit()
 
       api.on('reInit', onInit)
-      api.on('reInit', onSelect)
       api.on('select', onSelect)
 
-      api.scrollTo(0, false)
+      if (totalItems > 0) {
+        const middleIndex = Math.floor(totalItems / 2)
+
+        setTimeout(() => {
+          api.scrollTo(middleIndex, false)
+          setSelectedIndex(middleIndex)
+        }, 50)
+      }
 
       return () => {
         api.off('select', onSelect)
         api.off('reInit', onInit)
       }
-    }, [api, onSelect])
+    }, [api, onSelect, totalItems])
 
     React.useEffect(() => {
       if (!api || !setApi) {
@@ -139,12 +179,13 @@ const CustomCarousel = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTM
           canScrollNext,
           selectedIndex,
           scrollSnaps,
+          totalItems,
         }}
       >
         <div
           ref={ref}
           onKeyDownCapture={handleKeyDown}
-          className={cn('relative', className)}
+          className={cn('relative w-full flex justify-center', className)}
           role="region"
           aria-roledescription="carousel"
           {...props}
@@ -159,11 +200,21 @@ CustomCarousel.displayName = 'CustomCarousel'
 
 const CustomCarouselContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => {
-    const { carouselRef, orientation } = useCustomCarousel()
+    const { carouselRef, orientation, totalItems } = useCustomCarousel()
 
     return (
-      <div ref={carouselRef} className="overflow-hidden">
-        <div ref={ref} className={cn('flex', orientation === 'horizontal' ? '' : 'flex-col', className)} {...props} />
+      <div ref={carouselRef} className="overflow-hidden w-full">
+        <div
+          ref={ref}
+          className={cn(
+            'flex',
+            orientation === 'horizontal' ? '' : 'flex-col',
+            totalItems === 1 ? 'justify-center' : '',
+            totalItems === 2 ? 'justify-start pl-[25%]' : '',
+            className
+          )}
+          {...props}
+        />
       </div>
     )
   }
@@ -172,7 +223,7 @@ CustomCarouselContent.displayName = 'CustomCarouselContent'
 
 const CustomCarouselItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & { index?: number }>(
   ({ className, index, ...props }, ref) => {
-    const { orientation, selectedIndex } = useCustomCarousel()
+    const { orientation, selectedIndex, totalItems } = useCustomCarousel()
     const isSelected = selectedIndex === index
 
     return (
@@ -181,15 +232,18 @@ const CustomCarouselItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes
         role="group"
         aria-roledescription="slide"
         className={cn(
-          'min-w-0 shrink-0 grow-0 basis-auto mx-2 transition-all duration-300',
-          orientation === 'horizontal' ? '' : 'pt-4',
+          'min-w-0 shrink-0 grow-0 transition-all duration-300',
+          orientation === 'horizontal' ? 'mx-2' : 'pt-4',
           isSelected ? 'z-10' : 'opacity-90',
+          totalItems <= 3 ? 'basis-auto' : 'basis-auto',
           className
         )}
         style={{
           width: isSelected ? 'auto' : undefined,
           height: 'auto',
           transition: 'all 0.3s ease',
+          marginLeft: orientation === 'horizontal' ? '8px' : undefined,
+          marginRight: orientation === 'horizontal' ? '8px' : undefined,
         }}
         {...props}
       />
@@ -200,7 +254,11 @@ CustomCarouselItem.displayName = 'CustomCarouselItem'
 
 const CustomCarouselPrevious = React.forwardRef<HTMLButtonElement, React.ComponentProps<typeof Button>>(
   ({ className, variant = 'outline', size = 'icon', ...props }, ref) => {
-    const { orientation, scrollPrev, canScrollPrev } = useCustomCarousel()
+    const { orientation, scrollPrev, totalItems } = useCustomCarousel()
+
+    if (totalItems <= 1) {
+      return null
+    }
 
     return (
       <Button
@@ -208,9 +266,9 @@ const CustomCarouselPrevious = React.forwardRef<HTMLButtonElement, React.Compone
         variant={variant}
         size={size}
         className={cn(
-          'absolute h-8 w-8 rounded-full',
+          'absolute h-8 w-8 rounded-full z-20',
           orientation === 'horizontal'
-            ? 'left-4 top-1/2 -translate-y-1/2 z-10'
+            ? 'left-4 top-1/2 -translate-y-1/2'
             : '-top-8 left-1/2 -translate-x-1/2 rotate-90',
           className
         )}
@@ -227,7 +285,11 @@ CustomCarouselPrevious.displayName = 'CustomCarouselPrevious'
 
 const CustomCarouselNext = React.forwardRef<HTMLButtonElement, React.ComponentProps<typeof Button>>(
   ({ className, variant = 'outline', size = 'icon', ...props }, ref) => {
-    const { orientation, scrollNext, canScrollNext } = useCustomCarousel()
+    const { orientation, scrollNext, totalItems } = useCustomCarousel()
+
+    if (totalItems <= 1) {
+      return null
+    }
 
     return (
       <Button
@@ -235,9 +297,9 @@ const CustomCarouselNext = React.forwardRef<HTMLButtonElement, React.ComponentPr
         variant={variant}
         size={size}
         className={cn(
-          'absolute h-8 w-8 rounded-full',
+          'absolute h-8 w-8 rounded-full z-20',
           orientation === 'horizontal'
-            ? 'right-4 top-1/2 -translate-y-1/2 z-10'
+            ? 'right-4 top-1/2 -translate-y-1/2'
             : '-bottom-8 left-1/2 -translate-x-1/2 rotate-90',
           className
         )}

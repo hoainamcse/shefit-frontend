@@ -82,7 +82,9 @@ export default function Gallery() {
     <div className="flex flex-col gap-10 mt-10">
       <div className="mb-20">
         <div className="flex flex-col justify-center text-center gap-5 mb-20">
-          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] font-bold">Bài tập theo nhóm cơ</div>
+          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] font-bold">
+            Bài tập theo nhóm cơ
+          </div>
           <p className="text-[#737373] text-xl">
             Xem video hướng dẫn chi tiết 1000+ bài đốt mỡ và cắt nét cơ theo từng vùng hình thể nữ giới
           </p>
@@ -91,12 +93,12 @@ export default function Gallery() {
           {muscleGroupsData.data.map((muscleGroup) =>
             session ? (
               <Link href={`/gallery/muscle/${muscleGroup.id}`} key={muscleGroup.id}>
-                <div key={`menu-${muscleGroup.id}`} className="text-xl">
+                <div key={`menu-${muscleGroup.id}`} className="w-[585px] max-w-[585px] overflow-hidden">
                   <div className="relative group">
                     <img
                       src={muscleGroup.image ?? undefined}
                       alt=""
-                      className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
+                      className="aspect-[5/3] object-cover rounded-xl mb-4 w-full max-w-[585px] h-[373px]"
                     />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>
@@ -158,7 +160,9 @@ export default function Gallery() {
       </div>
       <div className="mb-20">
         <div className="flex flex-col justify-center text-center gap-5 mb-20">
-          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] font-bold">Món theo chế độ ăn</div>
+          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] font-bold">
+            Món theo chế độ ăn
+          </div>
           <p className="text-[#737373] text-xl">
             Khám phá 500+ món ăn theo các chế độ ăn khác nhau phù hợp nhất với mục tiêu của bạn.
           </p>
@@ -167,9 +171,9 @@ export default function Gallery() {
           {dietsData.data?.map((diet) =>
             session ? (
               <Link href={`/gallery/meal/${diet.id}`} key={diet.id}>
-                <div key={`menu-${diet.id}`} className="text-xl">
+                <div key={`menu-${diet.id}`} className="text-xl w-[585px] max-w-[585px] overflow-hidden">
                   <div className="relative group">
-                    <img src={diet.image} alt="" className="aspect-[5/3] object-cover rounded-xl mb-4 w-full" />
+                    <img src={diet.image} alt="" className="object-cover rounded-xl mb-4 w-[585px] h-[373px]" />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>
                   <p className="font-bold">{diet.name}</p>
@@ -190,13 +194,7 @@ export default function Gallery() {
                       onClick={() => setDialogOpen(`diet-${diet.id}`)}
                     >
                       <div className="relative group">
-                        <img
-                          src={diet.image}
-                          alt=""
-                          className="aspect-[5/3] object-cover rounded-xl mb-4"
-                          width={585}
-                          height={373}
-                        />
+                        <img src={diet.image} alt="" className="object-cover rounded-xl mb-4 w-[585px] h-[373px]" />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                       </div>
                       <p className="font-bold">{diet.name}</p>

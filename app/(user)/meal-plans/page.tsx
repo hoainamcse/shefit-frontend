@@ -100,7 +100,7 @@ export default function MealPlansPage() {
   return (
     <Layout>
       <div className="max-w-screen-md mx-auto">
-        <p className="font-[family-name:var(--font-coiny)] font-bold sm:text-center text-ring text-2xl sm:text-3xl my-2 sm:my-4">
+        <p className="font-[family-name:var(--font-coiny)] font-bold sm:text-center text-ring text-2xl sm:text-3xl my-8 sm:my-4">
           Chọn thực đơn
         </p>
         <p className="sm:text-center text-[#737373] text-base mb-4">
@@ -132,35 +132,33 @@ export default function MealPlansPage() {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-screen-xl mx-auto mt-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6">
         {filteredMealPlans.map((mealPlan) => (
-          <div key={`menu-${mealPlan.id}`}>
+          <div key={`menu-${mealPlan.id}`} className="w-[585px] max-w-[585px] overflow-hidden">
             <div className="relative group">
               <img
                 src={mealPlan.image}
                 alt={mealPlan.title}
-                className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
+                className="aspect-[5/3] object-cover rounded-xl mb-4 w-full max-w-[585px] h-[373px]"
               />
               <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
               <NextButton
                 className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1"
                 href={`/meal-plans/${mealPlan.id}`}
               />
-            </div>
-            <div className="relative">
-              <div>
-                <p className="font-medium">{mealPlan.title}</p>
-                <p className="text-[#737373]">{mealPlan.subtitle}</p>
-                <p className="text-[#737373]">
-                  Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
-                </p>
-              </div>
-              <div className="absolute bottom-0 right-0">
+              <div className="absolute top-2 right-2">
                 {mealPlan.is_free ? (
                   <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
                 ) : (
                   <Button className="bg-[#737373] text-white w-[136px] rounded-full">+ Gói Member</Button>
                 )}
+              </div>
+            </div>
+            <div className="relative">
+              <div>
+                <p className="font-medium">{mealPlan.title}</p>
+                <p className="text-[#737373]">{mealPlan.subtitle}</p>
+                <p className="text-[#737373]">Chef {mealPlan.chef_name}</p>
               </div>
             </div>
           </div>

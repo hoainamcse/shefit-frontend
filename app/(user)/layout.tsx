@@ -13,7 +13,7 @@ export default function UserLayout({
   const isLogoutPage = pathname === '/auth/login' || pathname.includes('/auth/login')
 
   return (
-    <div>
+    <div className="overflow-hidden">
       {children}
       {!isLogoutPage && (
         <div className="hidden lg:block">

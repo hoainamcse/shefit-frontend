@@ -156,16 +156,16 @@ export default function CoursesPage() {
   return (
     <Layout>
       <PopularCoursesCarousel />
-      <div className="max-w-screen-2xl mx-auto">
-        <div className="max-w-screen-xl mx-auto my-12 flex flex-col gap-4">
-          <p className="text-center font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl uppercase">
+      <div className="mx-auto">
+        <div className="mx-auto my-12 flex flex-col gap-4">
+          <p className="text-center font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl uppercase my-8">
             Tất cả khoá tập
           </p>
           <p className="text-base text-center text-[#737373]">
             Lựa chọn khóa tập phù hợp với kinh nghiệm, mục tiêu và phom dáng của chị để bắt đầu hành trình độ dáng ngay
             hôm nay!
           </p>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 w-full justify-center">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 w-full justify-center max-w-6xl mx-auto">
             <div className="w-full max-w-lg">
               <MultiSelectHero
                 placeholder="Độ khó"
@@ -213,21 +213,32 @@ export default function CoursesPage() {
                 </TabsList>
               </div>
               <TabsContent value="video">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div className="flex flex-wrap gap-6 justify-center">
                   {filteredCourses.map((course) => (
-                    <div key={`video-${course.id}`}>
+                    <div key={`video-${course.id}`} className="w-[585px] max-w-[585px] overflow-hidden">
                       <div className="relative group">
                         <img
                           src={course.cover_image}
                           alt={course.course_name}
                           className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
-                          // width={585}
-                          // height={373}
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                         <Link href={`/courses/${course.id}/video-classes`}>
                           <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
                         </Link>
+                        <div className="absolute top-2 right-2 flex justify-end">
+                          {course.is_free ? (
+                            <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                          ) : (
+                            <Button
+                              className="bg-[#737373] text-white w-[136px] rounded-full"
+                              onClick={() => handleMembershipClick(course)}
+                              disabled={isCheckingAccess}
+                            >
+                              {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
+                            </Button>
+                          )}
+                        </div>
                       </div>
                       <div className="flex justify-between">
                         <div>
@@ -238,19 +249,6 @@ export default function CoursesPage() {
                         <div className="flex flex-col justify-between">
                           <div className="text-gray-500 flex justify-end">
                             {course.form_categories.map((cat) => cat.name).join(', ')}
-                          </div>
-                          <div className="flex justify-end">
-                            {course.is_free ? (
-                              <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
-                            ) : (
-                              <Button
-                                className="bg-[#737373] text-white w-[136px] rounded-full"
-                                onClick={() => handleMembershipClick(course)}
-                                disabled={isCheckingAccess}
-                              >
-                                {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
-                              </Button>
-                            )}
                           </div>
                         </div>
                       </div>
@@ -260,21 +258,32 @@ export default function CoursesPage() {
               </TabsContent>
 
               <TabsContent value="live">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div className="flex flex-wrap gap-6 justify-center">
                   {filteredCoursesZoom.map((course) => (
-                    <div key={`zoom-${course.id}`}>
+                    <div key={`zoom-${course.id}`} className="w-[585px] max-w-[585px] overflow-hidden">
                       <div className="relative group">
                         <img
                           src={course.cover_image}
                           alt={course.course_name}
                           className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
-                          width={585}
-                          height={373}
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                         <Link href={`/courses/${course.id}/live-classes`}>
                           <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
                         </Link>
+                        <div className="absolute top-2 right-2 flex justify-end">
+                          {course.is_free ? (
+                            <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                          ) : (
+                            <Button
+                              className="bg-[#737373] text-white w-[136px] rounded-full"
+                              onClick={() => handleMembershipClick(course)}
+                              disabled={isCheckingAccess}
+                            >
+                              {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
+                            </Button>
+                          )}
+                        </div>
                       </div>
                       <div className="flex justify-between">
                         <div>
@@ -285,19 +294,6 @@ export default function CoursesPage() {
                         <div className="flex flex-col justify-between">
                           <div className="text-gray-500 flex justify-end">
                             {course.form_categories.map((cat) => cat.name).join(', ')}
-                          </div>
-                          <div className="flex justify-end">
-                            {course.is_free ? (
-                              <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
-                            ) : (
-                              <Button
-                                className="bg-[#737373] text-white w-[136px] rounded-full"
-                                onClick={() => handleMembershipClick(course)}
-                                disabled={isCheckingAccess}
-                              >
-                                {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
-                              </Button>
-                            )}
                           </div>
                         </div>
                       </div>
@@ -307,16 +303,14 @@ export default function CoursesPage() {
               </TabsContent>
 
               <TabsContent value="free">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div className="flex flex-wrap gap-6 justify-center">
                   {filteredFreeCourses.map((course) => (
-                    <div key={`free-${course.id}`}>
+                    <div key={`free-${course.id}`} className="w-[585px] max-w-[585px] overflow-hidden">
                       <div className="relative group">
                         <img
                           src={course.cover_image}
                           alt={course.course_name}
                           className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
-                          width={585}
-                          height={373}
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                         <Link
@@ -324,22 +318,29 @@ export default function CoursesPage() {
                         >
                           <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
                         </Link>
+                        <div className="absolute top-2 right-2 flex justify-end">
+                          {course.is_free ? (
+                            <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                          ) : (
+                            <Button
+                              className="bg-[#737373] text-white w-[136px] rounded-full"
+                              onClick={() => handleMembershipClick(course)}
+                              disabled={isCheckingAccess}
+                            >
+                              {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
+                            </Button>
+                          )}
+                        </div>
                       </div>
                       <div className="flex justify-between">
                         <div>
                           <p className="font-medium">{course.course_name}</p>
                           <p className="text-[#737373]">{courseLevelLabel[course.difficulty_level]}</p>
                           <p className="text-[#737373]">{course.trainer}</p>
-                          <p className="text-[#737373] text-sm">
-                            {course.course_format === 'video' ? 'Video' : 'Zoom'}
-                          </p>
                         </div>
                         <div className="flex flex-col justify-between">
                           <div className="text-gray-500 flex justify-end">
                             {course.form_categories.map((cat) => cat.name).join(', ')}
-                          </div>
-                          <div className="flex justify-end">
-                            <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
                           </div>
                         </div>
                       </div>
@@ -349,16 +350,14 @@ export default function CoursesPage() {
               </TabsContent>
 
               <TabsContent value="all">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div className="flex flex-wrap gap-6 justify-center">
                   {filteredAllCourses.map((course) => (
-                    <div key={`all-${course.id}`}>
+                    <div key={`all-${course.id}`} className="w-[585px] max-w-[585px] overflow-hidden">
                       <div className="relative group">
                         <img
                           src={course.cover_image}
                           alt={course.course_name}
                           className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
-                          width={585}
-                          height={373}
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                         <Link
@@ -366,32 +365,29 @@ export default function CoursesPage() {
                         >
                           <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
                         </Link>
+                        <div className="absolute top-2 right-2 flex justify-end">
+                          {course.is_free ? (
+                            <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                          ) : (
+                            <Button
+                              className="bg-[#737373] text-white w-[136px] rounded-full"
+                              onClick={() => handleMembershipClick(course)}
+                              disabled={isCheckingAccess}
+                            >
+                              {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
+                            </Button>
+                          )}
+                        </div>
                       </div>
                       <div className="flex justify-between">
                         <div>
                           <p className="font-medium">{course.course_name}</p>
                           <p className="text-[#737373]">{courseLevelLabel[course.difficulty_level]}</p>
                           <p className="text-[#737373]">{course.trainer}</p>
-                          <p className="text-[#737373] text-sm">
-                            {course.course_format === 'video' ? 'Video' : 'Zoom'}
-                          </p>
                         </div>
                         <div className="flex flex-col justify-between">
                           <div className="text-gray-500 flex justify-end">
                             {course.form_categories.map((cat) => cat.name).join(', ')}
-                          </div>
-                          <div className="flex justify-end">
-                            {course.is_free ? (
-                              <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
-                            ) : (
-                              <Button
-                                className="bg-[#737373] text-white w-[136px] rounded-full"
-                                onClick={() => handleMembershipClick(course)}
-                                disabled={isCheckingAccess}
-                              >
-                                {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
-                              </Button>
-                            )}
                           </div>
                         </div>
                       </div>

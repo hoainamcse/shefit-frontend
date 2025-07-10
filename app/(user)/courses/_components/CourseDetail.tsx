@@ -95,8 +95,8 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
   }
 
   return (
-    <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full pb-24 relative">
-      <div className="flex flex-col gap-10">
+    <div className="flex mx-auto flex-col gap-10 mt-10 w-full pb-24 relative">
+      <div className="flex flex-col gap-10 max-w-[1800px] w-full mx-auto ">
         <div className="flex items-center gap-[10px] cursor-pointer" onClick={() => router.back()}>
           <BackIcon color="#000000" style={{ marginBottom: '4px' }} />
           <div className="text-xl text-[#000000] font-semibold">Quay về</div>
@@ -104,7 +104,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         <img
           src={course?.data?.thumbnail_image}
           alt={`${courseId}`}
-          className="rounded-xl mb-4 w-full h-[680px] object-cover"
+          className="rounded-xl mb-4 w-full max-w-[1800px] h-[681px] object-cover"
         />
 
         <div className="flex justify-between text-lg">

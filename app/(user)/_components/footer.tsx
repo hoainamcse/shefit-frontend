@@ -55,8 +55,6 @@ export function Footer() {
                 </ul>
               </div>
             </div>
-            <hr className="mt-5" />
-            <p className="text-[#E8E5E5] text-xl mt-5">© Ngôi nhà đầu bếp 2024</p>
           </div>
         </div>
       </footer>
@@ -105,8 +103,6 @@ export function Footer() {
                   </ul>
                 </div>
               </div>
-              <hr className="mt-5" />
-              <p className="text-[#E8E5E5] text-xl mt-5">© Ngôi nhà đầu bếp 2024</p>
             </div>
           </div>
         </footer>
