@@ -154,7 +154,7 @@ export async function deleteMealPlanDish(
   return response.json()
 }
 
-//Import meal plan excel
+//Import meal plan
 export async function importMealPlanExcel(meal_plan_id: MealPlan['id'], file: File): Promise<ApiResponse<MealPlan>> {
   const formData = new FormData()
   formData.append('file', file, file.name)
@@ -162,6 +162,6 @@ export async function importMealPlanExcel(meal_plan_id: MealPlan['id'], file: Fi
     method: 'POST',
     body: formData,
   }, false)
-  return response.json()
+  return await response.json()
 }
 

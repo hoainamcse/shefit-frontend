@@ -300,3 +300,22 @@ export async function deleteDaySession(
   })
   return response.json()
 }
+
+// Import video course excel
+export const queryKeyImportStatus = 'import-status'
+export async function importVideoCourseExcel(course_id: Course['id'], file: File): Promise<ApiResponse<Course>> {
+  const formData = new FormData()
+  formData.append('file', file, file.name)
+  const response = await fetchData(`/v1/courses/import-excel/${course_id}`, {
+    method: 'POST',
+    body: formData,
+  }, false)
+  return await response.json()
+}
+
+export async function importVideoCourseStatus(course_id: Course['id']): Promise<{course_id: Course['id'], status: string}> {
+  const response = await fetchData(`/v1/courses/import-status/${course_id}`, {
+    method: 'GET',
+  })
+  return response.json()
+}

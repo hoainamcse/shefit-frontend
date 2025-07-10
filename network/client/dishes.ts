@@ -34,3 +34,13 @@ export async function deleteDish(ids: Dish['id'][]): Promise<ApiResponse<string>
   })
   return response.json()
 }
+
+export async function importDishExcel(file: File): Promise<ApiResponse<Dish>> {
+  const formData = new FormData()
+  formData.append('file', file, file.name)
+  const response = await fetchData('/v1/dishes/import-excel', {
+    method: 'POST',
+    body: formData,
+  }, false)
+  return await response.json()
+}

@@ -4,11 +4,11 @@ import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import type { Dish } from '@/models/dish'
 
 import { toast } from 'sonner'
-import { ImportIcon } from 'lucide-react'
+
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { createDish, deleteDish, getDishes, queryKeyDishes } from '@/network/client/dishes'
+import { createDish, deleteDish, getDishes, queryKeyDishes, importDishExcel } from '@/network/client/dishes'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -19,7 +19,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { EditDishForm } from '../forms/edit-dish-form'
 import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
-import { ExcelReader } from '../excel-reader'
+import { ExcelImportDialog } from '../excel-import-dialog'
+
 import { EditSheet } from './edit-sheet'
 import { getYoutubeThumbnail } from '@/lib/youtube'
 
@@ -164,7 +165,13 @@ export function DishesTable() {
         rightSection={
           <>
             <AddButton text="Thêm món ăn" onClick={onAddRow} />
-            <ImportDialog onSuccess={refetch} />
+            <ExcelImportDialog
+              title="Món ăn"
+              handleSubmit={async (file: File) => {
+                await importDishExcel(file)
+                refetch()
+              }}
+            />
           </>
         }
       />
@@ -177,81 +184,5 @@ export function DishesTable() {
         <EditDishForm data={selectedRow} onSuccess={onEditSuccess} />
       </EditSheet>
     </>
-  )
-}
-
-function ImportDialog({ onSuccess }: { onSuccess?: () => void }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [data, setData] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-
-  const onSubmit = async () => {
-    setIsLoading(true)
-    try {
-      const dietNames = new Set<string>()
-
-      for (const item of data) {
-        const dietList = (item.diets || '')
-          .split(';')
-          .map((d: string) => d.trim())
-          .filter(Boolean)
-
-        dietList.forEach((eq: string) => dietNames.add(eq))
-      }
-
-      const dietsMap = new Map()
-
-      for (const name of dietNames) {
-        const response = await createDiet({
-          diets: [{ name, description: '', image: 'https://placehold.co/600x400?text=example' }],
-        })
-        dietsMap.set(name, response.data[0].id)
-      }
-
-      const dataWithIds = data.map((item) => {
-        const dietsIds = (item.diets || '')
-          .split(';')
-          .map((d: string) => d.trim())
-          .filter(Boolean)
-          .map((d: string) => dietsMap.get(d))
-          .filter(Boolean)
-
-        const { diets, ...rest } = item
-
-        return {
-          ...rest,
-          diet_ids: [...new Set(dietsIds)],
-          image: 'https://placehold.co/600x400?text=example',
-        }
-      })
-
-      for (const dish of dataWithIds) {
-        await createDish(dish)
-      }
-
-      toast.success('Nhập món ăn thành công')
-      onSuccess?.()
-      setIsOpen(false)
-    } catch (error: any) {
-      toast.error(`Lỗi khi chuẩn bị dữ liệu: ${error.message}`)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <MainButton text="Nhập món ăn" icon={ImportIcon} variant="outline" />
-      </DialogTrigger>
-      <DialogContent className="max-w-screen-lg" onInteractOutside={(e) => e.preventDefault()}>
-        <DialogHeader>
-          <DialogTitle>Nhập món ăn</DialogTitle>
-          <DialogDescription>Chức năng này sẽ cho phép nhập danh sách món ăn từ tệp Excel</DialogDescription>
-        </DialogHeader>
-        <ExcelReader onSuccess={setData} />
-        {data.length > 0 && <MainButton text="Nhập món ăn" className="mt-4" onClick={onSubmit} loading={isLoading} />}
-      </DialogContent>
-    </Dialog>
   )
 }

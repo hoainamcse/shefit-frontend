@@ -41,4 +41,14 @@ export async function deleteBulkExercise(ids: Exercise['id'][]): Promise<ApiResp
   })
   return response.json()
 }
+  
 
+export async function importExerciseExcel(file: File): Promise<ApiResponse<Exercise>> {
+  const formData = new FormData()
+  formData.append('file', file, file.name)
+  const response = await fetchData('/v1/exercises/import-excel', {
+    method: 'POST',
+    body: formData,
+  }, false)
+  return await response.json()
+}

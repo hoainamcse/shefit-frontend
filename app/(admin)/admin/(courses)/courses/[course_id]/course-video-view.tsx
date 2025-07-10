@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Calendar, Clock, Play, Edit, Trash2, ChevronRight, ChevronDown, Import, ClipboardPen } from 'lucide-react'
+import { Spinner } from '@/components/spinner'
 
 import {
   createCourseWeek,
@@ -17,8 +18,11 @@ import {
   getCourseWeeks,
   getDayCircuits,
   getWeekDays,
+  importVideoCourseExcel,
+  importVideoCourseStatus,
   queryKeyCourseWeeks,
   queryKeyDayCircuits,
+  queryKeyImportStatus,
   queryKeyWeekDays,
   updateDayCircuit,
 } from '@/network/client/courses'
@@ -43,6 +47,7 @@ import { EditCourseWeekForm } from '@/components/forms/edit-course-week-form'
 import { EditDayCircuitForm } from '@/components/forms/edit-day-circuit-form'
 import { EditCircuitExerciseForm } from '@/components/forms/edit-circuit-exercise-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ExcelImportDialog } from '@/components/excel-import-dialog'
 
 export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null)
@@ -56,6 +61,9 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
   const [showCircuitForm, setShowCircuitForm] = useState(false)
   const [showExerciseForm, setShowExerciseForm] = useState(false)
   const [editingItem, setEditingItem] = useState<any>(null)
+  const importStorageKey = `courses:${courseID}`
+  const [isImportData, setIsImportData] = useState(localStorage.getItem(importStorageKey) !== null)
+
   // const [deleteItem, setDeleteItem] = useState<{ type: string; item: any } | null>(null)
 
   // const queryClient = useQueryClient()
@@ -88,6 +96,23 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
     queryKey: [queryKeyDayCircuits, selectedDay],
     queryFn: () => getDayCircuits(courseID, selectedWeek!, selectedDay!),
     enabled: !!selectedWeek && !!selectedDay,
+  })
+
+  // Check import status
+
+  useQuery({
+    queryKey: [queryKeyImportStatus, courseID],
+    queryFn: async () => {
+      const data = await importVideoCourseStatus(courseID)
+      if (data?.status === 'done') {
+        localStorage.removeItem(importStorageKey)
+        setIsImportData(false)
+        weeksRefetch()
+      }
+      return data
+    },
+    enabled: isImportData,
+    refetchInterval: 3000,
   })
 
   const toggleCircuitExpansion = (circuitId: number) => {
@@ -189,17 +214,32 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
       {/* Sidebar */}
       <div className="flex flex-col gap-4 w-80 p-4">
         <div className="flex items-center justify-between">
-          <ImportDialog courseID={courseID} onSuccess={() => weeksRefetch()} />
+          {/* <ImportDialog courseID={courseID} onSuccess={() => weeksRefetch()} /> */}
+          <ExcelImportDialog
+            title="Khoá tập"
+            handleSubmit={async (file: File) => {
+              localStorage.setItem(importStorageKey, 'import-excel')
+              setIsImportData(true)
+              await importVideoCourseExcel(courseID, file)
+            }}
+            disabled={isImportData}
+          />
           <AddButton
             onClick={() => {
               setEditingItem(null)
               setShowWeekForm(true)
             }}
             text="Thêm tuần"
+            disabled={isImportData}
           />
         </div>
 
-        {weeksLoading ? (
+        {isImportData ? (
+          <div className="flex flex-col items-center justify-center h-full space-y-2">
+            <Spinner className="bg-ring dark:bg-white" />
+            <p className="text-sm text-muted-foreground">Vui lòng đợi, dữ liệu đang được cập nhật...</p>
+          </div>
+        ) : weeksLoading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-12 bg-muted rounded animate-pulse" />

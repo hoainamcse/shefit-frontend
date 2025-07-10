@@ -13,6 +13,7 @@ import {
   deleteBulkExercise,
   deleteExercise,
   getExercises,
+  importExerciseExcel,
   queryKeyExercises,
 } from '@/network/client/exercises'
 import { RowActions } from '@/components/data-table/row-actions'
@@ -31,6 +32,7 @@ import { Badge } from '../ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
 import { MainButton } from '../buttons/main-button'
 import { ExcelReader } from '../excel-reader'
+import { ExcelImportDialog } from '../excel-import-dialog'
 
 export function ExercisesTable() {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -208,7 +210,13 @@ export function ExercisesTable() {
         rightSection={
           <>
             <AddButton text="Thêm bài tập" onClick={onAddRow} />
-            <ImportDialog onSuccess={refetch} />
+            <ExcelImportDialog
+              title="Bài tập"
+              handleSubmit={async (file: File) => {
+                await importExerciseExcel(file)
+                refetch()
+              }}
+            />
           </>
         }
       />
@@ -221,105 +229,5 @@ export function ExercisesTable() {
         <EditExerciseForm data={selectedRow} onSuccess={onEditSuccess} />
       </EditSheet>
     </>
-  )
-}
-
-function ImportDialog({ onSuccess }: { onSuccess?: () => void }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [data, setData] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-
-  const onSubmit = async () => {
-    setIsLoading(true)
-    try {
-      const equipmentNames = new Set<string>()
-      const muscleGroupNames = new Set<string>()
-
-      for (const item of data) {
-        const equipmentList = (item.equipments || '')
-          .split(';')
-          .map((eq: string) => eq.trim())
-          .filter(Boolean)
-
-        const muscleGroupList = (item.muscle_groups || '')
-          .split(';')
-          .map((mg: string) => mg.trim())
-          .filter(Boolean)
-
-        equipmentList.forEach((eq: string) => equipmentNames.add(eq))
-        muscleGroupList.forEach((mg: string) => muscleGroupNames.add(mg))
-      }
-
-      const equipmentsMap = new Map()
-      const muscleGroupsMap = new Map()
-
-      for (const name of equipmentNames) {
-        const response = await createEquipment({
-          name,
-          image: 'https://placehold.co/600x400?text=example',
-        })
-        equipmentsMap.set(name, response.data.id)
-      }
-
-      for (const name of muscleGroupNames) {
-        const response = await createMuscleGroup({
-          name,
-          image: 'https://placehold.co/600x400?text=example',
-        })
-        muscleGroupsMap.set(name, response.data.id)
-      }
-
-      const dataWithIds = data.map((item) => {
-        const equipmentsIds = (item.equipments || '')
-          .split(';')
-          .map((eq: string) => eq.trim())
-          .filter(Boolean)
-          .map((eq: string) => equipmentsMap.get(eq))
-          .filter(Boolean)
-
-        const muscleGroupsIds = (item.muscle_groups || '')
-          .split(';')
-          .map((mg: string) => mg.trim())
-          .filter(Boolean)
-          .map((mg: string) => muscleGroupsMap.get(mg))
-          .filter(Boolean)
-
-        const { equipments, muscle_groups, ...rest } = item
-
-        return {
-          ...rest,
-          equipment_ids: [...new Set(equipmentsIds)],
-          muscle_group_ids: [...new Set(muscleGroupsIds)],
-        }
-      })
-
-      for (const exercise of dataWithIds) {
-        await createExercise(exercise)
-      }
-
-      toast.success('Nhập bài tập thành công')
-      onSuccess?.()
-      setIsOpen(false)
-    } catch (error: any) {
-      toast.error(`Lỗi khi chuẩn bị dữ liệu: ${error.message}`)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <MainButton text="Nhập bài tập" icon={ImportIcon} variant="outline" />
-      </DialogTrigger>
-      <DialogContent className="max-w-screen-lg" onInteractOutside={(e) => e.preventDefault()}>
-        <DialogHeader>
-          <DialogTitle>Nhập món ăn</DialogTitle>
-          <DialogDescription>Chức năng này sẽ cho phép nhập danh sách bài tập từ tệp Excel</DialogDescription>
-        </DialogHeader>
-        <ExcelReader onSuccess={setData} />
-        {data.length > 0 && <MainButton text="Nhập bài tập" className="mt-4" onClick={onSubmit} loading={isLoading} />}
-      </DialogContent>
-    </Dialog>
   )
 }

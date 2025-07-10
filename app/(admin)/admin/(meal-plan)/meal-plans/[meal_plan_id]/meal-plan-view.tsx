@@ -25,6 +25,7 @@ import {
   deleteMealPlanDish,
   getMealPlanDays,
   getMealPlanDishes,
+  importMealPlanExcel,
   queryKeyMealPlanDays,
   queryKeyMealPlanDishes,
 } from '@/network/client/meal-plans'
@@ -38,6 +39,7 @@ import {
 } from '@/components/ui/dialog'
 import { transformDishes } from '@/lib/xlsx'
 import { ExcelReader } from '@/components/excel-reader'
+import { ExcelImportDialog } from '@/components/excel-import-dialog'
 
 interface MealPlanViewProps {
   mealPlanID: MealPlan['id']
@@ -165,7 +167,13 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <ImportDialog mealPlanID={mealPlanID} onSuccess={() => daysRefetch()} />
+        <ExcelImportDialog
+          title="Thực đơn"
+          handleSubmit={async (file: File) => {
+            await importMealPlanExcel(mealPlanID, file)
+            daysRefetch()
+          }}
+        />
       </div>
 
       {/* Days Navigation */}
@@ -191,7 +199,9 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
             <button
               type="button"
               key={day.id}
-              style={{ backgroundImage: `url(${day.image})` }}
+              style={{
+                backgroundImage: day.image ? `url(${day.image})` : 'url(https://placehold.co/600x400?text=example)',
+              }}
               className={`bg-cover h-20 w-40 bg-center rounded-md whitespace-nowrap text-white flex-shrink-0 ${
                 selectedDay?.id !== day.id && 'opacity-60 hover:opacity-100'
               }`}
@@ -308,64 +318,4 @@ const getMealTimeColor = (mealTime: DishMealTime) => {
     default:
       return 'bg-gray-100 text-gray-800 border-gray-200'
   }
-}
-
-function ImportDialog({ mealPlanID, onSuccess }: { mealPlanID: MealPlan['id']; onSuccess?: () => void }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [data, setData] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-
-  const onSubmit = async () => {
-    try {
-      const _data = transformDishes(data)
-      setIsLoading(true)
-
-      for (const d of _data.days) {
-        try {
-          const dayResponse = await createMealPlanDay(mealPlanID, {
-            day_number: d.day_number,
-            image: 'https://placehold.co/600x400?text=example',
-          })
-
-          const dayId = dayResponse.data[0].id
-
-          for (const dish of d.dishes) {
-            await createMealPlanDish(mealPlanID, dayId, {
-              ...dish,
-              meal_time: 'breakfast',
-            })
-          }
-        } catch (error) {
-          console.error(`Error processing day ${d.day_number}:`, error)
-          throw error
-        }
-      }
-
-      setData([])
-      toast.success('Nhập thực đơn thành công')
-      onSuccess?.()
-      setIsOpen(false)
-    } catch (error) {
-      console.error('Error creating meal plan dishes:', error)
-      toast.error('Đã có lỗi xảy ra khi nhập thực đơn')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <MainButton text="Nhập thực đơn" icon={ImportIcon} variant="outline" />
-      </DialogTrigger>
-      <DialogContent className="max-w-screen-lg" onInteractOutside={(e) => e.preventDefault()}>
-        <DialogHeader>
-          <DialogTitle>Nhập món ăn</DialogTitle>
-          <DialogDescription>Chức năng này sẽ cho phép nhập danh sách món ăn từ tệp Excel</DialogDescription>
-        </DialogHeader>
-        <ExcelReader specificHeaders={['day_number']} onSuccess={setData} />
-        {data.length > 0 && <MainButton text="Nhập thực đơn" className="mt-4" onClick={onSubmit} loading={isLoading} />}
-      </DialogContent>
-    </Dialog>
-  )
 }
