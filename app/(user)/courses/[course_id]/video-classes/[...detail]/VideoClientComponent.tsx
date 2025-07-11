@@ -28,10 +28,11 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
 
   return (
     <div className="mb-16">
-      <div className="flex justify-center items-center mb-1 flex-col gap-10">
-        <span className="font-bold font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-[40px]">
+      <div className="flex lg:justify-center justify-normal lg:items-center mb-4 flex-col gap-3 lg:gap-10">
+        <span className="font-bold font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px]">
           Circuit {cIdx + 1}: {circuit.name}
         </span>
+        <div className="text-[#737373] mb-2">{circuit.description}</div>
         <MainButton
           variant="ghost"
           className="rounded-full p-2 h-10 w-10 bg-[#13D8A7] text-white ml-3"
@@ -39,7 +40,6 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
           onClick={handlePlayPauseToggle}
           aria-label={isPlaying ? 'Pause circuit' : 'Play circuit'}
         />
-        <div className="text-[#737373] mb-4">{circuit.description}</div>
       </div>
 
       {circuit.circuit_exercises.length > 0 && (
@@ -55,6 +55,7 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
                         exerciseIndex={0}
                         isCircuitMode={true}
                         autoReplayListVideoCount={circuit.auto_replay_count}
+                        autoPlay={true}
                       />
                     </DialogTitle>
                   </DialogHeader>
@@ -84,10 +85,14 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
 
                       <div className="flex justify-between">
                         <div className="w-3/4">
-                          <p className="font-bold">{exercise.circuit_exercise_title}</p>
-                          <p className="text-[#737373]">{exercise.circuit_exercise_description}</p>
+                          <p className="font-bold text-wrap text-xl lg:text-2xl">{exercise.circuit_exercise_title}</p>
+                          <p className="text-[#737373] text-base lg:text-xl text-wrap">
+                            {exercise.circuit_exercise_description}
+                          </p>
                         </div>
-                        <Checkbox className="w-8 h-8" />
+                        <div className="flex items-center w-1/4">
+                          <Checkbox className="block w-8 h-8" />
+                        </div>
                       </div>
                     </div>
 
@@ -102,11 +107,14 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
                             height={300}
                           />
                           <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <PlayCircle className="w-12 h-12 text-white opacity-70 group-hover:opacity-100 transition-opacity" />
+                          </div>
                         </div>
 
                         <div className="flex-1 pl-3 flex flex-col">
-                          <p className="font-bold">{exercise.circuit_exercise_title}</p>
-                          <p className="text-[#737373] text-sm">{exercise.circuit_exercise_description}</p>
+                          <p className="font-bold text-base lg:text-xl">{exercise.circuit_exercise_title}</p>
+                          <p className="text-[#737373] text-xs lg:text-base">{exercise.circuit_exercise_description}</p>
                         </div>
 
                         <div className="absolute top-0 right-0">
@@ -120,9 +128,10 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
                   <DialogHeader>
                     <DialogTitle>
                       <VideoPlayer
-                        exerciseVideoList={circuit.circuit_exercises.map(mapCircuitExerciseToExercise)}
-                        exerciseIndex={eIdx}
+                        exerciseVideoList={[mapCircuitExerciseToExercise(exercise)]}
+                        exerciseIndex={0}
                         isCircuitMode={false}
+                        autoPlay={false}
                       />
                     </DialogTitle>
                   </DialogHeader>
@@ -138,9 +147,9 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
 
 export function VideoClientComponent({ circuits }: { circuits: any }) {
   return (
-    <div className="flex flex-col gap-10 mt-10">
+    <div className="flex flex-col gap-10 lg:mt-10 mt-2">
       <div className="mb-20">
-        <div className="flex flex-col justify-center text-center gap-5 mb-20"></div>
+        <div className="flex flex-col justify-center text-center gap-5"></div>
         {circuits.data.map((circuit: DayCircuit, cIdx: number) => (
           <CircuitItem key={circuit.id} circuit={circuit} cIdx={cIdx} />
         ))}

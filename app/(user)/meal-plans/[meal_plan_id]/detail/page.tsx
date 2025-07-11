@@ -37,31 +37,31 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
           <img
             src={mealPlan.image}
             alt="Menu detail image"
-            className="xl:block max-lg:hidden w-full h-[681px] object-cover rounded-xl"
+            className="w-full lg:h-[681px] h-[281px] object-cover lg:rounded-xl rounded-none"
           />
         </div>
-        <div className="mr-auto text-xl mt-8 max-lg:p-4">
+        {/* <div className="mr-auto mt-8 max-lg:p-4 text-base lg:text-xl">
           <p className="font-bold">{mealPlan.meal_plan_goal?.name}</p>
           <p className="text-[#737373]">{mealPlan.title}</p>
           <p className="text-[#737373]">Chef {mealPlan.chef_name}</p>
-        </div>
-        <div className="w-full max-lg:p-4">
+        </div> */}
+        {/* <div className="w-full max-lg:p-4">
           <div className="bg-primary py-5 w-full rounded-[20px] my-20 max-lg:my-2">
             <div className="xl:w-[696px] max-lg:w-full mx-auto text-white h-full flex flex-col items-center justify-center">
-              <div className="text-center text-[40px] font-bold mb-10">Kết quả</div>
-              <ul className="text-[#F7F7F7] text-xl list-disc mr-auto max-lg:px-8">
-                {mealPlan.meal_ingredients.map((ingredient) => (
-                  <li key={ingredient.name}>{ingredient.name}</li>
+              <div className="text-center text-xl lg:text-2xl font-bold mb-10">Kết quả</div>
+              <ul className="text-[#F7F7F7] text-base lg:text-xl list-disc mr-auto max-lg:px-8">
+                {mealPlan.meal_plan_goal?.name?.split('\n')?.map((subtitle, index) => (
+                  <li key={index}>{subtitle}</li>
                 ))}
               </ul>
             </div>
           </div>
-        </div>
+        </div> */}
         <div className="mr-auto text-xl my-20 max-lg:my-0 max-lg:p-4">
           <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-[40px] max-lg:text-[30px] mb-5">
             Menu theo lịch
           </div>
-          <div>{mealPlan.description}</div>
+          {/* <div>{mealPlan.description}</div> */}
         </div>
         <Tabs defaultValue="1" className="w-full h-full">
           <TabsList className="w-full flex-wrap justify-start bg-transparent p-0 h-full">

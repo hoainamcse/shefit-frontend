@@ -220,12 +220,12 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
   }
 
   return (
-    <div className="flex flex-col gap-10 mt-10">
+    <div className="flex flex-col gap-10 lg:mt-10 mt-2">
       <Tabs
         defaultValue={live.data && live.data.length > 0 ? live.data[0].day_of_week : 'Monday'}
         className="[state=active]:bg-[#91EBD5] data-[state=active]:shadow-none"
       >
-        <TabsList className="bg-white">
+        <TabsList className="bg-transparent">
           {Array.from(new Set(live.data.map((item: LiveDayWithSessions) => item.day_of_week)) as Set<string>).map(
             (day) => (
               <TabsTrigger
@@ -270,22 +270,22 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
                       .map((session_: Session) => (
                         <div key={session_.id} className="flex justify-between">
                           <div>
-                            <p className="font-[family-name:var(--font-coiny)] text-[30px] flex gap-2">
+                            <p className="font-[family-name:var(--font-coiny)] text-xl lg:text-3xl flex gap-2">
                               {session_.name}
                             </p>
-                            <p className="text-[#737373] text-xl">
+                            <p className="text-[#737373] text-base lg:text-xl">
                               {session_.description} / {formatToVNTime(session_.start_time)} -{' '}
                               {formatToVNTime(session_.end_time)}
                             </p>
                           </div>
                           {isClassAvailable(session_.start_time) ? (
                             <div className="cursor-pointer" onClick={(e) => handleJoinClass(e, session_)}>
-                              <div className="text-primary text-xl">
+                              <div className="text-primary text-base lg:text-xl">
                                 {isCheckingAccess ? 'Đang kiểm tra...' : 'Vào lớp'}
                               </div>
                             </div>
                           ) : (
-                            <div className={cn('text-gray-400 text-xl cursor-not-allowed', 'relative group')}>
+                            <div className={cn('text-gray-400 text-base lg:text-xl cursor-not-allowed', 'relative group')}>
                               Vào lớp
                               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                                 Lớp học chưa bắt đầu

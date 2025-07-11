@@ -290,7 +290,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
   }
 
   return (
-    <div className="flex flex-col gap-10 mt-10">
+    <div className="flex flex-col gap-10 lg:mt-10 mt-2">
       <Accordion type="multiple" className="mt-3">
         {courseData.map((week, weekIndex) => (
           <AccordionItem key={week.week} value={`week-${week.week}`}>
@@ -303,7 +303,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
                   .sort((a: any, b: any) => a.id - b.id)
                   .map((day: any, index: number) => (
                     <li key={day.id} className="flex justify-between items-center">
-                      <div className="flex gap-1">
+                      <div className="flex gap-1 text-base lg:text-xl">
                         <span className="font-semibold text-gray-900 dark:text-gray-50">Ngày </span>
                         <span className="text-gray-900 dark:text-gray-50">{index + 1}</span>
                         <p>{day.description}</p>

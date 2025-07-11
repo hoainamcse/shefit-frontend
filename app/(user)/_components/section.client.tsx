@@ -57,9 +57,9 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
   return (
     <div className="py-8 lg:py-12">
       <div className="bg-[#FFF3F3] mx-auto">
-        <div className="py-8 lg:py-12 space-y-8 lg:space-y-10">
+        <div className="py-8 lg:py-12 px-2 lg:px-4 space-y-8 lg:space-y-10">
           <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
-            <h2 dangerouslySetInnerHTML={{ __html: data.title }} className="text-2xl lg:text-3xl font-bold" />
+            <h2 dangerouslySetInnerHTML={{ __html: data.title }} className="text-3xl lg:text-[40px] font-bold" />
           </div>
 
           <div className="mx-auto px-8 lg:px-12">
@@ -77,7 +77,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
 
               <TabsContent value="video">
                 <div className="mx-auto text-center mb-6">
-                  <p className="text-primary">{data.video?.description}</p>
+                  <p className="text-primary text-base lg:text-xl">{data.video?.description}</p>
                 </div>
                 {data.video?.courses?.length ? (
                   <div className="relative w-full mx-auto py-4">
@@ -129,7 +129,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
 
               <TabsContent value="zoom">
                 <div className="mx-auto text-center mb-6">
-                  <p className="text-primary">{data.zoom?.description}</p>
+                  <p className="text-primary text-base lg:text-xl">{data.zoom?.description}</p>
                 </div>
                 {data.zoom?.courses?.length ? (
                   <div className="relative w-full mx-auto py-4">
@@ -298,8 +298,8 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
     <div className="py-8 lg:py-12">
       <div className="bg-[#DADADA] mx-auto">
         <div className="py-8 lg:py-12 space-y-8 lg:space-y-10">
-          <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
-            <h2 dangerouslySetInnerHTML={{ __html: data.title }} className="text-2xl lg:text-3xl font-bold" />
+          <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4 px-2 lg:px-4">
+            <h2 dangerouslySetInnerHTML={{ __html: data.title }} className="text-3xl lg:text-[40px] font-bold" />
           </div>
 
           <div className="mx-auto px-8 lg:px-12">
@@ -323,7 +323,10 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                 <TabsContent key={feature.id || methodIndex} value={feature.id || methodIndex.toString()}>
                   {feature.description && (
                     <div className="mx-auto text-center mb-6">
-                      <p dangerouslySetInnerHTML={{ __html: feature.description }} className="text-primary" />
+                      <p
+                        dangerouslySetInnerHTML={{ __html: feature.description }}
+                        className="text-primary text-base lg:text-xl"
+                      />
                     </div>
                   )}
                   {feature.courses?.length ? (

@@ -18,6 +18,7 @@ interface VideoPlayerProps {
   exerciseIndex: number
   isCircuitMode?: boolean
   autoReplayListVideoCount?: number
+  autoPlay?: boolean
 }
 
 const VideoPlayer = ({
@@ -25,11 +26,12 @@ const VideoPlayer = ({
   exerciseIndex,
   isCircuitMode = false,
   autoReplayListVideoCount = 1,
+  autoPlay = true,
 }: VideoPlayerProps) => {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(exerciseIndex)
   const [replayCount, setReplayCount] = useState(1)
   const [circuitReplayCount, setCircuitReplayCount] = useState(1)
-  const [playing, setPlaying] = useState(true)
+  const [playing, setPlaying] = useState(autoPlay)
 
   const exercise = exerciseVideoList[currentExerciseIndex]
   const maxReplay = isCircuitMode ? 1 : exercise?.auto_replay_count || 1

@@ -11,6 +11,8 @@ import { getCalories } from '@/network/client/calories'
 import type { MealPlan, MealPlanGoal } from '@/models/meal-plan'
 import { Button } from '@/components/ui/button'
 import { Calorie } from '@/models/calorie'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { cn } from '@/lib/utils'
 
 function MultiSelectHero({
   placeholder,
@@ -51,6 +53,7 @@ export default function MealPlansPage() {
   const [filter, setFilter] = useState({
     goals: [] as string[],
     calories: [] as string[],
+    showType: 'all' // 'all' or 'free'
   })
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -88,17 +91,19 @@ export default function MealPlansPage() {
       ? typeof mealPlan.meal_plan_goal === 'string'
         ? mealPlan.meal_plan_goal
         : mealPlan.meal_plan_goal.id?.toString()
-      : null
+      : ''
 
-    const matchesGoal = filter.goals.length === 0 || (goalId && filter.goals.includes(goalId))
+    const calorieId = mealPlan.calorie ? mealPlan.calorie.id?.toString() : ''
 
-    const matchesCalorie =
-      filter.calories.length === 0 || (mealPlan.calorie && filter.calories.includes(mealPlan.calorie.id.toString()))
-    return matchesGoal && matchesCalorie
+    const matchesGoals = filter.goals.length === 0 || filter.goals.includes(goalId)
+    const matchesCalories = filter.calories.length === 0 || filter.calories.includes(calorieId)
+    const matchesShowType = filter.showType === 'all' || (filter.showType === 'free' && mealPlan.is_free)
+
+    return matchesGoals && matchesCalories && matchesShowType
   })
 
   return (
-    <Layout>
+    <div>
       <div className="max-w-screen-md mx-auto">
         <p className="font-[family-name:var(--font-coiny)] font-bold sm:text-center text-ring text-2xl sm:text-3xl my-8 sm:my-4">
           Chọn thực đơn
@@ -132,38 +137,84 @@ export default function MealPlansPage() {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6">
-        {filteredMealPlans.map((mealPlan) => (
-          <div key={`menu-${mealPlan.id}`} className="w-[585px] max-w-[585px] overflow-hidden">
-            <div className="relative group">
-              <img
-                src={mealPlan.image}
-                alt={mealPlan.title}
-                className="aspect-[5/3] object-cover rounded-xl mb-4 w-full max-w-[585px] h-[373px]"
-              />
-              <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-              <NextButton
-                className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1"
-                href={`/meal-plans/${mealPlan.id}`}
-              />
-              <div className="absolute top-2 right-2">
-                {mealPlan.is_free ? (
-                  <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
-                ) : (
-                  <Button className="bg-[#737373] text-white w-[136px] rounded-full">+ Gói Member</Button>
-                )}
+      <Tabs defaultValue="all" className="w-full" onValueChange={(value) => setFilter(prev => ({ ...prev, showType: value }))}>
+        <TabsList className="bg-white mb-4 w-full flex justify-center mt-4">
+          <TabsTrigger value="all" className={cn('underline text-ring bg-white !shadow-none')}>
+            Tất cả
+          </TabsTrigger>
+          <TabsTrigger value="free" className={cn('underline text-ring bg-white !shadow-none')}>
+            Free
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="all">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6">
+            {filteredMealPlans.map((mealPlan) => (
+              <div key={`menu-${mealPlan.id}`} className="lg:w-[585px] w-full max-w-[585px] overflow-hidden">
+                <div className="relative group">
+                  <img
+                    src={mealPlan.image}
+                    alt={mealPlan.title}
+                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full max-w-[585px] lg:h-[373px] h-[261px]"
+                  />
+                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                  <NextButton
+                    className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1"
+                    href={`/meal-plans/${mealPlan.id}`}
+                  />
+                  <div className="absolute top-2 right-2">
+                    {mealPlan.is_free ? (
+                      <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                    ) : (
+                      <Button className="bg-[#737373] text-white w-[136px] rounded-full">+ Gói Member</Button>
+                    )}
+                  </div>
+                </div>
+                <div className="relative">
+                  <div>
+                    <p className="font-medium">{mealPlan.title}</p>
+                    <p className="text-[#737373]">{mealPlan.subtitle}</p>
+                    <p className="text-[#737373]">Chef {mealPlan.chef_name}</p>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="relative">
-              <div>
-                <p className="font-medium">{mealPlan.title}</p>
-                <p className="text-[#737373]">{mealPlan.subtitle}</p>
-                <p className="text-[#737373]">Chef {mealPlan.chef_name}</p>
-              </div>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </Layout>
+        </TabsContent>
+        <TabsContent value="free">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6">
+            {filteredMealPlans.map((mealPlan) => (
+              <div key={`menu-${mealPlan.id}`} className="lg:w-[585px] w-full max-w-[585px] overflow-hidden">
+                <div className="relative group">
+                  <img
+                    src={mealPlan.image}
+                    alt={mealPlan.title}
+                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full max-w-[585px] lg:h-[373px] h-[261px]"
+                  />
+                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                  <NextButton
+                    className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1"
+                    href={`/meal-plans/${mealPlan.id}`}
+                  />
+                  <div className="absolute top-2 right-2">
+                    {mealPlan.is_free ? (
+                      <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                    ) : (
+                      <Button className="bg-[#737373] text-white w-[136px] rounded-full">+ Gói Member</Button>
+                    )}
+                  </div>
+                </div>
+                <div className="relative">
+                  <div>
+                    <p className="font-medium">{mealPlan.title}</p>
+                    <p className="text-[#737373]">{mealPlan.subtitle}</p>
+                    <p className="text-[#737373]">Chef {mealPlan.chef_name}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
   )
 }

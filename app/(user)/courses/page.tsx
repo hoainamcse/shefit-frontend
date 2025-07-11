@@ -215,12 +215,12 @@ export default function CoursesPage() {
               <TabsContent value="video">
                 <div className="flex flex-wrap gap-6 justify-center">
                   {filteredCourses.map((course) => (
-                    <div key={`video-${course.id}`} className="w-[585px] max-w-[585px] overflow-hidden">
+                    <div key={`video-${course.id}`} className="lg:w-[585px] max-w-[585px] w-full overflow-hidden">
                       <div className="relative group">
                         <img
                           src={course.cover_image}
                           alt={course.course_name}
-                          className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
+                          className="aspect-[5/3] object-cover rounded-xl mb-4 lg:w-[585px] lg:h-[373px] w-full h-[232px]"
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                         <Link href={`/courses/${course.id}/video-classes`}>
@@ -260,12 +260,12 @@ export default function CoursesPage() {
               <TabsContent value="live">
                 <div className="flex flex-wrap gap-6 justify-center">
                   {filteredCoursesZoom.map((course) => (
-                    <div key={`zoom-${course.id}`} className="w-[585px] max-w-[585px] overflow-hidden">
+                    <div key={`zoom-${course.id}`} className="lg:w-[585px] max-w-[585px] w-full overflow-hidden">
                       <div className="relative group">
                         <img
                           src={course.cover_image}
                           alt={course.course_name}
-                          className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
+                          className="aspect-[5/3] object-cover rounded-xl mb-4 lg:w-[585px] lg:h-[373px] w-full h-[232px]"
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                         <Link href={`/courses/${course.id}/live-classes`}>
@@ -305,12 +305,12 @@ export default function CoursesPage() {
               <TabsContent value="free">
                 <div className="flex flex-wrap gap-6 justify-center">
                   {filteredFreeCourses.map((course) => (
-                    <div key={`free-${course.id}`} className="w-[585px] max-w-[585px] overflow-hidden">
+                    <div key={`free-${course.id}`} className="lg:w-[585px] max-w-[585px] w-full overflow-hidden">
                       <div className="relative group">
                         <img
                           src={course.cover_image}
                           alt={course.course_name}
-                          className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
+                          className="aspect-[5/3] object-cover rounded-xl mb-4 lg:w-[585px] lg:h-[373px] w-full h-[232px]"
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                         <Link
@@ -352,12 +352,12 @@ export default function CoursesPage() {
               <TabsContent value="all">
                 <div className="flex flex-wrap gap-6 justify-center">
                   {filteredAllCourses.map((course) => (
-                    <div key={`all-${course.id}`} className="w-[585px] max-w-[585px] overflow-hidden">
+                    <div key={`all-${course.id}`} className="lg:w-[585px] max-w-[585px] w-full overflow-hidden">
                       <div className="relative group">
                         <img
                           src={course.cover_image}
                           alt={course.course_name}
-                          className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
+                          className="aspect-[5/3] object-cover rounded-xl mb-4 lg:w-[585px] lg:h-[373px] w-full h-[232px]"
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                         <Link

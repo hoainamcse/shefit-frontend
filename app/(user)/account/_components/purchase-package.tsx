@@ -128,15 +128,12 @@ export default function PurchasePackage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
               {subscriptions.data.map((subscription) => (
                 <div key={subscription.id} className="bg-[#FFAEB01A] rounded-[20px] p-5 h-full">
-                  <div>
-                    <div className="flex justify-between">
-                      <div className="font-[family-name:var(--font-coiny)] text-[#000000] text-xl md:text-2xl mb-[18px]">
+                  <div className="flex flex-col 2xl:flex-row">
+                    <div className="flex flex-col gap-5 justify-between px-2 w-full">
+                      <div className="font-[family-name:var(--font-coiny)] text-[#000000] text-xl lg:text-2xl font-semibold mb-[18px]">
                         {subscription.name}
                       </div>
-                    </div>
-
-                    <div className="flex gap-5 justify-between items-center px-2 w-full">
-                      <ul className="list-disc pl-7 text-base md:text-xl text-[#737373] w-[50%] space-y-2">
+                      <ul className="list-disc pl-7 text-base md:text-xl text-[#737373] lg:w-[50%] w-full space-y-2">
                         {subscription.description_1
                           .replace(/<\/?p[^>]*>/g, '')
                           .split('\n')
@@ -149,18 +146,17 @@ export default function PurchasePackage() {
                             />
                           ))}
                       </ul>
-                      <img
-                        src={subscription.cover_image}
-                        alt=""
-                        className="aspect-[3/2] object-cover rounded-[20px] w-[50%]"
-                      />
+                      <Link href={`/packages/detail/${subscription.id}${courseId ? `?course_id=${courseId}` : ''}`}>
+                        <Button className="bg-[#13D8A7] w-[190px] h-[38px] rounded-[26px] text-base md:text-xl font-normal md:pt-2.5 md:pb-1.5">
+                          Chọn gói
+                        </Button>
+                      </Link>
                     </div>
-
-                    <Link href={`/packages/detail/${subscription.id}${courseId ? `?course_id=${courseId}` : ''}`}>
-                      <Button className="bg-[#13D8A7] w-[190px] h-[38px] rounded-[26px] text-base md:text-xl font-normal md:pt-2.5 md:pb-1.5">
-                        Chọn gói
-                      </Button>
-                    </Link>
+                    <img
+                      src={subscription.cover_image}
+                      alt=""
+                      className="aspect-[3/2] object-cover rounded-[20px] lg:w-[402px] lg:h-[261px] w-full mt-4"
+                    />
                   </div>
                 </div>
               ))}
