@@ -12,7 +12,15 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
 
 import { MainButton } from '../buttons/main-button'
-import { deleteBulkUser, deleteUser, getUser, getUsers, getUserSubscriptions, queryKeyUsers, updateUser } from '@/network/client/users'
+import {
+  deleteBulkUser,
+  deleteUser,
+  getUser,
+  getUsers,
+  getUserSubscriptions,
+  queryKeyUsers,
+  updateUser,
+} from '@/network/client/users'
 import { getUserTokenUsage, getUserChatbotSettings, updateUserChatbotSettings } from '@/network/client/chatbot'
 import { User } from '@/models/user'
 import { Switch } from '../ui/switch'
@@ -129,20 +137,30 @@ export function UsersTable() {
       {
         header: 'Enable Chatbot',
         accessorKey: 'is_enable_chatbot',
-        cell: ({ row }) => <Switch
-          className="transform scale-75"
-          checked={row.getValue('is_enable_chatbot')}
-          onCheckedChange={async (checked) => {
+        cell: ({ row }) => {
+          const [localChecked, setLocalChecked] = useState<boolean>(row.getValue('is_enable_chatbot'))
+
+          // Sync local state with row value when row changes
+          useEffect(() => {
+            setLocalChecked(row.getValue('is_enable_chatbot'))
+          }, [row])
+
+          const handleCheckedChange = async (checked: boolean) => {
+            setLocalChecked(checked)
+
             try {
-              console.log('checked', checked)
-              await updateUserChatbotSettings(row.id.toString(), { is_enable_chatbot: checked })
+              await updateUserChatbotSettings(row.getValue('id') as string, { is_enable_chatbot: checked })
               toast.success('Đã cập nhật trạng thái chatbot')
+              refetch()
             } catch (error: any) {
               console.error(error)
               toast.error('Lỗi khi cập nhật trạng thái chatbot')
+              setLocalChecked(!checked)
             }
-          }}
-        />,
+          }
+
+          return <Switch className="transform scale-75" checked={localChecked} onCheckedChange={handleCheckedChange} />
+        },
         size: 120,
       },
       {
@@ -203,7 +221,6 @@ export function UsersTable() {
       error: 'Đã có lỗi xảy ra',
     })
   }
-
 
   if (isLoading) {
     return (
@@ -418,7 +435,6 @@ function ExportDialog({ data, onSuccess }: { data?: UserRow[]; onSuccess?: () =>
   const onSubmit = async () => {
     setIsPending(true)
     try {
-
       const headers = [
         'ID',
         'Họ & tên',
@@ -539,7 +555,6 @@ function ExportDialog({ data, onSuccess }: { data?: UserRow[]; onSuccess?: () =>
       link.click()
       document.body.removeChild(link)
       onSuccess?.()
-
     } catch (error) {
       console.error('Error exporting CSV:', error)
       toast.error('Có lỗi khi xuất dữ liệu')
@@ -549,17 +564,17 @@ function ExportDialog({ data, onSuccess }: { data?: UserRow[]; onSuccess?: () =>
   }
 
   return (
-  <>
-    {isPending && (
-      <div className="fixed inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm z-50">
-        <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-lg">
-          <p className="text-lg font-semibold">Đang xuất dữ liệu. Vui lòng chờ...</p>
-          <p className="text-sm text-gray-600 mt-2">Quá trình này có thể mất vài phút.</p>
-          <div className="mt-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+    <>
+      {isPending && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm z-50">
+          <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-lg">
+            <p className="text-lg font-semibold">Đang xuất dữ liệu. Vui lòng chờ...</p>
+            <p className="text-sm text-gray-600 mt-2">Quá trình này có thể mất vài phút.</p>
+            <div className="mt-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          </div>
         </div>
-      </div>
-    )}
-    <MainButton text="Xuất dữ liệu" icon={Download} variant="outline" onClick={onSubmit} loading={isPending} />
-  </>
-)
+      )}
+      <MainButton text="Xuất dữ liệu" icon={Download} variant="outline" onClick={onSubmit} loading={isPending} />
+    </>
+  )
 }
