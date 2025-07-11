@@ -1,4 +1,7 @@
 import type {Gift } from '@/models/subscription'
+import { MealPlan } from './meal-plan'
+import { Dish } from './dish'
+import { Exercise } from './exercise'
 
 type UserSubscription = {
     id?: number,
@@ -23,9 +26,9 @@ type UserSubscription = {
   id: number
   gifts: Gift
   subscription: {id: number; courses: { id: number; course_name: string }[]}
-  exercises: { id: number; name: string }[]
-  meal_plans: { id: number; title: string }[]
-  dishes: { id: number; name: string }[]
+  exercises: Pick<Exercise, 'id' | 'name'>[]
+  meal_plans: Pick<MealPlan, 'id' | 'title'>[]
+  dishes: Pick<Dish, 'id' | 'name'>[]
 }
 
 export type { UserSubscription, UserSubscriptionDetail }

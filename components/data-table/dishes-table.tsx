@@ -1,6 +1,6 @@
 'use client'
 
-import type { ColumnDef, PaginationState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
 import type { Dish } from '@/models/dish'
 
 import { toast } from 'sonner'
@@ -24,11 +24,17 @@ import { ExcelImportDialog } from '../excel-import-dialog'
 import { EditSheet } from './edit-sheet'
 import { getYoutubeThumbnail } from '@/lib/youtube'
 
-export function DishesTable() {
+interface DishesTableProps {
+  onConfirmRowSelection?: (selectedRows: Dish[]) => void
+}
+
+export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 5,
   })
+
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyDishes, pagination],
@@ -158,12 +164,27 @@ export function DishesTable() {
       <DataTable
         data={data?.data}
         columns={columns}
-        state={{ pagination }}
+        state={{ pagination, rowSelection }}
         rowCount={data?.paging.total}
         onDelete={onDeleteRows}
         onPaginationChange={setPagination}
+        onRowSelectionChange={setRowSelection}
         rightSection={
           <>
+            {onConfirmRowSelection && (
+              <MainButton
+                variant="outline"
+                text={`Chọn ${Object.keys(rowSelection).length} món ăn`}
+                onClick={() => {
+                  const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
+                  if (selectedRows.length === 0) {
+                    toast.error('Vui lòng chọn ít nhất một món ăn')
+                    return
+                  }
+                  onConfirmRowSelection(selectedRows.filter((row): row is Dish => !!row))
+                }}
+              />
+            )}
             <AddButton text="Thêm món ăn" onClick={onAddRow} />
             <ExcelImportDialog
               title="Món ăn"

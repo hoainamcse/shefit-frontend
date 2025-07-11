@@ -1,15 +1,13 @@
 'use client'
 
-import type { ColumnDef, PaginationState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
 import type { Exercise } from '@/models/exercise'
 
 import { toast } from 'sonner'
-import { ImportIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
 import {
-  createExercise,
   deleteBulkExercise,
   deleteExercise,
   getExercises,
@@ -21,24 +19,24 @@ import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { getYoutubeThumbnail } from '@/lib/youtube'
 import { Spinner } from '@/components/spinner'
-
-import { createMuscleGroup } from '@/network/client/muscle-groups'
 import { EditExerciseForm } from '../forms/edit-exercise-form'
-import { createEquipment } from '@/network/client/equipments'
 import { AddButton } from '../buttons/add-button'
 import { EditSheet } from './edit-sheet'
 import { Badge } from '../ui/badge'
-
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
 import { MainButton } from '../buttons/main-button'
-import { ExcelReader } from '../excel-reader'
 import { ExcelImportDialog } from '../excel-import-dialog'
 
-export function ExercisesTable() {
+interface ExercisesTableProps {
+  onConfirmRowSelection?: (selectedRows: Exercise[]) => void
+}
+
+export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 5,
   })
+
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyExercises, pagination],
@@ -203,12 +201,27 @@ export function ExercisesTable() {
       <DataTable
         data={data?.data}
         columns={columns}
-        state={{ pagination }}
+        state={{ pagination, rowSelection }}
         rowCount={data?.paging.total}
         onDelete={onDeleteRows}
         onPaginationChange={setPagination}
+        onRowSelectionChange={setRowSelection}
         rightSection={
           <>
+            {onConfirmRowSelection && (
+              <MainButton
+                variant="outline"
+                text={`Chọn ${Object.keys(rowSelection).length} bài tập`}
+                onClick={() => {
+                  const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
+                  if (selectedRows.length === 0) {
+                    toast.error('Vui lòng chọn ít nhất một bài tập')
+                    return
+                  }
+                  onConfirmRowSelection(selectedRows.filter((row): row is Exercise => !!row))
+                }}
+              />
+            )}
             <AddButton text="Thêm bài tập" onClick={onAddRow} />
             <ExcelImportDialog
               title="Bài tập"
