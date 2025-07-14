@@ -15,7 +15,7 @@ import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import router from 'next/router'
 
-export default function FormDelivery({ cartData }: { cartData: any }) {
+export default function FormDelivery({ cartData, discountAmount = 0 }: { cartData: any; discountAmount?: number }) {
   const [loading, setLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccessDialog, setShowSuccessDialog] = useState(false)
@@ -29,6 +29,7 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
       address: '',
       shipping_fee: cartData?.shipping_fee?.toString() || '0',
       total: cartData?.total?.toString() || '0',
+      discount: '0',
       payment_method: true,
       note: '',
     },
@@ -59,11 +60,13 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
       const weight = cartData.total_weight || 0
       const shippingFee = calculateShippingFee(weight, isHCM)
       const cartTotal = cartData.total - cartData.shipping_fee || 0
+      const finalTotal = Math.max(0, cartTotal - discountAmount) + shippingFee
 
       form.setValue('shipping_fee', shippingFee.toString(), { shouldValidate: true })
-      form.setValue('total', (cartTotal + shippingFee).toString(), { shouldValidate: true })
+      form.setValue('total', finalTotal.toString(), { shouldValidate: true })
+      form.setValue('discount', discountAmount.toString(), { shouldValidate: true })
     }
-  }, [selectedCity, cartData, form])
+  }, [selectedCity, cartData, form, discountAmount])
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -78,6 +81,7 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
           const weight = cartData?.total_weight || 0
           const shippingFee = calculateShippingFee(weight, isHCM)
           const cartTotal = cartData?.total - cartData?.shipping_fee || 0
+          const finalTotal = Math.max(0, cartTotal - discountAmount) + shippingFee
 
           form.reset({
             name: userData.fullname || userData.username || '',
@@ -85,7 +89,8 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
             city: userData.province || '',
             address: userData.address || '',
             shipping_fee: shippingFee.toString(),
-            total: (cartTotal + shippingFee).toString(),
+            total: finalTotal.toString(),
+            discount: discountAmount.toString(),
             payment_method: true,
             note: '',
           })
@@ -112,6 +117,7 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
         address: formData.address,
         total_weight: cartData?.total_weight,
         shipping_fee: parseInt(formData.shipping_fee),
+        discount: parseInt(formData.discount || '0'),
         total: parseInt(formData.total),
         status: 'delivered',
         payment_method: 'cod',
@@ -130,7 +136,7 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
   }
   return (
     <div className="w-full flex flex-col gap-5">
-      <div className="font-[family-name:var(--font-coiny)] font-bold text-3xl">Thông tin vận chuyển</div>
+      <div className="font-[family-name:var(--font-coiny)] font-bold text-3xl lg:text-[40px]">Thông tin vận chuyển</div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmitOrder)} className="space-y-7">
           <FormField
@@ -138,9 +144,9 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xl">Tên</FormLabel>
+                <FormLabel className="text-base lg:text-xl">Tên</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Nhập tên của bạn" />
+                  <Input {...field} placeholder="Nhập tên của bạn" className="text-base lg:text-xl" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -152,9 +158,9 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xl">Số điện thoại</FormLabel>
+                <FormLabel className="text-base lg:text-xl">Số điện thoại</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Nhập số điện thoại của bạn" />
+                  <Input {...field} placeholder="Nhập số điện thoại của bạn" className="text-base lg:text-xl" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -166,7 +172,7 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xl">Thành phố</FormLabel>
+                <FormLabel className="text-base lg:text-xl">Thành phố</FormLabel>
                 <FormControl>
                   <Select
                     value={field.value}
@@ -197,7 +203,7 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xl">Địa chỉ</FormLabel>
+                <FormLabel className="text-base lg:text-xl">Địa chỉ</FormLabel>
                 <FormControl>
                   <Input {...field} placeholder="Nhập địa chỉ của bạn" />
                 </FormControl>
@@ -209,8 +215,8 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
             name="shipping_fee"
             control={form.control}
             render={({ field }) => (
-              <FormItem className="flex justify-between">
-                <FormLabel className="text-xl">Phí ship</FormLabel>
+              <FormItem className="flex justify-between items-center">
+                <FormLabel className="text-base lg:text-xl mt-2">Phí ship</FormLabel>
                 <FormControl>
                   <div className="text-[#8E8E93] text-xl">
                     {parseInt(field.value || '0').toLocaleString('vi-VN')} <span>VNĐ</span>
@@ -221,13 +227,31 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
             )}
           />
           <FormField
+            name="discount"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="flex justify-between items-center">
+                <FormLabel className="text-base lg:text-xl mt-2">Giảm giá</FormLabel>
+                <FormControl>
+                  <div className="text-[#DA1515] text-xl">
+                    {parseInt(field.value || '0') > 0
+                      ? `-${parseInt(field.value || '0').toLocaleString('vi-VN')}`
+                      : '0'}{' '}
+                    <span>VNĐ</span>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
             name="total"
             control={form.control}
             render={({ field }) => (
-              <FormItem className="flex justify-between">
-                <FormLabel className="text-xl font-semibold">Tổng tiền</FormLabel>
+              <FormItem className="flex justify-between items-center">
+                <FormLabel className="text-base lg:text-xl font-semibold mt-2">Tổng tiền</FormLabel>
                 <FormControl>
-                  <div className="text-[#00C7BE] text-2xl font-semibold">
+                  <div className="text-[#00C7BE] text-xl lg:text-2xl font-semibold">
                     {parseInt(field.value || '0').toLocaleString('vi-VN')} <span>VNĐ</span>
                   </div>
                 </FormControl>
@@ -239,8 +263,8 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
             name="address"
             control={form.control}
             render={({ field }) => (
-              <FormItem className="flex justify-between">
-                <FormLabel className="text-xl font-semibold">Phương thức</FormLabel>
+              <FormItem className="flex justify-between items-center">
+                <FormLabel className="text-xl font-semibold mt-2">Phương thức</FormLabel>
                 <FormControl>
                   <div className="flex gap-2 item-center">
                     <div className="text-[#737373] text-xl leading-8 items-center">Thanh toán khi nhận hàng</div>
@@ -267,7 +291,7 @@ export default function FormDelivery({ cartData }: { cartData: any }) {
 
           <Button
             type="submit"
-            className="w-full bg-[#13D8A7] hover:bg-[#11c296] rounded-full h-16 text-2xl"
+            className="w-full bg-[#13D8A7] hover:bg-[#11c296] rounded-full lg:h-16 h-12 text-xl lg:text-2xl"
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Đang xử lý...' : 'Mua ngay'}

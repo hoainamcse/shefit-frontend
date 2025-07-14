@@ -38,14 +38,12 @@ export default function ProductsPage() {
   return (
     <div className="flex flex-col gap-10">
       <img src="/body-quiz-image.jpg" className="w-full object-cover xl:h-[628px]" alt="" />
-      <div className="mb-20 p-6 mt-20">
+      <div className="mb-20 p-4 mt-20">
         <div className="flex flex-col gap-5 mb-20">
-          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] font-bold">
-            Dụng Cụ Tập & Thực Phẩm Eat Clean
+          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] text-3xl font-bold">
+            Dụng Cụ Tập & Thực Phẩm
           </div>
-          <p className="text-[#737373] text-xl">
-            Dụng cụ tập tại nhà, thực phẩm eat clean & nhiều sản phẩm hỗ trợ tập & ăn uống lành mạnh khác
-          </p>
+          <p className="text-[#737373] text-base lg:text-xl">Dụng cụ tập tại nhà & các loại thực phẩm Eat Clean</p>
           <div className="flex gap-4 xl:w-1/3">
             <FilterCategory
               placeholder="Loại"
@@ -63,7 +61,7 @@ export default function ProductsPage() {
                   <img
                     src={product.image_urls[0] || ''}
                     alt={product.name}
-                    className="aspect-1 object-cover rounded-xl mb-4 w-full h-[373px]"
+                    className="aspect-1 object-cover rounded-xl mb-4 w-full lg:h-[373px] h-[190px]"
                   />
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
@@ -79,21 +77,21 @@ export default function ProductsPage() {
                           <Button
                             key={`color-${colorId}`}
                             style={{ backgroundColor: hex }}
-                            className="rounded-full w-8 h-8"
+                            className="rounded-full lg:w-8 lg:h-8 w-[19px] h-[19px]"
                             disabled={!inStock}
                           />
                         )
                       })
                   })()}
                 </div>
-                <p className="font-medium">{product.name}</p>
-                <p className="text-[#737373]">
+                <p className="font-medium lg:text-xl text-base">{product.name}</p>
+                <p className="text-[#737373] lg:text-xl text-base">
                   {Array.from(new Set(product.variants.map((variant) => variant.color_id)))
                     .map((colorId) => colors.find((color) => color.id === colorId)?.name)
                     .filter(Boolean)
                     .join(', ')}
                 </p>
-                <p className="text-[#737373]">{product.price.toLocaleString()} VNĐ</p>
+                <p className="text-[#737373] lg:text-xl text-base">{product.price.toLocaleString()} VNĐ</p>
               </div>
             </Link>
           ))}

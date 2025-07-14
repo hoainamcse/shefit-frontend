@@ -1,7 +1,6 @@
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Header } from '@/app/(user)/_components/header'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { getMealPlan } from '@/network/server/meal-plans'
 import ActionButtons from './ActionButtons'

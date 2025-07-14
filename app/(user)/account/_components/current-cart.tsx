@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 import { useSession } from '@/hooks/use-session'
 import { useEffect, useState } from 'react'
 import { UserCart } from '@/models/user-cart'
+import { getListCoupons } from '@/network/server/coupons'
 import {
   Dialog,
   DialogTrigger,
@@ -31,6 +32,11 @@ export default function CurrentCart() {
   const [selectedCart, setSelectedCart] = useState<any>(null)
   const [quantityUpdating, setQuantityUpdating] = useState<Record<number, boolean>>({})
   const [variantQuantities, setVariantQuantities] = useState<Record<number, number>>({})
+  const [coupons, setCoupons] = useState<any[]>([])
+  const [couponCode, setCouponCode] = useState('')
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null)
+  const [discountAmount, setDiscountAmount] = useState(0)
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false)
   const router = useRouter()
   const { session } = useSession()
 
@@ -65,6 +71,21 @@ export default function CurrentCart() {
     }
     fetchCartData()
   }, [session])
+
+  useEffect(() => {
+    async function fetchCoupons() {
+      try {
+        const couponsResponse = await getListCoupons()
+        if (couponsResponse?.data) {
+          setCoupons(couponsResponse.data)
+        }
+      } catch (error) {
+        console.error('Error fetching coupons:', error)
+      }
+    }
+
+    fetchCoupons()
+  }, [])
 
   const handleUpdateQuantity = async (variantId: number, newQuantity: number) => {
     if (!session) {
@@ -115,6 +136,64 @@ export default function CurrentCart() {
 
   const handleBuyNow = () => {
     router.push('/products')
+  }
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      toast.error('Vui lòng nhập mã giảm giá')
+      return
+    }
+
+    if (isApplyingCoupon) return
+
+    try {
+      setIsApplyingCoupon(true)
+
+      if (!coupons.length) {
+        const couponsResponse = await getListCoupons()
+        if (couponsResponse?.data) {
+          setCoupons(couponsResponse.data)
+        }
+      }
+
+      const matchingCoupon = coupons.find((coupon) => coupon.code?.toLowerCase() === couponCode.trim().toLowerCase())
+
+      if (!matchingCoupon) {
+        toast.error('Mã giảm giá không hợp lệ hoặc đã hết hạn')
+        return
+      }
+
+      const cartTotal = pendingCarts[0]?.cart?.total - pendingCarts[0]?.cart?.shipping_fee || 0
+      let discount = 0
+
+      if (matchingCoupon.discount_type === 'percentage') {
+        discount = (cartTotal * matchingCoupon.discount_value) / 100
+      } else if (matchingCoupon.discount_type === 'fixed_amount') {
+        discount = matchingCoupon.discount_value
+      } else {
+        discount = Number(matchingCoupon.discount_value || 0)
+      }
+
+      // Don't allow discount to exceed cart total
+      discount = Math.min(discount, cartTotal)
+
+      setAppliedCoupon(matchingCoupon)
+      setDiscountAmount(discount)
+
+      toast.success(`Đã áp dụng mã giảm giá: ${matchingCoupon.code}`)
+    } catch (error) {
+      console.error('Error applying coupon:', error)
+      toast.error('Không thể áp dụng mã giảm giá. Vui lòng thử lại!')
+    } finally {
+      setIsApplyingCoupon(false)
+    }
+  }
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null)
+    setDiscountAmount(0)
+    setCouponCode('')
+    toast.success('Đã hủy mã giảm giá')
   }
 
   if (loading)
@@ -175,31 +254,30 @@ export default function CurrentCart() {
             <img
               src={variant.image_urls?.[0]}
               alt={variant.name || ''}
-              className="size-[148px] rounded-lg max-lg:w-[100px] mr-5"
+              className="lg:size-[148px] size-[85px] rounded-lg"
             />
-            <div className="w-full text-xl lg:text-md">
-              <div className="font-medium">{variant.name || 'Sản phẩm'}</div>
-              {variant.size && <div className="text-[#737373]">Size: {variant.size.size}</div>}
-              {variant.color && <div className="text-[#737373]">Color: {variant.color.name}</div>}
+            <div>
+              <div className="font-medium text-base lg:text-xl">{variant.name || 'Sản phẩm'}</div>
+              {variant.size && <div className="text-[#737373] text-base lg:text-xl">Size: {variant.size.size}</div>}
+              {variant.color && <div className="text-[#737373] text-base lg:text-xl">Color: {variant.color.name}</div>}
               <div className="flex gap-3 items-center">
                 <div className="flex items-center gap-2">
                   <Button
-                    className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-xl font-bold items-center flex border-2"
+                    className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] h-8 w-10 lg:w-10 lg:h-10 text-base lg:text-xl font-bold items-center flex border-2"
                     onClick={() => handleUpdateQuantity(variant.id, (variantQuantities[variant.id] || 1) - 1)}
                     disabled={quantityUpdating[variant.id]}
                   >
                     <MinusIcon />
                   </Button>
                   <Input
-                    className="w-24 text-center border-2 border-[#737373] text-2xl font-bold pr-0"
-                    type="number"
+                    className="h-8 lg:h-10 w-16 lg:w-16 text-center border-2 border-[#737373] text-base lg:text-xl font-bold pr-0 p-0"
                     min={1}
                     value={variantQuantities[variant.id] || 1}
                     onChange={(e) => handleUpdateQuantity(variant.id, Number(e.target.value) || 1)}
                     disabled={quantityUpdating[variant.id]}
                   />
                   <Button
-                    className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-xl font-bold items-center flex border-2"
+                    className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] h-8 lg:h-10 w-10 lg:w-10 text-base lg:text-xl font-bold items-center flex border-2"
                     onClick={() => handleUpdateQuantity(variant.id, (variantQuantities[variant.id] || 1) + 1)}
                     disabled={quantityUpdating[variant.id]}
                   >
@@ -208,44 +286,92 @@ export default function CurrentCart() {
                 </div>
               </div>
             </div>
-            <div className="text-[#737373] w-full text-xl lg:text-md">
-              <div>
-                <span>{variant.price?.toLocaleString()}</span> VNĐ
+            <div className="flex flex-col">
+              <div className="text-[#737373] w-full text-base lg:text-xl text-right">
+                <div className="text-base lg:text-xl">
+                  <span>{variant.price?.toLocaleString()}</span> VNĐ
+                </div>
               </div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="flex gap-2 bg-white hover:bg-white shadow-none items-center justify-end p-0">
+                    <BinIcon />
+                    <p className="text-base lg:text-xl text-[#DA1515] items-center">Xóa</p>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-[90vw] w-[350px]">
+                  <DialogHeader>
+                    <DialogTitle>Xác nhận xóa sản phẩm?</DialogTitle>
+                    <DialogDescription>Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng không?</DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Hủy</Button>
+                    </DialogClose>
+                    <DialogClose asChild>
+                      <Button className="bg-primary text-white" onClick={() => handleRemove(variant.id)}>
+                        Xóa
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="flex gap-2 bg-white hover:bg-white shadow-none items-center">
-                  <BinIcon />
-                  <p className="text-xl text-[#DA1515] items-center">Xóa</p>
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-[90vw] w-[350px]">
-                <DialogHeader>
-                  <DialogTitle>Xác nhận xóa sản phẩm?</DialogTitle>
-                  <DialogDescription>Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng không?</DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant="outline">Hủy</Button>
-                  </DialogClose>
-                  <DialogClose asChild>
-                    <Button className="bg-primary text-white" onClick={() => handleRemove(variant.id)}>
-                      Xóa
-                    </Button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
           </div>
         ))}
         <div className="flex justify-between mt-20">
-          <div>Tổng tiền</div>
-          <div className="text-[#00C7BE] font-semibold">{totalPrice} VNĐ</div>
+          <div className="text-base lg:text-xl">Tổng tiền</div>
+          <div className="text-[#00C7BE] font-semibold text-xl lg:text-2xl">{totalPrice} VNĐ</div>
         </div>
+        <div className="flex flex-col gap-2 mt-4">
+          <div className="text-base lg:text-xl">Mã giảm giá</div>
+          {appliedCoupon ? (
+            <div className="flex items-center justify-between border border-[#13D8A7] rounded-md p-3">
+              <div>
+                <div className="font-medium text-xl lg:text-2xl">{appliedCoupon.code}</div>
+                <div className="text-sm text-[#737373]">
+                  {appliedCoupon.discount_type === 'percentage'
+                    ? `Giảm ${appliedCoupon.discount_value}%`
+                    : `Giảm ${appliedCoupon.discount_value.toLocaleString()} VNĐ`}
+                </div>
+              </div>
+              <Button
+                onClick={handleRemoveCoupon}
+                variant="ghost"
+                className="text-[#DA1515] hover:text-[#DA1515] hover:bg-red-50"
+              >
+                Hủy
+              </Button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <Input
+                className="w-full"
+                placeholder="Nhập mã giảm giá của bạn"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+              />
+              <Button
+                onClick={handleApplyCoupon}
+                disabled={isApplyingCoupon || !couponCode.trim()}
+                className="bg-[#13D8A7] hover:bg-[#11c296] text-white"
+              >
+                {isApplyingCoupon ? 'Đang áp dụng...' : 'Áp dụng'}
+              </Button>
+            </div>
+          )}
+        </div>
+        {discountAmount > 0 && (
+          <div className="flex justify-between mt-2">
+            <div className="text-base lg:text-xl">Giảm giá</div>
+            <div className="text-[#DA1515] font-semibold text-xl lg:text-2xl">
+              -{discountAmount.toLocaleString()} VNĐ
+            </div>
+          </div>
+        )}
       </div>
       {selectedCart ? (
-        <FormDelivery cartData={selectedCart} />
+        <FormDelivery cartData={selectedCart} discountAmount={discountAmount} />
       ) : (
         <div className="mt-6 text-center text-gray-500">Đang tải thông tin...</div>
       )}

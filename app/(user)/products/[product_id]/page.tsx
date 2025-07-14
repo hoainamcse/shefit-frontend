@@ -14,6 +14,8 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { useSession } from '@/hooks/use-session'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { Product } from '@/models/product'
+import { BackIconBlack } from '@/components/icons/BackIconBlack'
+import Link from 'next/link'
 
 export default function ProductPage({ params }: { params: Promise<{ product_id: string }> }) {
   const { product_id } = use(params)
@@ -220,10 +222,13 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
   }
 
   return (
-    <div className="flex flex-col gap-10">
-      <div className="mb-20 p-10 mt-20">
+    <div className="flex flex-col lg:gap-10 gap-5">
+      <div className="mb-20 lg:p-10 p-4 lg:mt-20 mt-0">
+        <Link href="/products" className="flex cursor-pointer items-center mb-5 font-semibold">
+          <BackIconBlack /> <span className="ml-1">Quay về</span>
+        </Link>
         <div className="xl:w-[80%] max-lg:w-full xl:flex justify-between mb-20 max-lg:block">
-          <div className="xl:w-3/4 max-lg:w-full px-8">
+          <div className="xl:w-3/4 max-lg:w-full lg:px-8 px-4">
             <Carousel
               opts={{
                 align: 'center',
@@ -235,7 +240,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
                     <img
                       src={product.image_urls[index]}
                       alt={product.name}
-                      className="xl:aspect-[5/3] max-lg:aspect-1 object-cover rounded-xl mb-4 w-full"
+                      className="xl:aspect-[5/3] max-lg:aspect-1 object-cover rounded-xl mb-4 w-full lg:h-[687px] h-[364px]"
                     />
                   </CarouselItem>
                 ))}
@@ -293,17 +298,17 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
               </div>
             )}
 
-            <p className="font-medium xl:text-[30px] max-lg:text-xl">{product.name}</p>
-            <p className="text-[#737373] text-xl mt-1">
+            <p className="font-medium xl:text-3xl text-base">{product.name}</p>
+            <p className="text-[#737373] text-base lg:text-xl mt-1">
               {selectedColorId ? colors.find((color) => color.id === selectedColorId)?.name : ''}
             </p>
-            <p className="text-[#00C7BE] text-2xl font-semibold">{product.price.toLocaleString()} vnđ</p>
+            <p className="text-[#00C7BE] text-xl lg:text-2xl font-semibold">{product.price.toLocaleString()} vnđ</p>
 
             {product.variants.some(
               (variant: any) => variant.size_id !== null && (!selectedColorId || variant.color_id === selectedColorId)
             ) && (
               <div className="flex gap-2 my-4 items-center">
-                <div className="text-xl">Size:</div>
+                <div className="text-base lg:text-xl">Size:</div>
                 <div className="flex flex-wrap gap-2">
                   {Array.from(
                     new Set(
@@ -328,7 +333,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
                     return (
                       <Button
                         key={sizeId}
-                        className="w-10 h-10 text-xl font-semibold"
+                        className="w-10 h-10 text-base lg:text-xl font-semibold"
                         disabled={!hasInStockVariant || !selectedColorId}
                         onClick={() => {
                           if (variant) {
@@ -351,20 +356,20 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
               <div className="text-nowrap">Số lượng:</div>
               <div className="flex items-center gap-2">
                 <Button
-                  className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-xl font-bold items-center flex border-2"
+                  className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-base lg:text-xl font-bold items-center flex border-2"
                   onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
                 >
                   <MinusIcon />
                 </Button>
                 <Input
-                  className="w-24 text-center border-2 border-[#737373] text-2xl font-bold pr-0"
+                  className="w-24 text-center border-2 border-[#737373] text-base lg:text-xl font-bold pr-0 p-0"
                   type="number"
                   min={1}
                   value={quantity}
                   onChange={(e) => setQuantity(Number(e.target.value) || 1)}
                 />
                 <Button
-                  className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-xl font-bold items-center flex border-2"
+                  className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-base lg:text-xl font-bold items-center flex border-2"
                   onClick={() => setQuantity((prev) => prev + 1)}
                 >
                   <AddIcon />
@@ -390,21 +395,18 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-5 mb-20">
-          <div className="font-[family-name:var(--font-coiny)] font-bold text-ring xl:text-[40px] max-lg:text-[30px]">
-            Title
-          </div>
+        <div className="mb-20">
           <p className="text-[#737373] xl:text-xl max-lg:text-base">{product.description}</p>
         </div>
 
         {product.muscle_groups.length > 0 && (
           <div>
-            <div className="font-[family-name:var(--font-coiny)] font-bold text-ring xl:text-[40px] mb-5 max-lg:text-[30px]">
+            <div className="font-[family-name:var(--font-coiny)] font-bold text-ring lg:text-[40px] mb-5 text-3xl">
               Tính năng
             </div>
             <div className="grid xl:grid-cols-12 lg:grid-cols-10 md:grid-cols-6 sm:grid-cols-4 gap-10">
               {product.muscle_groups.map((muscleGroup) => (
-                <div key={muscleGroup.id} className="xl:text-xl max-lg:text-base">
+                <div key={muscleGroup.id} className="lg:text-xl text-base">
                   <div className="group">
                     <img
                       src={muscleGroup.image}
