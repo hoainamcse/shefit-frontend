@@ -57,7 +57,7 @@ export default function AcctionButton() {
   }
   return (
     <Link href={`/packages/${params?.id}`} className="mx-auto max-lg:w-full">
-      <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] max-md:w-full w-full px-5 mx-auto text-lg">
+      <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] max-md:w-full w-full px-5 mx-auto text-base lg:text-xl">
         Mua gói
       </Button>
     </Link>

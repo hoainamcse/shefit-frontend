@@ -84,10 +84,10 @@ export default function BodyQuiz() {
   return (
     <div>
       <div className="bg-[#FFAEB01A] py-[33px] px-5 sm:px-9 lg:px-[87px]">
-        <div className="text-center text-[#000000] text-[30px] leading-[33px] font-[family-name:var(--font-coiny)] mb-7 font-bold">
+        <div className="text-center text-[#000000] text-3xl lg:text-[40px] font-[family-name:var(--font-coiny)] mb-7 font-bold">
           Body Quiz
         </div>
-        <div className="text-center text-[#737373] text-base sm:text-[20px] leading-[30px] px-0 sm:px-8 lg:px-20 mb-7">
+        <div className="text-center text-[#737373] text-xl lg:text-2xl px-0 sm:px-8 lg:px-20 mb-7">
           Làm các bảng câu hỏi về số đo, phom dáng, hay chế độ ăn uống để HLV có thể theo dõi tiến độ của bạn
         </div>
 
@@ -99,7 +99,7 @@ export default function BodyQuiz() {
 
       {session && (
         <div className="py-12 sm:py-16 lg:py-20 px-5 sm:px-9 lg:px-[60px]">
-          <div className="text-[#FF7873] text-[30px] leading-[33px] font-[family-name:var(--font-coiny)] mb-10 font-bold">
+          <div className="text-[#FF7873] text-3xl lg:text-[40px] font-[family-name:var(--font-coiny)] mb-10 font-bold">
             Kết quả
           </div>
           <div className="flex flex-col gap-[18px]">
@@ -112,13 +112,13 @@ export default function BodyQuiz() {
                 <Link
                   key={quiz.id}
                   href={`/account/quiz/${quiz.id}/quiz-result`}
-                  className="text-[#000000] text-[20px] leading-[30px] font-normal border border-[#E2E2E2] p-4 rounded-[10px]"
+                  className="text-[#000000] text-base lg:text-xl leading-[30px] font-normal border border-[#E2E2E2] p-4 rounded-[10px]"
                 >
                   Kết quả ngày {formatDate(quiz.quiz_date)} - {quiz.body_quiz.title}
                 </Link>
               ))
             ) : (
-              <div className="text-center py-4">No quizzes found</div>
+              <div className="text-center py-4">Bạn chưa có kết quả nào, hãy tham gia làm Quiz cùng Shefit!</div>
             )}
           </div>
         </div>

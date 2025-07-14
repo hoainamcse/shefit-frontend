@@ -26,7 +26,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
     <div className="flex flex-col gap-10 mt-10 animate-fade-in">
       <div className="mb-20">
         <div className="flex flex-col justify-center text-center gap-5 mb-14">
-          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] mb-5 font-bold">
+          <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px] mb-5 font-bold">
             Các bài tập nhóm {selectedMuscleGroup?.name}
           </div>
         </div>
@@ -46,21 +46,22 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
               </TabsList>
             </div>
             <TabsContent value="all">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
+              <div className="grid grid-cols-3 lg:gap-10 gap-4">
                 {muscleGroupExercises.data?.map((exercise) => (
                   <Link href={`/gallery/muscle/${muscle_id}/${exercise.id}`} key={exercise.id}>
-                    <div key={`menu-${exercise.id}`} className="text-xl w-[585px] max-w-[585px] overflow-hidden">
+                    <div
+                      key={`menu-${exercise.id}`}
+                      className="text-xl lg:w-[585px] w-[122px] max-w-[585px] overflow-hidden"
+                    >
                       <div className="relative group">
                         <img
                           src={getYoutubeThumbnail(exercise.youtube_url)}
                           alt={exercise.name}
-                          className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
-                          width={585}
-                          height={373}
+                          className="aspect-[5/3] object-cover rounded-xl mb-4 lg:h-[373px] h-[122px] w-full"
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                       </div>
-                      <p className="font-bold">{exercise.name}</p>
+                      <p className="font-bold text-base lg:text-xl">{exercise.name}</p>
                     </div>
                   </Link>
                 ))}
@@ -84,7 +85,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                           />
                           <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                         </div>
-                        <p className="font-bold">{exercise.name}</p>
+                        <p className="font-bold text-base lg:text-xl">{exercise.name}</p>
                       </div>
                     </Link>
                   ))}
@@ -107,7 +108,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                           />
                           <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                         </div>
-                        <p className="font-bold">{exercise.name}</p>
+                        <p className="font-bold text-base lg:text-xl">{exercise.name}</p>
                       </div>
                     </Link>
                   ))}

@@ -40,7 +40,7 @@ export default function ActionButtons({ exerciseId }: ActionButtonsProps) {
     <div className="gap-5 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
       <Button
         onClick={() => handleSaveExercise(exerciseId)}
-        className="w-full rounded-full text-xl bg-[#13D8A7] text-white hover:bg-[#11c296 h-14 border-2 border-[#13D8A7]"
+        className="w-full rounded-full text-base lg:text-xl bg-[#13D8A7] text-white hover:bg-[#11c296 h-14 border-2 border-[#13D8A7]"
       >
         Lưu
       </Button>
@@ -50,9 +50,9 @@ export default function ActionButtons({ exerciseId }: ActionButtonsProps) {
             <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center text-center gap-6">
-            <p className="text-lg">ĐĂNG NHẬP ĐỂ LƯU BÀI TẬP</p>
+            <p className="text-base lg:text-xl">ĐĂNG NHẬP ĐỂ LƯU BÀI TẬP</p>
             <div className="flex gap-4 justify-center w-full px-10">
-              <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
+              <Button className="bg-[#13D8A7] rounded-full w-full text-base lg:text-xl" onClick={handleLoginClick}>
                 Đăng nhập
               </Button>
             </div>

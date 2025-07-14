@@ -16,12 +16,12 @@ function ExerciseContent() {
   if (showFavorites) {
     return <FavouriteContent />
   }
-  
+
   return (
     <div className="space-y-10">
       <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
         <AccordionItem value="item-1" className="border-b-0">
-          <AccordionTrigger className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+          <AccordionTrigger className="text-3xl lg:text-[40px] text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
             Khóa tập của bạn
           </AccordionTrigger>
           <AccordionContent>
@@ -31,7 +31,7 @@ function ExerciseContent() {
       </Accordion>
       <Accordion type="single" collapsible className="w-full" defaultValue="item-2">
         <AccordionItem value="item-2" className="border-b-0">
-          <AccordionTrigger className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+          <AccordionTrigger className="text-3xl lg:text-[40px] text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
             Thực đơn của bạn
           </AccordionTrigger>
           <AccordionContent>
@@ -41,7 +41,7 @@ function ExerciseContent() {
       </Accordion>
       <Accordion type="single" collapsible className="w-full" defaultValue="item-3">
         <AccordionItem value="item-3" className="border-b-0">
-          <AccordionTrigger className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+          <AccordionTrigger className="text-3xl lg:text-[40px] text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
             Động tác
           </AccordionTrigger>
           <AccordionContent>
@@ -51,7 +51,7 @@ function ExerciseContent() {
       </Accordion>
       <Accordion type="single" collapsible className="w-full" defaultValue="item-4">
         <AccordionItem value="item-4" className="border-b-0">
-          <AccordionTrigger className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+          <AccordionTrigger className="text-3xl lg:text-[40px] text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
             Món ăn
           </AccordionTrigger>
           <AccordionContent>
@@ -65,7 +65,7 @@ function ExerciseContent() {
 
 function ExercisePage() {
   return (
-    <div className="px-6 lg:px-14">
+    <div className="px-4 lg:px-14">
       <SubscriptionProvider>
         <ListSubscriptions />
         <ExerciseContent />

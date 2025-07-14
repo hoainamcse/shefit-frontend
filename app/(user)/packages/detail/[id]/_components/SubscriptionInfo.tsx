@@ -72,25 +72,25 @@ export default function SubscriptionInfo() {
     <div>
       <div className="flex items-center mb-2">
         {subscriptionStatus.status === 'active' ? (
-          <Badge className="bg-green-600 px-8 py-3 text-lg font-bold">Còn hạn</Badge>
+          <Badge className="bg-green-600 px-4 lg:px-8 py-2 lg:py-3 text-base lg:text-xl font-bold">Còn hạn</Badge>
         ) : (
-          <Badge className="bg-red-600 px-8 py-3 text-lg font-bold">Hết hạn</Badge>
+          <Badge className="bg-red-600 px-4 lg:px-8 py-2 lg:py-3 text-base lg:text-xl font-bold">Hết hạn</Badge>
         )}
       </div>
       {subscriptionStatus.startDate && (
-        <div className="flex gap-2 items-center mb-2 text-[#737373] text-lg">
+        <div className="flex gap-2 items-center mb-2 text-[#737373] text-base lg:text-xl">
           <span>Ngày bắt đầu:</span>
           <span>{formatDate(subscriptionStatus.startDate)}</span>
         </div>
       )}
       {subscriptionStatus.endDate && (
-        <div className="flex gap-2 items-center mb-2 text-[#737373] text-lg">
+        <div className="flex gap-2 items-center mb-2 text-[#737373] text-base lg:text-xl">
           <span>Ngày kết thúc:</span>
           <span>{formatDate(subscriptionStatus.endDate)}</span>
         </div>
       )}
       {subscriptionStatus.coupon_code && (
-        <div className="flex gap-2 items-center mb-2 text-[#737373] text-lg">
+        <div className="flex gap-2 items-center mb-2 text-[#737373] text-base lg:text-xl">
           <span>Promocode:</span>
           <span>{subscriptionStatus.coupon_code}</span>
         </div>

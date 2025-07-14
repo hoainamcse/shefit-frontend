@@ -77,7 +77,7 @@ export default function ProductsPage() {
                           <Button
                             key={`color-${colorId}`}
                             style={{ backgroundColor: hex }}
-                            className="rounded-full lg:w-8 lg:h-8 w-[19px] h-[19px]"
+                            className="rounded-full lg:w-8 lg:h-8 w-[19px] h-[19px] p-0"
                             disabled={!inStock}
                           />
                         )

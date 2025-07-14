@@ -105,7 +105,7 @@ export default function PurchasePackage() {
               value="purchased"
               className={cn('text-ring bg-white !shadow-none border-2 border-[#FF7873] text-lg')}
             >
-              Gói đã mua
+              Đã mua
             </TabsTrigger>
           </TabsList>
         )}

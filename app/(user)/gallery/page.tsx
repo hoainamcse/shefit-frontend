@@ -82,27 +82,27 @@ export default function Gallery() {
     <div className="flex flex-col gap-10 mt-10">
       <div className="mb-20">
         <div className="flex flex-col justify-center text-center gap-5 mb-20">
-          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] font-bold">
+          <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px] font-bold">
             Bài tập theo nhóm cơ
           </div>
-          <p className="text-[#737373] text-xl">
+          <p className="text-[#737373] text-base lg:text-xl">
             Xem video hướng dẫn chi tiết 1000+ bài đốt mỡ và cắt nét cơ theo từng vùng hình thể nữ giới
           </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
+        <div className="grid grid-cols-3 lg:gap-10 gap-4">
           {muscleGroupsData.data.map((muscleGroup) =>
             session ? (
               <Link href={`/gallery/muscle/${muscleGroup.id}`} key={muscleGroup.id}>
-                <div key={`menu-${muscleGroup.id}`} className="w-[585px] max-w-[585px] overflow-hidden">
+                <div key={`menu-${muscleGroup.id}`} className="lg:w-[585px] w-[122px] max-w-[585px] overflow-hidden ">
                   <div className="relative group">
                     <img
                       src={muscleGroup.image ?? undefined}
                       alt=""
-                      className="aspect-[5/3] object-cover rounded-xl mb-4 w-full max-w-[585px] h-[373px]"
+                      className="aspect-[5/3] object-cover rounded-xl mb-4 w-full max-w-[585px] lg:h-[373px] h-[122px]"
                     />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>
-                  <p className="font-bold">{muscleGroup.name}</p>
+                  <p className="font-bold text-base lg:text-xl">{muscleGroup.name}</p>
                 </div>
               </Link>
             ) : (
@@ -124,12 +124,10 @@ export default function Gallery() {
                           src={muscleGroup.image ?? undefined}
                           alt=""
                           className="aspect-[5/3] object-cover rounded-xl mb-4"
-                          width={585}
-                          height={373}
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                       </div>
-                      <p className="font-bold">{muscleGroup.name}</p>
+                      <p className="font-bold text-base lg:text-xl">{muscleGroup.name}</p>
                     </div>
                   </DialogTrigger>
                   <DialogContent>
@@ -137,15 +135,21 @@ export default function Gallery() {
                       <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
                     </DialogHeader>
                     <div className="flex flex-col items-center text-center gap-6">
-                      <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN</p>
+                      <p className="text-base lg:text-xl">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN</p>
                       <div className="flex gap-4 justify-center w-full px-10">
                         <div className="flex-1">
-                          <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>
+                          <Button
+                            className="bg-[#13D8A7] rounded-full w-full text-base lg:text-xl"
+                            onClick={handleBuyPackageClick}
+                          >
                             Mua gói Member
                           </Button>
                         </div>
                         <div className="flex-1">
-                          <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
+                          <Button
+                            className="bg-[#13D8A7] rounded-full w-full text-base lg:text-xl"
+                            onClick={handleLoginClick}
+                          >
                             Đăng nhập
                           </Button>
                         </div>
@@ -160,23 +164,27 @@ export default function Gallery() {
       </div>
       <div className="mb-20">
         <div className="flex flex-col justify-center text-center gap-5 mb-20">
-          <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] font-bold">
+          <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px] font-bold">
             Món theo chế độ ăn
           </div>
-          <p className="text-[#737373] text-xl">
+          <p className="text-[#737373] text-base lg:text-xl">
             Khám phá 500+ món ăn theo các chế độ ăn khác nhau phù hợp nhất với mục tiêu của bạn.
           </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
+        <div className="grid grid-cols-3 lg:gap-10 gap-4">
           {dietsData.data?.map((diet) =>
             session ? (
               <Link href={`/gallery/meal/${diet.id}`} key={diet.id}>
-                <div key={`menu-${diet.id}`} className="text-xl w-[585px] max-w-[585px] overflow-hidden">
+                <div key={`menu-${diet.id}`} className="text-xl lg:w-[585px] w-[122px] max-w-[585px] overflow-hidden">
                   <div className="relative group">
-                    <img src={diet.image} alt="" className="object-cover rounded-xl mb-4 w-[585px] h-[373px]" />
+                    <img
+                      src={diet.image}
+                      alt=""
+                      className="object-cover rounded-xl mb-4 lg:w-[585px] lg:h-[373px] h-[122px] w-full"
+                    />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>
-                  <p className="font-bold">{diet.name}</p>
+                  <p className="font-bold text-base lg:text-xl">{diet.name}</p>
                 </div>
               </Link>
             ) : (
@@ -197,7 +205,7 @@ export default function Gallery() {
                         <img src={diet.image} alt="" className="object-cover rounded-xl mb-4 w-[585px] h-[373px]" />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                       </div>
-                      <p className="font-bold">{diet.name}</p>
+                      <p className="font-bold text-base lg:text-xl">{diet.name}</p>
                     </div>
                   </DialogTrigger>
                   <DialogContent>
@@ -205,7 +213,7 @@ export default function Gallery() {
                       <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
                     </DialogHeader>
                     <div className="flex flex-col items-center text-center gap-6">
-                      <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN</p>
+                      <p className="text-base lg:text-xl">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN</p>
                       <div className="flex gap-4 justify-center w-full px-10">
                         <div className="flex-1">
                           <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>

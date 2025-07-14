@@ -3,7 +3,6 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { getUserSubscriptions } from '@/network/client/users'
-import { useRouter } from 'next/navigation'
 import { getSubscription } from '@/network/client/subscriptions'
 import { useSession } from '@/hooks/use-session'
 import { useEffect, useState } from 'react'
@@ -39,13 +38,9 @@ export default function ListSubscriptions() {
           )
 
           setUserSubscriptions(sortedSubscriptions)
-
-          // Only set the selected subscription if it's not already set
           if (!selectedSubscription) {
             setSelectedSubscription(sortedSubscriptions[0])
           }
-
-          // Fetch subscription names only once
           const namesPromises = sortedSubscriptions.map(async (sub) => {
             try {
               const subResponse = await getSubscription(sub.subscription.id.toString())
@@ -76,13 +71,8 @@ export default function ListSubscriptions() {
       }
     }
 
-    // Only run this effect when session changes
-    // We don't need to include selectedSubscription or setSelectedSubscription in the dependency array
-    // as we're checking selectedSubscription inside conditionally
     fetchData()
   }, [session, setContextLoading])
-
-  const router = useRouter()
 
   const handleSubscriptionChange = async (value: string) => {
     if (value === 'favorites') {
@@ -134,32 +124,36 @@ export default function ListSubscriptions() {
       {!showFavorites && (
         <>
           {isActive ? (
-            <Button className="w-[160px] h-[54px] bg-[#13D8A7] text-lg">Còn hạn</Button>
+            <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#13D8A7] text-lg">Còn hạn</Button>
           ) : (
-            <Button className="w-[160px] h-[54px] bg-[#E61417] text-lg">Hết hạn</Button>
+            <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#E61417] text-lg">Hết hạn</Button>
           )}
 
-          <div className="flex flex-col lg:flex-row gap-5 mt-auto text-lg justify-center text-[#737373] font-bold">
-            <div className="flex gap-2">
-              <div>Ngày bắt đầu:</div>
-              <span>
-                {selectedSubscription?.subscription_start_at
-                  ? new Date(selectedSubscription.subscription_start_at).toLocaleDateString('vi-VN')
-                  : ''}
-              </span>
+          <div className="flex lg:flex-row gap-5 mt-auto text-lg justify-between text-[#737373] font-bold">
+            <div className="flex flex-col lg:flex-row lg:gap-10 gap-2">
+              <div className="flex gap-2">
+                <div>Ngày bắt đầu:</div>
+                <span>
+                  {selectedSubscription?.subscription_start_at
+                    ? new Date(selectedSubscription.subscription_start_at).toLocaleDateString('vi-VN')
+                    : ''}
+                </span>
+              </div>
+              <div className="flex gap-2">
+                <div>Ngày kết thúc:</div>
+                <span>
+                  {selectedSubscription?.subscription_end_at
+                    ? new Date(selectedSubscription.subscription_end_at).toLocaleDateString('vi-VN')
+                    : ''}
+                </span>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <div>Ngày kết thúc:</div>
-              <span>
-                {selectedSubscription?.subscription_end_at
-                  ? new Date(selectedSubscription.subscription_end_at).toLocaleDateString('vi-VN')
-                  : ''}
-              </span>
-            </div>
-            <div className="flex gap-2">
-              <div>Promocode:</div>
-              <span>{selectedSubscription?.coupon_code}</span>
-            </div>
+            {selectedSubscription?.coupon_code && (
+              <div className="flex gap-2">
+                <div>Promocode:</div>
+                <span>{selectedSubscription?.coupon_code}</span>
+              </div>
+            )}
           </div>
         </>
       )}

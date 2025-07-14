@@ -99,36 +99,49 @@ export default function PurchasedPackage() {
           {subscriptions.map((subscription) => (
             <div
               key={subscription.id}
-              className="bg-[#FFAEB01A] rounded-[20px] py-5 px-5 grid grid-cols-1 md:grid-cols-2 h-full"
+              className="bg-[#FFAEB01A] rounded-[20px] py-5 px-5 grid grid-cols-1 md:grid-cols-2 h-full relative"
             >
+              <Button
+                className={`rounded-lg text-white text-base lg:text-xl lg:w-[160px] lg:h-[56px] w-[100px] h-[46px] lg:hidden block absolute top-5 right-5 ${
+                  subscription.status === 'active' ? 'bg-[#13D8A7]' : 'bg-[#E61417]'
+                }`}
+              >
+                {subscription.status === 'active' ? 'Còn hạn' : 'Hết hạn'}
+              </Button>
               <div className="flex flex-col gap-5 max-w-[45%] text-lg">
-                <div className="font-[family-name:var(--font-coiny)] text-[#000000] text-xl md:text-2xl mb-[18px]">
+                <div className="font-[family-name:var(--font-coiny)] text-[#000000] text-xl lg:text-2xl mb-[18px]">
                   {subscription.name || `Gói #${subscription.subscription.id}`}
                 </div>
-                <div className="flex justify-between text-[#737373]">
+                <div className="flex justify-between text-[#737373] text-base lg:text-xl">
                   <div>Ngày bắt đầu:</div>
                   <div>{formatDate(subscription.subscription_start_at)}</div>
                 </div>
-                <div className="flex justify-between text-[#737373]">
+                <div className="flex justify-between text-[#737373] text-base lg:text-xl">
                   <div>Ngày kết thúc:</div>
                   <div>{formatDate(subscription.subscription_end_at)}</div>
                 </div>
                 <Link
                   href={`/packages/detail/${subscription.subscription.id}`}
-                  className="h-fit text-base md:text-xl lg:text-2xl text-[#13D8A7] mb-[18px] max-md:font-light mt-auto"
+                  className="h-fit text-base lg:text-xl text-[#13D8A7] mb-[18px] max-md:font-light mt-auto"
                 >
-                  <Button className="bg-[#13D8A7] rounded-full w-[160px] h-[36px] text-lg">Chọn gói</Button>
+                  <Button className="bg-[#13D8A7] rounded-full w-[160px] h-[36px] text-base lg:text-xl">
+                    Chọn gói
+                  </Button>
                 </Link>
               </div>
               <div className="flex flex-col justify-between items-end gap-4">
                 <Button
-                  className={`rounded-lg text-white text-lg w-[160px] h-[56px] ${
+                  className={`rounded-lg text-white text-base lg:text-xl lg:w-[160px] lg:h-[56px] w-[100px] h-[46px] hidden lg:block ${
                     subscription.status === 'active' ? 'bg-[#13D8A7]' : 'bg-[#E61417]'
                   }`}
                 >
                   {subscription.status === 'active' ? 'Còn hạn' : 'Hết hạn'}
                 </Button>
-                <img src={subscription.cover_image} alt="" className="aspect-[3/2] object-cover rounded-[20px]" />
+                <img
+                  src={subscription.cover_image}
+                  alt=""
+                  className="aspect-[3/2] object-cover rounded-[20px] w-full"
+                />
               </div>
             </div>
           ))}

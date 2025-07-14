@@ -275,7 +275,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
                             backgroundColor: hex,
                             border: isSelected ? '2px solid #00C7BE' : '1px solid #ddd',
                           }}
-                          className="rounded-full w-10 h-10 relative"
+                          className="rounded-full lg:w-10 lg:h-10 w-[19px] h-[19px] p-0 relative"
                           disabled={!hasInStockVariants}
                           onClick={() => {
                             setSelectedColorId(colorId)

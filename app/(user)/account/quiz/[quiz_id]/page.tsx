@@ -213,9 +213,9 @@ export default function BodyQuizPage() {
   const renderQuestionField = (question: BodyQuiz['questions'][number]) => {
     const fieldName = `question_${question.id}` as const
     return (
-      <div key={question.id} className="bg-white p-6 rounded-lg shadow-sm border mb-6">
+      <div key={question.id} className="bg-white p-4 lg:p-6 rounded-lg shadow-sm border mb-6">
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">
+          <h3 className="text-base lg:text-xl font-medium">
             {question.title}
             {question.is_required && <span className="text-red-500 ml-1">*</span>}
           </h3>
@@ -232,15 +232,15 @@ export default function BodyQuizPage() {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <div>
+                  <div className="text-base lg:text-xl">
                     {question.question_type === 'SINGLE_CHOICE' && (
                       <Select
                         onValueChange={field.onChange}
                         value={field.value as string}
                         defaultValue={typeof field.value === 'string' ? field.value : ''}
                       >
-                        <SelectTrigger className="w-full h-[50px] bg-white text-black">
-                          <SelectValue placeholder="Chọn câu trả lời" className="text-black" />
+                        <SelectTrigger className="w-full h-[50px] bg-white text-black text-base lg:text-xl">
+                          <SelectValue placeholder="Chọn câu trả lời" className="text-black text-base lg:text-xl" />
                         </SelectTrigger>
                         <SelectContent>
                           {question.choices?.map((choice, index) => (
@@ -287,7 +287,7 @@ export default function BodyQuizPage() {
                         {...field}
                         type={question.input_type === 'integer' ? 'number' : 'text'}
                         placeholder="Nhập câu trả lời"
-                        className="w-full h-[50px] bg-white text-black"
+                        className="w-full h-[50px] bg-white text-black text-base lg:text-xl"
                       />
                     )}
                   </div>
@@ -303,7 +303,7 @@ export default function BodyQuizPage() {
 
   if (isLoading) {
     return (
-      <div className="p-14 max-w-screen-3xl mx-auto mb-20 flex justify-center items-center min-h-[50vh]">
+      <div className="p-4 mx-auto mb-20 flex justify-center items-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
       </div>
     )
@@ -311,7 +311,7 @@ export default function BodyQuizPage() {
 
   if (error) {
     return (
-      <div className="p-14 max-w-screen-3xl mx-auto mb-20 text-center">
+      <div className="p-4 mx-auto mb-20 text-center">
         <p className="text-red-500">{error}</p>
       </div>
     )
@@ -319,7 +319,7 @@ export default function BodyQuizPage() {
 
   if (!bodyQuiz) {
     return (
-      <div className="p-14 max-w-screen-3xl mx-auto mb-20">
+      <div className="p-4 mx-auto mb-20">
         <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4">
           <p className="text-yellow-700">Không tìm thấy dữ liệu bài kiểm tra</p>
         </div>
@@ -333,86 +333,92 @@ export default function BodyQuizPage() {
   }
 
   return (
-    <div className="p-14 max-w-screen-3xl mx-auto mb-20 relative">
-      <Dialog open={showSuccessDialog} onOpenChange={handleCloseDialog}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle></DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <p className="text-center text-lg font-semibold text-[#737373] uppercase">Gửi bài kiểm tra thành công!</p>
-          </div>
-          <DialogFooter>
-            <Button
-              onClick={handleCloseDialog}
-              className="bg-[#13D8A7] hover:bg-[#13d8a7d0] rounded-full w-full h-[45px] text-xl font-semibold"
-            >
-              Trở về
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Login Dialog */}
-      <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
-        <DialogContent className="sm:max-w-[625px]">
-          <DialogHeader>
-            <DialogTitle className="text-center text-2xl"></DialogTitle>
-            <DialogDescription className="text-center text-lg">
-              HÃY ĐĂNG NHẬP/ĐĂNG KÝ TÀI KHOẢN ĐỂ XEM KẾT QUẢ BODY QUIZ
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex gap-4 justify-center mt-4">
-            <Button
-              className="bg-[#13D8A7] hover:bg-[#13d8a7d0] rounded-full w-1/3 h-[45px]"
-              onClick={handleLoginClick}
-            >
-              Đăng nhập
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <div className="bg-[#FFF7F8] p-8 rounded-[10px] pb-28 mt-10">
+    <div className="lg:p-20">
+      <div className="relative w-full">
+        <img
+          src={'/body-quiz-image.jpg'}
+          alt="Body Quiz Image"
+          className="object-cover h-[280px] lg:h-[731px] w-full"
+        />
         <Link
           href="/account?tab=body-quiz"
-          className="inline-flex items-center gap-2 text-xl font-semibold transition-colors absolute top-6 left-13"
+          className="inline-flex items-center gap-2 text-xl font-semibold transition-colors absolute top-4 left-4 lg:left-16 lg:top-0"
         >
           <BackIconBlack className="w-5 h-5" />
           <span>Quay về</span>
         </Link>
-        <div className="relative w-full aspect-[9/4]">
-          <Image src={'/body-quiz-image.jpg'} alt="Body Quiz Image" fill className="rounded-[10px] object-cover" />
-        </div>
-
-        <div className="w-full flex flex-col gap-5 mt-20">
-          <div className="xl:w-[400px] max-lg:w-full mb-10 ">
-            <div className="font-[family-name:var(--font-coiny)] text-3xl text-ring font-bold mb-5">
-              {bodyQuiz.title || 'Shefit.vn Body Quiz 1:1'}
+      </div>
+      <div className="p-4 mx-auto mb-20 relative">
+        <Dialog open={showSuccessDialog} onOpenChange={handleCloseDialog}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle></DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <p className="text-center text-base lg:text-xl font-semibold text-[#737373] uppercase">
+                Gửi bài kiểm tra thành công!
+              </p>
             </div>
-            {bodyQuiz.description && <p className="text-gray-500">{bodyQuiz.description}</p>}
-          </div>
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-7">
-              <div className="space-y-6">{bodyQuiz.questions?.map((question) => renderQuestionField(question))}</div>
-
+            <DialogFooter>
               <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-[#13D8A7] hover:bg-[#13d8a7d0] text-white py-2 px-4 rounded-full w-full xl:h-20 text-xl transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+                onClick={handleCloseDialog}
+                className="bg-[#13D8A7] hover:bg-[#13d8a7d0] rounded-full w-full h-[45px] text-base lg:text-xl font-semibold"
               >
-                {isSubmitting ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-2"></div>
-                    Đang gửi...
-                  </div>
-                ) : (
-                  'Gửi'
-                )}
+                Trở về
               </Button>
-            </form>
-          </Form>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
+          <DialogContent className="sm:max-w-[625px]">
+            <DialogHeader>
+              <DialogTitle className="text-center text-xl lg:text-2xl"></DialogTitle>
+              <DialogDescription className="text-center text-xl lg:text-2xl">
+                HÃY ĐĂNG NHẬP/ĐĂNG KÝ TÀI KHOẢN ĐỂ XEM KẾT QUẢ BODY QUIZ
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex gap-4 justify-center mt-4">
+              <Button
+                className="bg-[#13D8A7] hover:bg-[#13d8a7d0] rounded-full w-1/3 h-[45px] text-base lg:text-xl"
+                onClick={handleLoginClick}
+              >
+                Đăng nhập
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <div>
+          <div className="w-full flex flex-col gap-5 lg:mt-20 mt-5">
+            <div className="mb-10">
+              <div className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] text-ring font-bold mb-5">
+                {bodyQuiz.title}
+              </div>
+              {bodyQuiz.description && <p className="text-gray-500 text-base">{bodyQuiz.description}</p>}
+            </div>
+
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-7">
+                <div className="space-y-6">{bodyQuiz.questions?.map((question) => renderQuestionField(question))}</div>
+
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-[#13D8A7] hover:bg-[#13d8a7d0] text-white py-2 px-4 rounded-full w-full xl:h-20 text-base lg:text-xl transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-2"></div>
+                      Đang gửi...
+                    </div>
+                  ) : (
+                    'Gửi'
+                  )}
+                </Button>
+              </form>
+            </Form>
+          </div>
         </div>
       </div>
     </div>

@@ -78,7 +78,7 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
 
   return (
     <div className="flex flex-col gap-10 mt-10">
-      <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] mb-5 text-center font-bold">
+      <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px] mb-5 text-center font-bold">
         {dish?.name}
       </div>
 
@@ -112,7 +112,7 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
 
       <div className="flex flex-col gap-5">
         <div>
-          <div className="font-medium text-xl">{dish?.name}</div>
+          <div className="font-medium text-xl lg:text-2xl">{dish?.name}</div>
           <div className="text-[#737373] mt-2">
             <div className="flex flex-wrap gap-4">
               <p>Dinh dưỡng: {dish.nutrients}</p>
@@ -122,7 +122,7 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
 
         {dish?.description && (
           <div className="mt-4">
-            <h3 className="font-semibold text-lg mb-2">Mô tả:</h3>
+            <h3 className="font-semibold text-xl mb-2 lg:text-2xl">Mô tả:</h3>
             <p className="text-[#737373]">{dish.description}</p>
           </div>
         )}

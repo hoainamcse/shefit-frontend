@@ -1,5 +1,10 @@
 'use client'
-import { getFavouriteExercises, getFavouriteCourses, getFavouriteMealPlans, getFavouriteDishes } from '@/network/client/user-favourites'
+import {
+  getFavouriteExercises,
+  getFavouriteCourses,
+  getFavouriteMealPlans,
+  getFavouriteDishes,
+} from '@/network/client/user-favourites'
 import { FavouriteExercise, FavouriteMealPlan, FavouriteDish } from '@/models/favourite'
 import { Exercise } from '@/models/exercise'
 import { useSession } from '@/hooks/use-session'
@@ -275,32 +280,40 @@ export default function FavouriteContent() {
           <DialogTrigger asChild>
             <div className="flex flex-col gap-16">
               <div>
-                <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+                <div className="text-3xl lg:text-[40px] text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
                   Khóa tập của bạn
                 </div>
-                <div className="text-gray-500 text-lg">Bạn chưa có khóa tập nào</div>
-                <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm khóa tập</Button>
+                <div className="text-gray-500 text-base lg:text-xl">Bạn chưa có khóa tập nào</div>
+                <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-base lg:text-xl">
+                  Thêm khóa tập
+                </Button>
               </div>
               <div>
-                <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+                <div className="text-3xl lg:text-[40px] text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
                   Động tác của bạn
                 </div>
-                <div className="text-gray-500 text-lg">Bạn chưa có động tác nào</div>
-                <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm động tác</Button>
+                <div className="text-gray-500 text-base lg:text-xl">Bạn chưa có động tác nào</div>
+                <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-base lg:text-xl">
+                  Thêm động tác
+                </Button>
               </div>
               <div>
-                <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+                <div className="text-3xl lg:text-[40px] text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
                   Thực đơn của bạn
                 </div>
-                <div className="text-gray-500 text-lg">Bạn chưa có thực đơn nào</div>
-                <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm thực đơn</Button>
+                <div className="text-gray-500 text-base lg:text-xl">Bạn chưa có thực đơn nào</div>
+                <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-base lg:text-xl">
+                  Thêm thực đơn
+                </Button>
               </div>
               <div>
-                <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+                <div className="text-3xl lg:text-[40px] text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
                   Món ăn của bạn
                 </div>
-                <div className="text-gray-500 text-lg">Bạn chưa có món ăn nào</div>
-                <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm món ăn</Button>
+                <div className="text-gray-500 text-base lg:text-xl">Bạn chưa có món ăn nào</div>
+                <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-base lg:text-xl">
+                  Thêm món ăn
+                </Button>
               </div>
             </div>
           </DialogTrigger>
@@ -309,15 +322,18 @@ export default function FavouriteContent() {
               <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
             </DialogHeader>
             <div className="flex flex-col items-center text-center gap-6">
-              <p className="text-lg">HÃY ĐĂNG NHẬP & MUA GÓI ĐỂ THÊM KHÓA TẬP & THỰC ĐƠN</p>
+              <p className="text-base lg:text-xl">HÃY ĐĂNG NHẬP & MUA GÓI ĐỂ THÊM KHÓA TẬP & THỰC ĐƠN</p>
               <div className="flex gap-4 justify-center w-full px-10">
                 <div className="flex-1">
-                  <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>
+                  <Button
+                    className="bg-[#13D8A7] rounded-full w-full text-base lg:text-xl"
+                    onClick={handleBuyPackageClick}
+                  >
                     Mua gói
                   </Button>
                 </div>
                 <div className="flex-1">
-                  <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
+                  <Button className="bg-[#13D8A7] rounded-full w-full text-base lg:text-xl" onClick={handleLoginClick}>
                     Đăng nhập
                   </Button>
                 </div>
@@ -332,10 +348,10 @@ export default function FavouriteContent() {
   return (
     <div className="mt-12">
       <div>
-        <div className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+        <div className="text-3xl lg:text-[40px] text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
           Khóa tập của bạn
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-base lg:text-xl">
           {isLoadingCourses ? (
             <div className="flex justify-center items-center h-40 col-span-3">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#13D8A7]"></div>
@@ -358,12 +374,12 @@ export default function FavouriteContent() {
                     </div>
                     <div className="flex justify-between">
                       <div>
-                        <p className="font-medium">{course.course_name}</p>
+                        <p className="font-medium text-base lg:text-xl">{course.course_name}</p>
                         <div className="flex gap-2">
-                          <p className="text-[#737373]">{course.trainer}</p>
+                          <p className="text-[#737373] text-base lg:text-xl">{course.trainer}</p>
                         </div>
                       </div>
-                      <div className="flex gap-2 justify-end flex-col items-end">
+                      <div className="flex gap-2 justify-end flex-col items-end text-base lg:text-xl">
                         {course.form_categories?.map((cat) => cat.name).join(', ')}
                       </div>
                     </div>
@@ -372,18 +388,22 @@ export default function FavouriteContent() {
               </div>
             ))
           ) : (
-            <div className="col-span-3 text-center text-gray-500 py-8">Chưa có khóa tập yêu thích</div>
+            <div className="col-span-3 text-center text-gray-500 py-8 text-base lg:text-xl">
+              Chưa có khóa tập yêu thích
+            </div>
           )}
         </div>
         <Link href="/courses">
-          <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm khóa tập</Button>
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-base lg:text-xl">
+            Thêm khóa tập
+          </Button>
         </Link>
       </div>
       <div className="space-y-6 mt-12">
-        <h2 className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+        <h2 className="text-3xl lg:text-[40px] text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
           Thực đơn
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-base lg:text-xl">
           {isLoadingMealPlans ? (
             <div className="flex justify-center items-center h-40 col-span-3">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#13D8A7]"></div>
@@ -402,27 +422,31 @@ export default function FavouriteContent() {
                   />
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
-                <p className="font-medium">{meal_plan.title}</p>
-                <p className="text-[#737373]">{meal_plan.subtitle}</p>
-                <p className="text-[#737373]">
+                <p className="font-medium text-base lg:text-xl">{meal_plan.title}</p>
+                <p className="text-[#737373] text-base lg:text-xl">{meal_plan.subtitle}</p>
+                <p className="text-[#737373] text-base lg:text-xl">
                   {meal_plan.chef_name} - {meal_plan.number_of_days} ngày
                 </p>
               </Link>
             ))
           ) : (
-            <div className="col-span-3 text-center text-gray-500 py-8">Chưa có thực đơn yêu thích</div>
+            <div className="col-span-3 text-center text-gray-500 py-8 text-base lg:text-xl">
+              Chưa có thực đơn yêu thích
+            </div>
           )}
         </div>
         <Link href="/meal-plans">
-          <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14">Thêm thực đơn</Button>
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-base lg:text-xl">
+            Thêm thực đơn
+          </Button>
         </Link>
       </div>
 
       <div className="space-y-6 mt-12">
-        <h2 className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+        <h2 className="text-3xl lg:text-[40px] text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
           Động tác
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-base lg:text-xl">
           {isLoadingExercises ? (
             <div className="flex justify-center items-center h-40 col-span-3">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#13D8A7]"></div>
@@ -445,21 +469,27 @@ export default function FavouriteContent() {
                     />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>
-                  <p className="font-medium">{exercise.exercise?.name}</p>
+                  <p className="font-medium text-base lg:text-xl">{exercise.exercise?.name}</p>
                 </div>
               </Link>
             ))
           ) : (
-            <div className="col-span-3 text-center text-gray-500 py-8">Chưa có động tác yêu thích</div>
+            <div className="col-span-3 text-center text-gray-500 py-8 text-base lg:text-xl">
+              Chưa có động tác yêu thích
+            </div>
           )}
         </div>
         <Link href="/gallery">
-          <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm động tác</Button>
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-base lg:text-xl">
+            Thêm động tác
+          </Button>
         </Link>
       </div>
 
       <div className="space-y-6 mt-12">
-        <h2 className="text-3xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">Món ăn</h2>
+        <h2 className="text-3xl lg:text-[40px] text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+          Món ăn
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
           {isLoadingDishes ? (
             <div className="flex justify-center items-center h-40 col-span-3">
@@ -467,13 +497,13 @@ export default function FavouriteContent() {
             </div>
           ) : dishes.length > 0 ? (
             dishes.map((dish) => (
-              <Link 
+              <Link
                 href={`/gallery/meal/${dish.dish?.diet?.id || '#'}/${dish.id}`}
                 key={dish.id}
                 onClick={(e) => {
                   if (!dish.dish?.diet?.id) {
-                    e.preventDefault();
-                    alert('Diet information not available');
+                    e.preventDefault()
+                    alert('Diet information not available')
                   }
                 }}
               >
@@ -484,15 +514,19 @@ export default function FavouriteContent() {
                   <img src={dish.image} alt={dish.title} className="aspect-[5/3] object-cover rounded-xl mb-4 w-full" />
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
-                <p className="font-medium">{dish.title}</p>
+                <p className="font-medium text-base lg:text-xl">{dish.title}</p>
               </Link>
             ))
           ) : (
-            <div className="col-span-3 text-center text-gray-500 py-8">Chưa có món ăn yêu thích</div>
+            <div className="col-span-3 text-center text-gray-500 py-8 text-base lg:text-xl">
+              Chưa có món ăn yêu thích
+            </div>
           )}
         </div>
         <Link href="/dishes">
-          <Button className="bg-[#13D8A7] text-white text-xl w-full rounded-full h-14 mt-6">Thêm món ăn</Button>
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-base lg:text-xl">
+            Thêm món ăn
+          </Button>
         </Link>
       </div>
     </div>

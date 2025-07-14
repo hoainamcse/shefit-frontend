@@ -110,20 +110,21 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
       )}
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-2 mb-5">
-          <div className="font-[family-name:var(--font-coiny)] font-bold text-ring xl:text-[40px]">Tên bài tập</div>
-          <div className="text-[#737373] text-xl">{exercise?.name}</div>
+          <div className="text-center font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl lg:text-[40px]">
+            {exercise?.name}
+          </div>
         </div>
         <div className="flex flex-col gap-2 mb-5">
-          <div className="font-[family-name:var(--font-coiny)] font-bold text-ring xl:text-[40px]">
+          <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl lg:text-[40px]">
             Thông tin bài tập
           </div>
-          <div className="text-[#737373] text-xl">{exercise?.description}</div>
+          <div className="text-[#737373] text-lg lg:text-xl">{exercise?.description}</div>
         </div>
       </div>
 
       {exercise?.equipments?.length > 0 && (
         <div className="flex flex-col gap-5">
-          <p className="font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl xl:text-[40px]">Dụng cụ</p>
+          <p className="font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl lg:text-[40px]">Dụng cụ</p>
           <ScrollArea className="w-screen-max-xl">
             <div className="flex space-x-4 py-4 w-full">
               {exercise.equipments.map((equipment: any, index: number) => (
@@ -135,7 +136,7 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
                       className="w-[168px] h-[175px] object-cover rounded-xl"
                     />
                   </div>
-                  <figcaption className="pt-2 font-semibold text-lg max-lg:text-base text-muted-foreground w-full">
+                  <figcaption className="pt-2 font-semibold text-lg lg:text-xl text-muted-foreground w-full">
                     {equipment.name}
                   </figcaption>
                 </figure>
@@ -148,7 +149,7 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
 
       {exercise?.muscle_groups?.length > 0 && (
         <div className="flex flex-col gap-5">
-          <p className="font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl xl:text-[40px]">Nhóm cơ</p>
+          <p className="font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl lg:text-[40px]">Nhóm cơ</p>
           <ScrollArea className="w-screen-max-xl">
             <div className="flex w-full space-x-4 py-4">
               {exercise.muscle_groups.map((muscleGroup: any, index: number) => (
@@ -160,7 +161,7 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
                       className="w-[168px] h-[175px] object-cover rounded-xl"
                     />
                   </div>
-                  <figcaption className="pt-2 font-semibold text-xl max-lg:text-base text-muted-foreground w-full">
+                  <figcaption className="pt-2 font-semibold text-lg lg:text-xl text-muted-foreground w-full">
                     {muscleGroup.name}
                   </figcaption>
                 </figure>

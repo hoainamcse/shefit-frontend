@@ -23,109 +23,74 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
 
   const subscriptionData = subscription?.data
   return (
-    <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full pb-24 relative px-4 lg:px-14">
-      <Link href="/account?tab=buy-package" className="flex items-center gap-[10px] cursor-pointer">
-        <BackIcon color="#000000" style={{ marginBottom: '4px' }} />
-        <div className="text-xl text-[#000000] font-semibold">Quay về</div>
-      </Link>
-      <div className="mb-20 flex flex-col gap-10">
+    <div>
+      <div className="relative">
         <img
           src={subscriptionData?.cover_image}
           alt={`${subscriptionData?.name}`}
-          className="rounded-xl mb-4 w-full h-[680px] object-cover"
+          className="lg:rounded-xl rounded-none mb-4 w-full lg:h-[680px] h-[280px] object-cover"
         />
-        <SubscriptionInfo />
-        <div className="flex justify-between text-lg">
-          <div className="flex flex-col gap-10 w-full">
-            <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-8 font-bold text-center">
-              {subscriptionData?.name}
-            </div>
-            <div>
-              <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
-                Thông tin Gói
+        <Link
+          href="/account?tab=buy-package"
+          className="absolute top-5 left-5 flex items-center gap-[10px] cursor-pointer"
+        >
+          <BackIcon color="#000000" style={{ marginBottom: '4px' }} />
+          <div className="text-xl text-[#000000] font-semibold">Quay về</div>
+        </Link>
+      </div>
+      <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full pb-24 px-4 lg:px-14">
+        <div className="mb-20 flex flex-col gap-10">
+          <SubscriptionInfo />
+          <div className="flex justify-between text-lg">
+            <div className="flex flex-col gap-10 w-full">
+              <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-8 font-bold text-center">
+                {subscriptionData?.name}
               </div>
-              <p dangerouslySetInnerHTML={{ __html: subscriptionData?.description_2 || '' }} />
-            </div>
-            <div>
-              <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4  font-bold">
-                Khóa Tập Thuộc Gói
-              </div>
-              <p className="mb-5">Các khóa tập bạn được truy cập khi mua gói member này</p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                {subscriptionData?.course_ids?.map((courseId: number) => {
-                  const course = courses?.data?.find((course) => course.id === courseId)
-                  return course ? (
-                    <div key={`course-${course.id}`}>
-                      <div className="relative group">
-                        <img
-                          src={course.cover_image || subscriptionData?.cover_image}
-                          alt={course.course_name || course.id.toString()}
-                          className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
-                        />
-                        <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-
-                        <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
-                          <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
-                        </Link>
-                      </div>
-                      <div className="flex justify-between">
-                        <div>
-                          <p className="font-medium">{course.course_name}</p>
-                          <p className="text-[#737373]">{courseLevelLabel[course.difficulty_level]}</p>
-                          <p className="text-[#737373]">{course.trainer}</p>
-                        </div>
-                        <div>
-                          <div className="text-gray-500 flex justify-end max-w-[200px]">
-                            {Array.isArray(course.form_categories)
-                              ? course.form_categories.map((cat) => cat.name).join(', ')
-                              : courseFormLabel[course.form_categories]}
-                          </div>
-                          <div className="flex justify-end">
-                            {course.is_free ? (
-                              <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
-                            ) : null}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ) : null
-                })}
-              </div>
-            </div>
-            {subscriptionData?.meal_plan_ids && subscriptionData?.meal_plan_ids.length > 0 && (
               <div>
                 <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
-                  Thực đơn
+                  Thông tin Gói
                 </div>
-                <p dangerouslySetInnerHTML={{ __html: subscriptionData?.meal_plan_description || '' }} />
+                <p dangerouslySetInnerHTML={{ __html: subscriptionData?.description_2 || '' }} />
+              </div>
+              <div>
+                <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4  font-bold">
+                  Khóa Tập Thuộc Gói
+                </div>
+                <p className="mb-5">Các khóa tập bạn được truy cập khi mua gói member này</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  {subscriptionData?.meal_plan_ids.map((mealPlanId: number) => {
-                    const mealPlan = mealPlans?.data?.find((plan: any) => plan.id === mealPlanId)
-                    return mealPlan ? (
-                      <div key={`menu-${mealPlan.id}`}>
+                  {subscriptionData?.course_ids?.map((courseId: number) => {
+                    const course = courses?.data?.find((course) => course.id === courseId)
+                    return course ? (
+                      <div key={`course-${course.id}`}>
                         <div className="relative group">
                           <img
-                            src={mealPlan.image}
-                            alt={mealPlan.title}
+                            src={course.cover_image || subscriptionData?.cover_image}
+                            alt={course.course_name || course.id.toString()}
                             className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
                           />
                           <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-                          <Link href={`/meal-plans/${mealPlan.id}`}>
-                            <NextButton className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1" />
+
+                          <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
+                            <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
                           </Link>
                         </div>
-                        <div className="relative">
+                        <div className="flex justify-between">
                           <div>
-                            <p className="font-medium">{mealPlan.title}</p>
-                            <p className="text-[#737373]">{mealPlan.subtitle}</p>
-                            <p className="text-[#737373]">
-                              Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
-                            </p>
+                            <p className="font-medium">{course.course_name}</p>
+                            <p className="text-[#737373]">{courseLevelLabel[course.difficulty_level]}</p>
+                            <p className="text-[#737373]">{course.trainer}</p>
                           </div>
-                          <div className="absolute bottom-0 right-0">
-                            {mealPlan.is_free ? (
-                              <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
-                            ) : null}
+                          <div>
+                            <div className="text-gray-500 flex justify-end max-w-[200px]">
+                              {Array.isArray(course.form_categories)
+                                ? course.form_categories.map((cat) => cat.name).join(', ')
+                                : courseFormLabel[course.form_categories]}
+                            </div>
+                            <div className="flex justify-end">
+                              {course.is_free ? (
+                                <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                              ) : null}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -133,14 +98,56 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                   })}
                 </div>
               </div>
-            )}
-            <div>
-              <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
-                Theo dõi kết quả
+              {subscriptionData?.meal_plan_ids && subscriptionData?.meal_plan_ids.length > 0 && (
+                <div>
+                  <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
+                    Thực đơn
+                  </div>
+                  <p dangerouslySetInnerHTML={{ __html: subscriptionData?.meal_plan_description || '' }} />
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    {subscriptionData?.meal_plan_ids.map((mealPlanId: number) => {
+                      const mealPlan = mealPlans?.data?.find((plan: any) => plan.id === mealPlanId)
+                      return mealPlan ? (
+                        <div key={`menu-${mealPlan.id}`}>
+                          <div className="relative group">
+                            <img
+                              src={mealPlan.image}
+                              alt={mealPlan.title}
+                              className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
+                            />
+                            <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                            <Link href={`/meal-plans/${mealPlan.id}`}>
+                              <NextButton className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1" />
+                            </Link>
+                          </div>
+                          <div className="relative">
+                            <div>
+                              <p className="font-medium">{mealPlan.title}</p>
+                              <p className="text-[#737373]">{mealPlan.subtitle}</p>
+                              <p className="text-[#737373]">
+                                Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
+                              </p>
+                            </div>
+                            <div className="absolute bottom-0 right-0">
+                              {mealPlan.is_free ? (
+                                <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                              ) : null}
+                            </div>
+                          </div>
+                        </div>
+                      ) : null
+                    })}
+                  </div>
+                </div>
+              )}
+              <div>
+                <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
+                  Theo dõi kết quả
+                </div>
+                <p dangerouslySetInnerHTML={{ __html: subscriptionData?.result_checkup || '' }} />
               </div>
-              <p dangerouslySetInnerHTML={{ __html: subscriptionData?.result_checkup || '' }} />
+              <AcctionButton />
             </div>
-            <AcctionButton />
           </div>
         </div>
       </div>

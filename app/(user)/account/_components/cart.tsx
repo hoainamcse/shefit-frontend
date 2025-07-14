@@ -28,10 +28,10 @@ export default function Cart() {
     <div className="max-w-screen-3xl mx-auto px-4 lg:px-14">
       <Tabs defaultValue="current-cart">
         <TabsList className="w-full bg-background gap-x-20 mb-10">
-          <TabsTrigger value="current-cart" className="w-1/2 !shadow-none text-2xl text-ring">
+          <TabsTrigger value="current-cart" className="w-1/2 !shadow-none text-xl lg:text-2xl text-ring">
             Giỏ hàng
           </TabsTrigger>
-          <TabsTrigger value="purchased-order" className="w-1/2 !shadow-none text-2xl text-ring">
+          <TabsTrigger value="purchased-order" className="w-1/2 !shadow-none text-xl lg:text-2xl text-ring">
             Đơn hàng đã mua
           </TabsTrigger>
         </TabsList>
