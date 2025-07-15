@@ -120,7 +120,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
           <h2 className="text-3xl lg:text-[40px] font-bold">{data.title}</h2>
           <p className="text-[#FB4A64] text-base lg:text-xl">{data.description}</p>
         </div>
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div
             className={cn(
               'grid grid-cols-1 gap-8 items-stretch justify-items-center',
@@ -132,7 +132,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
             )}
           >
             {data.subscriptions.map((sub, mIndex) => (
-              <div key={mIndex} className="flex flex-col h-full w-full max-w-sm space-y-4">
+              <div key={mIndex} className="flex flex-col h-full w-full space-y-4 px-4">
                 <Link href={'#'}>
                   <div
                     className={cn(
@@ -161,7 +161,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                             <img
                               src={course.image_homepage || '/temp/homepage-3.jpg'}
                               alt={course.course_name}
-                              className="rounded-md w-full object-cover aspect-[5/7]"
+                              className="rounded-md w-full object-cover aspect-[401/566]"
                             />
                             <div
                               className={cn(

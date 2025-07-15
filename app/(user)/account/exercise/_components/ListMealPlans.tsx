@@ -270,7 +270,7 @@ export default function ListMealPlans() {
                 }
               >
                 <div>
-                  <div className="relative group">
+                  <div className="relative group lg:max-w-[585px]">
                     {selectedSubscription?.status === 'expired' && (
                       <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50 rounded-xl">
                         <Lock className="text-white w-12 h-12" />

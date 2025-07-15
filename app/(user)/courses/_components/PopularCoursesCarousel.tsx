@@ -29,7 +29,7 @@ export default function PopularCoursesCarousel() {
   }
 
   return (
-    <>
+    <div className="mx-auto p-4">
       <p className="lg:text-center font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-[40px] lg:my-8 my-0 font-bold uppercase mb-4">
         Khoá Tập Hot Nhất Tháng
       </p>
@@ -42,17 +42,17 @@ export default function PopularCoursesCarousel() {
         >
           <CarouselContent>
             {popularCourses.map((course) => (
-              <CarouselItem key={`popular-course-${course.id}`} className="basis-3/4 lg:basis-[22%]">
+              <CarouselItem
+                key={`popular-course-${course.id}`}
+                className="basis-3/4 md:basis-[37%] lg:basis-[28%] xl:basis-[22%] w-full"
+              >
                 <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                   <div className="text-center">
-                    <div className="relative group">
-                      <img
-                        src={course.cover_image}
-                        alt={course.course_name}
-                        className="object-cover rounded-xl mb-4 lg:w-[400px] lg:h-[566px] w-[273px] h-[381px]"
-                      />
-                      <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-                    </div>
+                    <img
+                      src={course.cover_image}
+                      alt={course.course_name}
+                      className="object-cover rounded-xl mb-4 aspect-[401/560] w-full"
+                    />
                     <p className="font-medium text-base lg:text-xl">{course.course_name}</p>
                     <p className="text-[#737373] text-base lg:text-xl">
                       {course.form_categories.map((cat) => cat.name).join(', ')}
@@ -67,6 +67,6 @@ export default function PopularCoursesCarousel() {
           <CarouselNext />
         </Carousel>
       </div>
-    </>
+    </div>
   )
 }

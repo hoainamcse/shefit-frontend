@@ -12,7 +12,7 @@ export default function Layout({ children, withFooter, className }: LayoutProps)
   return (
     <>
       <Header />
-      <div className={cn("p-4", className)}>{children}</div>
+      <div className={cn("", className)}>{children}</div>
       <Footer />
     </>
   )

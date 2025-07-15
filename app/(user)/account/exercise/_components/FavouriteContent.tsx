@@ -20,6 +20,7 @@ import { getMealPlan } from '@/network/server/meal-plans'
 import { getDish } from '@/network/server/dishes'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
 
 export default function FavouriteContent() {
   const { session } = useSession()
@@ -361,7 +362,7 @@ export default function FavouriteContent() {
               <div key={course.id} className="group">
                 <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                   <div>
-                    <div className="relative group">
+                    <div className="relative group lg:max-w-[585px]">
                       <div className="absolute top-4 right-4 z-10">
                         <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                       </div>
@@ -411,7 +412,7 @@ export default function FavouriteContent() {
           ) : mealPlans.length > 0 ? (
             mealPlans.map(({ meal_plan }) => (
               <Link href={`/meal-plans/${meal_plan.id}`} key={meal_plan.id}>
-                <div className="relative group">
+                <div className="relative group lg:max-w-[585px]">
                   <div className="absolute top-4 right-4 z-10">
                     <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                   </div>
@@ -446,7 +447,7 @@ export default function FavouriteContent() {
         <h2 className="text-3xl lg:text-[40px] text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
           Động tác
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-base lg:text-xl">
+        <div className="grid grid-cols-3 gap-6 mx-auto mt-6 text-base lg:text-xl">
           {isLoadingExercises ? (
             <div className="flex justify-center items-center h-40 col-span-3">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#13D8A7]"></div>
@@ -458,14 +459,19 @@ export default function FavouriteContent() {
                 key={exercise.id}
               >
                 <div>
-                  <div className="relative group">
-                    <div className="absolute top-4 right-4 z-10">
-                      <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
+                  <div className="relative group lg:max-w-[585px]">
+                    <div className="absolute lg:top-4 lg:right-4 z-10 top-2 right-2">
+                      <div className="lg:block hidden">
+                        <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
+                      </div>
+                      <div className="lg:hidden block">
+                        <DeleteIconMini className="text-white hover:text-red-500 transition-colors duration-300" />
+                      </div>
                     </div>
                     <img
                       src={getYoutubeThumbnail(exercise.exercise?.youtube_url || '')}
                       alt={exercise.exercise?.name || ''}
-                      className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
+                      className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full"
                     />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>
@@ -490,7 +496,7 @@ export default function FavouriteContent() {
         <h2 className="text-3xl lg:text-[40px] text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
           Món ăn
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
+        <div className="grid grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
           {isLoadingDishes ? (
             <div className="flex justify-center items-center h-40 col-span-3">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#13D8A7]"></div>
@@ -507,11 +513,20 @@ export default function FavouriteContent() {
                   }
                 }}
               >
-                <div className="relative group">
-                  <div className="absolute top-4 right-4 z-10">
-                    <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
+                <div className="relative group lg:max-w-[585px]">
+                  <div className="absolute lg:top-4 lg:right-4 z-10 top-2 right-2">
+                    <div className="lg:block hidden">
+                      <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
+                    </div>
+                    <div className="lg:hidden block">
+                      <DeleteIconMini className="text-white hover:text-red-500 transition-colors duration-300" />
+                    </div>
                   </div>
-                  <img src={dish.image} alt={dish.title} className="aspect-[5/3] object-cover rounded-xl mb-4 w-full" />
+                  <img
+                    src={dish.image}
+                    alt={dish.title}
+                    className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full"
+                  />
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
                 <p className="font-medium text-base lg:text-xl">{dish.title}</p>

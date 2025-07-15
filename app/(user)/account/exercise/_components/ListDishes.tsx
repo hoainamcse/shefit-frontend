@@ -252,7 +252,7 @@ export default function ListDishes() {
               }
             >
               <div>
-                <div className="relative group">
+                <div className="relative group lg:max-w-[585px]">
                   {selectedSubscription?.status === 'expired' && (
                     <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50 rounded-xl">
                       <Lock className="text-white w-12 h-12" />
@@ -269,7 +269,7 @@ export default function ListDishes() {
                   <img
                     src={dish.image}
                     alt={dish.title}
-                    className="aspect-video object-cover rounded-xl mb-4 size-[122px] lg:w-[585px] lg:h-[373px]"
+                    className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full"
                   />
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>

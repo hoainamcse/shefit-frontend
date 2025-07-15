@@ -95,18 +95,26 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
   }
 
   return (
-    <div className="flex mx-auto flex-col gap-10 lg:mt-10 mt-2 w-full pb-24 relative lg:px-10">
-      <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto ">
-        <div className="flex items-center gap-[10px] cursor-pointer" onClick={() => router.back()}>
-          <BackIcon color="#000000" style={{ marginBottom: '4px' }} />
-          <div className="text-xl text-[#000000] font-semibold">Quay về</div>
-        </div>
+    <div>
+      <div className="relative">
         <img
           src={course?.data?.thumbnail_image}
           alt={`${courseId}`}
-          className="rounded-xl w-full max-w-[1800px] lg:h-[681px] h-[281px] object-cover"
+          className="w-full aspect-[400/255] object-cover block lg:hidden"
         />
-
+        <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto z-10 absolute top-4 left-4 lg:left-20">
+          <div className="flex items-center gap-[10px] cursor-pointer" onClick={() => router.back()}>
+            <BackIcon color="#fff" style={{ marginBottom: '4px' }} />
+            <div className="text-xl text-[#fff] font-semibold">Quay về</div>
+          </div>
+        </div>
+      </div>
+      <div className="flex mx-auto flex-col gap-10 lg:mt-10 mt-2 w-full pb-24 lg:px-10 px-4">
+        <img
+          src={course?.data?.thumbnail_image}
+          alt={`${courseId}`}
+          className="rounded-xl w-full aspect-[1800/681] object-cover hidden lg:block"
+        />
         <div className="flex justify-between text-lg">
           <div>
             <p className="font-medium text-base lg:text-2xl">{course?.data?.course_name}</p>

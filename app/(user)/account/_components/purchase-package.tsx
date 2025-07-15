@@ -128,12 +128,12 @@ export default function PurchasePackage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
               {subscriptions.data.map((subscription) => (
                 <div key={subscription.id} className="bg-[#FFAEB01A] rounded-[20px] p-5 h-full">
-                  <div className="flex flex-col 2xl:flex-row">
-                    <div className="flex flex-col gap-5 justify-between px-2 w-full">
+                  <div className="flex flex-col 2xl:flex-row 2xl:gap-4">
+                    <div className="flex flex-col gap-5 justify-between px-2 w-full 2xl:w-1/2">
                       <div className="font-[family-name:var(--font-coiny)] text-[#000000] text-xl lg:text-2xl font-semibold mb-[18px]">
                         {subscription.name}
                       </div>
-                      <ul className="list-disc pl-7 text-base md:text-xl text-[#737373] lg:w-[50%] w-full space-y-2">
+                      <ul className="list-disc pl-7 text-base md:text-xl text-[#737373] w-full space-y-2">
                         {subscription.description_1
                           .replace(/<\/?p[^>]*>/g, '')
                           .split('\n')
@@ -152,11 +152,13 @@ export default function PurchasePackage() {
                         </Button>
                       </Link>
                     </div>
-                    <img
-                      src={subscription.cover_image}
-                      alt=""
-                      className="aspect-[3/2] object-cover rounded-[20px] lg:w-[402px] lg:h-[261px] w-full mt-4"
-                    />
+                    <div className="w-full 2xl:w-1/2 mt-4 2xl:mt-0">
+                      <img
+                        src={subscription.cover_image}
+                        alt=""
+                        className="aspect-[400/255] object-cover rounded-[20px] w-full h-auto"
+                      />
+                    </div>
                   </div>
                 </div>
               ))}

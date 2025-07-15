@@ -212,7 +212,7 @@ export function ListCourses() {
               }
             >
               <div>
-                <div className="relative group">
+                <div className="relative group lg:max-w-[585px]">
                   <div className="absolute top-4 right-4 z-10">
                     <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                   </div>

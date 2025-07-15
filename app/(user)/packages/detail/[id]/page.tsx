@@ -28,18 +28,23 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
         <img
           src={subscriptionData?.cover_image}
           alt={`${subscriptionData?.name}`}
-          className="lg:rounded-xl rounded-none mb-4 w-full lg:h-[680px] h-[280px] object-cover"
+          className="lg:rounded-xl rounded-none mb-4 w-full object-cover aspect-[400/255] block lg:hidden"
         />
         <Link
           href="/account?tab=buy-package"
-          className="absolute top-5 left-5 flex items-center gap-[10px] cursor-pointer"
+          className="absolute top-5 left-5 lg:left-20 flex items-center gap-[10px] cursor-pointer"
         >
           <BackIcon color="#000000" style={{ marginBottom: '4px' }} />
           <div className="text-xl text-[#000000] font-semibold">Quay về</div>
         </Link>
       </div>
-      <div className="flex max-w-screen-2xl mx-auto flex-col gap-10 mt-10 w-full pb-24 px-4 lg:px-14">
+      <div className="flex mx-auto flex-col gap-10 mt-10 w-full pb-24 px-4 lg:px-14">
         <div className="mb-20 flex flex-col gap-10">
+          <img
+            src={subscriptionData?.cover_image}
+            alt={`${subscriptionData?.name}`}
+            className="lg:rounded-xl rounded-none mb-4 w-full object-cover lg:aspect-[1800/681] hidden lg:block"
+          />
           <SubscriptionInfo />
           <div className="flex justify-between text-lg">
             <div className="flex flex-col gap-10 w-full">
