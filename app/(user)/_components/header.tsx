@@ -86,8 +86,8 @@ export function Header() {
   ]
 
   return (
-    <header className="bg-primary sticky top-0 inset-x-0 z-50">
-      <div className="container mx-auto flex justify-between items-center p-3">
+    <header className="bg-[#FF7873] sticky top-0 inset-x-0 z-50">
+      <div className="mx-auto flex justify-between items-center p-3 lg:px-16">
         <Link href="/" className="flex-shrink-0">
           <Image src="/logo-mono-horizontal.png" alt="logo-mono-horizontal" width={136} height={40} />
         </Link>

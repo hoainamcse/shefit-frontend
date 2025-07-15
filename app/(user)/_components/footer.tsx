@@ -14,23 +14,23 @@ export function Footer() {
           backgroundPosition: 'center',
         }}
       >
-        <div className="relative text-white px-10 pt-44">
+        <div className="relative text-white px-28 pt-44">
           <div className="w-full pt-10">
-            <img src="/logo-mono-vertical.png" alt="logo-mono-vertical" className="size-[237px] ml-auto" />
+            <img src="/logo-mono-vertical.png" alt="logo-mono-vertical" className="size-[237px] ml-auto mb-20" />
             <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-4">
               <div className="grid grid-cols-2 max-sm:grid-cols-1">
                 <ul className="flex flex-col gap-3">
-                  <li className="font-bold text-3xl">Về Shefit</li>
-                  <li className="text-[#E8E5E5] text-xl">
+                  <li className="font-bold text-xl lg:text-3xl">Về Shefit</li>
+                  <li className="text-[#E8E5E5] text-base lg:text-xl">
                     <Link href="/policy">Chính sách</Link>
                   </li>
-                  <li className="text-[#E8E5E5] text-xl">
+                  <li className="text-[#E8E5E5] text-base lg:text-xl">
                     <Link href="/about">Về chúng tôi</Link>
                   </li>
                 </ul>
                 <ul className="flex flex-col gap-3">
-                  <li className="font-bold text-3xl uppercase">Fitness for woman</li>
-                  <li className="text-[#E8E5E5] text-xl">
+                  <li className="font-bold text-xl lg:text-3xl uppercase">Fitness for woman</li>
+                  <li className="text-[#E8E5E5] text-base lg:text-xl">
                     Độ dáng tại nhà cho phụ nữ với đa dạng các lớp tập live trực tuyến cùng HLV & Giáo Án Video quay
                     sẵn. Mang lại vóc dáng đẹp & sức khỏe vàng, thời gian tập đầy năng lượng & vui tươi. Tiết kiệm thời
                     gian & chi phí.
@@ -39,22 +39,21 @@ export function Footer() {
               </div>
               <div className="w-full flex">
                 <ul className="ml-auto flex flex-col gap-3">
-                  <li className="font-bold text-3xl uppercase">Công ty TNHH Shefit Việt Nam</li>
-                  <li className="text-[#E8E5E5] text-xl">
+                  <li className="font-bold text-xl lg:text-3xl uppercase">Công ty TNHH Shefit Việt Nam</li>
+                  <li className="text-[#E8E5E5] text-base lg:text-xl">
                     Văn phòng: Khu The Sun Avenue, An Phú, Quận 2, Thành phố Hồ Chí Minh
                   </li>
-                  <li className="text-[#FFEFEF] font-bold text-4xl md:text-5xl lg:text-6xl whitespace-nowrap overflow-hidden">
-                    <span className="text-3xl md:text-4xl lg:text-5xl">Hotline: +84 90 693 48 21</span>
+                  <li className="text-[#FFEFEF] font-bold text-xl lg:text-4xl whitespace-nowrap overflow-hidden">
+                    <span className="text-2xl lg:text-4xl">Hotline: +84 90 693 48 21</span>
                   </li>
-                  <li className="text-[#E8E5E5] text-xl">Email: info@thehealthyhouse.vn</li>
+                  <li className="text-[#E8E5E5] text-base lg:text-xl">Email: info@thehealthyhouse.vn</li>
                   <div className="flex gap-3">
-                    {/* <ZaloIcon />
-                    <YoutubeIcon /> */}
                     <FacebookIcon />
                   </div>
                 </ul>
               </div>
             </div>
+            <hr className="mt-5" />
           </div>
         </div>
       </footer>
@@ -93,16 +92,15 @@ export function Footer() {
                     <li className="text-[#E8E5E5] text-base">
                       Văn phòng: Khu The Sun Avenue, An Phú, Quận 2, Thành phố Hồ Chí Minh
                     </li>
-                    <li className="text-[#FFEFEF] font-bold text-[30px]">Hotline: +84 90 693 48 21</li>
+                    <li className="text-[#FFEFEF] font-bold text-2xl">Hotline: +84 90 693 48 21</li>
                     <li className="text-[#E8E5E5] text-base">Email: info@shefit.vn</li>
                     <div className="flex gap-3">
-                      {/* <ZaloIcon />
-                      <YoutubeIcon /> */}
                       <FacebookIcon />
                     </div>
                   </ul>
                 </div>
               </div>
+              <hr className="mt-5" />
             </div>
           </div>
         </footer>

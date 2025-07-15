@@ -22,10 +22,9 @@ type DataType = z.infer<typeof formSchema>
 export function SectionOne({ data }: { data: DataType['section_1'] }) {
   return (
     <div className="lg:relative flex flex-col-reverse">
-      <img src={data.image} alt={data.image} className="w-full object-cover aspect-[5/3] lg:aspect-[21/9]" />
-      {/* <div className="bg-[#00000033] absolute inset-0 transition-opacity" /> */}
-      <div className="lg:absolute lg:inset-y-0 lg:left-1/2 lg:right-[10%] flex flex-col justify-center items-center lg:items-start gap-4 bg-primary lg:bg-transparent text-center lg:text-start p-2 lg:p-4">
-        <h2 className="text-white text-3xl lg:text-5xl font-bold">{data.title}</h2>
+      <img src={data.image} alt={data.image} className="w-full object-cover aspect-[1/1] lg:aspect-[21/9]" />
+      <div className="lg:absolute lg:inset-y-0 lg:left-1/2 lg:right-[10%] flex flex-col justify-center items-center lg:items-start gap-4 bg-[#FFA5A5] lg:bg-transparent text-center lg:text-start p-2 lg:p-4">
+        <h2 className="text-white text-3xl lg:text-[40px] font-bold">{data.title}</h2>
         <div className="flex gap-1 text-[#FB4A64] text-base lg:text-xl font-bold flex-wrap justify-center lg:justify-start">
           {data.features.map((item, index) => (
             <Fragment key={index}>
@@ -35,7 +34,12 @@ export function SectionOne({ data }: { data: DataType['section_1'] }) {
           ))}
         </div>
         <div className="text-neutral-200 text-base lg:text-xl">{data.description}</div>
-        <MainButton text={data.cta.text} className="rounded-full text-base lg:text-xl" size="lg" href={data.cta.href} />
+        <MainButton
+          text={data.cta.text}
+          className="rounded-full text-base lg:text-xl mb-2"
+          size="lg"
+          href={data.cta.href}
+        />
       </div>
     </div>
   )
@@ -45,10 +49,10 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
   return (
     <div className="py-8 lg:py-12 px-4 sm:px-6">
       <div className="container mx-auto space-y-8 lg:space-y-10">
-        <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
-          <h3 className="text-ring text-3xl lg:text-5xl font-bold">{data.subtitle}</h3>
-          <h2 className="text-3xl lg:text-5xl font-bold">{data.title}</h2>
-          <p className="text-primary text-base lg:text-xl">{data.description}</p>
+        <div className="lg:max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4">
+          <h3 className="text-[#FF7873] text-3xl lg:text-[40px] font-bold">{data.subtitle}</h3>
+          <h2 className="text-3xl lg:text-[40px] font-bold">{data.title}</h2>
+          <p className="text-[#FB4A64] text-base lg:text-xl">{data.description}</p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center">
           <div className="lg:col-span-3">
@@ -63,7 +67,7 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
                   {index === 2 && <CupIcon size={32} />}
                 </span>
                 <div className="space-y-2">
-                  <h4 className="uppercase text-lg lg:text-3xl font-semibold">{feature.title}</h4>
+                  <h4 className="uppercase text-lg lg:text-3xl font-semibold text-[#FF7873]">{feature.title}</h4>
                   <p className="text-neutral-500 text-base lg:text-xl">{feature.description}</p>
                 </div>
               </div>
@@ -88,14 +92,14 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
   return (
     <div className="py-8 lg:py-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
-        <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
-          <h2 className="text-3xl lg:text-5xl font-bold">{data.title}</h2>
-          <p className="text-primary text-base lg:text-xl">{data.description}</p>
+        <div className="max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4 px-4 sm:px-6">
+          <h2 className="text-3xl lg:text-[40px] font-bold">{data.title}</h2>
+          <p className="text-[#FB4A64] text-base lg:text-xl">{data.description}</p>
         </div>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto">
           <div
             className={cn(
-              'grid grid-cols-1 gap-8 items-stretch',
+              'grid grid-cols-1 gap-8 items-stretch justify-items-center',
               data.subscriptions.length === 1
                 ? 'lg:grid-cols-1 max-w-md mx-auto'
                 : data.subscriptions.length === 2
@@ -109,8 +113,8 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                   <div
                     className={cn(
                       'group flex items-center gap-2 text-base lg:text-lg text-background font-medium rounded-md p-3',
-                      mIndex === 0 && 'bg-primary',
-                      mIndex === 1 && 'bg-ring',
+                      mIndex === 0 && 'bg-[#FFAEB0]',
+                      mIndex === 1 && 'bg-[#FC6363]',
                       mIndex === 2 && 'bg-[#B60606]'
                     )}
                   >
@@ -120,15 +124,15 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                       <ArrowIcon size={20} />
                     </span>
                   </div>
+                  <div className="flex-1 flex items-center justify-center text-lg lg:text-xl mt-4">
+                    <HtmlContent content={sub.description_homepage || 'test'} />
+                  </div>
                 </Link>
                 <Carousel className="mx-4">
                   <CarouselContent>
                     {courses[mIndex]?.data?.map((course, cIndex) => (
-                      <CarouselItem key={`course-${course.id}`} className="basis-2/3 lg:basis-full">
+                      <CarouselItem key={`course-${course.id}`} className="basis-3/4 lg:basis-full">
                         <div className="flex flex-col items-center gap-4">
-                          <div className="flex-1 flex items-center justify-center text-lg lg:text-xl">
-                            <HtmlContent content={course.description_homepage_1} />
-                          </div>
                           <div className="relative w-full overflow-hidden">
                             <img
                               src={course.image_homepage || '/temp/homepage-3.jpg'}
@@ -150,7 +154,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                             </div>
                           </div>
                           <p className="text-center text-neutral-500 text-lg lg:text-xl">
-                            {course.description_homepage_2}
+                            {course.description_homepage_1}
                           </p>
                         </div>
                       </CarouselItem>
@@ -158,9 +162,6 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                     {mealPlans[mIndex]?.data?.map((mealPlan, mpIndex) => (
                       <CarouselItem key={`mealplan-${mealPlan.id}`} className="basis-2/3 lg:basis-full">
                         <div className="flex flex-col items-center gap-4">
-                          <div className="flex-1 flex items-center justify-center text-lg lg:text-xl">
-                            <HtmlContent content={mealPlan.description_homepage_1} />
-                          </div>
                           <div className="relative w-full overflow-hidden">
                             <img
                               src={mealPlan.image_homepage || '/temp/homepage-3.jpg'}
@@ -182,7 +183,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                             </div>
                           </div>
                           <p className="text-center text-neutral-500 text-lg lg:text-xl">
-                            {mealPlan.description_homepage_2}
+                            {mealPlan.description_homepage_1}
                           </p>
                         </div>
                       </CarouselItem>
@@ -204,13 +205,16 @@ export function SectionFour({ data }: { data: DataType['section_4'] }) {
   return (
     <div className="py-8 lg:py-12 px-4 sm:px-6">
       <div className="container mx-auto">
-        <div className="bg-primary py-8 rounded-xl px-4">
-          <div className="max-w-lg mx-auto flex flex-col items-center justify-center text-center gap-4 text-background">
-            <h3 className="text-lg lg:text-[40px] font-bold ">{data.title}</h3>
+        <div className="lg:bg-[#FF7873] bg-[#FFA5A5] py-8 rounded-xl px-4">
+          <div className="max-w-xl mx-auto flex flex-col items-center justify-center text-center gap-4 text-background">
+            <h3
+              dangerouslySetInnerHTML={{ __html: data.title }}
+              className="text-lg lg:text-[40px] lg:leading-10 font-bold px-12"
+            />
             <p className="text-xs lg:text-2xl">{data.description}</p>
             <MainButton
               text={data.cta.text}
-              className="rounded-full w-full text-sm lg:text-2xl font-bold"
+              className="rounded-full w-full h-8 lg:h-[81px] text-sm lg:text-2xl font-bold"
               size="lg"
               href={data.cta.href}
             />
@@ -225,10 +229,10 @@ export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
   return (
     <div className="py-8 lg:py-12 px-8 sm:px-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
-        <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
-          <h3 className="text-ring text-3xl lg:text-[40px] font-bold">Ăn uống khoa học</h3>
+        <div className="max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4">
+          <h3 className="text-[#FF7873] text-3xl lg:text-[40px] font-bold">Ăn uống khoa học</h3>
           <h2 className="text-3xl lg:text-[40px] font-bold">
-            “Độ” Dáng Nhanh Hơn Với Menu Theo Từng Mục Tiêu Từ Chuyên Gia
+            “Độ” dáng nhanh hơn với menu theo từng mục tiêu từ chuyên gia
           </h2>
         </div>
         <div className="max-w-6xl mx-auto flex flex-col items-center justify-center gap-4">
@@ -273,7 +277,6 @@ export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
   )
 }
 
-// Todo: carousel indicator
 export async function SectionEight({ data }: { data: DataType['section_8'] }) {
   let VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -284,7 +287,7 @@ export async function SectionEight({ data }: { data: DataType['section_8'] }) {
     <div className="py-8 lg:py-12 px-8 sm:px-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
-          <h2 className="text-ring text-3xl lg:text-[40px] font-bold">{data.title}</h2>
+          <h2 className="text-[#FF7873] text-3xl lg:text-[40px] font-bold">{data.title}</h2>
           <p className="text-neutral-500 text-base">{data.description}</p>
         </div>
         <div className="space-y-4">
@@ -314,7 +317,7 @@ export async function SectionEight({ data }: { data: DataType['section_8'] }) {
           <div className="flex justify-center">
             <MainButton
               text="Xem gian hàng"
-              className="rounded-full mx-auto w-44 text-lg lg:text-2xl"
+              className="rounded-full mx-auto w-44 lg:w-[296px] text-lg lg:text-2xl"
               size="lg"
               href="/products"
             />
@@ -329,7 +332,7 @@ export async function SectionNine({ data }: { data: DataType['section_9'] }) {
   return (
     <div className="py-8 lg:py-12 px-4 sm:px-6">
       <div className="mx-auto space-y-8 lg:space-y-10">
-        <div className="max-w-80 mx-auto text-center">
+        <div className="max-w-[350px] mx-auto text-center">
           <h2 className="text-3xl lg:text-[40px] font-bold">Dẫn dắt bởi chuyên gia hàng đầu</h2>
         </div>
         <div className="relative">
@@ -399,24 +402,34 @@ export function SectionEleven({ data }: { data: DataType['section_11'] }) {
     <div className="py-8 lg:py-12 mb-12">
       <div className="space-y-8 lg:space-y-10">
         <h2 className="text-3xl lg:text-[40px] font-bold w-full text-black block lg:hidden text-center">
-          Cộng đồng <span className="text-primary">Shefit</span> <br /> Nơi chia sẻ hành trình độ dáng của bạn
+          Cộng đồng <span className="text-[#FF7873]">Shefit</span> <br /> Nơi chia sẻ hành trình độ dáng của bạn
         </h2>
         <div className="relative">
           <img src={data.image} alt={data.image} className="aspect-video w-full object-cover" />
           <div className="absolute top-0 right-0 h-full w-1/2 flex-col items-center justify-center px-8 text-background hidden lg:flex">
             <div className="max-w-xl mx-auto text-center flex flex-col items-center gap-4">
               <h2 className="text-3xl lg:text-[40px] font-bold w-full">
-                Cộng đồng <span className="text-primary">Shefit</span> <br /> Nơi chia sẻ hành trình độ dáng của bạn
+                Cộng đồng <span className="text-[#FF7873]">Shefit</span> <br /> Nơi chia sẻ hành trình độ dáng của bạn
               </h2>
               <p className="mb-4 text-[16px] lg:text-[20px] w-full">{data.description}</p>
               <FacebookIcon className="w-12 h-12" />
-              <MainButton text={data.cta.text} className="rounded-full w-44 text-lg lg:text-2xl" size="lg" href={data.cta.href} />
+              <MainButton
+                text={data.cta.text}
+                className="rounded-full w-44 lg:w-[444px] lg:h-16 text-lg lg:text-2xl"
+                size="lg"
+                href={data.cta.href}
+              />
             </div>
           </div>
           <div className="flex flex-col gap-4 lg:hidden items-center justify-center text-center">
             <p className="px-5 mt-4 text-[16px] lg:text-[20px] w-full">{data.description}</p>
             <FacebookIcon className="w-12 h-12" />
-            <MainButton text={data.cta.text} className="rounded-full w-44 text-lg lg:text-2xl" size="lg" href={data.cta.href} />
+            <MainButton
+              text={data.cta.text}
+              className="rounded-full w-44 text-lg lg:text-2xl"
+              size="lg"
+              href={data.cta.href}
+            />
           </div>
         </div>
       </div>
