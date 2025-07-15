@@ -25,7 +25,7 @@ export function CoachCard({ coach, reverse = false }: CoachCardProps) {
           </div>
           <div className="max-lg:w-full mx-auto">
             <p className="font-medium xl:text-xl max-lg:text-base">
-              HLV <span>{coach.name}</span>
+              <span>{coach.name}</span>
             </p>
             <p className="text-gray-500 max-lg:text-sm w-2/3 text-center mx-auto">{coach.detail}</p>
           </div>

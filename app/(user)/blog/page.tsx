@@ -13,22 +13,20 @@ export default async function BlogPage() {
         </p>
         <p className="sm:text-center text-gray-500 text-base mb-20">Các lời khuyên hữu ích về tập luyện & ăn uống</p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 mx-auto mt-6 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-auto mt-6 items-stretch">
         {blogs.data.map((blog: Blog, index: number) => (
           <Link key={`menu-${index}`} href={`/blog/${blog.id}`} className="h-full">
             <Card
               key={`menu-${index}`}
-              className="xl:mb-10 max-lg:mb-5 flex justify-between items-center p-4 gap-4 h-full"
+              className="flex flex-col md:flex-row justify-between p-2 md:p-3 gap-2 md:gap-3 h-full rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow duration-300"
             >
-              <div className="relative group w-1/2">
-                <img
-                  src={blog.cover_image}
-                  alt={blog.title}
-                  className="aspect-[5/3] object-cover rounded-xl w-full h-full"
-                />
+              <div className="relative group md:w-1/2 w-full overflow-hidden rounded-lg flex-shrink-0 mx-auto md:mx-0">
+                <div className="aspect-[250/220] w-full max-h-[280px]">
+                  <img src={blog.cover_image} alt={blog.title} className="object-cover w-full h-full" />
+                </div>
               </div>
-              <div className="w-1/2 flex flex-col h-full justify-center">
-                <p className="font-medium xl:text-xl max-lg:text-base">{blog.title}</p>
+              <div className="md:w-1/2 w-full flex flex-col h-full pr-2 pb-1 justify-start mt-2 md:mt-0 text">
+                <p className="font-medium text-base lg:text-lg mb-1">{blog.title}</p>
                 <HtmlContent content={blog.content} className="text-gray-500 max-lg:text-sm line-clamp-5" />
               </div>
             </Card>
