@@ -130,7 +130,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                       <Carousel className="w-full">
                         <CarouselContent>
                           {data.video.courses.map((course: any, index: number) => (
-                            <CarouselItem key={course.id || index} className="basis-3/4 lg:basis-full">
+                            <CarouselItem key={course.id || index} className="basis-3/4 md:basis-1/3  lg:basis-full">
                               <div className="relative overflow-hidden rounded-lg">
                                 <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                                   <div className="relative">
@@ -217,7 +217,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                       <Carousel className="w-full">
                         <CarouselContent>
                           {data.zoom?.courses?.map((course: any, index: number) => (
-                            <CarouselItem key={course.id || index} className="basis-3/4 lg:basis-full">
+                            <CarouselItem key={course.id || index} className="basis-3/4 md:basis-1/3  lg:basis-full">
                               <div className="relative overflow-hidden rounded-lg">
                                 <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                                   <div className="relative">
@@ -368,7 +368,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
           <Carousel className="w-full">
             <CarouselContent>
               {feature.courses.map((course: any, index: number) => (
-                <CarouselItem key={course.id || index} className="basis-3/4 lg:basis-full">
+                <CarouselItem key={course.id || index} className="basis-3/4 md:basis-1/3 lg:basis-full">
                   <div className="relative overflow-hidden rounded-lg">
                     <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                       <div className="relative">

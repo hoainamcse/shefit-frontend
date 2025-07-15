@@ -8,19 +8,19 @@ export default async function CoachesPage() {
   const coaches = await getCoaches()
 
   return (
-    <div className="pb-20">
-      <div>
-        <p className="font-[family-name:var(--font-coiny)] font-bold text-center text-ring text-3xl my-2 sm:my-4">
+    <div>
+      <div className="mb-12 md:mb-[72px]">
+        <p className="font-[family-name:var(--font-coiny)] font-bold md:text-center text-ring text-3xl md:text-[40px] md:leading-[48px] mt-12 md:mt-16 lg:mt-[76px] mb-3.5 md:mb-7">
           Các HLV của Shefit
         </p>
-        <p className="text-center text-[#737373] text-lg sm:text-xl mb-12 sm:mb-20 max-w-3xl mx-auto">
+        <p className="md:text-center text-gray-500 text-base md:text-xl md:max-w-2xl lg:max-w-3xl mx-auto">
           Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
           nascetur justo sit.
         </p>
       </div>
 
       <div>
-        <div className="flex flex-col gap-16 sm:gap-20">
+        <div className="flex flex-col gap-12 md:gap-20">
           {coaches.data.map((coach: any, index: number) => (
             <CoachCard key={`coach-${coach.id || index}`} coach={coach} reverse={index % 2 === 1} />
           ))}

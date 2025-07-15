@@ -23,7 +23,7 @@ export function SectionOne({ data }: { data: DataType['section_1'] }) {
   return (
     <div className="lg:relative flex flex-col-reverse">
       <img src={data.image} alt={data.image} className="w-full object-cover aspect-[1/1] lg:aspect-[21/9]" />
-      <div className="lg:absolute lg:inset-y-0 lg:left-[60%] lg:right-0 flex flex-col justify-center items-center lg:items-start gap-3 bg-[#FFA5A5] lg:bg-transparent text-center lg:text-start p-2 lg:p-3 max-w-[600px] px-4 lg:px-0">
+      <div className="lg:absolute lg:inset-y-0 lg:left-[60%] lg:right-0 flex flex-col justify-center items-center lg:items-start gap-3 bg-[#FFA5A5] lg:bg-transparent text-center lg:text-start p-2 lg:p-3 lg:max-w-[600px] px-4 lg:px-0">
         <h2 className="text-white text-3xl lg:text-[40px] font-bold mt-2 lg:mt-0">{data.title}</h2>
         <div className="flex gap-1 text-[#FB4A64] text-base lg:text-xl font-bold flex-wrap justify-center lg:justify-start">
           {data.features.map((item, index) => (
@@ -291,7 +291,7 @@ export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
           </Carousel>
           <MainButton
             text="Xem menu"
-            className="rounded-full mt-4 w-44 text-lg lg:text-2xl"
+            className="rounded-full mt-4 w-44 text-lg lg:text-2xl bg-[#FB4A64] lg:bg-[#13D8A7]"
             size="lg"
             href="/meal-plans"
           />
