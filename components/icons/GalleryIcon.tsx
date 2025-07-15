@@ -3,30 +3,24 @@ interface GalleryIconProps extends React.ComponentPropsWithoutRef<'svg'> {
   className?: string
 }
 
-export function GalleryIcon({ size, className = '', ...others }: GalleryIconProps) {
+export function GalleryIcon({ size, style, className = '', ...others }: GalleryIconProps) {
   return (
     <svg
-      width="24"
-      height="25"
-      viewBox="0 0 24 25"
-      fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ width: size, height: size }}
-      {...others}
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      style={{ width: size, height: size, ...style }}
       className={className}
+      {...others}
     >
-      <path d="M13 15V21H20V15H13ZM18.543 19.7511H14.457V16.2489H18.543V19.7511Z" fill="currentColor" />
       <path
-        d="M17.6297 5.1596C17.1659 5.2873 16.8991 5.86572 16.6077 5.92206C16.2834 5.99717 15.2942 4.62626 13.3363 5.1596C11.6986 5.60279 11.7807 7.50329 12.4456 8.66762C12.8355 9.34368 16.2711 12.2094 16.8047 11.9878C17.0222 11.8977 20.0842 9.30986 20.3059 9.00939C21.9683 6.75585 20.4742 4.34457 17.6338 5.16336L17.6297 5.1596ZM16.3983 10.1061C15.5323 9.99343 12.2116 7.05257 13.9356 6.54177C15.442 6.09106 15.8401 7.52206 16.3819 7.60845C17.0304 7.72113 17.5148 6.07979 19.054 6.54177C20.8518 7.08262 17.1905 10.2188 16.3983 10.1061Z"
-        fill="currentColor"
-      />
-      <path
-        d="M7.35536 5L3 12H12L7.35134 5H7.35536ZM7.13436 8.0427C7.31517 7.80865 7.07813 7.54577 7.80134 7.69341L9.29999 10.6497H5.69999C5.49507 10.4805 6.88124 8.35957 7.13436 8.0427Z"
-        fill="currentColor"
-      />
-      <path
-        d="M6.82686 15.052C2.5067 15.6405 3.35314 21.3477 7.90488 20.9833C12.5325 20.6122 11.8058 14.37 6.82686 15.052ZM8.18038 19.6994C5.44534 20.3915 4.30343 16.9411 6.81886 16.2991C9.54591 15.6004 10.6958 19.0575 8.18038 19.6994Z"
-        fill="currentColor"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+        d="M1.75.75h7s1 0 1 1v7s0 1-1 1h-7s-1 0-1-1v-7s0-1 1-1m12.5 4.5a4.5 4.5 0 1 0 9.002 0a4.5 4.5 0 0 0-9.002 0m4.536 8.727a.886.886 0 0 0-1.572 0l-4.337 7.807a1.03 1.03 0 0 0-.007.976a.9.9 0 0 0 .793.49h8.674a.91.91 0 0 0 .793-.49a1.03 1.03 0 0 0-.007-.976zm-12.935-.943a.778.778 0 0 0-1.2 0l-3.71 4.437a.83.83 0 0 0 0 1.058l3.708 4.437a.78.78 0 0 0 1.2 0l3.708-4.437a.83.83 0 0 0 0-1.058z"
       />
     </svg>
   )
