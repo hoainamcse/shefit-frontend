@@ -11,29 +11,29 @@ export default async function Food({ params }: { params: Promise<{ meal_id: stri
   const selectedDiet = diet.data?.find((item) => item.id.toString() === meal_id)
 
   return (
-    <div className="flex flex-col gap-10 mt-10">
+    <div className="flex flex-col gap-10 mt-6 md:mt-10 lg:mt-[76px]">
       <div>
-        <div className="flex flex-col justify-center text-center gap-5 mb-14">
-          <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px] mb-5 font-bold">
+        <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-6 md:mb-10 lg:mb-[60px] xl:mb-[90px]">
+          <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px] font-bold">
             Các món theo chế độ {selectedDiet?.name}
           </div>
           <p className="text-[#737373] text-base lg:text-xl">{selectedDiet?.description}</p>
         </div>
-        <div className="grid grid-cols-3 lg:gap-10 gap-4">
+        <div className="grid grid-cols-3 sm:gap-5 gap-4">
           {dish.data
             ?.filter((item) => item.diet && item.diet.id.toString() === meal_id)
             .map((item, index) => (
               <Link href={`/gallery/meal/${meal_id}/${item.id}`} key={index}>
-                <div key={`menu-${index}`} className="lg:w-[585px] w-[122px] max-w-[585px] overflow-hidden">
-                  <div className="relative group">
+                <div key={`menu-${index}`} className="overflow-hidden">
+                  <div className="relative group mb-2 md:mb-3 lg:mb-5">
                     <img
                       src={item.image}
                       alt=""
-                      className="aspect-[5/3] object-cover rounded-xl mb-4 lg:w-[585px] lg:h-[373px] h-[122px] w-full"
+                      className="aspect-[1/1] md:aspect-[585/373] object-cover rounded-[20px] w-full"
                     />
-                    <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                    <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                   </div>
-                  <p className="font-bold text-base lg:text-xl">{item.name}</p>
+                  <p className="font-medium lg:font-bold text-base lg:text-xl">{item.name}</p>
                 </div>
               </Link>
             ))}
