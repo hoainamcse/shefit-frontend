@@ -23,8 +23,8 @@ export function SectionOne({ data }: { data: DataType['section_1'] }) {
   return (
     <div className="lg:relative flex flex-col-reverse">
       <img src={data.image} alt={data.image} className="w-full object-cover aspect-[1/1] lg:aspect-[21/9]" />
-      <div className="lg:absolute lg:inset-y-0 lg:left-1/2 lg:right-[10%] flex flex-col justify-center items-center lg:items-start gap-4 bg-[#FFA5A5] lg:bg-transparent text-center lg:text-start p-2 lg:p-4">
-        <h2 className="text-white text-3xl lg:text-[40px] font-bold">{data.title}</h2>
+      <div className="lg:absolute lg:inset-y-0 lg:left-[60%] lg:right-0 flex flex-col justify-center items-center lg:items-start gap-3 bg-[#FFA5A5] lg:bg-transparent text-center lg:text-start p-2 lg:p-3 max-w-[600px] px-4 lg:px-0">
+        <h2 className="text-white text-3xl lg:text-[40px] font-bold mt-2 lg:mt-0">{data.title}</h2>
         <div className="flex gap-1 text-[#FB4A64] text-base lg:text-xl font-bold flex-wrap justify-center lg:justify-start">
           {data.features.map((item, index) => (
             <Fragment key={index}>
@@ -47,18 +47,23 @@ export function SectionOne({ data }: { data: DataType['section_1'] }) {
 
 export function SectionTwo({ data }: { data: DataType['section_2'] }) {
   return (
-    <div className="py-8 lg:py-12 px-4 sm:px-6">
-      <div className="container mx-auto space-y-8 lg:space-y-10">
-        <div className="lg:max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4">
-          <h3 className="text-[#FF7873] text-3xl lg:text-[40px] font-bold">{data.subtitle}</h3>
-          <h2 className="text-3xl lg:text-[40px] font-bold">{data.title}</h2>
-          <p className="text-[#FB4A64] text-base lg:text-xl">{data.description}</p>
+    <div className="my-8 lg:my-12">
+      <div className="lg:max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4 py-8 lg:py-12 px-8 lg:px-16">
+        <h3 className="text-[#FF7873] text-3xl lg:text-[40px] font-bold">{data.subtitle}</h3>
+        <h2 className="text-3xl lg:text-[40px] font-bold">{data.title}</h2>
+        <p className="text-[#FB4A64] text-base lg:text-xl">{data.description}</p>
+      </div>
+      <img src={data.image} alt={data.image} className="aspect-[440/450] w-full max-w-full block lg:hidden" />
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-10 items-center px-8 lg:px-16">
+        <div className="lg:col-span-3">
+          <img
+            src={data.image}
+            alt={data.image}
+            className="aspect-[1065/746] rounded-md w-full max-w-full hidden lg:block"
+          />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center">
-          <div className="lg:col-span-3">
-            <img src={data.image} alt={data.image} className="aspect-[5/3] rounded-md w-full" />
-          </div>
-          <div className="lg:col-span-2 flex flex-col items-center lg:items-start gap-6 text-base lg:text-xl">
+        <div className="lg:col-span-2 flex flex-col gap-6 text-base lg:text-xl">
+          <div className="hidden lg:flex lg:flex-col lg:items-start gap-6">
             {data.features.map((feature, index) => (
               <div key={index} className="flex items-start gap-4 text-ring">
                 <span className="flex-shrink-0">
@@ -74,10 +79,29 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
             ))}
             <MainButton
               text={data.cta.text}
-              className="rounded-full text-base lg:text-xl"
+              className="rounded-full text-base lg:text-xl w-[296px] h-14"
               size="lg"
               href={data.cta.href}
             />
+          </div>
+
+          <div className="lg:hidden p-4 rounded-lg text-center">
+            {data.features.map((feature, index) => (
+              <div key={index} className="mb-6">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-[#FF7873] mb-auto">
+                    {index === 0 && <BodyIcon size={24} />}
+                    {index === 1 && <DumbbellIcon size={24} />}
+                    {index === 2 && <CupIcon size={24} />}
+                  </span>
+                  <h4 className="text-[#FF7873] text-lg font-semibold">{feature.title}</h4>
+                </div>
+                <p className="text-neutral-800 text-sm px-2">{feature.description}</p>
+              </div>
+            ))}
+            <div className="mt-6 flex justify-center">
+              <MainButton text={data.cta.text} className="rounded-full text-base h-9" size="lg" href={data.cta.href} />
+            </div>
           </div>
         </div>
       </div>
@@ -92,7 +116,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
   return (
     <div className="py-8 lg:py-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
-        <div className="max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4 px-4 sm:px-6">
+        <div className="max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4 px-6 lg:px-12">
           <h2 className="text-3xl lg:text-[40px] font-bold">{data.title}</h2>
           <p className="text-[#FB4A64] text-base lg:text-xl">{data.description}</p>
         </div>
@@ -205,13 +229,13 @@ export function SectionFour({ data }: { data: DataType['section_4'] }) {
   return (
     <div className="py-8 lg:py-12 px-4 sm:px-6">
       <div className="container mx-auto">
-        <div className="lg:bg-[#FF7873] bg-[#FFA5A5] py-8 rounded-xl px-4">
-          <div className="max-w-xl mx-auto flex flex-col items-center justify-center text-center gap-4 text-background">
+        <div className="lg:bg-[#FF7873] bg-[#FFA5A5] lg:py-8 py-6 rounded-xl px-4">
+          <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-2 lg:gap-4 text-background">
             <h3
               dangerouslySetInnerHTML={{ __html: data.title }}
-              className="text-lg lg:text-[40px] lg:leading-10 font-bold px-12"
+              className="text-xl lg:text-[40px] lg:leading-10 font-bold px-8 lg:px-0"
             />
-            <p className="text-xs lg:text-2xl">{data.description}</p>
+            <p className="text-base lg:text-2xl">{data.description}</p>
             <MainButton
               text={data.cta.text}
               className="rounded-full w-full h-8 lg:h-[81px] text-sm lg:text-2xl font-bold"

@@ -69,7 +69,7 @@ export function Footer() {
         >
           <div className="relative text-white px-5 pt-44">
             <div className="w-full pt-10">
-              <img src="/logo-mono-vertical.png" alt="logo-mono-vertical" className="size-[237px] ml-auto" />
+              <img src="/logo-mono-vertical.png" alt="logo-mono-vertical" className="size-[146px] ml-auto" />
               <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-4">
                 <div className="grid grid-cols-2 max-sm:grid-cols-1">
                   <ul className="flex flex-col gap-3">

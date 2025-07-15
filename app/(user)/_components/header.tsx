@@ -1,16 +1,16 @@
-"use client"
+'use client'
 
-import Image from "next/image"
-import { MainButton } from "@/components/buttons/main-button"
-import Link from "next/link"
-import { ExerciseYogaIcon } from "@/components/icons/ExerciseYogaIcon"
-import { FoodGrainsIcon } from "@/components/icons/FoodGrainsIcon"
-import { GymIcon } from "@/components/icons/GymIcon"
-import { FitnessLineIcon } from "@/components/icons/FitnessLineIcon"
-import { BookIcon } from "@/components/icons/BookIcon"
-import { AboutIcon } from "@/components/icons/AboutIcon"
-import { AccountIcon } from "@/components/icons/AccountIcon"
-import { MenuIcon } from "@/components/icons/MenuIcon"
+import Image from 'next/image'
+import { MainButton } from '@/components/buttons/main-button'
+import Link from 'next/link'
+import { ExerciseYogaIcon } from '@/components/icons/ExerciseYogaIcon'
+import { FoodGrainsIcon } from '@/components/icons/FoodGrainsIcon'
+import { GymIcon } from '@/components/icons/GymIcon'
+import { FitnessLineIcon } from '@/components/icons/FitnessLineIcon'
+import { BookIcon } from '@/components/icons/BookIcon'
+import { AboutIcon } from '@/components/icons/AboutIcon'
+import { AccountIcon } from '@/components/icons/AccountIcon'
+import { MenuIcon } from '@/components/icons/MenuIcon'
 import {
   Sheet,
   SheetContent,
@@ -19,81 +19,86 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet"
-import { GalleryIcon } from "@/components/icons/GalleryIcon"
-import { MemberShipIcon } from "@/components/icons/MemberShipIcon"
-import { FacebookIcon } from "@/components/icons/FacebookIcon"
-import { useSession } from "@/hooks/use-session"
-import { signOut } from "@/network/server/auth"
+} from '@/components/ui/sheet'
+import { GalleryIcon } from '@/components/icons/GalleryIcon'
+import { MemberShipIcon } from '@/components/icons/MemberShipIcon'
+import { FacebookIcon } from '@/components/icons/FacebookIcon'
+import { useSession } from '@/hooks/use-session'
+import { signOut } from '@/network/server/auth'
 
 export function Header() {
   const { session } = useSession()
 
   const authButton = session ? (
-    <MainButton onClick={signOut} className="rounded-full w-32 md:w-36 lg:w-40 xl:w-44" text="Đăng xuất" variant="secondary" />
+    <MainButton
+      onClick={signOut}
+      className="rounded-full w-32 lg:w-[151px] lg:h-10"
+      text="Đăng xuất"
+      variant="secondary"
+    />
   ) : (
     <Link href="/auth/login">
-      <MainButton className="rounded-full w-32 md:w-36 lg:w-40 xl:w-44" text="Đăng nhập" />
+      <MainButton className="rounded-full w-32 lg:w-[151px] lg:h-10" text="Đăng nhập" />
     </Link>
   )
 
   const navItems = [
     {
-      label: "Gói Member",
+      label: 'Gói Member',
       icon: MemberShipIcon,
-      url: "/account?tab=buy-package",
+      url: '/account?tab=buy-package',
     },
     {
-      label: "Khoá tập",
+      label: 'Khoá tập',
       icon: ExerciseYogaIcon,
-      url: "/courses",
+      url: '/courses',
     },
     {
-      label: "Thực đơn",
+      label: 'Thực đơn',
       icon: FoodGrainsIcon,
-      url: "/meal-plans",
+      url: '/meal-plans',
     },
     {
-      label: "Sản phẩm",
+      label: 'Sản phẩm',
       icon: GymIcon,
-      url: "/products",
+      url: '/products',
     },
     {
-      label: "Team HLV",
+      label: 'Team HLV',
       icon: FitnessLineIcon,
-      url: "/coaches",
+      url: '/coaches',
     },
     {
-      label: "Về Shefit",
+      label: 'Về Shefit',
       icon: AboutIcon,
-      url: "/about",
+      url: '/about',
     },
     {
-      label: "Blog healthy",
+      label: 'Blog healthy',
       icon: BookIcon,
-      url: "/blog",
+      url: '/blog',
     },
     {
-      label: "Thư viện",
+      label: 'Thư viện',
       icon: GalleryIcon,
-      url: "/gallery",
+      url: '/gallery',
     },
     {
-      label: "Tài khoản",
+      label: 'Tài khoản',
       icon: AccountIcon,
-      url: "/account",
+      url: '/account',
     },
   ]
 
   return (
-    <header className="bg-ring sticky top-0 inset-x-0 z-50">
+    <header className="bg-[#FF7873] sticky top-0 inset-x-0 z-50">
       <div className="mx-auto flex justify-between items-center p-3 lg:px-16">
         <Link href="/" className="flex-shrink-0">
           <Image src="/logo-mono-horizontal.png" alt="logo-mono-horizontal" width={136} height={40} />
         </Link>
         <div className="justify-center items-center gap-2 xl:gap-6 text-background hidden lg:flex">
           {navItems.map((item, index) =>
-            item.label === "Gói Member" ? (
+            item.label === 'Gói Member' ? (
               <button
                 key={`navItem-${index}`}
                 onClick={() => (window.location.href = item.url)}
@@ -116,6 +121,11 @@ export function Header() {
           {authButton}
         </div>
         <Sheet>
+          {session ? null : (
+            <Link href="/auth/login" className="text-white ml-auto px-5 mt-1 text-lg block lg:hidden">
+              Đăng nhập
+            </Link>
+          )}
           <SheetTrigger asChild>
             <button className="lg:hidden">
               <MenuIcon />
@@ -128,7 +138,7 @@ export function Header() {
             </SheetHeader>
             <div>
               {navItems.map((item, index) =>
-                item.label === "Gói Member" ? (
+                item.label === 'Gói Member' ? (
                   <button
                     key={`navItem-${index}`}
                     onClick={() => (window.location.href = item.url)}

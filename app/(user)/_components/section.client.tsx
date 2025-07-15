@@ -58,8 +58,8 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
   return (
     <div className="py-8 lg:py-12">
       <div className="bg-[#FFF3F3] mx-auto">
-        <div className="py-8 lg:py-12 px-2 lg:px-4 space-y-8 lg:space-y-10">
-          <div className="max-w-[500px] px-2 lg:px-4 mx-auto flex flex-col items-center justify-center text-center gap-4">
+        <div className="py-8 lg:py-12 space-y-8 lg:space-y-10">
+          <div className="max-w-[500px] px-4 lg:px-6 mx-auto flex flex-col items-center justify-center text-center gap-4">
             <h2 dangerouslySetInnerHTML={{ __html: data.title }} className="text-3xl lg:text-[40px] font-bold" />
           </div>
 
