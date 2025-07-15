@@ -44,7 +44,6 @@ const formSchema = z.object({
   diet_id: z.coerce.number().nullable(),
   calorie_id: z.coerce.number().nullable(),
   description_homepage_1: z.string(),
-  description_homepage_2: z.string(),
   image_homepage: z.string().url(),
 })
 
@@ -76,7 +75,6 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
     calorie_id: null,
     diet_id: null,
     description_homepage_1: '',
-    description_homepage_2: '',
     image_homepage: defaultImageUrl,
   } as FormValue
 
@@ -100,7 +98,6 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
             calorie_id: data.calorie?.id || null,
             diet_id: data.diet?.id || null,
             description_homepage_1: data.description_homepage_1 || '',
-            description_homepage_2: data.description_homepage_2 || '',
             image_homepage: data.image_homepage || defaultImageUrl,
           }
         })()
@@ -162,12 +159,6 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
             form={form}
             name="description_homepage_1"
             label="Mô tả homepage 1"
-            placeholder="Nhập mô tả"
-          />
-          <FormTextareaField
-            form={form}
-            name="description_homepage_2"
-            label="Mô tả homepage 2"
             placeholder="Nhập mô tả"
           />
           <ImageUploader

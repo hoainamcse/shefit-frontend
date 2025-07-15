@@ -24,7 +24,6 @@ type MealPlan = {
   diet: Diet | null
   calorie: Calorie | null
   description_homepage_1: string
-  description_homepage_2: string
   image_homepage: string
 }
 

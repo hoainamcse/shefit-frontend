@@ -42,6 +42,7 @@ const formSchema = z.object({
     message: 'Mô tả phải có ít nhất 10 ký tự.',
   }),
   meal_plan_ids: z.array(z.string()).optional(),
+  description_homepage: z.string(),
   description_1: z.string().min(10, {
     message: 'Mô tả phải có ít nhất 10 ký tự.',
   }),
@@ -122,6 +123,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
             youtube_url: isYoutube ? data.cover_image : defaultYoutubeUrl,
             course_format: data.course_format as 'video' | 'live' | 'both',
             gifts: data.relationships?.gifts || [],
+            description_homepage: data.description_homepage || '',
           }
         })()
       : {
@@ -138,6 +140,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
           description_2: '',
           meal_plan_ids: [],
           meal_plan_description: '',
+          description_homepage: '',
         },
   })
 
@@ -304,7 +307,6 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                 name="description_1"
                 label="Thông tin tóm tắt gói"
                 placeholder="Nhập thông tin tóm tắt gói"
-                withAsterisk
               />
 
               <FormRichTextField
@@ -312,7 +314,13 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                 name="description_2"
                 label="Thông tin chi tiết gói"
                 placeholder="Nhập thông tin chi tiết gói"
-                withAsterisk
+              />
+
+              <FormRichTextField
+                form={form}
+                name="description_homepage"
+                label="Thông tin mô tả homepage"
+                placeholder="Nhập thông tin mô tả homepage"
               />
 
               <FormRichTextField
@@ -320,7 +328,6 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                 name="meal_plan_description"
                 label="Thông tin chi tiết thực đơn"
                 placeholder="Nhập thông tin chi tiết thực đơn"
-                withAsterisk
               />
 
               <FormRichTextField
@@ -328,7 +335,6 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                 name="result_checkup"
                 label="Theo dõi kết quả"
                 placeholder="Nhập thông tin theo dõi kết quả"
-                withAsterisk
               />
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">

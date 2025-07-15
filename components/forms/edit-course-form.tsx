@@ -54,7 +54,6 @@ const formSchema = z.object({
   muscle_group_ids: z.array(z.string()),
   subscription_ids: z.array(z.string()),
   description_homepage_1: z.string(),
-  description_homepage_2: z.string(),
   image_homepage: z.string().url(),
   workout_method_ids: z.array(z.string()),
 })
@@ -93,7 +92,6 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
     equipment_ids: [],
     subscription_ids: [],
     description_homepage_1: '',
-    description_homepage_2: '',
     image_homepage: defaultImageUrl,
     workout_method_ids: [],
   } as FormValue
@@ -120,7 +118,6 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
             free_amount: data.free_amount,
             is_one_on_one: data.is_one_on_one,
             description_homepage_1: data.description_homepage_1 || '',
-            description_homepage_2: data.description_homepage_2 || '',
             image_homepage: data.image_homepage || defaultImageUrl,
             muscle_group_ids: data.relationships?.muscle_groups.map((mg) => mg.id.toString()) || [],
             equipment_ids: data.relationships?.equipments.map((e) => e.id.toString()) || [],
@@ -205,12 +202,6 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
             form={form}
             name="description_homepage_1"
             label="Mô tả homepage 1"
-            placeholder="Nhập mô tả"
-          />
-          <FormTextareaField
-            form={form}
-            name="description_homepage_2"
-            label="Mô tả homepage 2"
             placeholder="Nhập mô tả"
           />
           <ImageUploader

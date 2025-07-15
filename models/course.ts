@@ -30,7 +30,6 @@ type Course = {
   form_categories: FormCategory[]
   workout_methods: WorkoutMethod[]
   description_homepage_1: string
-  description_homepage_2: string
   image_homepage: string
   subscriptions: Subscription[]
   relationships?: {
