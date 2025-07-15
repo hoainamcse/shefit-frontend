@@ -53,7 +53,7 @@ export default function MealPlansPage() {
   const [filter, setFilter] = useState({
     goals: [] as string[],
     calories: [] as string[],
-    showType: 'all' // 'all' or 'free'
+    showType: 'all', // 'all' or 'free'
   })
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -137,7 +137,11 @@ export default function MealPlansPage() {
           </div>
         </div>
       </div>
-      <Tabs defaultValue="all" className="w-full" onValueChange={(value) => setFilter(prev => ({ ...prev, showType: value }))}>
+      <Tabs
+        defaultValue="all"
+        className="w-full"
+        onValueChange={(value) => setFilter((prev) => ({ ...prev, showType: value }))}
+      >
         <TabsList className="bg-white mb-4 w-full flex justify-center mt-4">
           <TabsTrigger value="all" className={cn('underline text-ring bg-white !shadow-none')}>
             Tất cả
@@ -147,14 +151,17 @@ export default function MealPlansPage() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="all">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto mt-6 justify-items-center">
             {filteredMealPlans.map((mealPlan) => (
-              <div key={`menu-${mealPlan.id}`} className="lg:w-[585px] w-full max-w-[585px] overflow-hidden">
+              <div
+                key={`menu-${mealPlan.id}`}
+                className="lg:w-[585px] md:w-[450px] sm:w-[400px] w-full max-w-full overflow-hidden"
+              >
                 <div className="relative group">
                   <img
                     src={mealPlan.image}
                     alt={mealPlan.title}
-                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full max-w-[585px] lg:h-[373px] h-[261px]"
+                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full lg:h-[373px] md:h-[300px] sm:h-[280px] h-[261px]"
                   />
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   <NextButton
@@ -181,14 +188,17 @@ export default function MealPlansPage() {
           </div>
         </TabsContent>
         <TabsContent value="free">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto mt-6 justify-items-center">
             {filteredMealPlans.map((mealPlan) => (
-              <div key={`menu-${mealPlan.id}`} className="lg:w-[585px] w-full max-w-[585px] overflow-hidden">
+              <div
+                key={`menu-${mealPlan.id}`}
+                className="lg:w-[585px] md:w-[450px] sm:w-[400px] w-full max-w-full overflow-hidden"
+              >
                 <div className="relative group">
                   <img
                     src={mealPlan.image}
                     alt={mealPlan.title}
-                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full max-w-[585px] lg:h-[373px] h-[261px]"
+                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full lg:h-[373px] md:h-[300px] sm:h-[280px] h-[261px]"
                   />
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   <NextButton

@@ -24,9 +24,6 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
 
   return (
     <div className="max-w-screen-[1800px] mx-auto">
-      <div className="xl:block max-lg:hidden">
-        <Header />
-      </div>
       <Link href={`/meal-plans/${meal_plan_id}`} className="mt-8 ml-10">
         <Button className="flex items-center gap-2 text-xl bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent  text-black shadow-none">
           <BackIconBlack /> Quay về

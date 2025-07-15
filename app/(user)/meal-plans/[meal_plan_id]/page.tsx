@@ -25,7 +25,7 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
             <img
               src={mealPlan.image}
               alt="Menu detail image"
-              className="w-full lg:h-[681px] h-[281px] object-cover lg:rounded-xl rounded-none"
+              className="w-full lg:h-[681px] h-[281px] object-cover rounded-sm lg:rounded-xl md:rounded-md "
             />
           </div>
           <div className="mr-auto text-xl mt-8 max-lg:p-4">
@@ -62,16 +62,18 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
               }}
               className="w-full"
             >
-              <CarouselContent>
+              <CarouselContent className="gap-x-4">
                 {mealPlan.meal_ingredients.map((ingredient) => (
-                  <CarouselItem key={ingredient.name} className="basis-1/2 lg:basis-[11%]">
-                    <div className="w-[168px]">
-                      <img
-                        src={ingredient.image}
-                        alt={ingredient.name}
-                        className="w-[168px] h-[175px] object-cover rounded-xl"
-                      />
-                      <div className="text-lg max-lg:text-base w-full">{ingredient.name}</div>
+                  <CarouselItem key={ingredient.name} className="basis-auto" style={{ width: '168px' }}>
+                    <div className="flex flex-col items-center">
+                      <div className="w-[168px] h-[175px] overflow-hidden rounded-xl">
+                        <img
+                          src={ingredient.image}
+                          alt={ingredient.name}
+                          className="w-full h-full object-cover rounded-xl"
+                        />
+                      </div>
+                      <div className="text-lg max-lg:text-base w-full text-center mt-2 truncate">{ingredient.name}</div>
                     </div>
                   </CarouselItem>
                 ))}
