@@ -33,7 +33,7 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 25,
   })
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 

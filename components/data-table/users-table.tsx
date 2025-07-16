@@ -44,7 +44,7 @@ type UserRow = User & { token_usage: number; is_enable_chatbot: boolean }
 export function UsersTable() {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 25,
   })
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const { session } = useSession()

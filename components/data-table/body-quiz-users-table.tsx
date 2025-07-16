@@ -21,7 +21,7 @@ import { MainButton } from '../buttons/main-button'
 export function BodyQuizUsersTable() {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 25,
   })
 
   const { data, isLoading, error } = useQuery({
