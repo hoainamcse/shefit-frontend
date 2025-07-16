@@ -23,18 +23,18 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
     : []
 
   return (
-    <div className="max-w-screen-[1800px] mx-auto">
-      <Link href={`/meal-plans/${meal_plan_id}`} className="mt-8 ml-10">
+    <div className="flex flex-col max-w-screen-[1800px] mx-auto">
+      <Link href={`/meal-plans/${meal_plan_id}`}>
         <Button className="flex items-center gap-2 text-xl bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent  text-black shadow-none">
           <BackIconBlack /> Quay về
         </Button>
       </Link>
-      <div className="flex flex-col items-center justify-center max-lg:mt-0 mx-auto max-w-[1800px] mb-20">
+      <div className=" items-center justify-center mt-10 max-lg:mt-5 mb-20">
         <div className="relative w-full">
           <img
             src={mealPlan.image}
             alt="Menu detail image"
-            className="w-full object-cover lg:rounded-xl rounded-none aspect-[1800/681]"
+            className="w-full lg:h-[681px] h-[281px] object-cover rounded-sm lg:rounded-xl md:rounded-md"
           />
         </div>
         <div className="mr-auto text-xl my-20 max-lg:my-0 max-lg:p-4">

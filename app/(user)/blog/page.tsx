@@ -18,16 +18,19 @@ export default async function BlogPage() {
           <Link key={`menu-${index}`} href={`/blog/${blog.id}`} className="h-full">
             <Card
               key={`menu-${index}`}
-              className="flex flex-col md:flex-row justify-between p-2 md:p-3 gap-2 md:gap-3 h-full rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow duration-300"
+              className="flex flex-col md:flex-row justify-start items-start p-2 sm:p-3 md:p-4 gap-2 sm:gap-3 md:gap-4 h-full rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow duration-300"
             >
-              <div className="relative group md:w-1/2 w-full overflow-hidden rounded-lg flex-shrink-0 mx-auto md:mx-0">
-                <div className="aspect-[250/220] w-full max-h-[280px]">
+              <div className="relative group w-full md:w-[200px] lg:w-[272px] overflow-hidden rounded-lg flex-shrink-0 mx-auto md:mx-0">
+                <div className="aspect-[272/223]">
                   <img src={blog.cover_image} alt={blog.title} className="object-cover w-full h-full" />
                 </div>
               </div>
-              <div className="md:w-1/2 w-full flex flex-col h-full pr-2 pb-1 justify-start mt-2 md:mt-0 text">
-                <p className="font-medium text-base lg:text-lg mb-1">{blog.title}</p>
-                <HtmlContent content={blog.content} className="text-gray-500 max-lg:text-sm line-clamp-5" />
+              <div className="w-full md:flex-1 flex flex-col h-full pr-2 pb-1 justify-start mt-2 md:mt-0 text overflow-hidden">
+                <p className="font-medium text-base lg:text-lg mb-1 truncate overflow-hidden">{blog.title}</p>
+                <HtmlContent
+                  content={blog.content}
+                  className="text-gray-500 max-lg:text-sm line-clamp-5 overflow-hidden"
+                />
               </div>
             </Card>
           </Link>

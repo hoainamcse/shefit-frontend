@@ -14,7 +14,11 @@ export default async function BlogDetail({ params }: { params: Promise<{ detail:
         <div className="text-xl text-[#000000] font-semibold">Quay về</div>
       </Link>
       <div className="flex flex-col gap-10 mt-5 lg:mt-10">
-        <img src={blog.cover_image} alt={blog.title} className="lg:h-[680px] w-full object-cover h-[300px]" />
+        <img
+          src={blog.cover_image}
+          alt={blog.title}
+          className="lg:h-[680px] w-full object-cover h-[300px] rounded-xl"
+        />
         <div>
           <div className="font-[family-name:var(--font-coiny)] xl:text-[40px] mb-5 max-lg:text-2xl font-bold">
             {blog.title}
