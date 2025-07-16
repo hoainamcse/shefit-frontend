@@ -50,14 +50,14 @@ export function SectionOne({ data }: { data: DataType['section_1'] }) {
 
 export function SectionTwo({ data }: { data: DataType['section_2'] }) {
   return (
-    <div className="my-8 lg:my-12">
+    <div className="my-8 lg:my-4">
       <div className="lg:max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4 py-8 lg:py-12 px-8 lg:px-16">
         <h3 className="text-[#FF7873] text-3xl lg:text-[40px] font-bold">{data.subtitle}</h3>
         <h2 className="text-3xl lg:text-[40px] font-bold">{data.title}</h2>
         <p className="text-[#FB4A64] text-base lg:text-xl">{data.description}</p>
       </div>
       <img src={data.image} alt={data.image} className="aspect-[440/450] w-full max-w-full block lg:hidden" />
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-10 items-center px-8 lg:px-16">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-[120px] items-center px-8 lg:px-16">
         <div className="lg:col-span-3">
           <img
             src={data.image}
@@ -116,16 +116,16 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
   const courses = await Promise.all(data.subscriptions.map((dt) => getCourses({ ids: dt.course_ids })))
   const mealPlans = await Promise.all(data.subscriptions.map((dt) => getMealPlans({ ids: dt.meal_plan_ids })))
   return (
-    <div className="py-8 lg:py-12">
+    <div className="py-8 lg:py-24">
       <div className="container mx-auto space-y-8 lg:space-y-10">
-        <div className="max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4 px-6 lg:px-12">
+        <div className="max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4 px-6 lg:px-12 mb-8 lg:mb-[74px]">
           <h2 className="text-3xl lg:text-[40px] font-bold">{data.title}</h2>
           <p className="text-[#FB4A64] text-base lg:text-xl">{data.description}</p>
         </div>
         <div className="max-w-7xl mx-auto">
           <div
             className={cn(
-              'grid grid-cols-1 gap-8 items-stretch justify-items-center',
+              'grid grid-cols-1 gap-8 lg:gap-20 items-stretch justify-items-center',
               data.subscriptions.length === 1
                 ? 'lg:grid-cols-1 max-w-md mx-auto'
                 : data.subscriptions.length === 2
@@ -232,7 +232,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
 
 export function SectionFour({ data }: { data: DataType['section_4'] }) {
   return (
-    <div className="py-8 lg:py-12 px-4 sm:px-6">
+    <div className="py-8 lg:py-12 px-4 sm:px-6 -mt-20">
       <div className="container mx-auto">
         <div className="lg:bg-[#FF7873] bg-[#FFA5A5] lg:py-8 py-6 rounded-xl px-4">
           <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-2 lg:gap-4 text-background">

@@ -1,12 +1,10 @@
 'use client'
 
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
-import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { getCourses } from '@/network/client/courses'
 import type { Course } from '@/models/course'
 import Link from 'next/link'
-import { courseFormLabel } from '@/lib/label'
 export default function PopularCoursesCarousel() {
   const [popularCourses, setPopularCourses] = useState<Course[]>([])
 
@@ -40,7 +38,7 @@ export default function PopularCoursesCarousel() {
           }}
           className="w-full"
         >
-          <CarouselContent className="flex items-center justify-center">
+          <CarouselContent>
             {popularCourses.map((course) => (
               <CarouselItem
                 key={`popular-course-${course.id}`}
