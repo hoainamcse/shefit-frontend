@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 function FilterCategory({
   placeholder,
@@ -15,7 +15,7 @@ function FilterCategory({
 }) {
   return (
     <Tabs value={value} onValueChange={onChange} className="w-full">
-      <TabsList className="w-full justify-start gap-2 bg-white shadow-none">
+      <TabsList className="w-full justify-start gap-2 bg-white shadow-none flex-wrap">
         {options.map((item) => (
           <TabsTrigger
             key={item.value}

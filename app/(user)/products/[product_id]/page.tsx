@@ -223,16 +223,20 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
 
   return (
     <div className="flex flex-col lg:gap-10 gap-5">
-      <div className="mb-20 lg:p-10 p-4 lg:mt-20 mt-0">
-        <Link href="/products" className="flex cursor-pointer items-center mb-5 font-semibold">
-          <BackIconBlack /> <span className="ml-1">Quay về</span>
+      <div className="mb-20 lg:p-10 p-4 mt-4">
+        <Link
+          href="/products"
+          className="flex cursor-pointer items-center lg:mb-5 mb-2 lg:ml-8 ml-4 font-semibold gap-2"
+        >
+          <BackIconBlack /> <span className="ml-1 text-base lg:text-xl">Quay về</span>
         </Link>
-        <div className="xl:w-[80%] max-lg:w-full xl:flex justify-between mb-20 max-lg:block">
-          <div className="xl:w-3/4 max-lg:w-full lg:px-8 px-4">
+        <div className="xl:w-[70%] max-lg:w-full xl:flex justify-between mb-20 max-lg:block">
+          <div className="px-8">
             <Carousel
               opts={{
                 align: 'center',
               }}
+              className="max-w-[800px]"
             >
               <CarouselContent>
                 {Array.from({ length: product.image_urls.length }).map((_, index) => (
@@ -240,7 +244,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
                     <img
                       src={product.image_urls[index]}
                       alt={product.name}
-                      className="xl:aspect-[5/3] max-lg:aspect-1 object-cover rounded-xl mb-4 w-full lg:h-[687px] h-[364px]"
+                      className="aspect-square object-cover rounded-xl mb-4"
                     />
                   </CarouselItem>
                 ))}
@@ -249,7 +253,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
               <CarouselNext />
             </Carousel>
           </div>
-          <div className="xl:w-1/5 max-lg:w-full xl:text-xl flex flex-col gap-3">
+          <div className="xl:w-1/5 max-lg:w-full xl:text-xl flex flex-col gap-3 lg:px-8 px-4">
             {product.variants.some((variant: any) => variant.color_id !== null) && (
               <div className="flex flex-col gap-2 mb-4">
                 <div className="flex gap-2">
@@ -353,7 +357,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
               </div>
             )}
             <div className="flex gap-3 items-center">
-              <div className="text-nowrap">Số lượng:</div>
+              <div className="text-nowrap lg:text-xl text-base">Số lượng:</div>
               <div className="flex items-center gap-2">
                 <Button
                   className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-base lg:text-xl font-bold items-center flex border-2"
@@ -379,14 +383,14 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
             <div className="w-full flex gap-3 justify-center">
               <Button
                 variant="outline"
-                className="w-full rounded-full bg-[#13D8A7] hover:bg-[#11c296] text-white hover:text-white"
+                className="w-full rounded-full bg-[#13D8A7] hover:bg-[#11c296] text-white hover:text-white text-base lg:text-xl"
                 disabled={!(hasDefaultVariant || selectedVariantId) || isBuyingNow}
                 onClick={handleBuyNow}
               >
                 {isBuyingNow ? 'Đang xử lý...' : 'Mua ngay'}
               </Button>
               <Button
-                className="border-[#13D8A7] border-2 text-[#13D8A7] rounded-full w-full bg-white hover:bg-[#11c29628]"
+                className="border-[#13D8A7] border-2 text-[#13D8A7] rounded-full w-full bg-white hover:bg-[#11c29628] text-base lg:text-xl"
                 disabled={!(hasDefaultVariant || selectedVariantId) || isAdding}
                 onClick={handleAddToCart}
               >
@@ -395,12 +399,12 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
             </div>
           </div>
         </div>
-        <div className="mb-20">
+        <div className="mb-20 lg:px-8 px-4">
           <p className="text-[#737373] xl:text-xl max-lg:text-base">{product.description}</p>
         </div>
 
         {product.muscle_groups.length > 0 && (
-          <div>
+          <div className="lg:px-8 px-4">
             <div className="font-[family-name:var(--font-coiny)] font-bold text-ring lg:text-[40px] mb-5 text-3xl">
               Tính năng
             </div>

@@ -40,7 +40,7 @@ export default function PopularCoursesCarousel() {
           }}
           className="w-full"
         >
-          <CarouselContent>
+          <CarouselContent className="flex items-center justify-center">
             {popularCourses.map((course) => (
               <CarouselItem
                 key={`popular-course-${course.id}`}
