@@ -407,17 +407,8 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
             <h2 dangerouslySetInnerHTML={{ __html: data.title }} className="text-3xl lg:text-[40px] font-bold" />
           </div>
 
-          <div className="mx-auto px-8 lg:px-12">
+          <div className="mx-auto">
             <Tabs defaultValue={defaultWorkoutMethodId} className="w-full">
-              {parsedFeatures[selectedMethod]?.description && (
-                <div className="mx-auto text-center mb-6">
-                  <p
-                    dangerouslySetInnerHTML={{ __html: parsedFeatures[selectedMethod].description }}
-                    className="text-[#FB4A64] text-base lg:text-xl"
-                  />
-                </div>
-              )}
-
               <div className="flex justify-center mb-8">
                 <TabsList className="bg-transparent shadow-none flex flex-wrap mb-4 gap-4">
                   {parsedFeatures.map((feature, index) => (
@@ -432,9 +423,20 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                   ))}
                 </TabsList>
               </div>
-
+              {parsedFeatures[selectedMethod]?.description && (
+                <div className="mx-auto text-center mb-6 px-8 lg:px-12">
+                  <p
+                    dangerouslySetInnerHTML={{ __html: parsedFeatures[selectedMethod].description }}
+                    className="text-[#FB4A64] text-base lg:text-xl"
+                  />
+                </div>
+              )}
               {parsedFeatures.map((feature, methodIndex: number) => (
-                <TabsContent key={feature.id || methodIndex} value={feature.id || methodIndex.toString()}>
+                <TabsContent
+                  className="mx-auto px-8 lg:px-12"
+                  key={feature.id || methodIndex}
+                  value={feature.id || methodIndex.toString()}
+                >
                   {feature.courses?.length ? (
                     <CarouselComponent feature={feature} methodIndex={methodIndex} />
                   ) : (

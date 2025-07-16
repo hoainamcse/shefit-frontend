@@ -22,7 +22,10 @@ type DataType = z.infer<typeof formSchema>
 export function SectionOne({ data }: { data: DataType['section_1'] }) {
   return (
     <div className="lg:relative flex flex-col-reverse">
-      <img src={data.image} alt={data.image} className="w-full object-cover aspect-[1/1] lg:aspect-[21/9]" />
+      <div className="relative">
+        <img src={data.image} alt={data.image} className="w-full object-cover aspect-[1/1] lg:aspect-[21/9]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent from-50% to-black hidden lg:block" />
+      </div>
       <div className="lg:absolute lg:inset-y-0 lg:left-[60%] lg:right-0 flex flex-col justify-center items-center lg:items-start gap-3 bg-[#FFA5A5] lg:bg-transparent text-center lg:text-start p-2 lg:p-3 lg:max-w-[600px] px-4 lg:px-0">
         <h2 className="text-white text-3xl lg:text-[40px] font-bold mt-2 lg:mt-0">{data.title}</h2>
         <div className="flex gap-1 text-[#FB4A64] text-base lg:text-xl font-bold flex-wrap justify-center lg:justify-start">
