@@ -148,7 +148,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                     </span>
                   </div>
                   <div className="flex-1 flex items-center justify-center text-lg lg:text-xl mt-4">
-                    <HtmlContent content={sub.description_homepage} className="text-center px-2" />
+                    <HtmlContent content={sub.description_homepage} className="text-center px-2 text-neutral-500 text-base lg:text-xl" />
                   </div>
                 </Link>
                 <Carousel className="mx-4">
