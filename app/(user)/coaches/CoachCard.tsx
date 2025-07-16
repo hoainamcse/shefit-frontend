@@ -11,7 +11,7 @@ export function CoachCard({ coach, reverse = false }: CoachCardProps) {
     <div>
       <div className="flex items-center justify-between">
         <div
-          className={`flex justify-between w-full max-md:flex-col items-center md:items-end xl:gap-14 lg:gap-12 md:gap-8 gap-2 ${
+          className={`flex justify-between w-full max-md:flex-col items-center xl:gap-14 lg:gap-12 md:gap-8 gap-2 ${
             reverse ? 'flex-row-reverse' : ''
           }`}
         >
@@ -29,7 +29,7 @@ export function CoachCard({ coach, reverse = false }: CoachCardProps) {
               <p className="text-gray-500 text-sm md:text-base lg:text-xl text-center">{coach.detail}</p>
             </div>
           </div>
-          <div className="flex-[2] flex items-center max-md:mx-auto max-md:text-center bg-primary max-md:bg-white xl:text-2xl lg:text-xl text-gray-500 md:h-[212px] lg:h-[272px] xl:h-[372px] rounded-[55px] xl:px-16 lg:px-10 md:px-8 md:px-6 max-md:text-base">
+          <div className="flex-[2] flex items-center max-md:mx-auto max-md:text-center bg-primary max-md:bg-white xl:text-2xl lg:text-xl text-gray-500 md:h-[212px] lg:h-[272px] xl:h-[372px] rounded-[55px] xl:px-16 lg:px-10 md:px-8 md:px-6 max-md:text-base mt-5">
             {coach.description}
           </div>
         </div>
