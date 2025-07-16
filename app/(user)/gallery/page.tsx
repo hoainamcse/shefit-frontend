@@ -71,6 +71,7 @@ export default function Gallery() {
 
     fetchDiets()
   }, [])
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-40">
@@ -78,8 +79,9 @@ export default function Gallery() {
       </div>
     )
   }
+
   return (
-    <div className="flex flex-col gap-10 sm:gap-16 lg:gap-[90px] mt-6 md:mt-10 lg:mt-[76px]">
+    <div className="flex flex-col gap-10 sm:gap-16 lg:gap-[90px] pt-10 lg:pt-16 xl:pt-[93px]">
       <div>
         <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-10 lg:mb-16 xl:mb-[90px]">
           <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px] font-semibold sm:font-bold">

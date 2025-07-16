@@ -23,7 +23,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
     )
   }
   return (
-    <div className="flex flex-col gap-10 mt-6 md:mt-10 lg:mt-[76px] animate-fade-in">
+    <div className="flex flex-col gap-10 pt-10 lg:pt-16 xl:pt-[93px] animate-fade-in">
       <div>
         <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-3 sm:mb-6 md:mb-10 lg:mb-[60px]">
           <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px] font-bold">

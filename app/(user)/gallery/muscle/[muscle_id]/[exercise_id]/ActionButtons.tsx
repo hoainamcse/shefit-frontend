@@ -37,10 +37,10 @@ export default function ActionButtons({ exerciseId }: ActionButtonsProps) {
   }
 
   return (
-    <div className="gap-5 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
+    <div className="gap-5 w-full flex justify-center">
       <Button
         onClick={() => handleSaveExercise(exerciseId)}
-        className="w-full rounded-full text-base lg:text-xl bg-[#13D8A7] text-white hover:bg-[#11c296 h-14 border-2 border-[#13D8A7]"
+        className="w-full rounded-full text-base lg:text-xl bg-[#13D8A7] text-white hover:bg-[#11c296 h-[42px] md:h-14 lg:h-[70px] border-2 border-[#13D8A7]"
       >
         Lưu
       </Button>

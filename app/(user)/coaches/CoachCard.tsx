@@ -11,12 +11,12 @@ export function CoachCard({ coach, reverse = false }: CoachCardProps) {
     <div>
       <div className="flex items-center justify-between">
         <div
-          className={`flex justify-between w-full max-md:flex-col items-center md:items-end xl:gap-[72px] lg:gap-12 md:gap-8 gap-2 ${
+          className={`flex justify-between w-full max-md:flex-col items-center md:items-end xl:gap-14 lg:gap-12 md:gap-8 gap-2 ${
             reverse ? 'flex-row-reverse' : ''
           }`}
         >
           <div className="flex-1 flex flex-col items-center text-center justify-center gap-7 md:gap-1 w-full max-w-[340px]">
-            <div className="relative w-full" style={{ aspectRatio: '340/486' }}>
+            <div className="relative w-full" style={{ aspectRatio: '400/566' }}>
               <div className="absolute inset-0 bg-primary -z-10" />
               <img
                 src={coach.image}
@@ -38,7 +38,7 @@ export function CoachCard({ coach, reverse = false }: CoachCardProps) {
       {/* This code block to show name and detail under the image and make the description as horizontal as the image */}
       <div className="hidden md:flex mt-1">
         <div
-          className={`flex justify-between w-full max-md:flex-col items-center xl:gap-[72px] lg:gap-12 md:gap-8 gap-2 ${
+          className={`flex justify-between w-full max-md:flex-col items-center xl:gap-14 lg:gap-12 md:gap-8 gap-2 ${
             reverse ? 'flex-row-reverse' : ''
           }`}
         >

@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic'
 import { getExerciseById } from '@/network/server/exercises'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import ActionButtons from './ActionButtons'
+import Link from 'next/link'
+import { BackIconBlack } from '@/components/icons/BackIconBlack'
 
 // Dynamically import ReactPlayer with no SSR to avoid window is not defined errors
 const ReactPlayer = dynamic(() => import('react-player/lazy'), {
@@ -18,9 +20,9 @@ const ReactPlayer = dynamic(() => import('react-player/lazy'), {
 
 export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: string; exercise_id: string }> }) {
   const [exercise, setExercise] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [exerciseId, setExerciseId] = useState<string>('')
+  const [muscleId, setMuscleId] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -28,6 +30,7 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
       try {
         const resolvedParams = await params
         setExerciseId(resolvedParams.exercise_id)
+        setMuscleId(resolvedParams.muscle_id)
       } catch (err) {
         console.error('Error unwrapping params:', err)
         setError('Lỗi khi tải thông tin bài tập')
@@ -55,6 +58,7 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
 
     fetchExercise()
   }, [exerciseId])
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -80,9 +84,21 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
   }
 
   return (
-    <div className="flex flex-col gap-10 mt-10">
+    <div className="flex flex-col pt-10 xl:pt-[53px]">
+      <Link
+        href={`/gallery/muscle/${muscleId}`}
+        className="flex cursor-pointer items-center gap-2.5 font-semibold lg:hidden mb-7"
+      >
+        <div className="w-6 h-6 flex items-center justify-center">
+          <BackIconBlack />
+        </div>
+        {exercise?.muscle_groups && Array.isArray(exercise.muscle_groups)
+          ? exercise.muscle_groups.find((mg: any) => mg.id?.toString() === muscleId)?.name || 'Quay về'
+          : 'Quay về'}
+      </Link>
+
       {exercise?.youtube_url && (
-        <div className="w-full max-w-4xl mx-auto aspect-video bg-black rounded-lg overflow-hidden">
+        <div className="w-full aspect-[400/225] lg:aspect-[1800/681] bg-black rounded-[20px] overflow-hidden mb-4 sm:mb-10 lg:mb-16">
           <div className="w-full h-full">
             <ReactPlayer
               url={exercise.youtube_url}
@@ -100,7 +116,6 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
                 },
               }}
               style={{
-                aspectRatio: '16/9',
                 width: '100%',
                 height: '100%',
               }}
@@ -108,35 +123,39 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
           </div>
         </div>
       )}
-      <div className="flex flex-col gap-5">
-        <div className="flex flex-col gap-2 mb-5">
-          <div className="text-center font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl lg:text-[40px]">
+
+      <div className="flex flex-col">
+        <div className="flex flex-col gap-2 mb-4 sm:mb-10 lg:mb-16">
+          <div className="font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-3xl lg:text-[40px] lg:leading-[48px]">
             {exercise?.name}
           </div>
         </div>
-        <div className="flex flex-col gap-2 mb-5">
-          <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl lg:text-[40px]">
+
+        <div className="flex flex-col mb-[84px] lg:mb-16">
+          <div className="font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-3xl lg:text-[40px] lg:leading-[48px] mb-3.5">
             Thông tin bài tập
           </div>
-          <div className="text-[#737373] text-lg lg:text-xl">{exercise?.description}</div>
+          <div className="text-[#737373] text-base lg:text-xl">{exercise?.description}</div>
         </div>
       </div>
 
       {exercise?.equipments?.length > 0 && (
-        <div className="flex flex-col gap-5">
-          <p className="font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl lg:text-[40px]">Dụng cụ</p>
-          <ScrollArea className="w-screen-max-xl">
-            <div className="flex space-x-4 py-4 w-full">
+        <div className="flex flex-col mb-6 sm:mb-8 lg:mb-[52px]">
+          <p className="font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-3xl lg:text-[40px] lg:leading-[48px] mb-5 sm:mb-3.5">
+            Dụng cụ
+          </p>
+          <ScrollArea className="w-screen-max-xl px-0 md:px-5 lg:px-[52px]">
+            <div className="flex space-x-5 w-full">
               {exercise.equipments.map((equipment: any, index: number) => (
                 <figure key={`equipment-${equipment.id}-${index}`} className="shrink-0 w-[168px]">
                   <div className="overflow-hidden rounded-md">
                     <img
                       src={equipment.image ?? undefined}
                       alt={equipment.name}
-                      className="w-[168px] h-[175px] object-cover rounded-xl"
+                      className="w-[168px] h-[168px] object-cover rounded-xl"
                     />
                   </div>
-                  <figcaption className="pt-2 font-semibold text-lg lg:text-xl text-muted-foreground w-full">
+                  <figcaption className="pt-2.5 lg:pt-3 font-medium text-lg lg:text-xl w-full">
                     {equipment.name}
                   </figcaption>
                 </figure>
@@ -148,20 +167,22 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
       )}
 
       {exercise?.muscle_groups?.length > 0 && (
-        <div className="flex flex-col gap-5">
-          <p className="font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl lg:text-[40px]">Nhóm cơ</p>
+        <div className="flex flex-col mb-[52px]">
+          <p className="font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl lg:text-[40px] lg:leading-[48px] mb-5">
+            Nhóm cơ
+          </p>
           <ScrollArea className="w-screen-max-xl">
-            <div className="flex w-full space-x-4 py-4">
+            <div className="flex w-full space-x-5 px-0 md:px-5 lg:px-[52px]">
               {exercise.muscle_groups.map((muscleGroup: any, index: number) => (
                 <figure key={`muscleGroup-${muscleGroup.id}-${index}`} className="shrink-0 w-[168px]">
                   <div className="overflow-hidden rounded-md">
                     <img
                       src={muscleGroup.image ?? undefined}
                       alt={muscleGroup.name}
-                      className="w-[168px] h-[175px] object-cover rounded-xl"
+                      className="w-[168px] h-[168px] object-cover rounded-xl"
                     />
                   </div>
-                  <figcaption className="pt-2 font-semibold text-lg lg:text-xl text-muted-foreground w-full">
+                  <figcaption className="pt-2.5 lg:pt-3 font-medium text-lg lg:text-xl w-full">
                     {muscleGroup.name}
                   </figcaption>
                 </figure>

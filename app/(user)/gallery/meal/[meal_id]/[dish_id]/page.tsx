@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { getDish } from '@/network/server/dishes'
 import ActionButtons from './ActionButtons'
+import Link from 'next/link'
+import { BackIconBlack } from '@/components/icons/BackIconBlack'
 const ReactPlayer = dynamic(() => import('react-player/lazy'), {
   ssr: false,
   loading: () => (
@@ -18,12 +20,14 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [dishId, setDishId] = useState<string>('')
+  const [mealId, setMealId] = useState<string>('')
 
   useEffect(() => {
     const unwrapParams = async () => {
       try {
         const resolvedParams = await params
         setDishId(resolvedParams.dish_id)
+        setMealId(resolvedParams.meal_id)
       } catch (err) {
         console.error('Error unwrapping params:', err)
         setError('Lỗi khi tải thông tin món ăn')
@@ -77,13 +81,23 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
   }
 
   return (
-    <div className="flex flex-col gap-10 mt-10">
-      <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px] mb-5 text-center font-bold">
+    <div className="flex flex-col pt-10 md:pt-13 lg:pt-[69px]">
+      <Link
+        href={`/gallery/meal/${mealId}`}
+        className="flex cursor-pointer items-center gap-2.5 font-semibold max-md:mb-7"
+      >
+        <div className="w-6 h-6 pt-1 flex justify-center">
+          <BackIconBlack />
+        </div>
+        Quay về
+      </Link>
+
+      <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px] mb-4 sm:mb-10 lg:mb-[87px] md:text-center font-semibold md:font-bold">
         {dish?.name}
       </div>
 
       {dish?.youtube_url && (
-        <div className="w-full max-w-4xl mx-auto aspect-video bg-black rounded-lg overflow-hidden">
+        <div className="w-full aspect-[1/1] lg:aspect-[1800/681] bg-black rounded-[20px] overflow-hidden mb-5">
           <div className="w-full h-full">
             <ReactPlayer
               url={dish.youtube_url}
@@ -112,8 +126,8 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
 
       <div className="flex flex-col gap-5">
         <div>
-          <div className="font-medium text-xl lg:text-2xl">{dish?.name}</div>
-          <div className="text-[#737373] mt-2">
+          <div className="font-medium text-base lg:text-xl">{dish?.name}</div>
+          <div className="text-[#737373] text-base lg:text-xl">
             <div className="flex flex-wrap gap-4">
               <p>Dinh dưỡng: {dish.nutrients}</p>
             </div>
@@ -121,9 +135,9 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
         </div>
 
         {dish?.description && (
-          <div className="mt-4">
-            <h3 className="font-semibold text-xl mb-2 lg:text-2xl">Mô tả:</h3>
-            <p className="text-[#737373]">{dish.description}</p>
+          <div>
+            <h3 className="font-semibold text-base lg:text-xl">Mô tả:</h3>
+            <p className="text-[#737373] text-base lg:text-xl">{dish.description}</p>
           </div>
         )}
         <ActionButtons dishId={dish.id} />
