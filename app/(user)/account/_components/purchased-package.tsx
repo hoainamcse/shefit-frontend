@@ -97,34 +97,38 @@ export default function PurchasedPackage() {
       ) : subscriptions.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 h">
           {subscriptions.map((subscription) => (
-            <div
-              key={subscription.id}
-              className="bg-[#FFAEB01A] rounded-[20px] p-5 h-full relative"
-            >
+            <div key={subscription.id} className="bg-[#FFAEB01A] rounded-[20px] p-5 h-full relative">
               <div className="flex flex-col 2xl:flex-row 2xl:gap-4">
                 <div className="flex flex-col gap-5 justify-between px-2 w-full 2xl:w-1/2">
-                  <div className="flex items-start justify-between">
-                    <div className="font-[family-name:var(--font-coiny)] text-[#000000] text-xl lg:text-2xl font-semibold mb-[18px]">
+                  <div className="flex flex-col items-start justify-between gap-2">
+                    <div className="font-[family-name:var(--font-coiny)] text-[#000000] text-xl lg:text-2xl font-semibold">
                       {subscription.name || `Gói #${subscription.subscription.id}`}
                     </div>
                     <Button
-                      className={`rounded-lg text-white text-sm md:text-base lg:text-xl w-[100px] h-[36px] lg:w-[160px] lg:h-[46px] ${
+                      className={`block lg:hidden rounded-lg text-white text-sm md:text-base lg:text-xl w-[100px] h-[36px] lg:w-[160px] lg:h-[46px] ${
                         subscription.status === 'active' ? 'bg-[#13D8A7]' : 'bg-[#E61417]'
                       }`}
                     >
                       {subscription.status === 'active' ? 'Còn hạn' : 'Hết hạn'}
                     </Button>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-[#737373] text-base lg:text-xl">
-                      <div>Ngày bắt đầu:</div>
-                      <div>{formatDate(subscription.subscription_start_at)}</div>
+                    <div className="space-y-3">
+                      <div className="flex justify-between text-[#737373] text-base lg:text-xl gap-2">
+                        <div>Ngày bắt đầu:</div>
+                        <div>{formatDate(subscription.subscription_start_at)}</div>
+                      </div>
+                      <div className="flex justify-between text-[#737373] text-base lg:text-xl gap-2">
+                        <div>Ngày kết thúc:</div>
+                        <div>{formatDate(subscription.subscription_end_at)}</div>
+                      </div>
+                      {subscription.coupon_code && (
+                        <div className="flex justify-between text-[#737373] text-base lg:text-xl gap-2">
+                          <div>Promocode:</div>
+                          <div>{subscription.coupon_code}</div>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex justify-between text-[#737373] text-base lg:text-xl">
-                      <div>Ngày kết thúc:</div>
-                      <div>{formatDate(subscription.subscription_end_at)}</div>
-                    </div>
                   </div>
+
                   <Link
                     href={`/packages/detail/${subscription.subscription.id}`}
                     className="h-fit text-base lg:text-xl text-[#13D8A7] mt-4"
@@ -134,7 +138,14 @@ export default function PurchasedPackage() {
                     </Button>
                   </Link>
                 </div>
-                <div className="w-full 2xl:w-1/2 mt-4 2xl:mt-0">
+                <div className="w-full 2xl:w-1/2 mt-4 2xl:mt-0 flex flex-col gap-4">
+                  <Button
+                    className={`ml-auto hidden lg:block rounded-lg text-white text-sm md:text-base lg:text-xl w-[100px] h-[36px] lg:w-[160px] lg:h-[46px] ${
+                      subscription.status === 'active' ? 'bg-[#13D8A7]' : 'bg-[#E61417]'
+                    }`}
+                  >
+                    {subscription.status === 'active' ? 'Còn hạn' : 'Hết hạn'}
+                  </Button>
                   <img
                     src={subscription.cover_image}
                     alt=""
