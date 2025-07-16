@@ -427,7 +427,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
         </DialogContent>
       </Dialog>
 
-      <div className="flex mb-6">
+      <div className="flex mb-6 px-4">
         <Button
           onClick={handleCancel}
           disabled={isDeleting}
@@ -436,7 +436,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
           <ArrowLeftIcon className="h-4 w-4" /> {isDeleting ? 'Đang hủy...' : 'Quay lại'}
         </Button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
         <div className="w-full text-2xl lg:mb-20 mb-4">
           {cart?.product_variants.map((variant: any, index: number) => (
             <div key={`menu-${index}`} className="flex justify-between items-center mb-5">

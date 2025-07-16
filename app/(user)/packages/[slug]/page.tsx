@@ -26,7 +26,7 @@ export default function PackageDetail({ params }: { params: Promise<{ slug: stri
 
   return subscription?.data ? (
     <div className="flex">
-      <div className="py-16 px-5 md:py-16 md:px-10 xl:p-[60px] flex-1 max-w-[832px]">
+      <div className="lg:py-16 py-4 px-5 md:py-16 md:px-10 xl:p-[60px] flex-1 max-w-[832px]">
         <Link href="/account?tab=buy-package" className="flex items-center gap-[10px] mb-10 md:mb-16 cursor-pointer">
           <BackIcon color="#000000" style={{ marginBottom: '4px' }} />
           <div className="text-xl text-[#000000] font-semibold">Quay về</div>

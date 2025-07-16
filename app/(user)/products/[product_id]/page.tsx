@@ -230,8 +230,8 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
         >
           <BackIconBlack /> <span className="ml-1 text-base lg:text-xl">Quay về</span>
         </Link>
-        <div className="xl:w-[70%] max-lg:w-full xl:flex justify-between mb-20 max-lg:block">
-          <div className="px-8">
+        <div className="xl:w-4/5 max-lg:w-full xl:flex justify-between mb-20 max-lg:block">
+          <div className="px-8 w-full">
             <Carousel
               opts={{
                 align: 'center',
@@ -244,7 +244,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
                     <img
                       src={product.image_urls[index]}
                       alt={product.name}
-                      className="aspect-square object-cover rounded-xl mb-4"
+                      className="aspect-square object-cover rounded-xl mb-4 w-full"
                     />
                   </CarouselItem>
                 ))}
@@ -253,7 +253,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
               <CarouselNext />
             </Carousel>
           </div>
-          <div className="xl:w-1/5 max-lg:w-full xl:text-xl flex flex-col gap-3 lg:px-8 px-4">
+          <div className="xl:w-2/5 max-lg:w-full xl:text-xl flex flex-col gap-3 lg:px-8 px-4">
             {product.variants.some((variant: any) => variant.color_id !== null) && (
               <div className="flex flex-col gap-2 mb-4">
                 <div className="flex gap-2">

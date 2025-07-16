@@ -46,7 +46,7 @@ export default function ProductsPage() {
               Dụng Cụ & Thực Phẩm
             </div>
             <p className="text-[#737373] text-base lg:text-xl">Dụng cụ tập tại nhà & các loại thực phẩm Eat Clean</p>
-            <div className="gap-2 w-full hidden lg:flex">
+            <div className="gap-2 w-full hidden md:flex">
               <FilterCategory
                 placeholder="Loại"
                 options={categories.map((category) => ({ value: category.id.toString(), label: category.name }))}
@@ -54,7 +54,7 @@ export default function ProductsPage() {
                 onChange={setSelectedCategory}
               />
             </div>
-            <div className="flex gap-2 w-full lg:hidden">
+            <div className="flex gap-2 w-full md:hidden">
               <Select onValueChange={setSelectedCategory} value={selectedCategory || undefined}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Loại" />
