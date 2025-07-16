@@ -148,7 +148,10 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                     </span>
                   </div>
                   <div className="flex-1 flex items-center justify-center text-lg lg:text-xl mt-4">
-                    <HtmlContent content={sub.description_homepage} className="text-center px-2 text-neutral-500 text-base lg:text-xl" />
+                    <HtmlContent
+                      content={sub.description_homepage}
+                      className="text-center px-2 text-neutral-500 text-base lg:text-xl"
+                    />
                   </div>
                 </Link>
                 <Carousel className="mx-4">
@@ -271,14 +274,16 @@ export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
                         className="rounded-lg w-full object-cover aspect-[4/3]"
                       />
                       <div className="absolute bottom-0 inset-x-0 h-16 bg-[#28282894] flex items-center justify-between text-background rounded-b-lg px-3">
-                        <p className="font-medium text-2xl lg:text-3xl">{item.title}</p>
-                        <MainButton
-                          size="icon"
-                          icon={ArrowRight}
-                          variant="secondary"
-                          href="#"
-                          className="rounded-full text-primary transform transition-transform duration-300 hover:translate-x-1"
-                        />
+                        <p className="font-medium text-2xl lg:text-3xl break-words max-w-[90%]">{item.title}</p>
+                        <div className="w-10 h-10 flex-shrink-0 items-center">
+                          <MainButton
+                            size="icon"
+                            icon={ArrowRight}
+                            variant="secondary"
+                            href="#"
+                            className="rounded-full text-primary transform transition-transform duration-300 hover:translate-x-1"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -353,8 +358,11 @@ export async function SectionNine({ data }: { data: DataType['section_9'] }) {
   return (
     <div className="py-8 lg:py-12 px-4 sm:px-6">
       <div className="mx-auto space-y-8 lg:space-y-10">
-        <div className="max-w-[350px] mx-auto text-center">
-          <h2 className="text-3xl lg:text-[40px] font-bold">Dẫn dắt bởi chuyên gia hàng đầu</h2>
+        <div className="max-w-[400px] mx-auto text-center">
+          <h2 className="text-3xl lg:text-[40px] lg:leading-[1.2] font-bold">
+            Dẫn dắt bởi <br />
+            chuyên gia hàng đầu
+          </h2>
         </div>
         <div className="relative">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
