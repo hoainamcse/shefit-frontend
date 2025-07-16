@@ -112,7 +112,6 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
 export async function SectionThree({ data }: { data: DataType['section_3'] }) {
   const courses = await Promise.all(data.subscriptions.map((dt) => getCourses({ ids: dt.course_ids })))
   const mealPlans = await Promise.all(data.subscriptions.map((dt) => getMealPlans({ ids: dt.meal_plan_ids })))
-
   return (
     <div className="py-8 lg:py-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
@@ -149,7 +148,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                     </span>
                   </div>
                   <div className="flex-1 flex items-center justify-center text-lg lg:text-xl mt-4">
-                    <HtmlContent content={sub.description_homepage || 'test'} />
+                    <HtmlContent content={sub.description_homepage} className="text-center px-2" />
                   </div>
                 </Link>
                 <Carousel className="mx-4">
@@ -320,16 +319,14 @@ export async function SectionEight({ data }: { data: DataType['section_8'] }) {
               {data.products.map((item, index) => (
                 <CarouselItem key={item.id} className="basis-2/5 lg:basis-1/6">
                   <Link href={`/products/${item.id}`}>
-                    <div className="flex flex-col gap-2">
+                    <div className="grid grid-rows-[auto_1fr_auto] gap-1 lg:gap-2 h-full">
                       <img
                         src={item.image_urls[0] || '/temp/homepage-5.jpg'}
                         alt={item.name}
                         className="rounded-2xl w-full object-cover aspect-square"
                       />
-                      <div>
-                        <p className="text-lg font-medium">{item.name}</p>
-                        <p className="text-[#00C7BE] font-medium">{VND.format(item.price)}</p>
-                      </div>
+                      <p className="text-lg font-medium">{item.name}</p>
+                      <p className="text-[#00C7BE] font-medium">{VND.format(item.price)}</p>
                     </div>
                   </Link>
                 </CarouselItem>
