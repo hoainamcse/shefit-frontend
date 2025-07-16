@@ -134,7 +134,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                               <div className="relative overflow-hidden rounded-lg">
                                 <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                                   <div className="relative">
-                                    <div className="relative aspect-[5/7]">
+                                    <div className="relative aspect-[273/381]">
                                       <div className="absolute top-3 left-2 z-10">
                                         <p className="text-white text-sm font-medium uppercase">Khóa tập luyện với</p>
                                         <p className="text-white text-xl font-semibold uppercase">
@@ -144,7 +144,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                       <img
                                         src={course.cover_image}
                                         alt={course.course_name}
-                                        className="object-cover rounded-lg w-[273px] h-[381px]"
+                                        className="object-cover rounded-lg aspect-[273/381]"
                                       />
                                     </div>
                                   </div>
@@ -221,7 +221,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                               <div className="relative overflow-hidden rounded-lg">
                                 <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                                   <div className="relative">
-                                    <div className="relative aspect-[5/7]">
+                                    <div className="relative aspect-[273/381]">
                                       <div className="absolute top-3 left-2 z-10">
                                         <p className="text-white text-sm font-medium uppercase">Khóa tập luyện với</p>
                                         <p className="text-white text-xl font-semibold uppercase">
@@ -231,7 +231,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                       <img
                                         src={course.cover_image}
                                         alt={course.course_name}
-                                        className="object-cover rounded-lg w-[273px] h-[381px]"
+                                        className="object-cover rounded-lg aspect-[273/381]"
                                       />
                                     </div>
                                   </div>
@@ -372,7 +372,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                   <div className="relative overflow-hidden rounded-lg">
                     <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                       <div className="relative">
-                        <div className="relative aspect-[5/7]">
+                        <div className="relative aspect-[273/381]">
                           <div className="absolute top-3 left-2 z-10">
                             <p className="text-white text-sm font-medium uppercase">Khóa tập luyện với</p>
                             <p className="text-white text-xl font-semibold uppercase">
@@ -382,7 +382,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                           <img
                             src={course.cover_image}
                             alt={course.course_name}
-                            className="object-cover rounded-lg w-[273px] h-[381px]"
+                            className="object-cover rounded-lg aspect-[273/381]"
                           />
                         </div>
                       </div>
@@ -419,7 +419,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
               )}
 
               <div className="flex justify-center mb-8">
-                <TabsList className="bg-transparent shadow-none grid grid-cols-3 lg:grid-cols-5 mb-4">
+                <TabsList className="bg-transparent shadow-none flex flex-wrap mb-4 gap-4">
                   {parsedFeatures.map((feature, index) => (
                     <TabsTrigger
                       key={feature.id || index}

@@ -75,7 +75,7 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
                         <img
                           src={getYoutubeThumbnail(exercise.youtube_url)}
                           alt=""
-                          className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
+                          className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -84,13 +84,13 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
                       </div>
 
                       <div className="flex justify-between">
-                        <div className="w-3/4">
+                        <div>
                           <p className="font-bold text-wrap text-xl lg:text-2xl">{exercise.circuit_exercise_title}</p>
                           <p className="text-[#737373] text-base lg:text-xl text-wrap">
                             {exercise.circuit_exercise_description}
                           </p>
                         </div>
-                        <div className="flex items-center w-1/4">
+                        <div>
                           <Checkbox className="block w-8 h-8" />
                         </div>
                       </div>
@@ -147,7 +147,7 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
 
 export function VideoClientComponent({ circuits }: { circuits: any }) {
   return (
-    <div className="flex flex-col gap-10 lg:mt-10 mt-2">
+    <div className="flex flex-col gap-10 lg:mt-10 mt-2 px-4">
       <div className="mb-20">
         <div className="flex flex-col justify-center text-center gap-5"></div>
         {circuits.data.map((circuit: DayCircuit, cIdx: number) => (

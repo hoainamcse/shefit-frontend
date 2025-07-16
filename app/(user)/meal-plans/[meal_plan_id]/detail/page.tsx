@@ -29,36 +29,18 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
           <BackIconBlack /> Quay về
         </Button>
       </Link>
-      <div className="flex flex-col items-center justify-center mt-16 max-lg:mt-0 mx-auto max-w-[1800px] mb-20">
+      <div className="flex flex-col items-center justify-center max-lg:mt-0 mx-auto max-w-[1800px] mb-20">
         <div className="relative w-full">
           <img
             src={mealPlan.image}
             alt="Menu detail image"
-            className="w-full lg:h-[681px] h-[281px] object-cover lg:rounded-xl rounded-none"
+            className="w-full object-cover lg:rounded-xl rounded-none aspect-[1800/681]"
           />
         </div>
-        {/* <div className="mr-auto mt-8 max-lg:p-4 text-base lg:text-xl">
-          <p className="font-bold">{mealPlan.meal_plan_goal?.name}</p>
-          <p className="text-[#737373]">{mealPlan.title}</p>
-          <p className="text-[#737373]">Chef {mealPlan.chef_name}</p>
-        </div> */}
-        {/* <div className="w-full max-lg:p-4">
-          <div className="bg-primary py-5 w-full rounded-[20px] my-20 max-lg:my-2">
-            <div className="xl:w-[696px] max-lg:w-full mx-auto text-white h-full flex flex-col items-center justify-center">
-              <div className="text-center text-xl lg:text-2xl font-bold mb-10">Kết quả</div>
-              <ul className="text-[#F7F7F7] text-base lg:text-xl list-disc mr-auto max-lg:px-8">
-                {mealPlan.meal_plan_goal?.name?.split('\n')?.map((subtitle, index) => (
-                  <li key={index}>{subtitle}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div> */}
         <div className="mr-auto text-xl my-20 max-lg:my-0 max-lg:p-4">
           <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-[40px] max-lg:text-[30px] mb-5">
             Menu theo lịch
           </div>
-          {/* <div>{mealPlan.description}</div> */}
         </div>
         <Tabs defaultValue="1" className="w-full h-full">
           <TabsList className="w-full flex-wrap justify-start bg-transparent p-0 h-full">
@@ -94,36 +76,6 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
                           </div>
                           <div className="text-[#737373]">Dinh dưỡng: {dish.nutrients}</div>
                         </div>
-                        {/* <Table className="w-[400px] text-center border border-collapse">
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead className="border text-center">Thành phần</TableHead>
-                              <TableHead className="border text-center">Nguyên liệu</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody className="text-[#737373]">
-                            <TableRow>
-                              <TableCell className="border">Thịt cá</TableCell>
-                              <TableCell className="border">{dish.protein_source}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="border">Rau củ</TableCell>
-                              <TableCell className="border">{dish.vegetable}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="border">Tinh bột</TableCell>
-                              <TableCell className="border">{dish.starch}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="border">Gia vị</TableCell>
-                              <TableCell className="border">{dish.spices}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell className="border">Khác</TableCell>
-                              <TableCell className="border">{dish.others}</TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table> */}
                         <div className="xl:w-full text-[#737373]">{dish.description}</div>
                       </div>
                     ))

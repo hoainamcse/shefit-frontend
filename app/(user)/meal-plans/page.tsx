@@ -103,7 +103,7 @@ export default function MealPlansPage() {
   })
 
   return (
-    <div>
+    <div className="px-4">
       <div className="max-w-screen-md mx-auto">
         <p className="font-[family-name:var(--font-coiny)] font-bold sm:text-center text-ring text-2xl sm:text-3xl my-8 sm:my-4">
           Chọn thực đơn
@@ -153,15 +153,12 @@ export default function MealPlansPage() {
         <TabsContent value="all">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto mt-6 justify-items-center">
             {filteredMealPlans.map((mealPlan) => (
-              <div
-                key={`menu-${mealPlan.id}`}
-                className="lg:w-[585px] md:w-[450px] sm:w-[400px] w-full max-w-full overflow-hidden"
-              >
+              <div key={`menu-${mealPlan.id}`} className="w-full max-w-full overflow-hidden">
                 <div className="relative group">
                   <img
                     src={mealPlan.image}
                     alt={mealPlan.title}
-                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full lg:h-[373px] md:h-[300px] sm:h-[280px] h-[261px]"
+                    className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
                   />
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   <NextButton

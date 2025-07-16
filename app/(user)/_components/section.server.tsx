@@ -73,7 +73,7 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
                 </span>
                 <div className="space-y-2">
                   <h4 className="uppercase text-lg lg:text-3xl font-semibold text-[#FF7873]">{feature.title}</h4>
-                  <p className="text-neutral-500 text-base lg:text-xl">{feature.description}</p>
+                  <p className="text-[#1A1A1A] text-base lg:text-xl">{feature.description}</p>
                 </div>
               </div>
             ))}
@@ -363,14 +363,14 @@ export async function SectionNine({ data }: { data: DataType['section_9'] }) {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {data.coaches.map((coach, index) => (
               <div key={index} className={`relative ${index % 2 !== 0 ? 'lg:translate-y-12' : ''}`}>
-                <div className="relative w-full" style={{ paddingBottom: '150%' }}>
+                <div className="relative w-full aspect-[409/588]">
                   <div className="absolute inset-0">
-                    <div className="relative w-full h-full">
+                    <div className="relative w-full h-full aspect-[409/588]">
                       <div className="absolute bottom-0 left-0 bg-primary -z-10 w-full h-full" />
                       <img
                         src={coach.image || '/temp/homepage-6.png'}
                         alt={coach.name}
-                        className="object-cover w-full h-full"
+                        className="object-cover w-full h-full aspect-[409/588]"
                       />
                       <div className="text-center space-y-1 absolute bottom-5 left-0 w-full text-white">
                         <p className="text-[20px] lg:text-[40px] font-semibold">{coach.name}</p>

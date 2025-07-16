@@ -28,7 +28,7 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
           />
         </div>
         <div className="max-w-screen-[1800px] mx-auto">
-          <div className="flex flex-col items-center justify-center mt-16 max-lg:mt-0 mx-auto max-w-[1800px] mb-20">
+          <div className="flex flex-col items-center justify-center max-lg:mt-0 mx-auto max-w-[1800px] mb-20">
             <img
               src={mealPlan.image}
               alt="Menu detail image"
@@ -47,7 +47,7 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
             <div className="w-full max-lg:p-4">
               <div className="bg-primary lg:py-12 py-6 w-full rounded-[20px] my-20 max-lg:my-2">
                 <p className="font-bold text-xl lg:text-2xl text-white text-center mb-4">Kết quả</p>
-                <div className="xl:px-20 max-lg:w-full mx-auto text-white h-full flex flex-col items-center justify-center">
+                <div className="lg:px-20 px-2 max-lg:w-full mx-auto text-white h-full flex flex-col items-center justify-center">
                   <p className="text-[#F7F7F7] text-base lg:text-xl list-disc mr-auto max-lg:px-8">
                     {mealPlan.subtitle}
                   </p>
