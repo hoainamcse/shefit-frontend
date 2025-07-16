@@ -6,6 +6,7 @@ import { getUserSubscriptions } from '@/network/client/users'
 import { useParams } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import { formatDate } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 interface SubscriptionStatus {
   hasSubscription: boolean
@@ -72,9 +73,13 @@ export default function SubscriptionInfo() {
     <div>
       <div className="flex items-center mb-2">
         {subscriptionStatus.status === 'active' ? (
-          <Badge className="bg-green-600 px-4 lg:px-8 py-2 lg:py-3 text-base lg:text-xl font-bold">Còn hạn</Badge>
+          <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#13D8A7] text-lg rounded-none border border-[#000000]">
+            Còn hạn
+          </Button>
         ) : (
-          <Badge className="bg-red-600 px-4 lg:px-8 py-2 lg:py-3 text-base lg:text-xl font-bold">Hết hạn</Badge>
+          <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#E61417] text-lg rounded-none border border-[#000000]">
+            Hết hạn
+          </Button>
         )}
       </div>
       {subscriptionStatus.startDate && (

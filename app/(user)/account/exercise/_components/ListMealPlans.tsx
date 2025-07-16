@@ -298,7 +298,7 @@ export default function ListMealPlans() {
         })}
       </div>
       <Link href="/meal-plans" className="mt-6">
-        <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-base lg:text-xl mt-6">
+        <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-base lg:text-xl mt-6 lg:mt-12">
           Thêm thực đơn
         </Button>
       </Link>

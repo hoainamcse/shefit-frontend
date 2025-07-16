@@ -281,7 +281,7 @@ export default function ListDishes() {
       </div>
       <div className="mt-6">
         <Link href="/gallery">
-          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-base lg:text-xl">Thêm món ăn</Button>
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-base lg:text-xl lg:mt-12 mt-6">Thêm món ăn</Button>
         </Link>
       </div>
     </div>

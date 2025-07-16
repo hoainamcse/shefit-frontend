@@ -314,7 +314,7 @@ export default function ListExercises() {
       </div>
       <div className="mt-6">
         <Link href="/gallery">
-          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-base lg:text-xl">
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-base lg:text-xl lg:mt-12 mt-6">
             Thêm động tác
           </Button>
         </Link>

@@ -124,9 +124,9 @@ export default function ListSubscriptions() {
       {!showFavorites && (
         <>
           {isActive ? (
-            <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#13D8A7] text-lg">Còn hạn</Button>
+            <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#13D8A7] text-lg rounded-none border border-[#000000]">Còn hạn</Button>
           ) : (
-            <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#E61417] text-lg">Hết hạn</Button>
+            <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#E61417] text-lg rounded-none border border-[#000000]">Hết hạn</Button>
           )}
 
           <div className="flex lg:flex-row gap-5 mt-auto text-lg justify-between text-[#737373] font-bold">

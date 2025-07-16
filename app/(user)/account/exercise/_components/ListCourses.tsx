@@ -99,7 +99,7 @@ export function ListCourses() {
       <div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-[#13D8A7] text-white lg:text-xl text-base w-full rounded-full h-14 mt-6">
+            <Button className="bg-[#13D8A7] text-white lg:text-xl text-base w-full rounded-full h-14 lg:mt-12">
               Thêm khóa tập
             </Button>
           </DialogTrigger>

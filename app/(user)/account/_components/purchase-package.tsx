@@ -79,10 +79,7 @@ export default function PurchasePackage() {
 
   if (isLoading) {
     return (
-      <div className="pb-16 md:pb-16 px-5 sm:px-9 lg:px-[56px] xl:px-[60px]">
-        <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
-          Mua Gói Độ Dáng
-        </div>
+      <div className="pb-16 md:pb-16 px-5 lg:px-12 sm:px-9">
         <div className="flex justify-center items-center h-40">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
         </div>
@@ -91,10 +88,10 @@ export default function PurchasePackage() {
   }
 
   return (
-    <div className="pb-16 md:pb-16 px-5 sm:px-9 lg:px-[56px] xl:px-[60px]">
+    <div>
       <Tabs defaultValue="all">
         {session && (
-          <TabsList className="bg-background gap-y-3 sm:gap-y-5 gap-x-7 pl-0 h-fit lg:h-9 mb-6">
+          <TabsList className="bg-background gap-y-3 sm:gap-y-5 gap-x-7 pl-0 h-fit lg:h-9 mb-6 px-4 lg:px-12">
             <TabsTrigger
               value="all"
               className={cn('text-ring bg-white !shadow-none border-2 border-[#FF7873] text-lg ')}
@@ -110,11 +107,11 @@ export default function PurchasePackage() {
           </TabsList>
         )}
         <TabsContent value="all">
-          <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
+          <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold px-4 lg:px-12">
             Mua Gói Độ Dáng
           </div>
 
-          <div className="text-[#737373] text-base md:text-xl mb-6">
+          <div className="text-[#737373] text-base md:text-xl mb-6 px-4 lg:px-12">
             {courseId
               ? 'Bạn cần mua một trong các Gói Member sau để truy cập vào khóa tập vừa xem'
               : 'Mua gói độ dáng để bắt đầu các khóa tập và thực đơn'}
@@ -125,12 +122,12 @@ export default function PurchasePackage() {
               {courseId ? 'Không có gói nào phù hợp với khóa học này' : 'Không có gói nào khả dụng'}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 lg:px-12">
               {subscriptions.data.map((subscription) => (
-                <div key={subscription.id} className="bg-[#FFAEB01A] rounded-[20px] p-5 h-full">
+                <div key={subscription.id} className="bg-[#FFAEB01A] lg:rounded-[20px] lg:p-5 p-4 h-full">
                   <div className="flex flex-col 2xl:flex-row 2xl:gap-4">
-                    <div className="flex flex-col gap-5 justify-between px-2 w-full 2xl:w-1/2">
-                      <div className="font-[family-name:var(--font-coiny)] text-[#000000] text-xl lg:text-2xl font-semibold mb-[18px]">
+                    <div className="flex flex-col gap-5 justify-between  w-full 2xl:w-1/2">
+                      <div className="font-[family-name:var(--font-coiny)] text-[#000000] text-xl lg:text-2xl font-semibold">
                         {subscription.name}
                       </div>
                       <ul className="list-disc pl-7 text-base md:text-xl text-[#737373] w-full space-y-2">

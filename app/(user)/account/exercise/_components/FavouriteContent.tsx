@@ -395,7 +395,7 @@ export default function FavouriteContent() {
           )}
         </div>
         <Link href="/courses">
-          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-base lg:text-xl">
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-base lg:text-xl lg:mt-12">
             Thêm khóa tập
           </Button>
         </Link>
@@ -437,7 +437,7 @@ export default function FavouriteContent() {
           )}
         </div>
         <Link href="/meal-plans">
-          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-base lg:text-xl">
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-base lg:text-xl lg:mt-12 mt-6">
             Thêm thực đơn
           </Button>
         </Link>
@@ -486,7 +486,7 @@ export default function FavouriteContent() {
           )}
         </div>
         <Link href="/gallery">
-          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-base lg:text-xl">
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-base lg:text-xl lg:mt-12">
             Thêm động tác
           </Button>
         </Link>
@@ -539,7 +539,7 @@ export default function FavouriteContent() {
           )}
         </div>
         <Link href="/dishes">
-          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-base lg:text-xl">
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-base lg:text-xl lg:mt-12">
             Thêm món ăn
           </Button>
         </Link>
