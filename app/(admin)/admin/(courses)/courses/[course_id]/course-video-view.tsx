@@ -5,7 +5,18 @@ import type { Course } from '@/models/course'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Calendar, Clock, Play, Edit, Trash2, ChevronRight, ChevronDown, Import, ClipboardPen } from 'lucide-react'
+import {
+  Calendar,
+  Clock,
+  Play,
+  Edit,
+  Trash2,
+  ChevronRight,
+  ChevronDown,
+  Import,
+  ClipboardPen,
+  CircleAlert,
+} from 'lucide-react'
 import { Spinner } from '@/components/spinner'
 
 import {
@@ -61,8 +72,11 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
   const [showCircuitForm, setShowCircuitForm] = useState(false)
   const [showExerciseForm, setShowExerciseForm] = useState(false)
   const [editingItem, setEditingItem] = useState<any>(null)
-  const importStorageKey = `courses:${courseID}`
-  const [isImportData, setIsImportData] = useState(localStorage.getItem(importStorageKey) !== null)
+
+  const IMPORT_STATUS_STORAGE_NAME = `courses:${courseID}:import-status`
+  const [importStatus, setImportStatus] = useState<string | null>(() => {
+    return localStorage.getItem(IMPORT_STATUS_STORAGE_NAME)
+  })
 
   // const [deleteItem, setDeleteItem] = useState<{ type: string; item: any } | null>(null)
 
@@ -99,19 +113,19 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
   })
 
   // Check import status
-
-  useQuery({
+  const { refetch: importStatusRefetch } = useQuery({
     queryKey: [queryKeyImportStatus, courseID],
     queryFn: async () => {
-      const data = await importVideoCourseStatus(courseID)
-      if (data?.status === 'done') {
-        localStorage.removeItem(importStorageKey)
-        setIsImportData(false)
-        weeksRefetch()
+      const { status } = await importVideoCourseStatus(courseID)
+      if (status === 'done' || status === 'not started') {
+        localStorage.removeItem(IMPORT_STATUS_STORAGE_NAME)
+      } else {
+        localStorage.setItem(IMPORT_STATUS_STORAGE_NAME, status)
       }
-      return data
+      setImportStatus(status)
+      return status
     },
-    enabled: isImportData,
+    enabled: importStatus === 'processing',
     refetchInterval: 3000,
   })
 
@@ -218,11 +232,10 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
           <ExcelImportDialog
             title="Khoá tập"
             handleSubmit={async (file: File) => {
-              localStorage.setItem(importStorageKey, 'import-excel')
-              setIsImportData(true)
               await importVideoCourseExcel(courseID, file)
+              await importStatusRefetch()
             }}
-            disabled={isImportData}
+            disabled={importStatus === 'processing'}
           />
           <AddButton
             onClick={() => {
@@ -230,14 +243,42 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
               setShowWeekForm(true)
             }}
             text="Thêm tuần"
-            disabled={isImportData}
+            disabled={importStatus === 'processing'}
           />
         </div>
 
-        {isImportData ? (
+        {importStatus === 'processing' ? (
           <div className="flex flex-col items-center justify-center h-full space-y-2">
             <Spinner className="bg-ring dark:bg-white" />
             <p className="text-sm text-muted-foreground">Vui lòng đợi, dữ liệu đang được cập nhật...</p>
+          </div>
+        ) : importStatus?.startsWith('error') ? (
+          <div className="flex flex-col items-center justify-center h-full">
+            <div
+              className="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-xl shadow-lg p-8 flex flex-col items-center w-full max-w-md animate-shake"
+              role="alert"
+              tabIndex={0}
+              aria-label="Đã xảy ra lỗi trong quá trình upload dữ liệu"
+            >
+              <div className="mb-4">
+                <CircleAlert className="w-12 h-12 text-red-500" />
+              </div>
+              <p className="text-xl font-bold text-red-600 mb-2 text-center">Đã xảy ra lỗi khi upload dữ liệu</p>
+              <p className="text-base text-red-500 mb-6 text-center">
+                Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ nếu lỗi tiếp tục xảy ra.
+              </p>
+              <Button
+                variant="destructive"
+                className="w-full max-w-xs"
+                onClick={() => {
+                  localStorage.removeItem(IMPORT_STATUS_STORAGE_NAME)
+                  setImportStatus(null)
+                }}
+                autoFocus
+              >
+                Đóng
+              </Button>
+            </div>
           </div>
         ) : weeksLoading ? (
           <div className="space-y-4">
@@ -616,72 +657,72 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
   )
 }
 
-function ImportDialog({ courseID, onSuccess }: { courseID: Course['id']; onSuccess?: () => void }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [data, setData] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+// function ImportDialog({ courseID, onSuccess }: { courseID: Course['id']; onSuccess?: () => void }) {
+//   const [isOpen, setIsOpen] = useState(false)
+//   const [data, setData] = useState<any[]>([])
+//   const [isLoading, setIsLoading] = useState(false)
 
-  const onSubmit = async () => {
-    try {
-      setIsLoading(true)
-      const _data = transformExercise(data)
+//   const onSubmit = async () => {
+//     try {
+//       setIsLoading(true)
+//       const _data = transformExercise(data)
 
-      for (const w of _data.weeks) {
-        try {
-          const weekResponse = await createCourseWeek(courseID, { week_number: w.week_number })
+//       for (const w of _data.weeks) {
+//         try {
+//           const weekResponse = await createCourseWeek(courseID, { week_number: w.week_number })
 
-          for (const d of w.days) {
-            try {
-              const dayResponse = await createWeekDay(courseID, weekResponse.data.id, {
-                day_number: d.day_number,
-                description: '',
-              })
+//           for (const d of w.days) {
+//             try {
+//               const dayResponse = await createWeekDay(courseID, weekResponse.data.id, {
+//                 day_number: d.day_number,
+//                 description: '',
+//               })
 
-              for (const c of d.circuits) {
-                await createDayCircuit(courseID, weekResponse.data.id, dayResponse.data.id, {
-                  name: c.name,
-                  description: c.description,
-                  auto_replay_count: c.auto_replay_count,
-                  circuit_exercises: c.circuit_exercises,
-                })
-              }
-            } catch (error) {
-              console.error(`Error processing day ${d.day_number} for week ${w.week_number}:`, error)
-            }
-          }
-        } catch (error) {
-          console.error(`Error processing week ${w.week_number}:`, error)
-        }
-      }
+//               for (const c of d.circuits) {
+//                 await createDayCircuit(courseID, weekResponse.data.id, dayResponse.data.id, {
+//                   name: c.name,
+//                   description: c.description,
+//                   auto_replay_count: c.auto_replay_count,
+//                   circuit_exercises: c.circuit_exercises,
+//                 })
+//               }
+//             } catch (error) {
+//               console.error(`Error processing day ${d.day_number} for week ${w.week_number}:`, error)
+//             }
+//           }
+//         } catch (error) {
+//           console.error(`Error processing week ${w.week_number}:`, error)
+//         }
+//       }
 
-      setData([])
-      toast.success('Nhập khoá tập thành công')
-      onSuccess?.()
-      setIsOpen(false)
-    } catch (error) {
-      console.error('Error importing data:', error)
-      toast.error('Đã có lỗi xảy ra khi nhập khoá tập')
-    } finally {
-      setIsLoading(false)
-    }
-  }
+//       setData([])
+//       toast.success('Nhập khoá tập thành công')
+//       onSuccess?.()
+//       setIsOpen(false)
+//     } catch (error) {
+//       console.error('Error importing data:', error)
+//       toast.error('Đã có lỗi xảy ra khi nhập khoá tập')
+//     } finally {
+//       setIsLoading(false)
+//     }
+//   }
 
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <MainButton text="Nhập khoá tập" icon={Import} variant="outline" />
-      </DialogTrigger>
-      <DialogContent className="max-w-screen-lg" onInteractOutside={(e) => e.preventDefault()}>
-        <DialogHeader>
-          <DialogTitle>Nhập món ăn</DialogTitle>
-          <DialogDescription>Chức năng này sẽ cho phép nhập danh sách món ăn từ tệp Excel</DialogDescription>
-        </DialogHeader>
-        <ExcelReader
-          specificHeaders={['exercise_no', 'circuit_auto_replay_count', 'week_number', 'day_number']}
-          onSuccess={setData}
-        />
-        {data.length > 0 && <MainButton text="Nhập khoá tập" className="mt-4" onClick={onSubmit} loading={isLoading} />}
-      </DialogContent>
-    </Dialog>
-  )
-}
+//   return (
+//     <Dialog open={isOpen} onOpenChange={setIsOpen}>
+//       <DialogTrigger asChild>
+//         <MainButton text="Nhập khoá tập" icon={Import} variant="outline" />
+//       </DialogTrigger>
+//       <DialogContent className="max-w-screen-lg" onInteractOutside={(e) => e.preventDefault()}>
+//         <DialogHeader>
+//           <DialogTitle>Nhập món ăn</DialogTitle>
+//           <DialogDescription>Chức năng này sẽ cho phép nhập danh sách món ăn từ tệp Excel</DialogDescription>
+//         </DialogHeader>
+//         <ExcelReader
+//           specificHeaders={['exercise_no', 'circuit_auto_replay_count', 'week_number', 'day_number']}
+//           onSuccess={setData}
+//         />
+//         {data.length > 0 && <MainButton text="Nhập khoá tập" className="mt-4" onClick={onSubmit} loading={isLoading} />}
+//       </DialogContent>
+//     </Dialog>
+//   )
+// }

@@ -5,7 +5,7 @@ import * as XLSX from 'xlsx'
 
 interface ExcelReaderProps {
   specificHeaders?: string[]
-  onSuccess: (data: Record<string, string | number>[]) => void
+  onSuccess: (data: File) => void
 }
 
 export const ExcelReader = ({ specificHeaders = [], onSuccess }: ExcelReaderProps) => {
@@ -69,9 +69,9 @@ export const ExcelReader = ({ specificHeaders = [], onSuccess }: ExcelReaderProp
       // Set preview data and total rows
       setPreviewData(results.slice(0, 5))
       setTotalRows(results.length)
-      onSuccess(results)
       setIsProcessing(false)
     }
+    onSuccess(file)
 
     reader.readAsArrayBuffer(file)
   }
