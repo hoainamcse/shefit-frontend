@@ -34,7 +34,7 @@ export default function FormDelivery({
       city: '',
       address: '',
       shipping_fee: cartData?.shipping_fee?.toString() || '0',
-      total: cartData?.total?.toString() || '0',
+      total: cartData?.product_variants ? cartData.product_variants.reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0).toString() : '0',
       discount: '0',
       payment_method: true,
       note: '',
@@ -65,7 +65,7 @@ export default function FormDelivery({
       const isHCM = selectedCity?.includes('Hồ Chí Minh') || false
       const weight = cartData.total_weight || 0
       const shippingFee = calculateShippingFee(weight, isHCM)
-      const cartTotal = cartData.total - cartData.shipping_fee || 0
+      const cartTotal = cartData.product_variants ? cartData.product_variants.reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0) : 0
       const finalTotal = Math.max(0, cartTotal - discountAmount) + shippingFee
 
       form.setValue('shipping_fee', shippingFee.toString(), { shouldValidate: true })
@@ -86,7 +86,7 @@ export default function FormDelivery({
           const isHCM = userData.province?.includes('Hồ Chí Minh') || false
           const weight = cartData?.total_weight || 0
           const shippingFee = calculateShippingFee(weight, isHCM)
-          const cartTotal = cartData?.total - cartData?.shipping_fee || 0
+          const cartTotal = cartData?.product_variants ? cartData.product_variants.reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0) : 0
           const finalTotal = Math.max(0, cartTotal - discountAmount) + shippingFee
 
           form.reset({

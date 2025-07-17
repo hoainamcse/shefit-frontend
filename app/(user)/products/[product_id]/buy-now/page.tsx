@@ -50,9 +50,17 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
       city: '',
       address: '',
       shipping_fee: '0',
-      total: cart?.total?.toString() || '0',
+      total: cart?.product_variants
+        ? cart.product_variants
+            .reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0)
+            .toString()
+        : '0',
       discount: '0',
-      final_total: cart?.total?.toString() || '0',
+      final_total: cart?.product_variants
+        ? cart.product_variants
+            .reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0)
+            .toString()
+        : '0',
       payment_method: true,
       note: '',
     },
@@ -61,12 +69,16 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
   const selectedCity = form.watch('city')
 
   useEffect(() => {
-    if (cart) {
+    if (cart && cart.product_variants) {
+      const cartTotal = cart.product_variants.reduce((total: number, variant: any) => {
+        return total + variant.price * variant.quantity
+      }, 0)
+
       const isHCM = selectedCity?.includes('Hồ Chí Minh') || false
       const weight = cart.total_weight || 0
       const shippingFee = calculateShippingFee(weight, isHCM)
-      const cartTotal = cart.total || 0
       const finalTotal = Math.max(0, cartTotal - discountAmount) + shippingFee
+
       form.setValue('shipping_fee', shippingFee.toString(), { shouldValidate: true })
       form.setValue('total', cartTotal.toString(), { shouldValidate: true })
       form.setValue('discount', discountAmount.toString(), { shouldValidate: true })
@@ -202,7 +214,12 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
       const isHCM = form.getValues('city')?.includes('Hồ Chí Minh') || false
       const weight = updatedCart.total_weight || 0
       const shippingFee = calculateShippingFee(weight, isHCM)
-      const cartTotal = updatedCart.total || 0
+      const cartTotal = updatedCart.product_variants
+        ? updatedCart.product_variants.reduce(
+            (total: number, variant: any) => total + variant.price * variant.quantity,
+            0
+          )
+        : 0
       const finalTotal = Math.max(0, cartTotal - discountAmount) + shippingFee
       form.setValue('shipping_fee', shippingFee.toString(), { shouldValidate: true })
       form.setValue('total', cartTotal.toString(), { shouldValidate: true })
@@ -239,7 +256,9 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
         return
       }
 
-      const cartTotal = cart?.total || 0
+      const cartTotal = cart?.product_variants
+        ? cart.product_variants.reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0)
+        : 0
       let discount = 0
 
       if (matchingCoupon.discount_type === 'percentage') {
@@ -275,7 +294,9 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
       const isHCM = form.getValues('city')?.includes('Hồ Chí Minh') || false
       const weight = cart.total_weight || 0
       const shippingFee = calculateShippingFee(weight, isHCM)
-      const cartTotal = cart.total || 0
+      const cartTotal = cart.product_variants
+        ? cart.product_variants.reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0)
+        : 0
       const finalTotal = cartTotal + shippingFee
       form.setValue('discount', '0', { shouldValidate: true })
       form.setValue('final_total', finalTotal.toString(), { shouldValidate: true })
@@ -467,7 +488,16 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
             <div className="flex justify-between">
               <div className="text-base lg:text-xl">Tổng tiền</div>
               <div className="text-[#00C7BE] font-semibold text-xl lg:text-2xl">
-                {cart?.total?.toLocaleString()} VNĐ
+                {cart?.product_variants
+                  ? cart.product_variants
+                      .reduce(
+                        (total: number, variant: { price: number; quantity: number }) =>
+                          total + variant.price * variant.quantity,
+                        0
+                      )
+                      .toLocaleString()
+                  : '0'}{' '}
+                VNĐ
               </div>
             </div>
 

@@ -29,21 +29,28 @@ export default async function CartDetail({ params }: { params: Promise<{ slug: n
                 className="size-[148px] rounded-lg flex-shrink-0"
               />
               <div className="flex flex-col gap-3">
-                <div className="font-medium text-lg lg:text-xl">{products[index]?.data?.name}</div>
-                <div className="text-[#737373] text-lg lg:text-xl">{variant.color.name}</div>
-                <div className="text-[#737373] text-lg lg:text-xl">Size: {variant.size.size}</div>
+                <div className="font-medium text-base lg:text-xl">{products[index]?.data?.name}</div>
+                <div className="text-[#737373] text-base lg:text-xl">{variant.color.name}</div>
+                <div className="text-[#737373] text-base lg:text-xl">Size: {variant.size.size}</div>
+                <div className="text-[#737373] text-base lg:text-xl">Số lượng: {variant.quantity}</div>
               </div>
               <div className="ml-auto text-right">
-                <div className="text-[#737373] text-lg lg:text-xl">
+                <div className="text-[#737373] text-base lg:text-xl">
                   <span>{products[index]?.data?.price?.toLocaleString() || 0}</span> VNĐ
                 </div>
               </div>
             </div>
           ))}
-          <div className="flex justify-between mt-10 text-2xl items-center">
-            <div>Tổng tiền</div>
-            <div className="text-[#00C7BE] font-semibold">
-              {(cart.data.total - cart.data.shipping_fee).toLocaleString()} vnđ
+          <div className="flex flex-col gap-2 mt-10 text-2xl items-center">
+            <div className="flex justify-between w-full">
+              <div className="text-base lg:text-xl">Phí vận chuyển</div>
+              <div className="text-[#737373] text-base lg:text-xl">{cart.data.shipping_fee.toLocaleString()} VNĐ</div>
+            </div>
+            <div className="flex justify-between w-full">
+              <div className="text-base lg:text-xl">Tổng tiền</div>
+              <div className="text-[#00C7BE] font-semibold text-xl lg:text-2xl">
+                {cart.data.total.toLocaleString()} VNĐ
+              </div>
             </div>
           </div>
         </div>

@@ -162,7 +162,7 @@ export default function CurrentCart() {
         return
       }
 
-      const cartTotal = pendingCarts[0]?.cart?.total - pendingCarts[0]?.cart?.shipping_fee || 0
+      const cartTotal = pendingCarts[0]?.cart?.product_variants ? pendingCarts[0].cart.product_variants.reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0) : 0
       let discount = 0
 
       if (matchingCoupon.discount_type === 'percentage') {
@@ -210,7 +210,7 @@ export default function CurrentCart() {
   }
 
   const cartData = pendingCarts[0]?.cart
-  const totalPrice = (cartData?.total - cartData?.shipping_fee).toLocaleString()
+  const totalPrice = cartData?.product_variants ? cartData.product_variants.reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0).toLocaleString() : '0'
 
   const handleRemove = async (variantId: number) => {
     if (!session) {
