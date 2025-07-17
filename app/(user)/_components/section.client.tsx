@@ -61,7 +61,10 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
       <div className="bg-[#FFF3F3] mx-auto">
         <div className="py-28 md:py-12 space-y-8 lg:space-y-10">
           <div className="max-w-[500px] px-4 lg:px-6 mx-auto flex flex-col items-center justify-center text-center gap-4">
-            <HtmlContent content={data.title} className="text-3xl lg:text-[40px] font-bold" />
+            <HtmlContent
+              content={data.title}
+              className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[47px] font-bold"
+            />
           </div>
 
           <div className="mx-auto px-8 lg:px-12">
@@ -409,7 +412,10 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
       <div className="bg-[#DADADA] mx-auto">
         <div className="py-10 lg:py-12 space-y-8 lg:space-y-10">
           <div className="max-w-[500px] px-4 lg:px-6 mx-auto flex flex-col items-center justify-center text-center gap-4">
-            <HtmlContent content={data.title} className="text-3xl lg:text-[40px] font-bold" />
+            <HtmlContent
+              content={data.title}
+              className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[47px] font-bold"
+            />
           </div>
 
           <div className="mx-auto">

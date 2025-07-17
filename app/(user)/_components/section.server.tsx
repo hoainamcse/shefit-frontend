@@ -27,7 +27,9 @@ export function SectionOne({ data }: { data: DataType['section_1'] }) {
         <div className="absolute inset-0 bg-gradient-to-r from-transparent from-50% to-black hidden lg:block" />
       </div>
       <div className="lg:absolute lg:inset-y-0 lg:left-[60%] lg:right-0 flex flex-col justify-center items-center lg:items-start gap-3 bg-[#FFA5A5] lg:bg-transparent text-center lg:text-start p-2 lg:p-3 lg:max-w-[600px] px-4 lg:px-0">
-        <h2 className="text-white text-3xl lg:text-[40px] font-bold mt-2 lg:mt-0">{data.title}</h2>
+        <h2 className="font-[family-name:var(--font-coiny)] text-white text-3xl lg:text-[40px] lg:leading-[47px] font-bold mt-2 lg:mt-0">
+          {data.title}
+        </h2>
         <div className="flex gap-1 text-[#FB4A64] text-base lg:text-xl font-bold flex-wrap justify-center lg:justify-start">
           {data.features.map((item, index) => (
             <Fragment key={index}>
@@ -52,8 +54,12 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
   return (
     <div className="my-8 lg:my-4">
       <div className="lg:max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4 py-8 lg:py-12 px-8 lg:px-16">
-        <h3 className="text-[#FF7873] text-3xl lg:text-[40px] font-bold">{data.subtitle}</h3>
-        <h2 className="text-3xl lg:text-[40px] font-bold">{data.title}</h2>
+        <h3 className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl lg:text-[40px] lg:leading-[47px] font-bold">
+          {data.subtitle}
+        </h3>
+        <h2 className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[47px] font-bold">
+          {data.title}
+        </h2>
         <p className="text-[#FB4A64] text-base lg:text-xl">{data.description}</p>
       </div>
       <img src={data.image} alt={data.image} className="aspect-[440/450] w-full max-w-full block lg:hidden" />
@@ -119,7 +125,9 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
     <div className="pt-8 lg:pt-24">
       <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4 px-6 lg:px-12 mb-8 lg:mb-[74px]">
-          <h2 className="text-3xl lg:text-[40px] lg:leading-[40px] xl:text-5xl font-bold">{data.title}</h2>
+          <h2 className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[40px] xl:text-5xl xl:leading-[56px] font-bold">
+            {data.title}
+          </h2>
           <p className="text-[#FB4A64] text-base lg:text-xl">{data.description}</p>
         </div>
         <div className="max-w-7xl mx-auto">
@@ -256,8 +264,10 @@ export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
     <div className="py-8 lg:py-12 px-8 sm:px-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4">
-          <h3 className="text-[#FF7873] text-3xl lg:text-[40px] font-bold">Ăn uống khoa học</h3>
-          <h2 className="text-3xl lg:text-[40px] font-bold">
+          <h3 className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl lg:text-[40px] lg:leading-[47px] font-bold">
+            Ăn uống khoa học
+          </h3>
+          <h2 className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[47px] font-bold">
             “Độ” dáng nhanh hơn với menu theo từng mục tiêu từ chuyên gia
           </h2>
         </div>
@@ -315,7 +325,9 @@ export async function SectionEight({ data }: { data: DataType['section_8'] }) {
     <div className="py-8 lg:py-12 px-8 sm:px-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
-          <h2 className="text-[#FF7873] text-3xl lg:text-[40px] font-bold">{data.title}</h2>
+          <h2 className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl lg:text-[40px] lg:leading-[47px] font-bold">
+            {data.title}
+          </h2>
           <p className="text-neutral-500 text-base">{data.description}</p>
         </div>
         <div className="space-y-4">
@@ -359,7 +371,7 @@ export async function SectionNine({ data }: { data: DataType['section_9'] }) {
     <div className="py-8 lg:py-12 px-4 sm:px-6">
       <div className="mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-[400px] mx-auto text-center">
-          <h2 className="text-3xl lg:text-[40px] lg:leading-[1.2] font-bold">
+          <h2 className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[47px] font-bold">
             Dẫn dắt bởi <br />
             chuyên gia hàng đầu
           </h2>
@@ -397,27 +409,31 @@ export function SectionTen({ data }: { data: DataType['section_10'] }) {
   return (
     <div className="py-8 lg:py-20">
       <div
-        className="relative w-full h-[400px] lg:h-[600px]"
-        style={{ clipPath: 'polygon(0 5%, 100% 0, 100% 100%, 0 90%)' }}
+        className="relative w-full h-[400px] md:h-[600px] lg:h-[810px]"
+        style={{ clipPath: 'polygon(0 11.111%, 100% 0, 100% 100%, 0 88.889%)' }}
       >
         <img src={data.top.image} className="absolute w-full h-full object-cover" />
         <div className="bg-[#FF78734D] absolute inset-0 transition-opacity" />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-background">
           <div className="max-w-2xl space-y-4">
-            <h2 className="uppercase text-2xl lg:text-[40px] font-bold">{data.top.title}</h2>
+            <h2 className="uppercase font-[family-name:var(--font-coiny)] text-2xl lg:text-[40px] lg:leading-[47px] lg:font-bold">
+              {data.top.title}
+            </h2>
             <p className="text-[16px] lg:text-[24px]">{data.top.description}</p>
           </div>
         </div>
       </div>
       <div
-        className="relative w-full h-[400px] lg:h-[600px] -mt-[40px] lg:-mt-[60px]"
-        style={{ clipPath: 'polygon(0 0, 100% 10%, 100% 95%, 0 100%)' }}
+        className="relative w-full h-[400px] md:h-[600px] lg:h-[900px] -mt-[70px] lg:-mt-[90px]"
+        style={{ clipPath: 'polygon(0 0, 100% 10%, 100% 90%, 0 100%)' }}
       >
         <img src={data.bottom.image} className="absolute w-full h-full object-cover" />
         <div className="bg-[#FF78734D] absolute inset-0 transition-opacity" />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-background">
           <div className="max-w-2xl space-y-4">
-            <h2 className="uppercase text-2xl lg:text-[40px] font-bold">{data.bottom.title}</h2>
+            <h2 className="uppercase font-[family-name:var(--font-coiny)] text-2xl lg:text-[40px] lg:leading-[47px] lg:font-bold">
+              {data.bottom.title}
+            </h2>
             <p className="text-[16px] lg:text-[24px]">{data.bottom.description}</p>
           </div>
         </div>
@@ -430,17 +446,19 @@ export function SectionEleven({ data }: { data: DataType['section_11'] }) {
   return (
     <div className="pb-8 pt-20 lg:py-12 mb-12 max-lg:px-5">
       <div className="max-lg:space-y-4">
-        <h2 className="text-3xl lg:text-[40px] w-full text-black block lg:hidden text-center">
+        <h2 className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[47px] w-full text-black block lg:hidden text-center">
           Cộng đồng <span className="text-[#FF7873]">Shefit</span> <br /> Nơi chia sẻ hành trình độ dáng của bạn
         </h2>
         <div className="relative">
           <img src={data.image} alt={data.image} className="aspect-video w-full object-cover max-lg:rounded-[10px]" />
           <div className="absolute top-0 right-0 h-full w-1/2 flex-col items-center justify-center px-8 text-background hidden lg:flex">
             <div className="max-w-xl mx-auto text-center flex flex-col items-center gap-4">
-              <h2 className="text-3xl lg:text-[40px] font-bold w-full">
+              <h2 className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[47px] font-bold w-full">
                 Cộng đồng <span className="text-[#FF7873]">Shefit</span>
               </h2>
-              <h2 className="text-3xl lg:text-[40px] font-bold w-full">Nơi chia sẻ hành trình độ dáng của bạn</h2>
+              <h2 className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[47px] font-bold w-full">
+                Nơi chia sẻ hành trình độ dáng của bạn
+              </h2>
               <p className="text-[16px] lg:text-[20px] w-full">{data.description}</p>
               <FacebookIcon size={56} />
               <MainButton
