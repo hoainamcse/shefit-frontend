@@ -21,11 +21,11 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
           </Button>
         </Link>
 
-        <div className="items-center justify-center mb-20 mt-10 max-lg:mt-5">
+        <div className="items-center justify-center mb-20 mt-5 p-2 xl:p-4">
           <img
             src={mealPlan.image}
             alt="Menu detail image"
-            className="w-full aspect-[440/281] object-cover block lg:hidden rounded-sm lg:rounded-xl md:rounded-md"
+            className="w-full aspect-[440/281] object-cover block lg:hidden rounded-md lg:rounded-xl"
           />
           <img
             src={mealPlan.image}

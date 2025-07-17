@@ -29,7 +29,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
           <BackIconBlack /> Quay về
         </Button>
       </Link>
-      <div className=" items-center justify-center mt-10 max-lg:mt-5 mb-20">
+      <div className=" items-center justify-center mb-20 mt-5 p-2 xl:p-4">
         <div className="relative w-full">
           <img
             src={mealPlan.image}
