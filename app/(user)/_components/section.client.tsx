@@ -59,7 +59,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
   return (
     <div className="py-8 lg:py-12">
       <div className="bg-[#FFF3F3] mx-auto">
-        <div className="py-8 lg:py-12 space-y-8 lg:space-y-10">
+        <div className="py-28 md:py-12 space-y-8 lg:space-y-10">
           <div className="max-w-[500px] px-4 lg:px-6 mx-auto flex flex-col items-center justify-center text-center gap-4">
             <HtmlContent content={data.title} className="text-3xl lg:text-[40px] font-bold" />
           </div>
@@ -78,7 +78,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
               </div>
 
               <TabsContent value="video">
-                <div className="mx-auto text-center mb-6">
+                <div className="mx-auto text-center mb-6 lg:w-[70%] xl:w-[50%]">
                   <p className="text-[#FB4A64] text-base lg:text-xl">{data.video?.description}</p>
                 </div>
                 {data.video?.courses?.length ? (
@@ -101,11 +101,11 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                     <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                                       <div className="absolute inset-0 flex flex-col">
                                         <div className="relative w-full h-full">
-                                          <div className="absolute top-5 left-2 w-full h-full ">
-                                            <p className="text-white text-lg font-medium uppercase">
+                                          <div className="absolute top-8 left-2 px-2 w-[calc(100%-16px)] h-full">
+                                            <p className="text-white text-lg font-medium uppercase mb-4">
                                               Khóa tập luyện với
                                             </p>
-                                            <p className="text-white text-[36px] font-semibold uppercase">
+                                            <p className="text-white text-[40px] leading-[40px] uppercase font-[family-name:var(--font-black-ops-one)]">
                                               {course.form_categories?.[0]?.name}
                                             </p>
                                           </div>
@@ -136,16 +136,18 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                 <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                                   <div className="relative">
                                     <div className="relative aspect-[273/381]">
-                                      <div className="absolute top-3 left-2 z-10">
-                                        <p className="text-white text-sm font-medium uppercase">Khóa tập luyện với</p>
-                                        <p className="text-white text-xl font-semibold uppercase">
+                                      <div className="absolute top-6 left-2 px-2 z-10">
+                                        <p className="text-white text-lg font-medium uppercase mb-2">
+                                          Khóa tập luyện với
+                                        </p>
+                                        <p className="text-white text-[40px] leading-[40px] uppercase font-[family-name:var(--font-black-ops-one)]">
                                           {course.form_categories?.[0]?.name}
                                         </p>
                                       </div>
                                       <img
                                         src={course.cover_image}
                                         alt={course.course_name}
-                                        className="object-cover rounded-lg aspect-[273/381]"
+                                        className="object-cover rounded-lg w-full h-full"
                                       />
                                     </div>
                                   </div>
@@ -165,7 +167,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
               </TabsContent>
 
               <TabsContent value="zoom">
-                <div className="mx-auto text-center mb-6">
+                <div className="mx-auto text-center mb-6 lg:w-[70%] xl:w-[50%]">
                   <p className="text-[#FB4A64] text-base lg:text-xl">{data.zoom?.description}</p>
                 </div>
                 {data.zoom?.courses?.length ? (
@@ -188,11 +190,11 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                     <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                                       <div className="absolute inset-0 flex flex-col">
                                         <div className="relative w-full h-full">
-                                          <div className="absolute top-5 left-2 w-full h-full ">
-                                            <p className="text-white text-lg font-medium uppercase">
+                                          <div className="absolute top-8 left-2 px-2 w-[calc(100%-16px)] h-full ">
+                                            <p className="text-white text-lg font-medium uppercase mb-4">
                                               Khóa tập luyện với
                                             </p>
-                                            <p className="text-white text-[36px] font-semibold uppercase">
+                                            <p className="text-white text-[40px] leading-[40px] uppercase font-[family-name:var(--font-black-ops-one)]">
                                               {course.form_categories?.[0]?.name}
                                             </p>
                                           </div>
@@ -223,16 +225,18 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                 <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                                   <div className="relative">
                                     <div className="relative aspect-[273/381]">
-                                      <div className="absolute top-3 left-2 z-10">
-                                        <p className="text-white text-sm font-medium uppercase">Khóa tập luyện với</p>
-                                        <p className="text-white text-xl font-semibold uppercase">
+                                      <div className="absolute top-6 left-2 px-2 z-10">
+                                        <p className="text-white text-lg font-medium uppercase mb-2">
+                                          Khóa tập luyện với
+                                        </p>
+                                        <p className="text-white text-[40px] leading-[40px] uppercase font-[family-name:var(--font-black-ops-one)]">
                                           {course.form_categories?.[0]?.name}
                                         </p>
                                       </div>
                                       <img
                                         src={course.cover_image}
                                         alt={course.course_name}
-                                        className="object-cover rounded-lg aspect-[273/381]"
+                                        className="object-cover rounded-lg w-full h-full"
                                       />
                                     </div>
                                   </div>
@@ -340,9 +344,9 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                         <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                           <div className="absolute inset-0 flex flex-col">
                             <div className="relative w-full h-full">
-                              <div className="absolute top-5 left-2 w-full h-full ">
-                                <p className="text-white text-lg font-medium uppercase">Khóa tập luyện với</p>
-                                <p className="text-white text-[36px] font-semibold uppercase">
+                              <div className="absolute top-8 left-2 px-2 w-[calc(100%-16px)] h-full ">
+                                <p className="text-white text-lg font-medium uppercase mb-4">Khóa tập luyện với</p>
+                                <p className="text-white text-[40px] leading-[40px] uppercase font-[family-name:var(--font-black-ops-one)]">
                                   {course.form_categories?.[0]?.name}
                                 </p>
                               </div>
@@ -374,16 +378,16 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                     <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                       <div className="relative">
                         <div className="relative aspect-[273/381]">
-                          <div className="absolute top-3 left-2 z-10">
-                            <p className="text-white text-sm font-medium uppercase">Khóa tập luyện với</p>
-                            <p className="text-white text-xl font-semibold uppercase">
+                          <div className="absolute top-6 left-2 px-2 z-10">
+                            <p className="text-white text-lg font-medium uppercase mb-2">Khóa tập luyện với</p>
+                            <p className="text-white text-[40px] leading-[40px] uppercase font-[family-name:var(--font-black-ops-one)]">
                               {course.form_categories?.[0]?.name}
                             </p>
                           </div>
                           <img
                             src={course.cover_image}
                             alt={course.course_name}
-                            className="object-cover rounded-lg aspect-[273/381]"
+                            className="object-cover rounded-lg w-full h-full"
                           />
                         </div>
                       </div>
@@ -401,17 +405,17 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
   }
 
   return (
-    <div className="py-8 lg:py-12">
+    <div className="py-20 lg:pt-20 lg:pb-40">
       <div className="bg-[#DADADA] mx-auto">
-        <div className="py-8 lg:py-12 space-y-8 lg:space-y-10">
+        <div className="py-10 lg:py-12 space-y-8 lg:space-y-10">
           <div className="max-w-[500px] px-4 lg:px-6 mx-auto flex flex-col items-center justify-center text-center gap-4">
             <HtmlContent content={data.title} className="text-3xl lg:text-[40px] font-bold" />
           </div>
 
           <div className="mx-auto">
             <Tabs defaultValue={defaultWorkoutMethodId} className="w-full">
-              <div className="flex justify-center mb-8">
-                <TabsList className="bg-transparent shadow-none flex flex-wrap mb-4 gap-4">
+              <div className="flex justify-center mb-8 md:mb-6">
+                <TabsList className="bg-transparent shadow-none flex flex-wrap gap-4 h-auto">
                   {parsedFeatures.map((feature, index) => (
                     <TabsTrigger
                       key={feature.id || index}

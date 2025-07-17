@@ -116,10 +116,10 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
   const courses = await Promise.all(data.subscriptions.map((dt) => getCourses({ ids: dt.course_ids })))
   const mealPlans = await Promise.all(data.subscriptions.map((dt) => getMealPlans({ ids: dt.meal_plan_ids })))
   return (
-    <div className="py-8 lg:py-24">
+    <div className="pt-8 lg:pt-24">
       <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4 px-6 lg:px-12 mb-8 lg:mb-[74px]">
-          <h2 className="text-3xl lg:text-[40px] font-bold">{data.title}</h2>
+          <h2 className="text-3xl lg:text-[40px] lg:leading-[40px] xl:text-5xl font-bold">{data.title}</h2>
           <p className="text-[#FB4A64] text-base lg:text-xl">{data.description}</p>
         </div>
         <div className="max-w-7xl mx-auto">
@@ -182,7 +182,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                               <p className="capitalize text-sm lg:text-base">{course.difficulty_level}</p>
                             </div>
                           </div>
-                          <p className="text-center text-neutral-500 text-lg lg:text-xl">
+                          <p className="text-center text-neutral-500 text-base lg:text-xl">
                             {course.description_homepage_1}
                           </p>
                         </div>
@@ -232,7 +232,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
 
 export function SectionFour({ data }: { data: DataType['section_4'] }) {
   return (
-    <div className="py-8 lg:py-12 px-4 sm:px-6 -mt-20">
+    <div className="pt-[120px] lg:pt-24 pb-[88px] lg:pb-[72px] px-4 sm:px-6">
       <div className="container mx-auto">
         <div className="lg:bg-[#FF7873] bg-[#FFA5A5] lg:py-8 py-6 rounded-xl px-4">
           <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-2 lg:gap-4 text-background">
@@ -273,7 +273,7 @@ export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
                         alt={item.title}
                         className="rounded-lg w-full object-cover aspect-[4/3]"
                       />
-                      <div className="absolute bottom-0 inset-x-0 h-16 bg-[#28282894] flex items-center justify-between text-background rounded-b-lg px-3">
+                      <div className="absolute bottom-0 inset-x-0 h-[72px] lg:h-24 bg-[#28282894] flex items-center justify-between text-background rounded-b-lg px-3">
                         <p className="font-medium text-2xl lg:text-3xl break-words max-w-[90%]">{item.title}</p>
                         <div className="w-10 h-10 flex-shrink-0 items-center">
                           <MainButton
@@ -428,20 +428,21 @@ export function SectionTen({ data }: { data: DataType['section_10'] }) {
 
 export function SectionEleven({ data }: { data: DataType['section_11'] }) {
   return (
-    <div className="py-8 lg:py-12 mb-12">
-      <div className="space-y-8 lg:space-y-10">
-        <h2 className="text-3xl lg:text-[40px] font-bold w-full text-black block lg:hidden text-center">
+    <div className="pb-8 pt-20 lg:py-12 mb-12 max-lg:px-5">
+      <div className="max-lg:space-y-4">
+        <h2 className="text-3xl lg:text-[40px] w-full text-black block lg:hidden text-center">
           Cộng đồng <span className="text-[#FF7873]">Shefit</span> <br /> Nơi chia sẻ hành trình độ dáng của bạn
         </h2>
         <div className="relative">
-          <img src={data.image} alt={data.image} className="aspect-video w-full object-cover" />
+          <img src={data.image} alt={data.image} className="aspect-video w-full object-cover max-lg:rounded-[10px]" />
           <div className="absolute top-0 right-0 h-full w-1/2 flex-col items-center justify-center px-8 text-background hidden lg:flex">
             <div className="max-w-xl mx-auto text-center flex flex-col items-center gap-4">
               <h2 className="text-3xl lg:text-[40px] font-bold w-full">
-                Cộng đồng <span className="text-[#FF7873]">Shefit</span> <br /> Nơi chia sẻ hành trình độ dáng của bạn
+                Cộng đồng <span className="text-[#FF7873]">Shefit</span>
               </h2>
-              <p className="mb-4 text-[16px] lg:text-[20px] w-full">{data.description}</p>
-              <FacebookIcon className="w-12 h-12" />
+              <h2 className="text-3xl lg:text-[40px] font-bold w-full">Nơi chia sẻ hành trình độ dáng của bạn</h2>
+              <p className="text-[16px] lg:text-[20px] w-full">{data.description}</p>
+              <FacebookIcon size={56} />
               <MainButton
                 text={data.cta.text}
                 className="rounded-full w-44 lg:w-[444px] lg:h-16 text-lg lg:text-2xl"
@@ -451,8 +452,8 @@ export function SectionEleven({ data }: { data: DataType['section_11'] }) {
             </div>
           </div>
           <div className="flex flex-col gap-4 lg:hidden items-center justify-center text-center">
-            <p className="px-5 mt-4 text-[16px] lg:text-[20px] w-full">{data.description}</p>
-            <FacebookIcon className="w-12 h-12" />
+            <p className="px-5 mt-4 text-[16px] lg:text-[20px] w-full max-lg:text-gray-500">{data.description}</p>
+            <FacebookIcon size={32} />
             <MainButton
               text={data.cta.text}
               className="rounded-full w-44 text-lg lg:text-2xl"
