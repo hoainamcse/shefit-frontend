@@ -1,0 +1,21 @@
+/* Scrollbar đơn giản */
+.scrollBox::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollBox::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollBox::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.scrollBox::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+.scrollBox::-webkit-scrollbar-button {
+  display: none;
+}

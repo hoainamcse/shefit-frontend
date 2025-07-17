@@ -98,7 +98,7 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
       </Link>
 
       {exercise?.youtube_url && (
-        <div className="w-full aspect-[400/225] lg:aspect-[1800/681] bg-black rounded-[20px] overflow-hidden mb-4 sm:mb-10 lg:mb-16">
+        <div className="w-full aspect-[400/255] lg:aspect-[1800/681] bg-black rounded-[20px] overflow-hidden mb-4 sm:mb-10 lg:mb-16">
           <div className="w-full h-full">
             <ReactPlayer
               url={exercise.youtube_url}

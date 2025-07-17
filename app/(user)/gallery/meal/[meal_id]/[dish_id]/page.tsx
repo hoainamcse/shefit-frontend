@@ -79,7 +79,7 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
       </div>
     )
   }
-
+  console.log(dish)
   return (
     <div className="flex flex-col pt-10 md:pt-13 lg:pt-[69px]">
       <Link
@@ -96,8 +96,8 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
         {dish?.name}
       </div>
 
-      {dish?.youtube_url && (
-        <div className="w-full aspect-[1/1] lg:aspect-[1800/681] bg-black rounded-[20px] overflow-hidden mb-5">
+      {dish?.youtube_url ? (
+        <div className="w-full aspect-square lg:aspect-[1800/681] bg-black rounded-[20px] overflow-hidden mb-5">
           <div className="w-full h-full">
             <ReactPlayer
               url={dish.youtube_url}
@@ -122,6 +122,16 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
             />
           </div>
         </div>
+      ) : dish?.image ? (
+        <div className="w-full bg-black rounded-[20px] overflow-hidden mb-5">
+          <img
+            src={dish.image}
+            alt=""
+            className="aspect-square sm:aspect-[1800/681] object-cover rounded-[20px] w-full"
+          />
+        </div>
+      ) : (
+        <></>
       )}
 
       <div className="flex flex-col gap-5">

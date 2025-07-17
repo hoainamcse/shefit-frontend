@@ -1,5 +1,6 @@
 import React from 'react'
 import { Coach } from '@/models/coach'
+import styles from './CoachCard.module.css'
 
 interface CoachCardProps {
   coach: Coach
@@ -29,8 +30,15 @@ export function CoachCard({ coach, reverse = false }: CoachCardProps) {
               <p className="text-gray-500 text-sm md:text-base lg:text-xl text-center">{coach.detail}</p>
             </div>
           </div>
-          <div className="flex-[2] flex items-center max-md:mx-auto max-md:text-center bg-primary max-md:bg-white xl:text-2xl lg:text-xl text-gray-500 md:h-[212px] lg:h-[272px] xl:h-[372px] rounded-[55px] xl:px-16 lg:px-10 md:px-8 md:px-6 max-md:text-base mt-5">
-            {coach.description}
+
+          <div className="flex-[2] md:mt-5 bg-primary max-md:bg-white md:rounded-[28px] lg:rounded-[40px] xl:rounded-[55px]">
+            <div
+              className={`h-[calc(100%-40px)] xl:my-10 lg:my-8 md:my-5 flex items-center max-md:mx-auto max-md:text-center xl:text-2xl lg:text-xl text-gray-500 md:h-[158px] lg:h-[160px] xl:h-[208px] xl:px-16 lg:px-10 md:px-8 md:px-6 max-md:text-base overflow-y-auto ${styles.scrollBox}`}
+            >
+              <div className="my-auto max-md:mx-auto max-md:text-center xl:text-2xl lg:text-xl text-gray-500">
+                {coach.description}
+              </div>
+            </div>
           </div>
         </div>
       </div>

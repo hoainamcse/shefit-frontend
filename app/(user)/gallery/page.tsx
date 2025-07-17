@@ -100,7 +100,7 @@ export default function Gallery() {
                     <img
                       src={muscleGroup.image ?? undefined}
                       alt=""
-                      className="aspect-[1/1] md:aspect-[585/373] object-cover rounded-[20px] w-full"
+                      className="aspect-square md:aspect-[585/373] object-cover rounded-[20px] w-full"
                     />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                   </div>
@@ -125,7 +125,7 @@ export default function Gallery() {
                         <img
                           src={muscleGroup.image ?? undefined}
                           alt=""
-                          className="aspect-[1/1] md:aspect-[585/373] object-cover rounded-[20px] w-full"
+                          className="aspect-square md:aspect-[585/373] object-cover rounded-[20px] w-full"
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                       </div>
@@ -182,7 +182,7 @@ export default function Gallery() {
                     <img
                       src={diet.image}
                       alt=""
-                      className="aspect-[1/1] md:aspect-[585/373] object-cover rounded-[20px] w-full"
+                      className="aspect-square md:aspect-[585/373] object-cover rounded-[20px] w-full"
                     />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                   </div>
@@ -207,7 +207,7 @@ export default function Gallery() {
                         <img
                           src={diet.image}
                           alt=""
-                          className="aspect-[1/1] md:aspect-[585/373] object-cover rounded-[20px] w-full"
+                          className="aspect-square md:aspect-[585/373] object-cover rounded-[20px] w-full"
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                       </div>

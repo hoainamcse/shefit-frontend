@@ -29,7 +29,7 @@ export default async function Food({ params }: { params: Promise<{ meal_id: stri
                     <img
                       src={item.image}
                       alt=""
-                      className="aspect-[1/1] md:aspect-[585/373] object-cover rounded-[20px] w-full"
+                      className="aspect-square md:aspect-[585/373] object-cover rounded-[20px] w-full"
                     />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                   </div>

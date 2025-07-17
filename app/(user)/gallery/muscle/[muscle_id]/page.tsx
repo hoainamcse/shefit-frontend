@@ -67,7 +67,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                         <img
                           src={getYoutubeThumbnail(exercise.youtube_url)}
                           alt={exercise.name}
-                          className="aspect-[1/1] md:aspect-[585/373] object-cover rounded-[20px] w-full"
+                          className="aspect-square md:aspect-[585/373] object-cover rounded-[20px] w-full"
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                       </div>
