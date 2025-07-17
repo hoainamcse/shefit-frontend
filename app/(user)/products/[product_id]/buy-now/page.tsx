@@ -41,6 +41,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null)
   const [discountAmount, setDiscountAmount] = useState(0)
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false)
+  const [username, setUsername] = useState<string | null>(null)
 
   const form = useForm({
     defaultValues: {
@@ -65,16 +66,27 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
       const weight = cart.total_weight || 0
       const shippingFee = calculateShippingFee(weight, isHCM)
       const cartTotal = cart.total || 0
-
-      // Calculate final total with discount and shipping fee
       const finalTotal = Math.max(0, cartTotal - discountAmount) + shippingFee
-
       form.setValue('shipping_fee', shippingFee.toString(), { shouldValidate: true })
       form.setValue('total', cartTotal.toString(), { shouldValidate: true })
       form.setValue('discount', discountAmount.toString(), { shouldValidate: true })
       form.setValue('final_total', finalTotal.toString(), { shouldValidate: true })
     }
   }, [selectedCity, cart, form, discountAmount])
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (session) {
+        try {
+          const userData = await getUser(session.userId)
+          setUsername(userData?.data?.username || '')
+        } catch (error) {
+          console.error('Failed to fetch user:', error)
+        }
+      }
+    }
+    fetchUser()
+  }, [session])
 
   async function handleSubmitOrder(formData: any) {
     if (!cartId || isSubmitting) return
@@ -83,7 +95,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
     try {
       const cartData = {
         user_name: formData.name,
-        username: session ? '' : formData.name,
+        username: username || '',
         is_signed_up: !!session,
         telephone_number: formData.phone,
         city: formData.city,
@@ -91,9 +103,8 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
         total_weight: cart?.total_weight,
         shipping_fee: parseInt(formData.shipping_fee),
         total: parseInt(formData.total) + parseInt(formData.shipping_fee) - parseInt(formData.discount || '0'),
-        discount: parseInt(formData.discount || '0'),
+        coupon_code: couponCode,
         status: 'delivered',
-        payment_method: 'cod',
         notes: formData.note,
         product_variant_ids: cart?.product_variants?.map((variant: any) => variant.id) || [],
       }
@@ -124,10 +135,6 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
   }
 
   const cartId = searchParams?.get('cart_id')
-
-  const onSubmit = (data: any) => {
-    console.log('Form Data:', data)
-  }
 
   const calculateShippingFee = (weight: number, isHCM: boolean): number => {
     if (weight < 1) {
@@ -184,32 +191,23 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
     }
 
     const validQuantity = Math.max(1, newQuantity)
-
     if (variantQuantities[variantId] === validQuantity) return
-
     try {
       setQuantityUpdating({ ...quantityUpdating, [variantId]: true })
-
       await updateProductVariantQuantity(Number(cartId), variantId, validQuantity)
-
       const cartResponse = await getCart(Number(cartId))
       const updatedCart = cartResponse.data
-
       setCart(updatedCart)
       setVariantQuantities({ ...variantQuantities, [variantId]: validQuantity })
-
       const isHCM = form.getValues('city')?.includes('Hồ Chí Minh') || false
       const weight = updatedCart.total_weight || 0
       const shippingFee = calculateShippingFee(weight, isHCM)
       const cartTotal = updatedCart.total || 0
-
       const finalTotal = Math.max(0, cartTotal - discountAmount) + shippingFee
-
       form.setValue('shipping_fee', shippingFee.toString(), { shouldValidate: true })
       form.setValue('total', cartTotal.toString(), { shouldValidate: true })
       form.setValue('discount', discountAmount.toString(), { shouldValidate: true })
       form.setValue('final_total', finalTotal.toString(), { shouldValidate: true })
-
       toast.success('Đã cập nhật số lượng sản phẩm!')
     } catch (error) {
       console.error('Error updating quantity:', error)
@@ -224,12 +222,9 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
       toast.error('Vui lòng nhập mã giảm giá')
       return
     }
-
     if (isApplyingCoupon) return
-
     try {
       setIsApplyingCoupon(true)
-
       if (!coupons.length) {
         const couponsResponse = await getListCoupons()
         if (couponsResponse?.data) {
@@ -244,8 +239,6 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
         return
       }
 
-      console.log('Applied coupon:', matchingCoupon)
-
       const cartTotal = cart?.total || 0
       let discount = 0
 
@@ -257,30 +250,22 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
         discount = Number(matchingCoupon.discount_value || 0)
       }
 
-      console.log('Calculated discount:', discount, 'from cart total:', cartTotal)
-
       discount = Math.min(discount, cartTotal)
-
       setAppliedCoupon(matchingCoupon)
       setDiscountAmount(discount)
       const isHCM = form.getValues('city')?.includes('Hồ Chí Minh') || false
       const weight = cart?.total_weight || 0
       const shippingFee = calculateShippingFee(weight, isHCM)
       const finalTotal = Math.max(0, cartTotal - discount) + shippingFee
-
       form.setValue('discount', discount.toString(), { shouldValidate: true })
       form.setValue('final_total', finalTotal.toString(), { shouldValidate: true })
-
       toast.success(`Đã áp dụng mã giảm giá: ${matchingCoupon.code}`)
     } catch (error) {
-      console.error('Error applying coupon:', error)
       toast.error('Không thể áp dụng mã giảm giá. Vui lòng thử lại!')
     } finally {
       setIsApplyingCoupon(false)
     }
   }
-
-  // Function to remove applied coupon
   const handleRemoveCoupon = () => {
     setAppliedCoupon(null)
     setDiscountAmount(0)
@@ -292,11 +277,9 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
       const shippingFee = calculateShippingFee(weight, isHCM)
       const cartTotal = cart.total || 0
       const finalTotal = cartTotal + shippingFee
-
       form.setValue('discount', '0', { shouldValidate: true })
       form.setValue('final_total', finalTotal.toString(), { shouldValidate: true })
     }
-
     toast.success('Đã hủy mã giảm giá')
   }
 
@@ -306,7 +289,6 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
         const couponsResponse = await getListCoupons()
         if (couponsResponse?.data) {
           setCoupons(couponsResponse.data)
-          console.log('Loaded coupons:', couponsResponse.data)
         }
       } catch (error) {
         console.error('Error fetching coupons:', error)
@@ -620,11 +602,29 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
                 name="shipping_fee"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem className="flex justify-between">
+                  <FormItem className="flex justify-between items-center">
                     <FormLabel className="text-base lg:text-xl">Phí ship</FormLabel>
                     <FormControl>
-                      <div className="text-[#8E8E93] text-xl">
+                      <div className="text-[#8E8E93] text-base lg:text-xl">
                         {parseInt(field.value || '0').toLocaleString('vi-VN')} <span>VNĐ</span>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name="discount"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="flex justify-between items-center">
+                    <FormLabel className="text-base lg:text-xl mt-2">Giảm giá</FormLabel>
+                    <FormControl>
+                      <div className="text-[#DA1515] text-base lg:text-xl">
+                        {parseInt(field.value || '0') > 0
+                          ? `-${parseInt(field.value || '0').toLocaleString('vi-VN')}`
+                          : '0'}{' '}
+                        <span>VNĐ</span>
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -635,7 +635,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
                 name="final_total"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem className="flex justify-between">
+                  <FormItem className="flex justify-between items-center">
                     <FormLabel className="text-base lg:text-xl font-semibold">Tổng tiền</FormLabel>
                     <FormControl>
                       <div className="text-[#00C7BE] text-xl lg:text-2xl font-semibold">

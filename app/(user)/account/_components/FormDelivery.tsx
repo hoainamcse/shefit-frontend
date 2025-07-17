@@ -13,14 +13,20 @@ import { useSession } from '@/hooks/use-session'
 import { getUser } from '@/network/client/users'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import router from 'next/router'
 
-export default function FormDelivery({ cartData, discountAmount = 0 }: { cartData: any; discountAmount?: number }) {
-  const [loading, setLoading] = useState(false)
+export default function FormDelivery({
+  cartData,
+  discountAmount = 0,
+  couponCode = '',
+}: {
+  cartData: any
+  discountAmount?: number
+  couponCode?: string
+}) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccessDialog, setShowSuccessDialog] = useState(false)
   const { session } = useSession()
-
+  const [username, setUsername] = useState<string | null>(null)
   const form = useForm({
     defaultValues: {
       name: '',
@@ -103,6 +109,20 @@ export default function FormDelivery({ cartData, discountAmount = 0 }: { cartDat
     fetchUserData()
   }, [session, cartData, form])
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (session) {
+        try {
+          const userData = await getUser(session.userId)
+          setUsername(userData?.data?.username || '')
+        } catch (error) {
+          console.error('Failed to fetch user:', error)
+        }
+      }
+    }
+    fetchUser()
+  }, [session])
+
   const handleSubmitOrder = async (formData: any) => {
     if (!cartData?.id || isSubmitting) return
     setIsSubmitting(true)
@@ -110,17 +130,16 @@ export default function FormDelivery({ cartData, discountAmount = 0 }: { cartDat
     try {
       const orderData = {
         user_name: formData.name,
-        username: session ? '' : formData.name,
+        username: username,
         is_signed_up: !!session,
         telephone_number: formData.phone,
         city: formData.city,
         address: formData.address,
         total_weight: cartData?.total_weight,
         shipping_fee: parseInt(formData.shipping_fee),
-        discount: parseInt(formData.discount || '0'),
         total: parseInt(formData.total),
+        coupon_code: couponCode,
         status: 'delivered',
-        payment_method: 'cod',
         notes: formData.note,
         product_variant_ids: cartData?.product_variants?.map((variant: any) => variant.id) || [],
       }
@@ -128,7 +147,6 @@ export default function FormDelivery({ cartData, discountAmount = 0 }: { cartDat
       await editCart(cartData.id, orderData)
       setShowSuccessDialog(true)
     } catch (error) {
-      console.error('Error submitting order:', error)
       toast.error('Đã xảy ra lỗi khi đặt hàng')
     } finally {
       setIsSubmitting(false)
@@ -218,7 +236,7 @@ export default function FormDelivery({ cartData, discountAmount = 0 }: { cartDat
               <FormItem className="flex justify-between items-center">
                 <FormLabel className="text-base lg:text-xl mt-2">Phí ship</FormLabel>
                 <FormControl>
-                  <div className="text-[#8E8E93] text-xl">
+                  <div className="text-[#8E8E93] text-base lg:text-xl">
                     {parseInt(field.value || '0').toLocaleString('vi-VN')} <span>VNĐ</span>
                   </div>
                 </FormControl>
@@ -233,7 +251,7 @@ export default function FormDelivery({ cartData, discountAmount = 0 }: { cartDat
               <FormItem className="flex justify-between items-center">
                 <FormLabel className="text-base lg:text-xl mt-2">Giảm giá</FormLabel>
                 <FormControl>
-                  <div className="text-[#DA1515] text-xl">
+                  <div className="text-[#DA1515] text-base lg:text-xl">
                     {parseInt(field.value || '0') > 0
                       ? `-${parseInt(field.value || '0').toLocaleString('vi-VN')}`
                       : '0'}{' '}

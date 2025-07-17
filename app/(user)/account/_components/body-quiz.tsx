@@ -8,7 +8,6 @@ import { getBodyQuizzesByUser } from '@/network/server/body-quizzes'
 import { getBodyQuizzes } from '@/network/server/body-quizzes'
 import { useSession } from '@/hooks/use-session'
 import { ListResponse } from '@/models/response'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import type { BodyQuiz, UserBodyQuiz } from '@/models/body-quiz'
 import ListQuiz from './list-quiz'
 const formatDate = (dateString: string) => {
@@ -28,7 +27,6 @@ export default function BodyQuiz() {
     status: 'success',
   })
   const [loading, setLoading] = useState(true)
-  const [dialogOpen, setDialogOpen] = useState(false)
   const [bodyQuiz, setBodyQuiz] = useState<ListResponse<BodyQuiz> | null>(null)
   const [quizzes, setQuizzes] = useState<BodyQuiz[]>([])
   useEffect(() => {
@@ -36,7 +34,6 @@ export default function BodyQuiz() {
       try {
         setLoading(true)
 
-        // Always fetch quizzes, regardless of login status
         const [userQuizzes, allQuizzes] = await Promise.all([
           session ? getBodyQuizzesByUser(session.userId) : Promise.resolve(null),
           getBodyQuizzes(),
@@ -64,12 +61,9 @@ export default function BodyQuiz() {
           status: 'success',
         }
 
-        // Only set user quizzes if user is logged in
         if (session && userQuizzes) {
           setUserBodyQuizzes(userQuizzes)
         }
-
-        // Always set the quizzes data
         setBodyQuiz(transformedQuizzes)
         setQuizzes(transformedQuizzes.data || [])
       } catch (error) {

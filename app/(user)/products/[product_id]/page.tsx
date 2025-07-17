@@ -180,11 +180,34 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
         await new Promise((resolve) => setTimeout(resolve, 500))
 
         const userCartResponse = await createUserCart(Number(session.userId), newCartId)
+        console.log('userCartResponse:', userCartResponse)
 
-        if (userCartResponse?.cart?.id) {
-          currentCartId = userCartResponse.cart.id
+        const response = userCartResponse as any
+        let extractedCartId: number | null = null
+
+        if (response?.cart?.id) {
+          extractedCartId = response.cart.id
+        } else if (response?.id && response.cart_id) {
+          extractedCartId = response.cart_id
+        } else if (response?.data?.cart?.id) {
+          extractedCartId = response.data.cart.id
+        } else if (response?.data?.id && response.data.cart_id) {
+          extractedCartId = response.data.cart_id
+        } else if (typeof response === 'object') {
+          const cartIdProperties = ['cart_id', 'cartId', 'id']
+          for (const key in response) {
+            if (cartIdProperties.includes(key) && typeof response[key] === 'number') {
+              extractedCartId = response[key]
+              break
+            }
+          }
+        }
+
+        if (extractedCartId) {
+          currentCartId = extractedCartId
           setCartId(currentCartId)
         } else {
+          console.error('Invalid userCartResponse structure:', response)
           throw new Error('Không thể liên kết giỏ hàng với người dùng')
         }
       } else {

@@ -29,7 +29,7 @@ export default async function CartDetail({ params }: { params: Promise<{ slug: n
                 className="size-[148px] rounded-lg flex-shrink-0"
               />
               <div className="flex flex-col gap-3">
-                <div className="font-medium text-lg lg:text-xl">{products[index]?.data?.name || 'Sản phẩm'}</div>
+                <div className="font-medium text-lg lg:text-xl">{products[index]?.data?.name}</div>
                 <div className="text-[#737373] text-lg lg:text-xl">{variant.color.name}</div>
                 <div className="text-[#737373] text-lg lg:text-xl">Size: {variant.size.size}</div>
               </div>
@@ -40,7 +40,7 @@ export default async function CartDetail({ params }: { params: Promise<{ slug: n
               </div>
             </div>
           ))}
-          <div className="flex justify-between mt-10 text-2xl">
+          <div className="flex justify-between mt-10 text-2xl items-center">
             <div>Tổng tiền</div>
             <div className="text-[#00C7BE] font-semibold">
               {(cart.data.total - cart.data.shipping_fee).toLocaleString()} vnđ

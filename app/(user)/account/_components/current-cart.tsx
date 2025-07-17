@@ -2,7 +2,6 @@
 import { BinIcon } from '@/components/icons/BinIcon'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import FormDelivery from './FormDelivery'
 import { removeCart, updateProductVariantQuantity } from '@/network/client/carts'
@@ -174,7 +173,6 @@ export default function CurrentCart() {
         discount = Number(matchingCoupon.discount_value || 0)
       }
 
-      // Don't allow discount to exceed cart total
       discount = Math.min(discount, cartTotal)
 
       setAppliedCoupon(matchingCoupon)
@@ -196,12 +194,6 @@ export default function CurrentCart() {
     toast.success('Đã hủy mã giảm giá')
   }
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-40">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    )
   if (!pendingCarts.length || !pendingCarts[0]?.cart?.product_variants?.length) {
     return (
       <div className="flex flex-col items-center justify-center mt-20 w-full">
@@ -246,6 +238,12 @@ export default function CurrentCart() {
     }
   }
 
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-40">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    )
   return (
     <div className="xl:flex mt-10 w-full justify-between gap-20">
       <div className="w-full text-2xl max-lg:mb-20">
@@ -371,7 +369,11 @@ export default function CurrentCart() {
         )}
       </div>
       {selectedCart ? (
-        <FormDelivery cartData={selectedCart} discountAmount={discountAmount} />
+        <FormDelivery 
+          cartData={selectedCart} 
+          discountAmount={discountAmount} 
+          couponCode={appliedCoupon?.code || ''} 
+        />
       ) : (
         <div className="mt-6 text-center text-gray-500">Đang tải thông tin...</div>
       )}
