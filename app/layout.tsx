@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { Roboto_Flex, Encode_Sans_Semi_Expanded, Black_Ops_One } from 'next/font/google'
 
 import './globals.css'
-import { ThemeProvider } from '@/components/providers/theme-provider'
+// import { ThemeProvider } from '@/components/providers/theme-provider'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { Toaster } from '@/components/ui/sonner'
 
@@ -93,12 +93,12 @@ export default function RootLayout({
       <body
         className={`${bdLifelessGrotesk.className} ${coiny.variable} ${encode.variable} ${blackOpsOne.variable} antialiased`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <QueryProvider>
-            {children}
-            <Toaster richColors position="top-center" />
-          </QueryProvider>
-        </ThemeProvider>
+        {/* <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange> */}
+        <QueryProvider>
+          {children}
+          <Toaster richColors position="top-center" />
+        </QueryProvider>
+        {/* </ThemeProvider> */}
       </body>
     </html>
   )
