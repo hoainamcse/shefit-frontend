@@ -25,12 +25,12 @@ const TABS = [
     color: "#FF7873",
     fontWeight: "bold",
   },
+  { value: "cart", label: "Giỏ hàng", icon: <CartIcon />, color: "#FF7873" },
   {
     value: "account-information",
     label: "Thông tin tài khoản",
     icon: <ProfileCardIcon />,
   },
-  { value: "cart", label: "Giỏ hàng", icon: <CartIcon />, color: "#FF7873" },
 ]
 
 export default async function Account(props: { searchParams: Promise<{ tab: string }> }) {

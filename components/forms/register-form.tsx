@@ -129,21 +129,28 @@ function RegisterForm() {
     setCooldown(0)
   }
 
-  const checkForEmailExistsError = (error: any) => {
+  const checkRegistrationError = (error: any) => {
     if (error && error.message) {
       const message = error.message.toLowerCase()
       if (message.includes('already registered') || message.includes('đã tồn tại')) {
-        return true
+        return { type: 'email', message: 'Email này đã tồn tại trong hệ thống. Vui lòng sử dụng email khác!' }
       }
-    }
-    if (typeof error === 'string') {
-      const errorString = error.toLowerCase()
-      if (errorString.includes('already registered') || errorString.includes('đã tồn tại')) {
-        return true
+      if (message.includes('username') && message.includes('already exists')) {
+        return { type: 'username', message: 'Tên đăng nhập này đã tồn tại, hãy sử dụng tên đăng nhập khác!' }
       }
     }
 
-    return false
+    if (typeof error === 'string') {
+      const errorString = error.toLowerCase()
+      if (errorString.includes('already registered') || errorString.includes('đã tồn tại')) {
+        return { type: 'email', message: 'Email này đã tồn tại trong hệ thống. Vui lòng sử dụng email khác!' }
+      }
+      if (errorString.includes('username') && errorString.includes('already exists')) {
+        return { type: 'username', message: 'Tên đăng nhập này đã tồn tại, hãy sử dụng tên đăng nhập khác!' }
+      }
+    }
+
+    return null
   }
 
   async function handleSubmit(formData: FormData) {
@@ -216,9 +223,12 @@ function RegisterForm() {
     } catch (error) {
       console.error('Error during registration:', error)
 
-      if (checkForEmailExistsError(error)) {
-        toast.error('Email này đã tồn tại trong hệ thống. Vui lòng sử dụng email khác!')
-        resetFormState()
+      const registrationError = checkRegistrationError(error)
+      if (registrationError) {
+        toast.error(registrationError.message)
+        if (registrationError.type === 'email') {
+          resetFormState()
+        }
       } else {
         toast.error('Đã xảy ra lỗi khi đăng ký.')
       }
