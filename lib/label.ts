@@ -30,18 +30,6 @@ const courseLevelOptions = Object.entries(courseLevelLabel).map(([value, label])
   label,
 })) as Option<CourseLevel>[]
 
-const dishMealTimeLabel: Record<DishMealTime, string> = {
-  breakfast: 'Bữa sáng',
-  lunch: 'Bữa trưa',
-  dinner: 'Bữa tối',
-  snack: 'Bữa phụ',
-} as const
-
-const dishMealTimeOptions = Object.entries(dishMealTimeLabel).map(([value, label]) => ({
-  value: value as DishMealTime,
-  label,
-})) as Option<DishMealTime>[]
-
 const giftTypeLabel: Record<string, string> = {
   membership_plan: 'Thời gian',
   item: 'Vật dụng',
@@ -130,5 +118,5 @@ const PROVINCES = [
 ]
 
 export { PROVINCES }
-export { courseFormLabel, courseLevelLabel, dishMealTimeLabel, giftTypeLabel, roleLabel }
-export { courseFormOptions, courseLevelOptions, dishMealTimeOptions, giftTypeOptions, roleOptions }
+export { courseFormLabel, courseLevelLabel, giftTypeLabel, roleLabel }
+export { courseFormOptions, courseLevelOptions, giftTypeOptions, roleOptions }

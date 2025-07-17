@@ -1,16 +1,12 @@
-import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { Header } from '@/app/(user)/_components/header'
 import Link from 'next/link'
-import { BackIcon } from '@/components/icons/BackIcon'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getMealPlan } from '@/network/server/meal-plans'
 import { getMealPlanDishes } from '@/network/server/meal-plans'
 import { getMealPlanDays } from '@/network/server/meal-plans'
-import { dishMealTimeLabel } from '@/lib/label'
 import type { MealPlanDish } from '@/models/meal-plan'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
+import { sortByKey } from '@/lib/helpers'
 
 export default async function MealPlanDetailPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   const { meal_plan_id } = await params
@@ -60,20 +56,19 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
             sortedMealPlanByDay.map(async (day: any) => {
               const dayId = day.id
               const { data: dayDishes } = await getMealPlanDishes(meal_plan_id, dayId)
+              const dishesData = sortByKey(dayDishes, 'created_at', { transform: (val) => new Date(val).getTime() })
               return (
                 <TabsContent key={day.id} value={`${day.day_number}`}>
-                  {dayDishes.length === 0 ? (
+                  {dishesData.length === 0 ? (
                     <div>Chưa có món ăn cho ngày này.</div>
                   ) : (
-                    dayDishes.map((dish: MealPlanDish) => (
+                    dishesData.map((dish: MealPlanDish) => (
                       <div
                         key={dish.id}
                         className="mb-10 flex flex-col xl:w-full xl:text-xl max-lg:text-base gap-8 max-lg:px-4"
                       >
                         <div>
-                          <div className="font-medium">
-                            <span className="text-[#91EBD5]">{dishMealTimeLabel[dish.meal_time]}</span>: {dish.name}
-                          </div>
+                          <div className="font-medium">{dish.name}</div>
                           <div className="text-[#737373]">Dinh dưỡng: {dish.nutrients}</div>
                         </div>
                         <div className="xl:w-full text-[#737373]">{dish.description}</div>

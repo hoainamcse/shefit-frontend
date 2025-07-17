@@ -10,10 +10,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createMealPlanDish, updateMealPlanDish } from '@/network/client/meal-plans'
 import { MainButton } from '@/components/buttons/main-button'
-import { dishMealTimeOptions } from '@/lib/label'
 import { Form } from '@/components/ui/form'
 
-import { FormInputField, FormNumberField, FormSelectField, FormTextareaField } from './fields'
+import { FormInputField, FormTextareaField } from './fields'
 
 // ! Follow MealPlanDishPayload model in models/meal-plan.ts
 export const formSchema = z.object({
@@ -75,13 +74,6 @@ export function EditMealPlanDishForm({ data, mealPlanID, dayID, onSuccess }: Edi
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
         <FormInputField form={form} name="name" label="Tên món ăn" withAsterisk placeholder="Nhập tên món ăn" />
         <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
-        <FormSelectField
-          form={form}
-          name="meal_time"
-          label="Thời gian ăn"
-          placeholder="Chọn thời gian ăn"
-          data={dishMealTimeOptions}
-        />
         <FormTextareaField form={form} name="nutrients" label="Dinh dưỡng" placeholder="Nhập dinh dưỡng" />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (

@@ -3,9 +3,9 @@
 import type { MealPlan, MealPlanDay, MealPlanDish, DishMealTime } from '@/models/meal-plan'
 
 import { toast } from 'sonner'
-import { useState, useEffect } from 'react'
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { ImportIcon, Sprout, Trash2 } from 'lucide-react'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Sprout, Trash2 } from 'lucide-react'
 
 import { EditMealPlanDishForm } from '@/components/forms/edit-meal-plan-dish-form'
 import { EditMealPlanDayForm } from '@/components/forms/edit-meal-plan-day-form'
@@ -13,14 +13,10 @@ import { EditSheet } from '@/components/data-table/edit-sheet'
 import { MainButton } from '@/components/buttons/main-button'
 import { EditButton } from '@/components/buttons/edit-button'
 import { AddButton } from '@/components/buttons/add-button'
-import { dishMealTimeLabel } from '@/lib/label'
 import { Spinner } from '@/components/spinner'
 import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
 import { sortByKey } from '@/lib/helpers'
 import {
-  createMealPlanDay,
-  createMealPlanDish,
   deleteMealPlanDay,
   deleteMealPlanDish,
   getMealPlanDays,
@@ -29,16 +25,6 @@ import {
   queryKeyMealPlanDays,
   queryKeyMealPlanDishes,
 } from '@/network/client/meal-plans'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { transformDishes } from '@/lib/xlsx'
-import { ExcelReader } from '@/components/excel-reader'
 import { ExcelImportDialog } from '@/components/excel-import-dialog'
 
 interface MealPlanViewProps {
@@ -101,7 +87,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
   }
 
   const daysData = sortByKey(days?.data || [], 'day_number')
-  const dishesData = sortByKey(dishes?.data || [], 'meal_time', { transform: (val) => mealTimeOrder.indexOf(val) })
+  const dishesData = sortByKey(dishes?.data || [], 'created_at', { transform: (val) => new Date(val).getTime() })
 
   const onAddDay = () => {
     setIsAddingDay(true)
@@ -242,9 +228,6 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
                 <div key={`dish-${index}`} className="border rounded-lg p-4">
                   <div className="flex justify-between items-start">
                     <div className="space-y-2">
-                      <Badge className={getMealTimeColor(dish.meal_time)} variant="outline">
-                        {dishMealTimeLabel[dish.meal_time]}
-                      </Badge>
                       <h3 className="font-medium">{dish.name}</h3>
                       <p className="text-gray-600">{dish.description}</p>
 
