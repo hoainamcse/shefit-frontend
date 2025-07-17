@@ -61,7 +61,6 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
 
   const selectedCity = form.watch('city')
 
-  // Hàm tính phí ship
   const calculateShippingFee = (weight: number, isHCM: boolean): number => {
     if (weight < 1) {
       return isHCM ? 17000 : 20000
@@ -79,7 +78,6 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
     }
   }
 
-  // Hàm tính toán tổng tiền - tách ra để tái sử dụng
   const calculateTotals = (cartData: any, city: string, discount: number) => {
     const cartTotal = cartData?.product_variants
       ? cartData.product_variants.reduce((total: number, variant: any) => {
@@ -100,7 +98,6 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
     }
   }
 
-  // Effect để cập nhật form khi cart, city hoặc discount thay đổi
   useEffect(() => {
     if (cart) {
       const city = selectedCity || form.getValues('city')
@@ -225,15 +222,12 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
       setQuantityUpdating({ ...quantityUpdating, [variantId]: true })
       await updateProductVariantQuantity(Number(cartId), variantId, validQuantity)
 
-      // Lấy lại thông tin cart mới
       const cartResponse = await getCart(Number(cartId))
       const updatedCart = cartResponse.data
 
-      // Cập nhật state
       setCart(updatedCart)
       setVariantQuantities({ ...variantQuantities, [variantId]: validQuantity })
 
-      // Tính toán lại giá trị giảm giá nếu có coupon được áp dụng
       let newDiscountAmount = 0
       if (appliedCoupon) {
         const newCartTotal = updatedCart.product_variants
@@ -255,11 +249,9 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
         setDiscountAmount(newDiscountAmount)
       }
 
-      // Tính toán lại tổng tiền với cart mới và discount mới
       const city = form.getValues('city')
       const { cartTotal, shippingFee, finalTotal } = calculateTotals(updatedCart, city, newDiscountAmount)
 
-      // Cập nhật form
       form.setValue('shipping_fee', shippingFee.toString(), { shouldValidate: true })
       form.setValue('total', cartTotal.toString(), { shouldValidate: true })
       form.setValue('discount', newDiscountAmount.toString(), { shouldValidate: true })
@@ -314,7 +306,6 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
       setAppliedCoupon(matchingCoupon)
       setDiscountAmount(discount)
 
-      // Tính toán lại với discount mới
       const city = form.getValues('city')
       const { shippingFee, finalTotal } = calculateTotals(cart, city, discount)
 
@@ -582,7 +573,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
             {discountAmount > 0 && (
               <div className="flex justify-between">
                 <div className="text-base lg:text-xl">Giảm giá</div>
-                <div className="text-[#DA1515] font-semibold text-xl lg:text-2xl">
+                <div className="text-[#DA1515] font-semibold text-base lg:text-xl">
                   -{discountAmount.toLocaleString()} VNĐ
                 </div>
               </div>

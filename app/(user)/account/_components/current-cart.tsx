@@ -309,53 +309,57 @@ export default function CurrentCart() {
 
   return (
     <div className="xl:flex mt-10 w-full justify-between gap-20">
-      <div className="w-full text-2xl max-lg:mb-20">
+      <div className="w-full text-2xl mb-5 lg:mb-20">
         {cartData?.product_variants.map((variant: any, index: number) => (
           <div key={`menu-${index}`} className="flex justify-between items-center mb-5">
-            <img
-              src={variant.image_urls?.[0]}
-              alt={variant.name || ''}
-              className="lg:size-[148px] size-[85px] rounded-lg"
-            />
-            <div>
-              <div className="font-medium text-base lg:text-xl">{variant.name || 'Sản phẩm'}</div>
-              {variant.size && <div className="text-[#737373] text-base lg:text-xl">Size: {variant.size.size}</div>}
-              {variant.color && <div className="text-[#737373] text-base lg:text-xl">Color: {variant.color.name}</div>}
-              <div className="flex gap-3 items-center">
-                <div className="flex items-center gap-2">
-                  <Button
-                    className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] h-8 w-10 lg:w-10 lg:h-10 text-base lg:text-xl font-bold items-center flex border-2"
-                    onClick={() => handleUpdateQuantity(variant.id, (variantQuantities[variant.id] || 1) - 1)}
-                    disabled={quantityUpdating[variant.id]}
-                  >
-                    <MinusIcon />
-                  </Button>
-                  <Input
-                    className="h-8 lg:h-10 w-16 lg:w-16 text-center border-2 border-[#737373] text-base lg:text-xl font-bold pr-0 p-0"
-                    min={1}
-                    value={variantQuantities[variant.id] || 1}
-                    onChange={(e) => handleUpdateQuantity(variant.id, Number(e.target.value) || 1)}
-                    disabled={quantityUpdating[variant.id]}
-                  />
-                  <Button
-                    className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] h-8 lg:h-10 w-10 lg:w-10 text-base lg:text-xl font-bold items-center flex border-2"
-                    onClick={() => handleUpdateQuantity(variant.id, (variantQuantities[variant.id] || 1) + 1)}
-                    disabled={quantityUpdating[variant.id]}
-                  >
-                    <AddIcon />
-                  </Button>
+            <div className="flex justify-between items-center w-full gap-2 md:gap-5">
+              <img
+                src={variant.image_urls?.[0]}
+                alt={variant.name || ''}
+                className="aspect-square w-1/2 rounded-lg"
+              />
+              <div>
+                <div className="font-medium text-base lg:text-xl">{variant.name || 'Sản phẩm'}</div>
+                {variant.size && <div className="text-[#737373] text-base lg:text-xl">Size: {variant.size.size}</div>}
+                {variant.color && (
+                  <div className="text-[#737373] text-base lg:text-xl">Color: {variant.color.name}</div>
+                )}
+                <div className="flex gap-3 items-center">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] h-8 w-10 lg:w-10 lg:h-10 text-base lg:text-xl font-bold items-center flex border-2"
+                      onClick={() => handleUpdateQuantity(variant.id, (variantQuantities[variant.id] || 1) - 1)}
+                      disabled={quantityUpdating[variant.id]}
+                    >
+                      <MinusIcon />
+                    </Button>
+                    <Input
+                      className="h-8 lg:h-10 w-16 lg:w-16 text-center border-2 border-[#737373] text-base lg:text-xl font-bold pr-0 p-0"
+                      min={1}
+                      value={variantQuantities[variant.id] || 1}
+                      onChange={(e) => handleUpdateQuantity(variant.id, Number(e.target.value) || 1)}
+                      disabled={quantityUpdating[variant.id]}
+                    />
+                    <Button
+                      className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] h-8 lg:h-10 w-10 lg:w-10 text-base lg:text-xl font-bold items-center flex border-2"
+                      onClick={() => handleUpdateQuantity(variant.id, (variantQuantities[variant.id] || 1) + 1)}
+                      disabled={quantityUpdating[variant.id]}
+                    >
+                      <AddIcon />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="flex flex-col">
-              <div className="text-[#737373] w-full text-base lg:text-xl text-right">
-                <div className="text-base lg:text-xl">
+            <div className="flex flex-col md:flex-row md:items-center w-full">
+              <div className="text-[#737373] w-full text-base lg:text-xl text-right lg:text-center">
+                <div className="text-base lg:text-xl text-right md:text-center">
                   <span>{variant.price?.toLocaleString()}</span> VNĐ
                 </div>
               </div>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button className="flex gap-2 bg-white hover:bg-white shadow-none items-center justify-end p-0">
+                  <Button className="flex gap-2 bg-transparent hover:bg-transparent shadow-none items-center justify-end p-0">
                     <BinIcon />
                     <p className="text-base lg:text-xl text-[#DA1515] items-center">Xóa</p>
                   </Button>

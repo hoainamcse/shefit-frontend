@@ -74,8 +74,12 @@ export function Footer() {
                 <div className="grid grid-cols-2 max-sm:grid-cols-1">
                   <ul className="flex flex-col gap-3">
                     <li className="font-bold text-xl">Về Shefit</li>
-                    <li className="text-[#E8E5E5] text-base">Chính sách</li>
-                    <li className="text-[#E8E5E5] text-base">Về chúng tôi</li>
+                    <li className="text-[#E8E5E5] text-base">
+                      <Link href="/policy">Chính sách</Link>
+                    </li>
+                    <li className="text-[#E8E5E5] text-base">
+                      <Link href="/about">Về chúng tôi</Link>
+                    </li>
                   </ul>
                   <ul className="flex flex-col gap-3">
                     <li className="font-bold text-xl uppercase">Fitness for woman</li>
