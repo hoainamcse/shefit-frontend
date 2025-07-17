@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useSession } from '@/hooks/use-session'
 import { getUserSubscriptions } from '@/network/client/users'
+import { HtmlContent } from '@/components/html-content'
 interface CourseDetailProps {
   courseId: Course['id']
   typeCourse: 'video' | 'live'
@@ -166,9 +167,13 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         )}
         {!showDetails && (
           <div className="bg-primary rounded-xl my-4 p-4">
-            <p className="text-white text-center text-xl lg:text-2xl">Tóm tắt khoá tập</p>
-            <ul className="text-white list-disc pl-8">
-              <li>{course?.data?.summary}</li>
+            <p className="text-white text-center text-xl lg:text-2xl">Tóm tắt khoá học</p>
+            <ul className="xl:px-20 max-lg:w-full mx-auto text-white h-full flex flex-col items-start list-disc pl-5">
+              {course?.data?.summary.split('\n').map((line: string, index: number) => (
+                <li key={index} className="text-[#F7F7F7] text-base lg:text-xl mb-1">
+                  {line}
+                </li>
+              ))}
             </ul>
           </div>
         )}
@@ -185,7 +190,10 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
               <p className="font-[family-name:var(--font-coiny)] text-ring text-3xl xl:text-[40px] font-bold mb-4">
                 Thông tin khóa
               </p>
-              <p className="text-[#737373] text-base lg:text-xl">{course?.data?.description}</p>
+              <HtmlContent
+                content={course?.data?.description}
+                className="text-[#737373] text-base lg:text-xl whitespace-pre-line"
+              />
             </div>
             {course?.data?.relationship?.equipments?.length > 0 && (
               <div>

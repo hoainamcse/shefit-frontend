@@ -153,7 +153,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                   <div className="flex-1 flex items-center justify-center text-lg lg:text-xl mt-4">
                     <HtmlContent
                       content={sub.description_homepage}
-                      className="text-center px-2 text-neutral-500 text-base lg:text-xl"
+                      className="text-center px-2 text-neutral-500 text-base lg:text-xl whitespace-pre-line"
                     />
                   </div>
                 </Link>
@@ -236,11 +236,8 @@ export function SectionFour({ data }: { data: DataType['section_4'] }) {
       <div className="container mx-auto">
         <div className="lg:bg-[#FF7873] bg-[#FFA5A5] lg:py-8 py-6 rounded-xl px-4">
           <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-2 lg:gap-4 text-background">
-            <h3
-              dangerouslySetInnerHTML={{ __html: data.title }}
-              className="text-xl lg:text-[40px] lg:leading-10 font-bold px-8 lg:px-0"
-            />
-            <p className="text-base lg:text-2xl">{data.description}</p>
+            <HtmlContent content={data.title} className="text-xl lg:text-[40px] lg:leading-10 font-bold px-8 lg:px-0" />
+            <p className="text-base lg:text-2xl whitespace-pre-line">{data.description}</p>
             <MainButton
               text={data.cta.text}
               className="rounded-full w-full h-8 lg:h-[81px] text-sm lg:text-2xl font-bold"

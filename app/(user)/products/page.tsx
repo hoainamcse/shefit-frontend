@@ -69,7 +69,7 @@ export default function ProductsPage() {
               </Select>
             </div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-10">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-10">
             {filteredProducts.map((product: Product) => (
               <Link href={`/products/${product.id}`} key={product.id}>
                 <div key={`menu-${product.id}`} className="text-xl">

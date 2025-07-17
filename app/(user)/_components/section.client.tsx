@@ -14,6 +14,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext
 import Link from 'next/link'
 import { z } from 'zod'
 import { formSchema } from '@/app/(admin)/admin/(content-input)/homepage/schema'
+import { HtmlContent } from '@/components/html-content'
 
 type DataType = z.infer<typeof formSchema>
 
@@ -60,7 +61,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
       <div className="bg-[#FFF3F3] mx-auto">
         <div className="py-8 lg:py-12 space-y-8 lg:space-y-10">
           <div className="max-w-[500px] px-4 lg:px-6 mx-auto flex flex-col items-center justify-center text-center gap-4">
-            <h2 dangerouslySetInnerHTML={{ __html: data.title }} className="text-3xl lg:text-[40px] font-bold" />
+            <HtmlContent content={data.title} className="text-3xl lg:text-[40px] font-bold" />
           </div>
 
           <div className="mx-auto px-8 lg:px-12">
@@ -404,7 +405,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
       <div className="bg-[#DADADA] mx-auto">
         <div className="py-8 lg:py-12 space-y-8 lg:space-y-10">
           <div className="max-w-[500px] px-4 lg:px-6 mx-auto flex flex-col items-center justify-center text-center gap-4">
-            <h2 dangerouslySetInnerHTML={{ __html: data.title }} className="text-3xl lg:text-[40px] font-bold" />
+            <HtmlContent content={data.title} className="text-3xl lg:text-[40px] font-bold" />
           </div>
 
           <div className="mx-auto">
@@ -425,9 +426,9 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
               </div>
               {parsedFeatures[selectedMethod]?.description && (
                 <div className="mx-auto text-center mb-6 px-8 lg:px-12">
-                  <p
-                    dangerouslySetInnerHTML={{ __html: parsedFeatures[selectedMethod].description }}
-                    className="text-[#FB4A64] text-base lg:text-xl"
+                  <HtmlContent
+                    content={parsedFeatures[selectedMethod].description}
+                    className="text-[#FB4A64] text-base lg:text-xl whitespace-pre-line"
                   />
                 </div>
               )}

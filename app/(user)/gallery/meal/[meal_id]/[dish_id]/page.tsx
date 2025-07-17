@@ -147,7 +147,7 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
         {dish?.description && (
           <div>
             <h3 className="font-semibold text-base lg:text-xl">Mô tả:</h3>
-            <p className="text-[#737373] text-base lg:text-xl">{dish.description}</p>
+            <p className="text-[#737373] text-base lg:text-xl whitespace-pre-line">{dish.description}</p>
           </div>
         )}
         <ActionButtons dishId={dish.id} />

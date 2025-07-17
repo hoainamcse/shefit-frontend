@@ -12,6 +12,7 @@ import { ListResponse } from '@/models/response'
 import { Subscription } from '@/models/subscription'
 import { useSearchParams } from 'next/navigation'
 import { getUserSubscriptions } from '@/network/client/users'
+import { HtmlContent } from '@/components/html-content'
 
 export default function PurchasePackage() {
   const { session } = useSession()
@@ -131,17 +132,19 @@ export default function PurchasePackage() {
                         {subscription.name}
                       </div>
                       <ul className="list-disc pl-7 text-base md:text-xl text-[#737373] w-full space-y-2">
-                        {subscription.description_1
-                          .replace(/<\/?p[^>]*>/g, '')
-                          .split('\n')
-                          .filter((item) => item.trim() !== '')
-                          .map((item, index) => (
-                            <li
-                              key={index}
-                              className="[&>p]:m-0 [&>p]:inline"
-                              dangerouslySetInnerHTML={{ __html: item }}
-                            />
-                          ))}
+                        {(() => {
+                          const parser = new DOMParser()
+                          const doc = parser.parseFromString(subscription.description_1, 'text/html')
+                          const paragraphs = Array.from(doc.querySelectorAll('p')).map((p) => p.innerHTML)
+
+                          return paragraphs
+                            .filter((item: string) => item.trim() !== '')
+                            .map((content: string, index: number) => (
+                              <li key={index} className="[&>p]:m-0 [&>p]:inline list-item">
+                                <HtmlContent content={content} className="whitespace-pre-line" />
+                              </li>
+                            ))
+                        })()}
                       </ul>
                       <Link href={`/packages/detail/${subscription.id}${courseId ? `?course_id=${courseId}` : ''}`}>
                         <Button className="bg-[#13D8A7] w-[190px] h-[38px] rounded-[26px] text-base md:text-xl font-normal md:pt-2.5 md:pb-1.5">

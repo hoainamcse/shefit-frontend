@@ -135,7 +135,7 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
           <div className="font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-3xl lg:text-[40px] lg:leading-[48px] mb-3.5">
             Thông tin bài tập
           </div>
-          <div className="text-[#737373] text-base lg:text-xl">{exercise?.description}</div>
+          <div className="text-[#737373] text-base lg:text-xl whitespace-pre-line">{exercise?.description}</div>
         </div>
       </div>
 

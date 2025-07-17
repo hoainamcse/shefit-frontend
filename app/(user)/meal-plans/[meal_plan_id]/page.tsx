@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { getMealPlan } from '@/network/server/meal-plans'
 import ActionButtons from './ActionButtons'
+import { HtmlContent } from '@/components/html-content'
 export default async function MealPlanPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   try {
     const { meal_plan_id } = await params
@@ -58,38 +59,40 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
             <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl lg:text-[40px] max-lg:text-[30px] mb-5">
               Thông tin thực đơn
             </div>
-            <div className="text-[#737373] lg:text-xl">{mealPlan.description}</div>
+            <HtmlContent className="text-[#737373] lg:text-xl whitespace-pre-line" content={mealPlan.description} />
           </div>
-          <div className="mr-auto text-xl mt-10 w-full max-lg:p-4">
-            <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl lg:text-[40px] max-lg:text-[30px] mb-5">
-              Thành phần chính
+          {mealPlan.meal_ingredients.length > 0 && (
+            <div className="mr-auto text-xl mt-10 w-full max-lg:p-4">
+              <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl lg:text-[40px] max-lg:text-[30px] mb-5">
+                Thành phần chính
+              </div>
+              <Carousel
+                opts={{
+                  align: 'start',
+                }}
+                className="w-full"
+              >
+                <CarouselContent className="gap-x-4">
+                  {mealPlan.meal_ingredients.map((ingredient) => (
+                    <CarouselItem key={ingredient.name} className="basis-auto" style={{ width: '168px' }}>
+                      <div className="flex flex-col items-center">
+                        <div className="w-[168px] h-[175px] overflow-hidden rounded-xl">
+                          <img
+                            src={ingredient.image}
+                            alt={ingredient.name}
+                            className="w-full h-full object-cover rounded-xl"
+                          />
+                        </div>
+                        <div className="text-lg max-lg:text-base font-medium w-full text-center mt-2 truncate">
+                          {ingredient.name}
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
             </div>
-            <Carousel
-              opts={{
-                align: 'start',
-              }}
-              className="w-full"
-            >
-              <CarouselContent className="gap-x-4">
-                {mealPlan.meal_ingredients.map((ingredient) => (
-                  <CarouselItem key={ingredient.name} className="basis-auto" style={{ width: '168px' }}>
-                    <div className="flex flex-col items-center">
-                      <div className="w-[168px] h-[175px] overflow-hidden rounded-xl">
-                        <img
-                          src={ingredient.image}
-                          alt={ingredient.name}
-                          className="w-full h-full object-cover rounded-xl"
-                        />
-                      </div>
-                      <div className="text-lg max-lg:text-base font-medium w-full text-center mt-2 truncate">
-                        {ingredient.name}
-                      </div>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-          </div>
+          )}
           <ActionButtons mealPlanId={mealPlan.id} />
         </div>
       </div>

@@ -8,6 +8,7 @@ import { getMealPlans } from '@/network/server/meal-plans'
 import AcctionButton from './_components/AcctionButton'
 import SubscriptionInfo from './_components/SubscriptionInfo'
 import { BackIcon } from '@/components/icons/BackIcon'
+import { HtmlContent } from '@/components/html-content'
 
 export default async function PackageDetail({ params }: { params: Promise<{ id: string }> }) {
   const subscription = await getSubscription(Number((await params).id))
@@ -55,7 +56,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                 <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
                   Thông tin Gói
                 </div>
-                <p dangerouslySetInnerHTML={{ __html: subscriptionData?.description_2 || '' }} />
+                <HtmlContent className="whitespace-pre-line" content={subscriptionData?.description_2 || ''} />
               </div>
               <div>
                 <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4  font-bold">
@@ -108,7 +109,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                   <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
                     Thực đơn
                   </div>
-                  <p dangerouslySetInnerHTML={{ __html: subscriptionData?.meal_plan_description || '' }} />
+                  <HtmlContent className="whitespace-pre-line" content={subscriptionData?.meal_plan_description || ''} />
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     {subscriptionData?.meal_plan_ids.map((mealPlanId: number) => {
                       const mealPlan = mealPlans?.data?.find((plan: any) => plan.id === mealPlanId)
@@ -149,7 +150,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                 <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
                   Theo dõi kết quả
                 </div>
-                <p dangerouslySetInnerHTML={{ __html: subscriptionData?.result_checkup || '' }} />
+                <HtmlContent className="whitespace-pre-line" content={subscriptionData?.result_checkup || ''} />
               </div>
               <AcctionButton />
             </div>

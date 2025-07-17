@@ -15,12 +15,12 @@ function FilterCategory({
 }) {
   return (
     <Tabs value={value} onValueChange={onChange} className="w-full">
-      <TabsList className="w-full justify-start gap-2 bg-white shadow-none flex-wrap">
+      <TabsList className="w-full justify-start gap-2 bg-white shadow-none flex-wrap mb-5 lg:mb-0">
         {options.map((item) => (
           <TabsTrigger
             key={item.value}
             value={item.value}
-            className="flex-1 bg-white h-[36px] text-lg shadow-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none max-w-[150px]"
+            className="flex-1 bg-white h-[36px] text-lg shadow-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none max-w-[250px]"
           >
             {item.label}
           </TabsTrigger>

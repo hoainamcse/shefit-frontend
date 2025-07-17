@@ -10,6 +10,7 @@ import Link from 'next/link'
 import ShefitLogo from '@/public/logo-vertical-dark.png'
 import { formatDuration } from '@/lib/helpers'
 import { getSubscription } from '@/network/client/subscriptions'
+import { HtmlContent } from '@/components/html-content'
 
 export default function PackageDetail({ params }: { params: Promise<{ slug: string }> }) {
   const [selectedGiftId, setSelectedGiftId] = useState<number | null>(null)
@@ -37,9 +38,19 @@ export default function PackageDetail({ params }: { params: Promise<{ slug: stri
         </div>
 
         <ul className="list-disc pl-7 text-base md:text-xl text-[#737373] mb-7 space-y-2">
-          {subscription.data.description_1.split('\n').map((item: string, index: number) => (
-            <li key={index} className="[&>p]:m-0 [&>p]:inline" dangerouslySetInnerHTML={{ __html: item }} />
-          ))}
+          {(() => {
+            const parser = new DOMParser()
+            const doc = parser.parseFromString(subscription.data.description_1, 'text/html')
+            const paragraphs = Array.from(doc.querySelectorAll('p')).map((p) => p.innerHTML)
+
+            return paragraphs
+              .filter((item: string) => item.trim() !== '')
+              .map((content: string, index: number) => (
+                <li key={index} className="[&>p]:m-0 [&>p]:inline list-item">
+                  <HtmlContent content={content} className="whitespace-pre-line" />
+                </li>
+              ))
+          })()}
         </ul>
 
         <div className="mb-8">
