@@ -72,7 +72,7 @@ export function Footer() {
               <img src="/logo-mono-vertical.png" alt="logo-mono-vertical" className="size-[146px] ml-auto" />
               <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-4">
                 <div className="grid grid-cols-2 max-sm:grid-cols-1">
-                  <ul className="flex flex-col gap-3">
+                  <ul className="flex flex-col gap-3 mb-2">
                     <li className="font-bold text-xl">Về Shefit</li>
                     <li className="text-[#E8E5E5] text-base">
                       <Link href="/policy">Chính sách</Link>
@@ -104,7 +104,7 @@ export function Footer() {
                   </ul>
                 </div>
               </div>
-              <hr className="mt-5" />
+              <hr className="mt-5 mb-3" />
             </div>
           </div>
         </footer>

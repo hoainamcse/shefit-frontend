@@ -97,27 +97,14 @@ export function Header() {
           <Image src="/logo-mono-horizontal.png" alt="logo-mono-horizontal" width={136} height={40} />
         </Link>
         <div className="justify-center items-center gap-2 xl:gap-6 text-background hidden lg:flex">
-          {navItems.map((item, index) =>
-            item.label === 'Gói Member' ? (
-              <button
-                key={`navItem-${index}`}
-                onClick={() => (window.location.href = item.url)}
-                className="flex flex-col items-center gap-1 bg-transparent border-none text-white cursor-pointer whitespace-nowrap text-xs md:text-sm lg:text-base xl:text-lg"
-              >
-                <div className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 flex items-center justify-center">
-                  <item.icon />
-                </div>
-                <span className="whitespace-nowrap">{item.label}</span>
-              </button>
-            ) : (
-              <Link key={`navItem-${index}`} href={item.url} className="flex flex-col items-center gap-1">
-                <div className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 flex items-center justify-center">
-                  <item.icon />
-                </div>
-                <span className="whitespace-nowrap text-xs md:text-sm lg:text-base xl:text-lg">{item.label}</span>
-              </Link>
-            )
-          )}
+          {navItems.map((item, index) => (
+            <Link key={`navItem-${index}`} href={item.url} className="flex flex-col items-center gap-1">
+              <div className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 flex items-center justify-center">
+                <item.icon />
+              </div>
+              <span className="whitespace-nowrap text-xs md:text-sm lg:text-base xl:text-lg">{item.label}</span>
+            </Link>
+          ))}
           {authButton}
         </div>
         <Sheet>

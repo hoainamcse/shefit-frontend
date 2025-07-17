@@ -66,6 +66,7 @@ export default function CoursesPage() {
   const [showAccessDialog, setShowAccessDialog] = useState(false)
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
   const [isCheckingAccess, setIsCheckingAccess] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchSubscriptions = async () => {
@@ -81,6 +82,7 @@ export default function CoursesPage() {
       const zoomCourses = await getCourses({ course_format: 'live' })
       setCourses(videoCourses.data)
       setCoursesZoom(zoomCourses.data)
+      setIsLoading(false)
     }
     fetchCourses()
   }, [])
@@ -158,7 +160,7 @@ export default function CoursesPage() {
       <PopularCoursesCarousel />
       <div className="mx-auto px-4">
         <div className="mx-auto lg:my-12 my-0 flex flex-col gap-4">
-          <p className="text-center font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl uppercase my-8">
+          <p className="text-center font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl lg:text-[40px] uppercase my-8">
             Tất cả khoá tập
           </p>
           <p className="text-base lg:text-xl text-center text-[#737373]">
@@ -212,6 +214,11 @@ export default function CoursesPage() {
                   </TabsTrigger>
                 </TabsList>
               </div>
+              {isLoading && (
+                <div className="flex justify-center items-center h-40">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                </div>
+              )}
               <TabsContent value="video">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
                   {filteredCourses.map((course) => (

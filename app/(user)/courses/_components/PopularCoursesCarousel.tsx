@@ -7,7 +7,7 @@ import type { Course } from '@/models/course'
 import Link from 'next/link'
 export default function PopularCoursesCarousel() {
   const [popularCourses, setPopularCourses] = useState<Course[]>([])
-
+  const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
     const fetchPopularCourses = async () => {
       const [videoCourses, liveCourses] = await Promise.all([
@@ -18,6 +18,7 @@ export default function PopularCoursesCarousel() {
       const allCourses = [...videoCourses.data, ...liveCourses.data]
       const popular = allCourses.filter((course) => course.is_popular)
       setPopularCourses(popular)
+      setIsLoading(false)
     }
     fetchPopularCourses()
   }, [])
@@ -31,6 +32,11 @@ export default function PopularCoursesCarousel() {
       <p className="lg:text-center font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-[40px] lg:my-8 my-0 font-bold uppercase mb-4">
         Khoá Tập Hot Nhất Tháng
       </p>
+      {isLoading && (
+        <div className="flex justify-center items-center h-40">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        </div>
+      )}
       <div className="mx-auto px-4 lg:px-6">
         <Carousel
           opts={{

@@ -14,6 +14,7 @@ export default function ProductsPage() {
   const [categories, setCategories] = useState<any[]>([])
   const [selectedCategory, setSelectedCategory] = useState('')
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     async function fetchData() {
@@ -24,6 +25,7 @@ export default function ProductsPage() {
       const categoriesResponse = await getCategories()
       setCategories(categoriesResponse.data || [])
       console.log(productsResponse.data)
+      setIsLoading(false)
     }
     fetchData()
   }, [])
@@ -68,6 +70,11 @@ export default function ProductsPage() {
                 </SelectContent>
               </Select>
             </div>
+            {isLoading && (
+              <div className="flex justify-center items-center h-40">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+              </div>
+            )}
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-10">
             {filteredProducts.map((product: Product) => (

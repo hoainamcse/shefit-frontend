@@ -70,28 +70,27 @@ function ForgotPassword() {
           if (!verifyResponse || verifyResponse.status !== 'success') {
             toast.error('Xác thực OTP thất bại!')
             setIsLoading(false)
-            return false // Return false to indicate submission should not continue
+            return false
           }
 
           if (verifyResponse.data && verifyResponse.data.verified === false) {
             const errorMessage = verifyResponse.data.error || 'Mã OTP không hợp lệ hoặc đã hết hạn!'
             toast.error(errorMessage)
             setIsLoading(false)
-            return false // Return false to indicate submission should not continue
+            return false
           }
 
-          // OTP verification successful
           setIsOtpVerified(true)
           otpVerified = true
         } catch (error) {
           console.error('Error verifying OTP:', error)
           toast.error('Xác thực OTP thất bại!')
           setIsLoading(false)
-          return false // Return false to indicate submission should not continue
+          return false
         }
 
         if (!otpVerified) {
-          return false // Return false to indicate submission should not continue
+          return false
         }
       }
 
@@ -119,7 +118,6 @@ function ForgotPassword() {
     }
   }
 
-  // Custom form submission handler to prevent form clearing on OTP verification failure
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -127,34 +125,34 @@ function ForgotPassword() {
     await handleSubmit(formData)
   }
   return (
-    <form onSubmit={handleFormSubmit} className='space-y-6'>
-      <div className='flex gap-2'>
-        <div className='w-2/3'>
-          <Label htmlFor='email'>Email</Label>
+    <form onSubmit={handleFormSubmit} className="space-y-6">
+      <div className="flex lg:flex-row flex-col gap-2">
+        <div className="lg:w-2/3 w-full">
+          <Label htmlFor="email">Email</Label>
           <Input
-            placeholder='Nhập email của bạn'
-            id='email'
-            name='email'
-            type='email'
+            placeholder="Nhập email của bạn"
+            id="email"
+            name="email"
+            type="email"
             value={email}
             onChange={handleEmailChange}
           />
         </div>
-        <div className='w-1/3 relative'>
-          <Label htmlFor='otp'>OTP</Label>
-          <div className='relative'>
+        <div className="lg:w-1/3 w-full relative">
+          <Label htmlFor="otp">OTP</Label>
+          <div className="relative">
             <Input
-              placeholder='Nhập OTP của bạn'
-              id='otp'
-              name='otp'
-              type='text'
-              className='pr-24'
+              placeholder="Nhập OTP của bạn"
+              id="otp"
+              name="otp"
+              type="text"
+              className="pr-24"
               disabled={!isOtpSent}
             />
             <Button
-              type='button'
-              variant='secondary'
-              className='absolute right-1 top-1/2 -translate-y-1/2 h-8 px-2 text-xs bg-[#13D8A7] text-white hover:bg-[#13D8A7] hover:text-white'
+              type="button"
+              variant="secondary"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 px-2 text-xs bg-[#13D8A7] text-white hover:bg-[#13D8A7] hover:text-white"
               disabled={!isEmailValid || isLoading}
               onClick={handleSendOTP}
             >
@@ -163,18 +161,18 @@ function ForgotPassword() {
           </div>
         </div>
       </div>
-      <div className='mx-auto space-y-2'>
-        <Label htmlFor='password'>Mật khẩu</Label>
-        <CustomInput placeholder='Nhập mật khẩu của bạn' id='password' name='password' type='password' />
+      <div className="mx-auto space-y-2">
+        <Label htmlFor="password">Mật khẩu</Label>
+        <CustomInput placeholder="Nhập mật khẩu của bạn" id="password" name="password" type="password" />
       </div>
-      <div className='mx-auto space-y-2'>
-        <Label htmlFor='password'>Xác nhận mật khẩu</Label>
-        <CustomInput placeholder='Nhập lại mật khẩu của bạn' id='password' name='password' type='password' />
+      <div className="mx-auto space-y-2">
+        <Label htmlFor="password">Xác nhận mật khẩu</Label>
+        <CustomInput placeholder="Nhập lại mật khẩu của bạn" id="password" name="password" type="password" />
       </div>
       <MainButton
-        type='submit'
-        className='w-full p-3 rounded-3xl'
-        text='Đổi mật khẩu'
+        type="submit"
+        className="w-full p-3 rounded-3xl"
+        text="Đổi mật khẩu"
         disabled={isLoading || !isOtpSent}
       />
     </form>

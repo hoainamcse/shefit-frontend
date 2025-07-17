@@ -72,14 +72,6 @@ export default function Gallery() {
     fetchDiets()
   }, [])
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-40">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-
   return (
     <div className="flex flex-col gap-10 sm:gap-16 lg:gap-[90px] pt-10 lg:pt-16 xl:pt-[93px]">
       <div>
@@ -91,6 +83,11 @@ export default function Gallery() {
             Xem video hướng dẫn chi tiết 1000+ bài đốt mỡ và cắt nét cơ theo từng vùng hình thể nữ giới
           </p>
         </div>
+        {isLoading && (
+          <div className="flex justify-center items-center h-40">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        )}
         <div className="grid grid-cols-3 sm:gap-5 gap-4">
           {muscleGroupsData.data.map((muscleGroup) =>
             session ? (
@@ -173,6 +170,11 @@ export default function Gallery() {
             Khám phá 500+ món ăn theo các chế độ ăn khác nhau phù hợp nhất với mục tiêu của bạn.
           </p>
         </div>
+        {isLoading && (
+          <div className="flex justify-center items-center h-40">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        )}
         <div className="grid grid-cols-3 sm:gap-5 gap-4">
           {dietsData.data?.map((diet) =>
             session ? (

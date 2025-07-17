@@ -105,7 +105,7 @@ export default function MealPlansPage() {
   return (
     <div className="px-4">
       <div className="max-w-screen-md mx-auto">
-        <p className="font-[family-name:var(--font-coiny)] font-bold sm:text-center text-ring text-2xl sm:text-3xl my-8 sm:my-4">
+        <p className="font-[family-name:var(--font-coiny)] font-bold sm:text-center text-ring text-3xl lg:text-[40px] my-8 sm:my-4">
           Chọn thực đơn
         </p>
         <p className="sm:text-center text-[#737373] text-base mb-4">
@@ -150,6 +150,11 @@ export default function MealPlansPage() {
             Free
           </TabsTrigger>
         </TabsList>
+        {isLoading && (
+          <div className="flex justify-center items-center h-40">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        )}
         <TabsContent value="all">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto mt-6 justify-items-center">
             {filteredMealPlans.map((mealPlan) => (
