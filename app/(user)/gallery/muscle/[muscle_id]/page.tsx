@@ -40,19 +40,25 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
               <TabsList className="bg-white sm:mx-auto">
                 <TabsTrigger
                   value="all"
-                  className={cn('underline text-ring bg-white !shadow-none pl-0 pr-5 sm:px-2.5 md:px-4 lg:px-8')}
+                  className={cn(
+                    'underline text-base lg:text-xl text-ring bg-white !shadow-none pl-0 pr-5 sm:px-2.5 md:px-4 lg:px-8'
+                  )}
                 >
                   Tất cả
                 </TabsTrigger>
                 <TabsTrigger
                   value="with-equipment"
-                  className={cn('underline text-ring bg-white !shadow-none pl-0 pr-5 sm:px-2.5 md:px-4 lg:px-8')}
+                  className={cn(
+                    'underline text-base lg:text-xl text-ring bg-white !shadow-none pl-0 pr-5 sm:px-2.5 md:px-4 lg:px-8'
+                  )}
                 >
                   Có dụng cụ
                 </TabsTrigger>
                 <TabsTrigger
                   value="no-equipment"
-                  className={cn('underline text-ring bg-white !shadow-none pl-0 pr-5 sm:px-2.5 md:px-4 lg:px-8')}
+                  className={cn(
+                    'underline text-base lg:text-xl text-ring bg-white !shadow-none pl-0 pr-5 sm:px-2.5 md:px-4 lg:px-8'
+                  )}
                 >
                   Không có dụng cụ
                 </TabsTrigger>

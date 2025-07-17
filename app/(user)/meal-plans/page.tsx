@@ -19,11 +19,13 @@ function MultiSelectHero({
   options,
   value,
   onChange,
+  isDisabled,
 }: {
   placeholder: string
   options: { value: string; label: string }[]
   value: string[]
   onChange: (value: string[]) => void
+  isDisabled?: boolean
 }) {
   return (
     <MultiSelect
@@ -33,6 +35,7 @@ function MultiSelectHero({
       placeholder={placeholder}
       selectAllLabel="Tất cả"
       maxDisplay={2}
+      disabled={isDisabled}
     />
   )
 }
@@ -122,6 +125,7 @@ export default function MealPlansPage() {
               }))}
               value={filter.goals}
               onChange={(goals) => setFilter((prev) => ({ ...prev, goals }))}
+              isDisabled={isLoading}
             />
           </div>
           <div className="w-full">
@@ -133,6 +137,7 @@ export default function MealPlansPage() {
               }))}
               value={filter.calories}
               onChange={(calories) => setFilter((prev) => ({ ...prev, calories }))}
+              isDisabled={isLoading}
             />
           </div>
         </div>
@@ -143,10 +148,10 @@ export default function MealPlansPage() {
         onValueChange={(value) => setFilter((prev) => ({ ...prev, showType: value }))}
       >
         <TabsList className="bg-white mb-4 w-full flex justify-center mt-4">
-          <TabsTrigger value="all" className={cn('underline text-ring bg-white !shadow-none')}>
+          <TabsTrigger disabled={isLoading} value="all" className={cn('underline text-ring bg-white !shadow-none')}>
             Tất cả
           </TabsTrigger>
-          <TabsTrigger value="free" className={cn('underline text-ring bg-white !shadow-none')}>
+          <TabsTrigger disabled={isLoading} value="free" className={cn('underline text-ring bg-white !shadow-none')}>
             Free
           </TabsTrigger>
         </TabsList>

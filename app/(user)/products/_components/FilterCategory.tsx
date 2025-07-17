@@ -7,11 +7,13 @@ function FilterCategory({
   options,
   onChange,
   value,
+  isLoading,
 }: {
   placeholder: string
   options: { value: string; label: string }[]
   onChange?: (value: string) => void
   value: string
+  isLoading?: boolean
 }) {
   return (
     <Tabs value={value} onValueChange={onChange} className="w-full">
@@ -21,6 +23,7 @@ function FilterCategory({
             key={item.value}
             value={item.value}
             className="flex-1 bg-white h-[36px] text-lg shadow-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none max-w-[250px]"
+            disabled={isLoading}
           >
             {item.label}
           </TabsTrigger>

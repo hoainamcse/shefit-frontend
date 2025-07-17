@@ -122,6 +122,30 @@ function RegisterForm() {
     }
   }
 
+  const resetFormState = () => {
+    setIsOtpSent(false)
+    setIsOtpVerified(false)
+    setOtpCounter(null)
+    setCooldown(0)
+  }
+
+  const checkForEmailExistsError = (error: any) => {
+    if (error && error.message) {
+      const message = error.message.toLowerCase()
+      if (message.includes('already registered') || message.includes('đã tồn tại')) {
+        return true
+      }
+    }
+    if (typeof error === 'string') {
+      const errorString = error.toLowerCase()
+      if (errorString.includes('already registered') || errorString.includes('đã tồn tại')) {
+        return true
+      }
+    }
+
+    return false
+  }
+
   async function handleSubmit(formData: FormData) {
     try {
       const emailValue = formData.get('email')?.toString() || ''
@@ -166,17 +190,24 @@ function RegisterForm() {
         }
       }
 
+      const password = formData.get('password')?.toString() || ''
+      if (password.length < 6) {
+        toast.error('Mật khẩu phải có ít nhất 6 ký tự')
+        setIsLoading(false)
+        return false
+      }
+
       const data = {
         fullname: formData.get('fullname')?.toString() || '',
         phone_number: formData.get('phone_number')?.toString() || '',
         email: emailValue,
         username: formData.get('username')?.toString() || '',
-        password: formData.get('password')?.toString() || '',
+        password: password,
       }
 
       const response = await register(data)
 
-      if (response.status === 400) {
+      if (response.status === 400 || response.status === 401) {
         toast.error('Đăng ký thất bại!')
       } else {
         toast.success('Đăng ký thành công!')
@@ -184,7 +215,13 @@ function RegisterForm() {
       }
     } catch (error) {
       console.error('Error during registration:', error)
-      toast.error('Đã xảy ra lỗi khi đăng ký.')
+
+      if (checkForEmailExistsError(error)) {
+        toast.error('Email này đã tồn tại trong hệ thống. Vui lòng sử dụng email khác!')
+        resetFormState()
+      } else {
+        toast.error('Đã xảy ra lỗi khi đăng ký.')
+      }
     } finally {
       setIsLoading(false)
     }
@@ -208,7 +245,7 @@ function RegisterForm() {
         <Input placeholder="Nhập số điện thoại của bạn" id="phoneNumber" name="phone_number" type="text" />
       </div>
       <div className="flex lg:flex-row flex-col gap-2">
-        <div className="lg:w-2/3 w-full">
+        <div className="lg:w-3/5 w-full">
           <Label htmlFor="email">Email</Label>
           <Input
             placeholder="Nhập email của bạn"
@@ -219,7 +256,7 @@ function RegisterForm() {
             onChange={handleEmailChange}
           />
         </div>
-        <div className="lg:w-1/3 w-full relative">
+        <div className="lg:w-2/5 w-full relative">
           <Label htmlFor="otp">OTP</Label>
           <div className="relative">
             <Input

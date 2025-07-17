@@ -54,11 +54,12 @@ export default function ProductsPage() {
                 options={categories.map((category) => ({ value: category.id.toString(), label: category.name }))}
                 value={selectedCategory}
                 onChange={setSelectedCategory}
+                isLoading={isLoading}
               />
             </div>
             <div className="flex gap-2 w-full md:hidden">
               <Select onValueChange={setSelectedCategory} value={selectedCategory || undefined}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full" disabled={isLoading}>
                   <SelectValue placeholder="Loại" />
                 </SelectTrigger>
                 <SelectContent>

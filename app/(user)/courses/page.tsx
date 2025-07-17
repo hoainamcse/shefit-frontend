@@ -8,14 +8,14 @@ import React, { useState, useEffect } from 'react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { getCourses } from '@/network/client/courses'
 import { cn } from '@/lib/utils'
-import { courseLevelLabel, courseLevelOptions, courseFormLabel, courseFormOptions } from '@/lib/label'
+import { courseLevelLabel, courseLevelOptions, courseFormOptions } from '@/lib/label'
 import type { Course } from '@/models/course'
 import { getSubscriptions } from '@/network/client/subscriptions'
 import { getUserSubscriptions } from '@/network/client/users'
 import type { Subscription } from '@/models/subscription'
 import PopularCoursesCarousel from './_components/PopularCoursesCarousel'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useRouter } from 'next/navigation'
 import { useSession } from '@/hooks/use-session'
 import { UserSubscriptionDetail } from '@/models/user-subscriptions'
@@ -25,11 +25,13 @@ function MultiSelectHero({
   options,
   value,
   onChange,
+  isDisabled,
 }: {
   placeholder: string
   options: { value: string; label: string }[]
   value: string[]
   onChange: (value: string[]) => void
+  isDisabled?: boolean
 }) {
   return (
     <MultiSelect
@@ -39,6 +41,7 @@ function MultiSelectHero({
       placeholder={placeholder}
       selectAllLabel="Tất cả"
       maxDisplay={2}
+      disabled={isDisabled}
     />
   )
 }
@@ -174,6 +177,7 @@ export default function CoursesPage() {
                 options={courseLevelOptions}
                 value={difficulty}
                 onChange={setDifficulty}
+                isDisabled={isLoading}
               />
             </div>
             <div className="w-full max-w-lg">
@@ -182,6 +186,7 @@ export default function CoursesPage() {
                 options={courseFormOptions}
                 value={formCategory}
                 onChange={setFormCategory}
+                isDisabled={isLoading}
               />
             </div>
             <div className="w-full max-w-lg">
@@ -193,6 +198,7 @@ export default function CoursesPage() {
                 }))}
                 value={subscriptionId}
                 onChange={setSubscriptionId}
+                isDisabled={isLoading}
               />
             </div>
           </div>
@@ -200,16 +206,32 @@ export default function CoursesPage() {
             <Tabs defaultValue="all" onValueChange={setActiveTab}>
               <div className="flex justify-center gap-4 mb-10">
                 <TabsList className="bg-white">
-                  <TabsTrigger value="all" className={cn('underline text-ring bg-white !shadow-none')}>
+                  <TabsTrigger
+                    disabled={isLoading}
+                    value="all"
+                    className={cn('underline text-ring bg-white !shadow-none')}
+                  >
                     Tất cả
                   </TabsTrigger>
-                  <TabsTrigger value="video" className={cn('underline text-ring bg-white !shadow-none')}>
+                  <TabsTrigger
+                    disabled={isLoading}
+                    value="video"
+                    className={cn('underline text-ring bg-white !shadow-none')}
+                  >
                     Video
                   </TabsTrigger>
-                  <TabsTrigger value="live" className={cn('underline text-ring bg-white !shadow-none')}>
+                  <TabsTrigger
+                    disabled={isLoading}
+                    value="live"
+                    className={cn('underline text-ring bg-white !shadow-none')}
+                  >
                     Zoom
                   </TabsTrigger>
-                  <TabsTrigger value="free" className={cn('underline text-ring bg-white !shadow-none')}>
+                  <TabsTrigger
+                    disabled={isLoading}
+                    value="free"
+                    className={cn('underline text-ring bg-white !shadow-none')}
+                  >
                     Free
                   </TabsTrigger>
                 </TabsList>

@@ -7,3 +7,15 @@ export async function register(data: any) {
   })
   return response.json()
 }
+
+export async function resetPassword(data: any) {
+  const response = await fetchData('/v1/auth/reset-password', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  const jsonData = await response.json()
+  return {
+    status: response.status,
+    data: jsonData
+  }
+}
