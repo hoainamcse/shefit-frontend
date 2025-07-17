@@ -27,15 +27,17 @@ export default function FormDelivery({
   const [showSuccessDialog, setShowSuccessDialog] = useState(false)
   const { session } = useSession()
   const [username, setUsername] = useState<string | null>(null)
+
   const form = useForm({
     defaultValues: {
       name: '',
       phone: '',
       city: '',
       address: '',
-      shipping_fee: cartData?.shipping_fee?.toString() || '0',
-      total: cartData?.product_variants ? cartData.product_variants.reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0).toString() : '0',
+      shipping_fee: '0',
+      total: '0',
       discount: '0',
+      final_total: '0',
       payment_method: true,
       note: '',
     },
@@ -60,19 +62,37 @@ export default function FormDelivery({
     }
   }
 
+  const calculateTotals = (cartData: any, city: string, discount: number) => {
+    const cartTotal = cartData?.product_variants
+      ? cartData.product_variants.reduce((total: number, variant: any) => {
+          return total + variant.price * variant.quantity
+        }, 0)
+      : 0
+
+    const isHCM = city?.includes('Hồ Chí Minh') || false
+    const weight = cartData?.total_weight || 0
+    const shippingFee = calculateShippingFee(weight, isHCM)
+    const finalTotal = Math.max(0, cartTotal - discount) + shippingFee
+
+    return {
+      cartTotal,
+      shippingFee,
+      finalTotal,
+      discount,
+    }
+  }
+
   useEffect(() => {
     if (cartData) {
-      const isHCM = selectedCity?.includes('Hồ Chí Minh') || false
-      const weight = cartData.total_weight || 0
-      const shippingFee = calculateShippingFee(weight, isHCM)
-      const cartTotal = cartData.product_variants ? cartData.product_variants.reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0) : 0
-      const finalTotal = Math.max(0, cartTotal - discountAmount) + shippingFee
+      const city = selectedCity || form.getValues('city')
+      const { cartTotal, shippingFee, finalTotal, discount } = calculateTotals(cartData, city, discountAmount)
 
       form.setValue('shipping_fee', shippingFee.toString(), { shouldValidate: true })
-      form.setValue('total', finalTotal.toString(), { shouldValidate: true })
-      form.setValue('discount', discountAmount.toString(), { shouldValidate: true })
+      form.setValue('total', cartTotal.toString(), { shouldValidate: true })
+      form.setValue('discount', discount.toString(), { shouldValidate: true })
+      form.setValue('final_total', finalTotal.toString(), { shouldValidate: true })
     }
-  }, [selectedCity, cartData, form, discountAmount])
+  }, [selectedCity, cartData, discountAmount, form])
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -83,20 +103,18 @@ export default function FormDelivery({
         const userData = userResponse?.data
 
         if (userData) {
-          const isHCM = userData.province?.includes('Hồ Chí Minh') || false
-          const weight = cartData?.total_weight || 0
-          const shippingFee = calculateShippingFee(weight, isHCM)
-          const cartTotal = cartData?.product_variants ? cartData.product_variants.reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0) : 0
-          const finalTotal = Math.max(0, cartTotal - discountAmount) + shippingFee
+          const city = userData.province || ''
+          const { cartTotal, shippingFee, finalTotal } = calculateTotals(cartData, city, discountAmount)
 
           form.reset({
             name: userData.fullname || userData.username || '',
             phone: userData.phone_number || '',
-            city: userData.province || '',
+            city: city,
             address: userData.address || '',
             shipping_fee: shippingFee.toString(),
-            total: finalTotal.toString(),
+            total: cartTotal.toString(),
             discount: discountAmount.toString(),
+            final_total: finalTotal.toString(),
             payment_method: true,
             note: '',
           })
@@ -107,7 +125,7 @@ export default function FormDelivery({
     }
 
     fetchUserData()
-  }, [session, cartData, form])
+  }, [session, cartData, discountAmount, form])
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -130,14 +148,14 @@ export default function FormDelivery({
     try {
       const orderData = {
         user_name: formData.name,
-        username: username,
+        username: username || '',
         is_signed_up: !!session,
         telephone_number: formData.phone,
         city: formData.city,
         address: formData.address,
         total_weight: cartData?.total_weight,
         shipping_fee: parseInt(formData.shipping_fee),
-        total: parseInt(formData.total),
+        total: parseInt(formData.total) + parseInt(formData.shipping_fee) - parseInt(formData.discount || '0'),
         coupon_code: couponCode,
         status: 'delivered',
         notes: formData.note,
@@ -147,11 +165,13 @@ export default function FormDelivery({
       await editCart(cartData.id, orderData)
       setShowSuccessDialog(true)
     } catch (error) {
+      console.error('Error submitting order:', error)
       toast.error('Đã xảy ra lỗi khi đặt hàng')
     } finally {
       setIsSubmitting(false)
     }
   }
+
   return (
     <div className="w-full flex flex-col gap-5">
       <div className="font-[family-name:var(--font-coiny)] font-bold text-3xl lg:text-[40px]">Thông tin vận chuyển</div>
@@ -229,12 +249,13 @@ export default function FormDelivery({
               </FormItem>
             )}
           />
+
           <FormField
             name="shipping_fee"
             control={form.control}
             render={({ field }) => (
               <FormItem className="flex justify-between items-center">
-                <FormLabel className="text-base lg:text-xl mt-2">Phí ship</FormLabel>
+                <FormLabel className="text-base lg:text-xl">Phí ship</FormLabel>
                 <FormControl>
                   <div className="text-[#8E8E93] text-base lg:text-xl">
                     {parseInt(field.value || '0').toLocaleString('vi-VN')} <span>VNĐ</span>
@@ -244,6 +265,7 @@ export default function FormDelivery({
               </FormItem>
             )}
           />
+
           <FormField
             name="discount"
             control={form.control}
@@ -262,12 +284,13 @@ export default function FormDelivery({
               </FormItem>
             )}
           />
+
           <FormField
-            name="total"
+            name="final_total"
             control={form.control}
             render={({ field }) => (
               <FormItem className="flex justify-between items-center">
-                <FormLabel className="text-base lg:text-xl font-semibold mt-2">Tổng tiền</FormLabel>
+                <FormLabel className="text-base lg:text-xl font-semibold">Tổng tiền</FormLabel>
                 <FormControl>
                   <div className="text-[#00C7BE] text-xl lg:text-2xl font-semibold">
                     {parseInt(field.value || '0').toLocaleString('vi-VN')} <span>VNĐ</span>
@@ -277,15 +300,18 @@ export default function FormDelivery({
               </FormItem>
             )}
           />
+
           <FormField
-            name="address"
+            name="payment_method"
             control={form.control}
             render={({ field }) => (
               <FormItem className="flex justify-between items-center">
-                <FormLabel className="text-xl font-semibold mt-2">Phương thức</FormLabel>
+                <FormLabel className="text-base lg:text-xl font-semibold mt-2">Phương thức</FormLabel>
                 <FormControl>
-                  <div className="flex gap-2 item-center">
-                    <div className="text-[#737373] text-xl leading-8 items-center">Thanh toán khi nhận hàng</div>
+                  <div className="flex gap-2 items-center">
+                    <div className="text-[#737373] text-xl lg:text-2xl leading-8 items-center">
+                      Thanh toán khi nhận hàng
+                    </div>
                     <Checkbox className="size-8" />
                   </div>
                 </FormControl>
@@ -293,12 +319,13 @@ export default function FormDelivery({
               </FormItem>
             )}
           />
+
           <FormField
             name="note"
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xl">Ghi chú thêm</FormLabel>
+                <FormLabel className="text-base lg:text-xl">Ghi chú thêm</FormLabel>
                 <FormControl>
                   <Input {...field} placeholder="Nhập ghi chú của bạn cho shop" />
                 </FormControl>

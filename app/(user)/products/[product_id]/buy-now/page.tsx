@@ -21,6 +21,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Product, Variant } from '@/models/product'
 import { getListCoupons } from '@/network/server/coupons'
+
 export default function BuyNowPage({ params }: { params: Promise<{ product_id: string }> }) {
   const { product_id } = use(params)
   const searchParams = useSearchParams()
@@ -50,17 +51,9 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
       city: '',
       address: '',
       shipping_fee: '0',
-      total: cart?.product_variants
-        ? cart.product_variants
-            .reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0)
-            .toString()
-        : '0',
+      total: '0',
       discount: '0',
-      final_total: cart?.product_variants
-        ? cart.product_variants
-            .reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0)
-            .toString()
-        : '0',
+      final_total: '0',
       payment_method: true,
       note: '',
     },
@@ -68,23 +61,57 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
 
   const selectedCity = form.watch('city')
 
-  useEffect(() => {
-    if (cart && cart.product_variants) {
-      const cartTotal = cart.product_variants.reduce((total: number, variant: any) => {
-        return total + variant.price * variant.quantity
-      }, 0)
+  // Hàm tính phí ship
+  const calculateShippingFee = (weight: number, isHCM: boolean): number => {
+    if (weight < 1) {
+      return isHCM ? 17000 : 20000
+    } else if (weight >= 1 && weight < 3) {
+      return isHCM ? 20000 : 25000
+    } else if (weight >= 3 && weight < 5) {
+      return isHCM ? 25000 : 30000
+    } else if (weight >= 5 && weight < 10) {
+      return isHCM ? 30000 : 45000
+    } else {
+      const baseFee = isHCM ? 30000 : 45000
+      const additionalWeight = Math.ceil(weight - 10)
+      const additionalFee = additionalWeight * 5000
+      return baseFee + additionalFee
+    }
+  }
 
-      const isHCM = selectedCity?.includes('Hồ Chí Minh') || false
-      const weight = cart.total_weight || 0
-      const shippingFee = calculateShippingFee(weight, isHCM)
-      const finalTotal = Math.max(0, cartTotal - discountAmount) + shippingFee
+  // Hàm tính toán tổng tiền - tách ra để tái sử dụng
+  const calculateTotals = (cartData: any, city: string, discount: number) => {
+    const cartTotal = cartData?.product_variants
+      ? cartData.product_variants.reduce((total: number, variant: any) => {
+          return total + variant.price * variant.quantity
+        }, 0)
+      : 0
+
+    const isHCM = city?.includes('Hồ Chí Minh') || false
+    const weight = cartData?.total_weight || 0
+    const shippingFee = calculateShippingFee(weight, isHCM)
+    const finalTotal = Math.max(0, cartTotal - discount) + shippingFee
+
+    return {
+      cartTotal,
+      shippingFee,
+      finalTotal,
+      discount,
+    }
+  }
+
+  // Effect để cập nhật form khi cart, city hoặc discount thay đổi
+  useEffect(() => {
+    if (cart) {
+      const city = selectedCity || form.getValues('city')
+      const { cartTotal, shippingFee, finalTotal, discount } = calculateTotals(cart, city, discountAmount)
 
       form.setValue('shipping_fee', shippingFee.toString(), { shouldValidate: true })
       form.setValue('total', cartTotal.toString(), { shouldValidate: true })
-      form.setValue('discount', discountAmount.toString(), { shouldValidate: true })
+      form.setValue('discount', discount.toString(), { shouldValidate: true })
       form.setValue('final_total', finalTotal.toString(), { shouldValidate: true })
     }
-  }, [selectedCity, cart, form, discountAmount])
+  }, [selectedCity, cart, discountAmount, form])
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -148,23 +175,6 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
 
   const cartId = searchParams?.get('cart_id')
 
-  const calculateShippingFee = (weight: number, isHCM: boolean): number => {
-    if (weight < 1) {
-      return isHCM ? 17000 : 20000
-    } else if (weight >= 1 && weight < 3) {
-      return isHCM ? 20000 : 25000
-    } else if (weight >= 3 && weight < 5) {
-      return isHCM ? 25000 : 30000
-    } else if (weight >= 5 && weight < 10) {
-      return isHCM ? 30000 : 45000
-    } else {
-      const baseFee = isHCM ? 30000 : 45000
-      const additionalWeight = Math.ceil(weight - 10)
-      const additionalFee = additionalWeight * 5000
-      return baseFee + additionalFee
-    }
-  }
-
   useEffect(() => {
     const fetchUserData = async () => {
       if (!session) return
@@ -175,8 +185,11 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
 
         if (userData) {
           const isHCM = userData.province?.includes('Hồ Chí Minh') || false
-          const weight = cart?.total_weight
+          const weight = cart?.total_weight || 0
           const shippingFee = calculateShippingFee(weight, isHCM)
+          const cartTotal = cart?.product_variants
+            ? cart.product_variants.reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0)
+            : 0
 
           form.reset({
             name: userData.fullname || userData.username || '',
@@ -184,7 +197,10 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
             city: userData.province || '',
             address: userData.address || '',
             shipping_fee: shippingFee.toString(),
-            total: (cart?.total + shippingFee).toString(),
+            total: cartTotal.toString(),
+            discount: discountAmount.toString(),
+            final_total: (cartTotal + shippingFee - discountAmount).toString(),
+            payment_method: true,
             note: '',
           })
         }
@@ -194,7 +210,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
     }
 
     fetchUserData()
-  }, [session, cart, form])
+  }, [session, cart, form, discountAmount])
 
   const handleUpdateQuantity = async (variantId: number, newQuantity: number) => {
     if (!cartId) {
@@ -204,27 +220,51 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
 
     const validQuantity = Math.max(1, newQuantity)
     if (variantQuantities[variantId] === validQuantity) return
+
     try {
       setQuantityUpdating({ ...quantityUpdating, [variantId]: true })
       await updateProductVariantQuantity(Number(cartId), variantId, validQuantity)
+
+      // Lấy lại thông tin cart mới
       const cartResponse = await getCart(Number(cartId))
       const updatedCart = cartResponse.data
+
+      // Cập nhật state
       setCart(updatedCart)
       setVariantQuantities({ ...variantQuantities, [variantId]: validQuantity })
-      const isHCM = form.getValues('city')?.includes('Hồ Chí Minh') || false
-      const weight = updatedCart.total_weight || 0
-      const shippingFee = calculateShippingFee(weight, isHCM)
-      const cartTotal = updatedCart.product_variants
-        ? updatedCart.product_variants.reduce(
-            (total: number, variant: any) => total + variant.price * variant.quantity,
-            0
-          )
-        : 0
-      const finalTotal = Math.max(0, cartTotal - discountAmount) + shippingFee
+
+      // Tính toán lại giá trị giảm giá nếu có coupon được áp dụng
+      let newDiscountAmount = 0
+      if (appliedCoupon) {
+        const newCartTotal = updatedCart.product_variants
+          ? updatedCart.product_variants.reduce(
+              (total: number, variant: any) => total + variant.price * variant.quantity,
+              0
+            )
+          : 0
+
+        if (appliedCoupon.discount_type === 'percentage') {
+          newDiscountAmount = (newCartTotal * appliedCoupon.discount_value) / 100
+        } else if (appliedCoupon.discount_type === 'fixed_amount') {
+          newDiscountAmount = appliedCoupon.discount_value
+        } else {
+          newDiscountAmount = Number(appliedCoupon.discount_value || 0)
+        }
+
+        newDiscountAmount = Math.min(newDiscountAmount, newCartTotal)
+        setDiscountAmount(newDiscountAmount)
+      }
+
+      // Tính toán lại tổng tiền với cart mới và discount mới
+      const city = form.getValues('city')
+      const { cartTotal, shippingFee, finalTotal } = calculateTotals(updatedCart, city, newDiscountAmount)
+
+      // Cập nhật form
       form.setValue('shipping_fee', shippingFee.toString(), { shouldValidate: true })
       form.setValue('total', cartTotal.toString(), { shouldValidate: true })
-      form.setValue('discount', discountAmount.toString(), { shouldValidate: true })
+      form.setValue('discount', newDiscountAmount.toString(), { shouldValidate: true })
       form.setValue('final_total', finalTotal.toString(), { shouldValidate: true })
+
       toast.success('Đã cập nhật số lượng sản phẩm!')
     } catch (error) {
       console.error('Error updating quantity:', error)
@@ -240,6 +280,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
       return
     }
     if (isApplyingCoupon) return
+
     try {
       setIsApplyingCoupon(true)
       if (!coupons.length) {
@@ -259,8 +300,8 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
       const cartTotal = cart?.product_variants
         ? cart.product_variants.reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0)
         : 0
-      let discount = 0
 
+      let discount = 0
       if (matchingCoupon.discount_type === 'percentage') {
         discount = (cartTotal * matchingCoupon.discount_value) / 100
       } else if (matchingCoupon.discount_type === 'fixed_amount') {
@@ -272,12 +313,14 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
       discount = Math.min(discount, cartTotal)
       setAppliedCoupon(matchingCoupon)
       setDiscountAmount(discount)
-      const isHCM = form.getValues('city')?.includes('Hồ Chí Minh') || false
-      const weight = cart?.total_weight || 0
-      const shippingFee = calculateShippingFee(weight, isHCM)
-      const finalTotal = Math.max(0, cartTotal - discount) + shippingFee
+
+      // Tính toán lại với discount mới
+      const city = form.getValues('city')
+      const { shippingFee, finalTotal } = calculateTotals(cart, city, discount)
+
       form.setValue('discount', discount.toString(), { shouldValidate: true })
       form.setValue('final_total', finalTotal.toString(), { shouldValidate: true })
+
       toast.success(`Đã áp dụng mã giảm giá: ${matchingCoupon.code}`)
     } catch (error) {
       toast.error('Không thể áp dụng mã giảm giá. Vui lòng thử lại!')
@@ -285,19 +328,16 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
       setIsApplyingCoupon(false)
     }
   }
+
   const handleRemoveCoupon = () => {
     setAppliedCoupon(null)
     setDiscountAmount(0)
     setCouponCode('')
 
     if (cart) {
-      const isHCM = form.getValues('city')?.includes('Hồ Chí Minh') || false
-      const weight = cart.total_weight || 0
-      const shippingFee = calculateShippingFee(weight, isHCM)
-      const cartTotal = cart.product_variants
-        ? cart.product_variants.reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0)
-        : 0
-      const finalTotal = cartTotal + shippingFee
+      const city = form.getValues('city')
+      const { finalTotal } = calculateTotals(cart, city, 0)
+
       form.setValue('discount', '0', { shouldValidate: true })
       form.setValue('final_total', finalTotal.toString(), { shouldValidate: true })
     }

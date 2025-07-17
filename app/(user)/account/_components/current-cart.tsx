@@ -111,12 +111,35 @@ export default function CurrentCart() {
 
       setPendingCarts(pending)
       if (pending.length > 0 && pending[0]?.cart) {
-        setSelectedCart(pending[0]?.cart)
+        const updatedCart = pending[0]?.cart
+        setSelectedCart(updatedCart)
+
+        if (appliedCoupon) {
+          const newCartTotal = updatedCart.product_variants
+            ? updatedCart.product_variants.reduce(
+                (total: number, variant: any) => total + variant.price * variant.quantity,
+                0
+              )
+            : 0
+
+          let newDiscountAmount = 0
+          if (appliedCoupon.discount_type === 'percentage') {
+            newDiscountAmount = (newCartTotal * appliedCoupon.discount_value) / 100
+          } else if (appliedCoupon.discount_type === 'fixed_amount') {
+            newDiscountAmount = appliedCoupon.discount_value
+          } else {
+            newDiscountAmount = Number(appliedCoupon.discount_value || 0)
+          }
+
+          newDiscountAmount = Math.min(newDiscountAmount, newCartTotal)
+          setDiscountAmount(newDiscountAmount)
+        }
       }
 
       toast.success('Đã cập nhật số lượng sản phẩm!')
     } catch (error) {
       toast.error('Không thể cập nhật số lượng. Vui lòng thử lại!')
+
       const cartsRes = await getUserCart(Number(session.userId))
       const userCarts = (cartsRes?.data as UserCart[]) || []
       const pending = userCarts.filter(
@@ -162,9 +185,14 @@ export default function CurrentCart() {
         return
       }
 
-      const cartTotal = pendingCarts[0]?.cart?.product_variants ? pendingCarts[0].cart.product_variants.reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0) : 0
-      let discount = 0
+      const cartTotal = pendingCarts[0]?.cart?.product_variants
+        ? pendingCarts[0].cart.product_variants.reduce(
+            (total: number, variant: any) => total + variant.price * variant.quantity,
+            0
+          )
+        : 0
 
+      let discount = 0
       if (matchingCoupon.discount_type === 'percentage') {
         discount = (cartTotal * matchingCoupon.discount_value) / 100
       } else if (matchingCoupon.discount_type === 'fixed_amount') {
@@ -210,7 +238,11 @@ export default function CurrentCart() {
   }
 
   const cartData = pendingCarts[0]?.cart
-  const totalPrice = cartData?.product_variants ? cartData.product_variants.reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0).toLocaleString() : '0'
+  const totalPrice = cartData?.product_variants
+    ? cartData.product_variants
+        .reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0)
+        .toLocaleString()
+    : '0'
 
   const handleRemove = async (variantId: number) => {
     if (!session) {
@@ -231,6 +263,36 @@ export default function CurrentCart() {
         ) || []
 
       setPendingCarts(pending)
+
+      if (pending.length > 0 && pending[0]?.cart) {
+        const updatedCart = pending[0]?.cart
+        setSelectedCart(updatedCart)
+        if (appliedCoupon) {
+          const newCartTotal = updatedCart.product_variants
+            ? updatedCart.product_variants.reduce(
+                (total: number, variant: any) => total + variant.price * variant.quantity,
+                0
+              )
+            : 0
+
+          let newDiscountAmount = 0
+          if (appliedCoupon.discount_type === 'percentage') {
+            newDiscountAmount = (newCartTotal * appliedCoupon.discount_value) / 100
+          } else if (appliedCoupon.discount_type === 'fixed_amount') {
+            newDiscountAmount = appliedCoupon.discount_value
+          } else {
+            newDiscountAmount = Number(appliedCoupon.discount_value || 0)
+          }
+
+          newDiscountAmount = Math.min(newDiscountAmount, newCartTotal)
+          setDiscountAmount(newDiscountAmount)
+        }
+      } else {
+        setSelectedCart(null)
+        setAppliedCoupon(null)
+        setDiscountAmount(0)
+        setCouponCode('')
+      }
     } catch (error) {
       toast.error('Không thể xóa sản phẩm khỏi giỏ hàng. Vui lòng thử lại!')
     } finally {
@@ -244,6 +306,7 @@ export default function CurrentCart() {
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     )
+
   return (
     <div className="xl:flex mt-10 w-full justify-between gap-20">
       <div className="w-full text-2xl max-lg:mb-20">
@@ -369,11 +432,7 @@ export default function CurrentCart() {
         )}
       </div>
       {selectedCart ? (
-        <FormDelivery 
-          cartData={selectedCart} 
-          discountAmount={discountAmount} 
-          couponCode={appliedCoupon?.code || ''} 
-        />
+        <FormDelivery cartData={selectedCart} discountAmount={discountAmount} couponCode={appliedCoupon?.code || ''} />
       ) : (
         <div className="mt-6 text-center text-gray-500">Đang tải thông tin...</div>
       )}
