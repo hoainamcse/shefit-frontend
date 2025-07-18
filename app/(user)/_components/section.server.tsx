@@ -119,8 +119,19 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
 }
 
 export async function SectionThree({ data }: { data: DataType['section_3'] }) {
-  const courses = await Promise.all(data.subscriptions.map((dt) => getCourses({ ids: dt.course_ids })))
-  const mealPlans = await Promise.all(data.subscriptions.map((dt) => getMealPlans({ ids: dt.meal_plan_ids })))
+  let courses = []
+  let mealPlans = []
+  try {
+    courses = await Promise.all(data.subscriptions.map((dt) => getCourses({ ids: dt.course_ids })))
+    mealPlans = await Promise.all(data.subscriptions.map((dt) => getMealPlans({ ids: dt.meal_plan_ids })))
+  } catch (error) {
+    return (
+      <div className="container mx-auto">
+        <p className="text-center text-destructive">Không thể tải dữ liệu cho phần này. Vui lòng thử lại sau.</p>
+      </div>
+    )
+  }
+
   return (
     <div className="pt-8 lg:pt-24">
       <div className="container mx-auto space-y-8 lg:space-y-10">
