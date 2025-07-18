@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { MainButton } from '@/components/buttons/main-button'
 import { Pause, Play, PlayCircle } from 'lucide-react'
-import { getYoutubeThumbnail } from '@/lib/youtube'
+import { getYouTubeThumbnail } from '@/lib/youtube'
 import VideoPlayer from './VideoPlayer'
 import { DayCircuit, CircuitExercise } from '@/models/course'
 
@@ -73,7 +73,7 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
                     <div className="hidden md:block">
                       <div className="relative group cursor-pointer">
                         <img
-                          src={getYoutubeThumbnail(exercise.youtube_url)}
+                          src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/600x400?text=example'}
                           alt=""
                           className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
                         />
@@ -100,7 +100,7 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
                       <div className="flex relative">
                         <div className="relative group cursor-pointer w-1/3 flex-shrink-0">
                           <img
-                            src={getYoutubeThumbnail(exercise.youtube_url)}
+                            src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/600x400?text=example'}
                             alt=""
                             className="aspect-square object-cover rounded-xl"
                             width={300}

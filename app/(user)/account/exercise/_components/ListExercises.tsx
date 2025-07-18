@@ -17,7 +17,7 @@ import {
 import { getExercises, getExerciseById } from '@/network/server/exercises'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import type { Exercise } from '@/models/exercise'
-import { getYoutubeThumbnail } from '@/lib/youtube'
+import { getYouTubeThumbnail } from '@/lib/youtube'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { getFavouriteExercises } from '@/network/client/user-favourites'
 import { FavouriteExercise } from '@/models/favourite'
@@ -289,7 +289,7 @@ export default function ListExercises() {
                     </div>
                   </div>
                   <img
-                    src={getYoutubeThumbnail(exercise.youtube_url)}
+                    src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/600x400?text=example'}
                     alt={exercise.name}
                     className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full"
                   />

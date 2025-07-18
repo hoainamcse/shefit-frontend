@@ -14,7 +14,7 @@ import { getCourse } from '@/network/client/courses'
 import { Course } from '@/models/course'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import { Button } from '@/components/ui/button'
-import { getYoutubeThumbnail } from '@/lib/youtube'
+import { getYouTubeThumbnail } from '@/lib/youtube'
 import { getExerciseById } from '@/network/server/exercises'
 import { getMealPlan } from '@/network/server/meal-plans'
 import { getDish } from '@/network/server/dishes'
@@ -469,7 +469,10 @@ export default function FavouriteContent() {
                       </div>
                     </div>
                     <img
-                      src={getYoutubeThumbnail(exercise.exercise?.youtube_url || '')}
+                      src={
+                        getYouTubeThumbnail(exercise.exercise.youtube_url) ||
+                        'https://placehold.co/600x400?text=example'
+                      }
                       alt={exercise.exercise?.name || ''}
                       className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full"
                     />

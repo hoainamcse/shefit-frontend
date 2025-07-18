@@ -17,7 +17,7 @@ import {
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
-import { getYoutubeThumbnail } from '@/lib/youtube'
+import { getYouTubeThumbnail } from '@/lib/youtube'
 import { Spinner } from '@/components/spinner'
 import { EditExerciseForm } from '../forms/edit-exercise-form'
 import { AddButton } from '../buttons/add-button'
@@ -112,10 +112,10 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
         header: 'Video',
         accessorKey: 'youtube_url',
         cell: ({ row }) => {
-          const thumbnail = getYoutubeThumbnail(row.getValue('youtube_url'))
+          const thumbnail = getYouTubeThumbnail(row.getValue('youtube_url'))
           return (
             <a href={row.getValue('youtube_url')} target="_blank">
-              <img src={thumbnail} alt={`${row.getValue('name')} thumbnail`} className="h-16 rounded-md object-cover" />
+              <img src={thumbnail || 'https://placehold.co/600x400?text=example'} alt={`${row.getValue('name')} thumbnail`} className="h-16 rounded-md object-cover" />
             </a>
           )
         },

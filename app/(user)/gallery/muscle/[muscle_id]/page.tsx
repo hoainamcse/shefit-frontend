@@ -3,7 +3,7 @@ import React, { Suspense } from 'react'
 import Link from 'next/link'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getMuscleGroupExercises, getMuscleGroups } from '@/network/server/muscle-groups'
-import { getYoutubeThumbnail } from '@/lib/youtube'
+import { getYouTubeThumbnail } from '@/lib/youtube'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export default async function Muscle({ params }: { params: Promise<{ muscle_id: string }> }) {
@@ -71,7 +71,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                     <div key={`menu-${exercise.id}`} className="text-xl overflow-hidden">
                       <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                         <img
-                          src={getYoutubeThumbnail(exercise.youtube_url)}
+                          src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/600x400?text=example'}
                           alt={exercise.name}
                           className="object-cover rounded-[20px] w-full h-full"
                         />
@@ -93,7 +93,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                       <div key={`menu-${exercise.id}`} className="text-xl overflow-hidden">
                         <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                           <img
-                            src={getYoutubeThumbnail(exercise.youtube_url)}
+                            src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/600x400?text=example'}
                             alt={exercise.name}
                             className="object-cover rounded-[20px] w-full h-full"
                           />
@@ -114,7 +114,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                       <div key={`menu-${exercise.id}`} className="text-xl overflow-hidden">
                         <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                           <img
-                            src={getYoutubeThumbnail(exercise.youtube_url)}
+                            src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/600x400?text=example'}
                             alt={exercise.name}
                             className="object-cover rounded-[20px] w-full h-full"
                             width={585}

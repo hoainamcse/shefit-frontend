@@ -22,7 +22,7 @@ import { AddButton } from '../buttons/add-button'
 import { ExcelImportDialog } from '../excel-import-dialog'
 
 import { EditSheet } from './edit-sheet'
-import { getYoutubeThumbnail } from '@/lib/youtube'
+import { getYouTubeThumbnail } from '@/lib/youtube'
 
 interface DishesTableProps {
   onConfirmRowSelection?: (selectedRows: Dish[]) => void
@@ -83,11 +83,11 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
           const image = row.getValue('image')
           if (typeof image !== 'string') return null
           const isYoutube = image.includes('youtube.com') || image.includes('youtu.be')
-          const imgSrc = isYoutube ? getYoutubeThumbnail(image) : image
+          const imgSrc = isYoutube ? getYouTubeThumbnail(image) : image
           return (
             <div>
               <img
-                src={imgSrc}
+                src={imgSrc || 'https://placehold.co/600x400?text=example'}
                 alt={`${row.getValue('name')} thumbnail`}
                 className="h-16 w-28 rounded-md object-cover"
               />

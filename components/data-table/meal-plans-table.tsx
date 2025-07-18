@@ -22,7 +22,7 @@ import { Spinner } from '@/components/spinner'
 
 import { AddButton } from '../buttons/add-button'
 import { MainButton } from '../buttons/main-button'
-import { getYoutubeThumbnail } from '@/lib/youtube'
+import { getYouTubeThumbnail } from '@/lib/youtube'
 
 interface MealPlansTableProps {
   onConfirmRowSelection?: (selectedRows: MealPlan[]) => void
@@ -92,11 +92,11 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
           const image = row.getValue('image')
           if (typeof image !== 'string') return null
           const isYoutube = image.includes('youtube.com') || image.includes('youtu.be')
-          const imgSrc = isYoutube ? getYoutubeThumbnail(image) : image
+          const imgSrc = isYoutube ? getYouTubeThumbnail(image) : image
           return (
             <div>
               <img
-                src={imgSrc}
+                src={imgSrc || 'https://placehold.co/600x400?text=example'}
                 alt={`${row.getValue('title')} thumbnail`}
                 className="h-16 w-28 rounded-md object-cover"
               />
