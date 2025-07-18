@@ -123,12 +123,8 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
           </div>
         </div>
       ) : dish?.image ? (
-        <div className="w-full bg-black rounded-[20px] overflow-hidden mb-5">
-          <img
-            src={dish.image}
-            alt=""
-            className="aspect-square sm:aspect-[1800/681] object-cover rounded-[20px] w-full"
-          />
+        <div className="w-full bg-black rounded-[20px] overflow-hidden mb-5 aspect-square sm:aspect-[1800/681]">
+          <img src={dish.image} alt="" className="object-cover rounded-[20px] w-full h-full" />
         </div>
       ) : (
         <></>

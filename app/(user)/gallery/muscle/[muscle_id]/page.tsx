@@ -69,11 +69,11 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                 {muscleGroupExercises.data?.map((exercise) => (
                   <Link href={`/gallery/muscle/${muscle_id}/${exercise.id}`} key={exercise.id}>
                     <div key={`menu-${exercise.id}`} className="text-xl overflow-hidden">
-                      <div className="relative group mb-2 md:mb-3 lg:mb-5">
+                      <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                         <img
                           src={getYoutubeThumbnail(exercise.youtube_url)}
                           alt={exercise.name}
-                          className="aspect-square md:aspect-[585/373] object-cover rounded-[20px] w-full"
+                          className="object-cover rounded-[20px] w-full h-full"
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                       </div>
@@ -85,46 +85,44 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
             </TabsContent>
 
             <TabsContent value="with-equipment">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
+              <div className="grid grid-cols-3 sm:gap-5 gap-4">
                 {muscleGroupExercises.data
                   ?.filter((exercise) => exercise.equipments && exercise.equipments.length > 0)
                   .map((exercise) => (
                     <Link href={`/gallery/muscle/${muscle_id}/${exercise.id}`} key={exercise.id}>
-                      <div key={`menu-${exercise.id}`} className="text-xl w-[585px] max-w-[585px] overflow-hidden">
-                        <div className="relative group">
+                      <div key={`menu-${exercise.id}`} className="text-xl overflow-hidden">
+                        <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                           <img
                             src={getYoutubeThumbnail(exercise.youtube_url)}
                             alt={exercise.name}
-                            className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
-                            width={585}
-                            height={373}
+                            className="object-cover rounded-[20px] w-full h-full"
                           />
-                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                         </div>
-                        <p className="font-bold text-base lg:text-xl">{exercise.name}</p>
+                        <p className="font-medium lg:font-bold text-base lg:text-xl">{exercise.name}</p>
                       </div>
                     </Link>
                   ))}
               </div>
             </TabsContent>
             <TabsContent value="no-equipment">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
+              <div className="grid grid-cols-3 sm:gap-5 gap-4">
                 {muscleGroupExercises.data
                   ?.filter((exercise) => !exercise.equipments || exercise.equipments.length === 0)
                   .map((exercise) => (
                     <Link href={`/gallery/muscle/${muscle_id}/${exercise.id}`} key={exercise.id}>
-                      <div key={`menu-${exercise.id}`} className="text-xl w-[585px] max-w-[585px] overflow-hidden">
-                        <div className="relative group">
+                      <div key={`menu-${exercise.id}`} className="text-xl overflow-hidden">
+                        <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                           <img
                             src={getYoutubeThumbnail(exercise.youtube_url)}
                             alt={exercise.name}
-                            className="aspect-[5/3] object-cover rounded-xl mb-4 w-[585px] h-[373px]"
+                            className="object-cover rounded-[20px] w-full h-full"
                             width={585}
                             height={373}
                           />
-                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                         </div>
-                        <p className="font-bold text-base lg:text-xl">{exercise.name}</p>
+                        <p className="font-medium lg:font-bold text-base lg:text-xl">{exercise.name}</p>
                       </div>
                     </Link>
                   ))}

@@ -93,11 +93,11 @@ export default function Gallery() {
             session ? (
               <Link href={`/gallery/muscle/${muscleGroup.id}`} key={muscleGroup.id}>
                 <div key={`menu-${muscleGroup.id}`} className="overflow-hidden">
-                  <div className="relative group mb-2 md:mb-3 lg:mb-5">
+                  <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                     <img
                       src={muscleGroup.image ?? undefined}
                       alt=""
-                      className="aspect-square md:aspect-[585/373] object-cover rounded-[20px] w-full"
+                      className="object-cover rounded-[20px] w-full h-full"
                     />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                   </div>
@@ -118,11 +118,11 @@ export default function Gallery() {
                       className="text-xl cursor-pointer"
                       onClick={() => setDialogOpen(`muscle-${muscleGroup.id}`)}
                     >
-                      <div className="relative group mb-2 md:mb-3 lg:mb-5">
+                      <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                         <img
                           src={muscleGroup.image ?? undefined}
                           alt=""
-                          className="aspect-square md:aspect-[585/373] object-cover rounded-[20px] w-full"
+                          className="object-cover rounded-[20px] w-full h-full"
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                       </div>
@@ -180,12 +180,8 @@ export default function Gallery() {
             session ? (
               <Link href={`/gallery/meal/${diet.id}`} key={diet.id}>
                 <div key={`menu-${diet.id}`} className="text-xl overflow-hidden">
-                  <div className="relative group mb-2 md:mb-3 lg:mb-5">
-                    <img
-                      src={diet.image}
-                      alt=""
-                      className="aspect-square md:aspect-[585/373] object-cover rounded-[20px] w-full"
-                    />
+                  <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
+                    <img src={diet.image} alt="" className="object-cover rounded-[20px] w-full h-full" />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                   </div>
                   <p className="font-medium lg:font-bold text-base lg:text-xl">{diet.name}</p>
@@ -205,12 +201,8 @@ export default function Gallery() {
                       className="text-xl cursor-pointer"
                       onClick={() => setDialogOpen(`diet-${diet.id}`)}
                     >
-                      <div className="relative group mb-2 md:mb-3 lg:mb-5">
-                        <img
-                          src={diet.image}
-                          alt=""
-                          className="aspect-square md:aspect-[585/373] object-cover rounded-[20px] w-full"
-                        />
+                      <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
+                        <img src={diet.image} alt="" className="object-cover rounded-[20px] w-full h-full" />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                       </div>
                       <p className="font-medium lg:font-bold text-base lg:text-xl">{diet.name}</p>
