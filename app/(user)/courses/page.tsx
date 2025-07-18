@@ -161,17 +161,17 @@ export default function CoursesPage() {
   return (
     <Layout>
       <PopularCoursesCarousel />
-      <div className="mx-auto px-4">
+      <div className="mx-auto px-4 mt-8">
         <div className="mx-auto lg:my-12 my-0 flex flex-col gap-4">
-          <p className="text-center font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl lg:text-[40px] uppercase my-8">
+          <p className="md:text-center font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl lg:text-[40px] uppercase lg:my-8">
             Tất cả khoá tập
           </p>
-          <p className="text-base lg:text-xl text-center text-[#737373]">
+          <p className="text-base lg:text-xl md:text-center text-[#737373]">
             Lựa chọn khóa tập phù hợp với kinh nghiệm, mục tiêu và phom dáng của chị để bắt đầu hành trình độ dáng ngay
             hôm nay!
           </p>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 w-full justify-center max-w-6xl mx-auto">
-            <div className="w-full max-w-lg">
+          <div className="flex flex-wrap gap-4 w-full justify-center max-w-6xl mx-auto">
+            <div className="w-auto flex-1 min-w-[160px] max-w-[284px] mx-0 max-[389px]:!w-full max-[389px]:!mx-auto">
               <MultiSelectHero
                 placeholder="Độ khó"
                 options={courseLevelOptions}
@@ -180,7 +180,7 @@ export default function CoursesPage() {
                 isDisabled={isLoading}
               />
             </div>
-            <div className="w-full max-w-lg">
+            <div className="w-auto flex-1 min-w-[160px] max-w-[284px] mx-0 max-[389px]:!w-full max-[389px]:!mx-auto">
               <MultiSelectHero
                 placeholder="Phom dáng"
                 options={courseFormOptions}
@@ -189,7 +189,7 @@ export default function CoursesPage() {
                 isDisabled={isLoading}
               />
             </div>
-            <div className="w-full max-w-lg">
+            <div className="w-auto flex-1 min-w-[160px] max-w-[284px] mx-0 max-[389px]:!w-full max-[389px]:!mx-auto">
               <MultiSelectHero
                 placeholder="Gói Member"
                 options={subscriptions.map((subscription) => ({

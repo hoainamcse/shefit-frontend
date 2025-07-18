@@ -9,6 +9,7 @@ import { GymIcon } from '@/components/icons/GymIcon'
 import { FitnessLineIcon } from '@/components/icons/FitnessLineIcon'
 import { BookIcon } from '@/components/icons/BookIcon'
 import { AboutIcon } from '@/components/icons/AboutIcon'
+import { AboutIconBlack } from '@/components/icons/AboutIconBlack'
 import { AccountIcon } from '@/components/icons/AccountIcon'
 import { MenuIcon } from '@/components/icons/MenuIcon'
 import {
@@ -71,6 +72,7 @@ export function Header() {
     {
       label: 'Về Shefit',
       icon: AboutIcon,
+      mobileIcon: AboutIconBlack,
       url: '/about',
     },
     {
@@ -131,12 +133,12 @@ export function Header() {
                     onClick={() => (window.location.href = item.url)}
                     className="flex items-center gap-1 mb-3 bg-transparent border-none text-foreground cursor-pointer w-full text-left"
                   >
-                    <item.icon />
+                    {item.mobileIcon ? <item.mobileIcon /> : <item.icon />}
                     {item.label}
                   </button>
                 ) : (
                   <Link key={`navItem-${index}`} href={item.url} className="flex items-center gap-1 mb-3">
-                    <item.icon />
+                    {item.mobileIcon ? <item.mobileIcon /> : <item.icon />}
                     {item.label}
                   </Link>
                 )

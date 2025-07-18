@@ -132,14 +132,17 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
           </div>
         </div>
         {!showDetails && course?.data?.relationships?.subscriptions?.length > 0 && (
-          <div>
-            <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl xl:text-[40px] font-bold uppercase">
+          <div className="flex flex-col lg:gap-5 gap-2">
+            <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl xl:text-[40px] font-bold uppercase leading-[50px]">
               Gói Member
             </div>
             <div className="text-[#737373] text-xl lg:text-2xl">
               Bạn cần mua các Gói Member sau để truy cập khóa tập
             </div>
-            <div className="flex overflow-x-scroll gap-2 mt-4">
+            <div
+              className="flex overflow-x-scroll gap-2 mt-4"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
               {course?.data?.relationships?.subscriptions?.map((subscription: any) => {
                 const hasPurchased = userSubscriptions.includes(subscription.id)
                 return (
@@ -166,11 +169,11 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
           </div>
         )}
         {!showDetails && (
-          <div className="bg-primary rounded-xl my-4 p-4">
-            <p className="text-white text-center text-xl lg:text-2xl">Tóm tắt khoá học</p>
+          <div className="bg-primary rounded-xl my-4 p-4 lg:p-10">
+            <p className="text-white text-center text-xl lg:text-[40px] lg:font-bold font-medium lg:mb-10 mb-1">Tóm tắt khoá học</p>
             <ul className="xl:px-20 max-lg:w-full mx-auto text-white h-full flex flex-col items-start list-disc pl-5">
               {course?.data?.summary.split('\n').map((line: string, index: number) => (
-                <li key={index} className="text-[#F7F7F7] text-base lg:text-xl mb-1">
+                <li key={index} className="text-[#F7F7F7] text-base lg:text-2xl mb-1">
                   {line}
                 </li>
               ))}

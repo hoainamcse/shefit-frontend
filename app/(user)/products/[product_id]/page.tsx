@@ -253,7 +253,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
         >
           <BackIconBlack /> <span className="ml-1 text-base lg:text-xl">Quay về</span>
         </Link>
-        <div className="xl:w-4/5 max-lg:w-full xl:flex justify-between mb-20 max-lg:block">
+        <div className="xl:w-4/5 max-lg:w-full xl:flex justify-between max-lg:block">
           <div className="px-8 w-full">
             <Carousel
               opts={{
@@ -276,7 +276,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
               <CarouselNext />
             </Carousel>
           </div>
-          <div className="xl:w-2/5 max-lg:w-full xl:text-xl flex flex-col gap-3 lg:px-8 px-4">
+          <div className="xl:w-2/5 max-lg:w-full xl:text-xl flex flex-col md:gap-3 gap-2 lg:px-8 px-4">
             {product.variants.some((variant: any) => variant.color_id !== null) && (
               <div className="flex flex-col gap-2 mb-4">
                 <div className="flex gap-2">
@@ -334,7 +334,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
             {product.variants.some(
               (variant: any) => variant.size_id !== null && (!selectedColorId || variant.color_id === selectedColorId)
             ) && (
-              <div className="flex gap-2 my-4 items-center">
+              <div className="flex gap-2 md:my-4 my-0 items-center">
                 <div className="text-base lg:text-xl">Size:</div>
                 <div className="flex flex-wrap gap-2">
                   {Array.from(
@@ -403,7 +403,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
                 </Button>
               </div>
             </div>
-            <div className="w-full flex gap-3 justify-center">
+            <div className="w-full flex gap-3 justify-center my-10 md:my-4">
               <Button
                 variant="outline"
                 className="w-full rounded-full bg-[#13D8A7] hover:bg-[#11c296] text-white hover:text-white text-base lg:text-xl"
@@ -422,12 +422,12 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
             </div>
           </div>
         </div>
-        <div className="mb-20 lg:px-8 px-4">
+        <div className="mb-20 lg:px-8 px-4 mt-0 md:mt-16">
           <p className="text-[#737373] xl:text-xl max-lg:text-base">{product.description}</p>
         </div>
 
         {product.muscle_groups.length > 0 && (
-          <div className="lg:px-8 px-4">
+          <div className="lg:px-8 px-4 mt-0 md:mt-16">
             <div className="font-[family-name:var(--font-coiny)] font-bold text-ring lg:text-[40px] mb-5 text-3xl">
               Tính năng
             </div>

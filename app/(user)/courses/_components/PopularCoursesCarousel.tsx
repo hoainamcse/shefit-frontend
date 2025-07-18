@@ -28,16 +28,11 @@ export default function PopularCoursesCarousel() {
   }
 
   return (
-    <div className="mx-auto p-4">
-      <p className="lg:text-center font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-[40px] lg:my-8 my-0 font-bold uppercase mb-4">
+    <div className="mx-auto mt-0 lg:mt-8">
+      <p className="md:text-center font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px] lg:my-14 my-4 font-bold uppercase p-3">
         Khoá Tập Hot Nhất Tháng
       </p>
-      {isLoading && (
-        <div className="flex justify-center items-center h-40">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-        </div>
-      )}
-      <div className="mx-auto px-4 lg:px-6">
+      <div className="mx-auto px-8 lg:px-6">
         <Carousel
           opts={{
             align: 'start',
