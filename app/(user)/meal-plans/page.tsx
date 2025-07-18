@@ -108,7 +108,7 @@ export default function MealPlansPage() {
   return (
     <div className="px-4">
       <div className="max-w-screen-md mx-auto">
-        <p className="font-[family-name:var(--font-coiny)] font-bold sm:text-center text-ring text-3xl lg:text-[40px] my-8 sm:my-4">
+        <p className="font-[family-name:var(--font-coiny)] font-bold md:text-center text-ring text-3xl md:text-[40px] md:leading-[48px] mb-3.5 md:mb-7">
           Chọn thực đơn
         </p>
         <p className="sm:text-center text-[#737373] text-base mb-4">

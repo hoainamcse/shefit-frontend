@@ -8,10 +8,10 @@ export default async function BlogPage() {
   return (
     <div>
       <div className="max-w-screen-md mx-auto">
-        <p className="font-[family-name:var(--font-coiny)] sm:text-center text-ring text-2xl sm:text-3xl my-2 sm:my-4 font-bold">
+        <p className="font-[family-name:var(--font-coiny)] font-bold md:text-center text-ring text-3xl md:text-[40px] md:leading-[48px] mb-3 md:mb-6">
           Blog healthy
         </p>
-        <p className="sm:text-center text-gray-500 text-base mb-20">Các lời khuyên hữu ích về tập luyện & ăn uống</p>
+        <p className="md:text-center text-gray-500 text-base mb-16">Các lời khuyên hữu ích về tập luyện & ăn uống</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 mx-auto mt-6 items-stretch">
         {blogs.data.map((blog: Blog, index: number) => (

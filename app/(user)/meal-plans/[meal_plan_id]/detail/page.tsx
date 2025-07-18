@@ -34,7 +34,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
           />
         </div>
         <div className="mr-auto text-xl my-20 max-lg:my-0 max-lg:p-4">
-          <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-[40px] max-lg:text-[30px] mb-5">
+          <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl md:text-[40px] md:leading-[48px] mb-5">
             Menu theo lịch
           </div>
         </div>
@@ -44,7 +44,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
               <TabsTrigger
                 key={day.id}
                 value={`${day.day_number}`}
-                className="rounded-full mx-[10px] my-5 w-[63px] h-[64px] flex flex-col items-center justify-center font-medium text-xl cursor-pointer data-[state=active]:bg-[#91EBD5] data-[state=active]:text-white bg-transparent hover:bg-[#91EBD5]/10 transition-colors duration-200"
+                className="rounded-full mx-[10px] my-5 w-[63px] h-[64px] flex flex-col items-center justify-center font-medium text-[#000000] text-xl cursor-pointer data-[state=active]:bg-[#91EBD5] data-[state=active]:text-white bg-transparent hover:bg-[#91EBD5]/10 transition-colors duration-200"
               >
                 <div>
                   Ngày <br /> {day.day_number}

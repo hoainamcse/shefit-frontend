@@ -282,6 +282,27 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
     const [isOpen, setIsOpen] = React.useState(false)
     const [internalValue, setInternalValue] = React.useState<string[]>(defaultValue)
 
+    // Close dropdown when clicking outside
+    const containerRef = React.useRef<HTMLDivElement>(null)
+    const combinedRef = React.useCallback((node: HTMLDivElement | null) => {
+      containerRef.current = node
+      if (typeof ref === 'function') {
+        ref(node)
+      } else if (ref) {
+        (ref as React.MutableRefObject<HTMLDivElement | null>).current = node
+      }
+    }, [ref])
+
+    React.useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+          setIsOpen(false)
+        }
+      }
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
+
     const currentValue = value || internalValue
     const allOptionValues = options.map((opt) => opt.value)
     const isAllSelected = allOptionValues.every((val) => currentValue.includes(val))
@@ -311,7 +332,7 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
     }
 
     return (
-      <div ref={ref} className={cn('relative', className)} {...props}>
+      <div ref={combinedRef} className={cn('relative', className)} {...props}>
         <MultiSelectTrigger
           value={currentValue}
           placeholder={placeholder}
