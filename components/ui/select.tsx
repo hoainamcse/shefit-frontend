@@ -162,7 +162,7 @@ const MultiSelectTrigger = React.forwardRef<
     options: MultiSelectOption[]
     selectAllLabel?: string
   }
->(({ className, value = [], placeholder, maxDisplay = 3, options, selectAllLabel = 'Tất cả', ...props }, ref) => {
+>(({ className, value = [], placeholder, maxDisplay = 2, options, selectAllLabel = 'Tất cả', ...props }, ref) => {
   const displayText = React.useMemo(() => {
     if (value.length === 0) return placeholder || 'Chọn các lựa chọn...'
 
@@ -186,27 +186,44 @@ const MultiSelectTrigger = React.forwardRef<
       ref={ref}
       type="button"
       className={cn(
-        'flex h-10 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
+        'flex h-10 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
         className
       )}
       {...props}
     >
-      <span className="flex flex-1 items-center gap-1 overflow-hidden">
-        {displayText && <span className="truncate">{displayText}</span>}
+      <div className="flex-1 flex items-center gap-1 overflow-hidden min-w-0 w-full">
+        {displayText && <span className="truncate text-left">{displayText}</span>}
         {value.length > 0 && !isAllSelected && (
-          <div className="flex items-center gap-1 flex-wrap">
-            {value.map((v) => {
+          <div className="flex items-center gap-1 flex-wrap min-w-0 w-full">
+            {value.slice(0, maxDisplay).map((v) => {
               const option = options.find((opt) => opt.value === v)
               return (
-                <span key={v} className="inline-flex items-center gap-1 rounded bg-secondary px-1.5 py-0.5 text-xs">
+                <span
+                  key={v}
+                  className="inline-flex items-center rounded bg-secondary px-1.5 py-0.5 text-xs min-w-0 truncate shrink-0"
+                  style={{ maxWidth: `calc(90% / ${maxDisplay + 1 / 2})` }}
+                  title={option?.label || v}
+                >
                   {option?.label || v}
                 </span>
               )
             })}
+            {value.length > maxDisplay && (
+              <span
+                className="inline-flex items-center rounded bg-secondary px-1.5 py-0.5 text-xs min-w-0 truncate flex-1 shrink-0"
+                style={{ maxWidth: `calc(90% / (${maxDisplay + 1 / 2}) * (1/2))` }}
+                title={value
+                  .slice(maxDisplay)
+                  .map((v) => options.find((opt) => opt.value === v)?.label || v)
+                  .join(', ')}
+              >
+                +{value.length - maxDisplay}
+              </span>
+            )}
           </div>
         )}
-      </span>
-      <ChevronDown className="h-4 w-4 opacity-50" />
+      </div>
+      <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
     </button>
   )
 })
@@ -284,14 +301,17 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
 
     // Close dropdown when clicking outside
     const containerRef = React.useRef<HTMLDivElement>(null)
-    const combinedRef = React.useCallback((node: HTMLDivElement | null) => {
-      containerRef.current = node
-      if (typeof ref === 'function') {
-        ref(node)
-      } else if (ref) {
-        (ref as React.MutableRefObject<HTMLDivElement | null>).current = node
-      }
-    }, [ref])
+    const combinedRef = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        containerRef.current = node
+        if (typeof ref === 'function') {
+          ref(node)
+        } else if (ref) {
+          ;(ref as React.MutableRefObject<HTMLDivElement | null>).current = node
+        }
+      },
+      [ref]
+    )
 
     React.useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {

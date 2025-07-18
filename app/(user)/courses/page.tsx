@@ -242,211 +242,239 @@ export default function CoursesPage() {
                 </div>
               )}
               <TabsContent value="video">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
-                  {filteredCourses.map((course) => (
-                    <div key={`video-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
-                      <div className="relative group">
-                        <img
-                          src={course.cover_image}
-                          alt={course.course_name}
-                          className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
-                        />
-                        <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-                        <Link href={`/courses/${course.id}/video-classes`}>
-                          <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
-                        </Link>
-                        <div className="absolute top-2 right-2 flex justify-end">
-                          {course.is_free ? (
-                            <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
-                          ) : (
-                            <Button
-                              className="bg-[#737373] text-white w-[136px] rounded-full"
-                              onClick={() => handleMembershipClick(course)}
-                              disabled={isCheckingAccess}
-                            >
-                              {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex justify-between">
-                        <div>
-                          <p className="font-medium text-base lg:text-xl">{course.course_name}</p>
-                          <div className="flex gap-2">
-                            <p className="text-[#737373] text-base lg:text-xl">
-                              {courseLevelLabel[course.difficulty_level]}
-                            </p>
-                            <p className="text-[#737373] text-base lg:text-xl">-</p>
-                            <p className="text-[#737373] text-base lg:text-xl">{course.course_format}</p>
-                          </div>
-                          <p className="text-[#737373] text-base lg:text-xl">{course.trainer}</p>
-                        </div>
-                        <div className="flex flex-col justify-between">
-                          <div className="text-gray-500 flex justify-end text-base lg:text-xl">
-                            {course.form_categories.map((cat) => cat.name).join(', ')}
+                {filteredCourses.length === 0 ? (
+                  <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-lg">
+                    Không có khoá tập video nào phù hợp.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
+                    {filteredCourses.map((course) => (
+                      <div key={`video-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
+                        <div className="relative group">
+                          <img
+                            src={course.cover_image}
+                            alt={course.course_name}
+                            className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
+                          />
+                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                          <Link href={`/courses/${course.id}/video-classes`}>
+                            <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
+                          </Link>
+                          <div className="absolute top-2 right-2 flex justify-end">
+                            {course.is_free ? (
+                              <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                            ) : (
+                              <Button
+                                className="bg-[#737373] text-white w-[136px] rounded-full"
+                                onClick={() => handleMembershipClick(course)}
+                                disabled={isCheckingAccess}
+                              >
+                                {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
+                              </Button>
+                            )}
                           </div>
                         </div>
+                        <div className="flex justify-between">
+                          <div>
+                            <p className="font-medium text-base lg:text-xl">{course.course_name}</p>
+                            <div className="flex gap-2">
+                              <p className="text-[#737373] text-base lg:text-xl">
+                                {courseLevelLabel[course.difficulty_level]}
+                              </p>
+                              <p className="text-[#737373] text-base lg:text-xl">-</p>
+                              <p className="text-[#737373] text-base lg:text-xl">{course.course_format}</p>
+                            </div>
+                            <p className="text-[#737373] text-base lg:text-xl">{course.trainer}</p>
+                          </div>
+                          <div className="flex flex-col justify-between">
+                            <div className="text-gray-500 flex justify-end text-base lg:text-xl">
+                              {course.form_categories.map((cat) => cat.name).join(', ')}
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="live">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
-                  {filteredCoursesZoom.map((course) => (
-                    <div key={`zoom-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
-                      <div className="relative group">
-                        <img
-                          src={course.cover_image}
-                          alt={course.course_name}
-                          className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
-                        />
-                        <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-                        <Link href={`/courses/${course.id}/live-classes`}>
-                          <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
-                        </Link>
-                        <div className="absolute top-2 right-2 flex justify-end">
-                          {course.is_free ? (
-                            <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
-                          ) : (
-                            <Button
-                              className="bg-[#737373] text-white w-[136px] rounded-full"
-                              onClick={() => handleMembershipClick(course)}
-                              disabled={isCheckingAccess}
-                            >
-                              {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex justify-between">
-                        <div>
-                          <p className="font-medium text-base lg:text-xl">{course.course_name}</p>
-                          <div className="flex gap-2">
-                            <p className="text-[#737373] text-base lg:text-xl">
-                              {courseLevelLabel[course.difficulty_level]}
-                            </p>
-                            <p className="text-[#737373] text-base lg:text-xl">-</p>
-                            <p className="text-[#737373] text-base lg:text-xl">{course.course_format}</p>
-                          </div>
-                          <p className="text-[#737373] text-base lg:text-xl">{course.trainer}</p>
-                        </div>
-                        <div className="flex flex-col justify-between">
-                          <div className="text-gray-500 flex justify-end text-base lg:text-xl">
-                            {course.form_categories.map((cat) => cat.name).join(', ')}
+                {filteredCoursesZoom.length === 0 ? (
+                  <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-lg">
+                    Không có khoá tập zoom nào phù hợp.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
+                    {filteredCoursesZoom.map((course) => (
+                      <div key={`zoom-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
+                        <div className="relative group">
+                          <img
+                            src={course.cover_image}
+                            alt={course.course_name}
+                            className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
+                          />
+                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                          <Link href={`/courses/${course.id}/live-classes`}>
+                            <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
+                          </Link>
+                          <div className="absolute top-2 right-2 flex justify-end">
+                            {course.is_free ? (
+                              <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                            ) : (
+                              <Button
+                                className="bg-[#737373] text-white w-[136px] rounded-full"
+                                onClick={() => handleMembershipClick(course)}
+                                disabled={isCheckingAccess}
+                              >
+                                {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
+                              </Button>
+                            )}
                           </div>
                         </div>
+                        <div className="flex justify-between">
+                          <div>
+                            <p className="font-medium text-base lg:text-xl">{course.course_name}</p>
+                            <div className="flex gap-2">
+                              <p className="text-[#737373] text-base lg:text-xl">
+                                {courseLevelLabel[course.difficulty_level]}
+                              </p>
+                              <p className="text-[#737373] text-base lg:text-xl">-</p>
+                              <p className="text-[#737373] text-base lg:text-xl">{course.course_format}</p>
+                            </div>
+                            <p className="text-[#737373] text-base lg:text-xl">{course.trainer}</p>
+                          </div>
+                          <div className="flex flex-col justify-between">
+                            <div className="text-gray-500 flex justify-end text-base lg:text-xl">
+                              {course.form_categories.map((cat) => cat.name).join(', ')}
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="free">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
-                  {filteredFreeCourses.map((course) => (
-                    <div key={`free-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
-                      <div className="relative group">
-                        <img
-                          src={course.cover_image}
-                          alt={course.course_name}
-                          className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
-                        />
-                        <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-                        <Link
-                          href={`/courses/${course.id}/${course.course_format === 'video' ? 'video' : 'live'}-classes`}
-                        >
-                          <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
-                        </Link>
-                        <div className="absolute top-2 right-2 flex justify-end">
-                          {course.is_free ? (
-                            <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
-                          ) : (
-                            <Button
-                              className="bg-[#737373] text-white w-[136px] rounded-full"
-                              onClick={() => handleMembershipClick(course)}
-                              disabled={isCheckingAccess}
-                            >
-                              {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex justify-between">
-                        <div>
-                          <p className="font-medium text-base lg:text-xl">{course.course_name}</p>
-                          <div className="flex gap-2">
-                            <p className="text-[#737373] text-base lg:text-xl">
-                              {courseLevelLabel[course.difficulty_level]}
-                            </p>
-                            <p className="text-[#737373] text-base lg:text-xl">-</p>
-                            <p className="text-[#737373] text-base lg:text-xl">{course.course_format}</p>
-                          </div>
-                          <p className="text-[#737373] text-base lg:text-xl">{course.trainer}</p>
-                        </div>
-                        <div className="flex flex-col justify-between">
-                          <div className="text-gray-500 flex justify-end text-base lg:text-xl">
-                            {course.form_categories.map((cat) => cat.name).join(', ')}
+                {filteredFreeCourses.length === 0 ? (
+                  <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-lg">
+                    Không có khoá tập miễn phí nào phù hợp.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
+                    {filteredFreeCourses.map((course) => (
+                      <div key={`free-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
+                        <div className="relative group">
+                          <img
+                            src={course.cover_image}
+                            alt={course.course_name}
+                            className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
+                          />
+                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                          <Link
+                            href={`/courses/${course.id}/${
+                              course.course_format === 'video' ? 'video' : 'live'
+                            }-classes`}
+                          >
+                            <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
+                          </Link>
+                          <div className="absolute top-2 right-2 flex justify-end">
+                            {course.is_free ? (
+                              <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                            ) : (
+                              <Button
+                                className="bg-[#737373] text-white w-[136px] rounded-full"
+                                onClick={() => handleMembershipClick(course)}
+                                disabled={isCheckingAccess}
+                              >
+                                {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
+                              </Button>
+                            )}
                           </div>
                         </div>
+                        <div className="flex justify-between">
+                          <div>
+                            <p className="font-medium text-base lg:text-xl">{course.course_name}</p>
+                            <div className="flex gap-2">
+                              <p className="text-[#737373] text-base lg:text-xl">
+                                {courseLevelLabel[course.difficulty_level]}
+                              </p>
+                              <p className="text-[#737373] text-base lg:text-xl">-</p>
+                              <p className="text-[#737373] text-base lg:text-xl">{course.course_format}</p>
+                            </div>
+                            <p className="text-[#737373] text-base lg:text-xl">{course.trainer}</p>
+                          </div>
+                          <div className="flex flex-col justify-between">
+                            <div className="text-gray-500 flex justify-end text-base lg:text-xl">
+                              {course.form_categories.map((cat) => cat.name).join(', ')}
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="all">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
-                  {filteredAllCourses.map((course) => (
-                    <div key={`all-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
-                      <div className="relative group">
-                        <img
-                          src={course.cover_image}
-                          alt={course.course_name}
-                          className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
-                        />
-                        <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-                        <Link
-                          href={`/courses/${course.id}/${course.course_format === 'video' ? 'video' : 'live'}-classes`}
-                        >
-                          <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
-                        </Link>
-                        <div className="absolute top-2 right-2 flex justify-end">
-                          {course.is_free ? (
-                            <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
-                          ) : (
-                            <Button
-                              className="bg-[#737373] text-white w-[136px] rounded-full"
-                              onClick={() => handleMembershipClick(course)}
-                              disabled={isCheckingAccess}
-                            >
-                              {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex justify-between">
-                        <div>
-                          <p className="font-medium text-base lg:text-xl">{course.course_name}</p>
-                          <div className="flex gap-2">
-                            <p className="text-[#737373] text-base lg:text-xl">
-                              {courseLevelLabel[course.difficulty_level]}
-                            </p>
-                            <p className="text-[#737373] text-base lg:text-xl">-</p>
-                            <p className="text-[#737373] text-base lg:text-xl">{course.course_format}</p>
-                          </div>
-                          <p className="text-[#737373] text-base lg:text-xl">{course.trainer}</p>
-                        </div>
-                        <div className="flex flex-col justify-between">
-                          <div className="text-gray-500 flex justify-end text-base lg:text-xl">
-                            {course.form_categories.map((cat) => cat.name).join(', ')}
+                {filteredAllCourses.length === 0 ? (
+                  <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-lg">
+                    Không có khoá tập nào phù hợp.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
+                    {filteredAllCourses.map((course) => (
+                      <div key={`all-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
+                        <div className="relative group">
+                          <img
+                            src={course.cover_image}
+                            alt={course.course_name}
+                            className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
+                          />
+                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
+                          <Link
+                            href={`/courses/${course.id}/${
+                              course.course_format === 'video' ? 'video' : 'live'
+                            }-classes`}
+                          >
+                            <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
+                          </Link>
+                          <div className="absolute top-2 right-2 flex justify-end">
+                            {course.is_free ? (
+                              <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
+                            ) : (
+                              <Button
+                                className="bg-[#737373] text-white w-[136px] rounded-full"
+                                onClick={() => handleMembershipClick(course)}
+                                disabled={isCheckingAccess}
+                              >
+                                {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
+                              </Button>
+                            )}
                           </div>
                         </div>
+                        <div className="flex justify-between">
+                          <div>
+                            <p className="font-medium text-base lg:text-xl">{course.course_name}</p>
+                            <div className="flex gap-2">
+                              <p className="text-[#737373] text-base lg:text-xl">
+                                {courseLevelLabel[course.difficulty_level]}
+                              </p>
+                              <p className="text-[#737373] text-base lg:text-xl">-</p>
+                              <p className="text-[#737373] text-base lg:text-xl">{course.course_format}</p>
+                            </div>
+                            <p className="text-[#737373] text-base lg:text-xl">{course.trainer}</p>
+                          </div>
+                          <div className="flex flex-col justify-between">
+                            <div className="text-gray-500 flex justify-end text-base lg:text-xl">
+                              {course.form_categories.map((cat) => cat.name).join(', ')}
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </div>

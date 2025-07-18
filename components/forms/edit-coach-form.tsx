@@ -72,7 +72,13 @@ export function EditCoachForm({ data, onSuccess }: EditExerciseFormProps) {
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
         <FormInputField form={form} name="name" label="Tên HLV" withAsterisk placeholder="Nhập tên HLV" />
         <FormInputField form={form} name="detail" label="Chuyên môn" placeholder="Nhập chuyên môn" />
-        <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
+        <FormTextareaField
+          form={form}
+          name="description"
+          label="Mô tả"
+          placeholder="Nhập mô tả"
+          className="h-[200px]"
+        />
         <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
