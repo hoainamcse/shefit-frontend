@@ -25,9 +25,11 @@ import { MemberShipIcon } from '@/components/icons/MemberShipIcon'
 import { FacebookIcon } from '@/components/icons/FacebookIcon'
 import { useSession } from '@/hooks/use-session'
 import { signOut } from '@/network/server/auth'
+import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 export function Header() {
   const { session } = useSession()
+  const { redirectToLogin } = useAuthRedirect()
 
   const authButton = session ? (
     <MainButton
@@ -37,9 +39,7 @@ export function Header() {
       variant="secondary"
     />
   ) : (
-    <Link href="/auth/login">
-      <MainButton className="rounded-full w-32 lg:w-[151px] lg:h-10" text="Đăng nhập" />
-    </Link>
+    <MainButton className="rounded-full w-32 lg:w-[151px] lg:h-10" text="Đăng nhập" onClick={redirectToLogin} />
   )
 
   const navItems = [
