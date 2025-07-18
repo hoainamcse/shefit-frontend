@@ -1,5 +1,7 @@
-import { UploadResponse } from '@/models/upload'
+import type { ApiResponse } from '@/models/response'
+import { User } from '@/models/user'
 
+import type { UploadResponse } from '@/models/upload'
 import { fetchData } from '../helpers/fetch-data'
 
 const S3_BASE_URL = 'http://shefit-stg.s3.amazonaws.com'
@@ -47,4 +49,40 @@ export const uploadImageApi = async (file: File): Promise<UploadResponse> => {
     }
     throw new Error('An unknown error occurred during the image upload.')
   }
+}
+
+export interface FileMetadata {
+  filename: string
+  s3_key: string
+  is_deleted: boolean
+  mime_type: 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif'
+  id: number
+  user_id: User['id']
+  size: number
+  created_at: string
+  updated_at: string
+}
+
+export async function getAllFiles(): Promise<ApiResponse<FileMetadata[]>> {
+  const response = await fetchData('/v1/s3/all', {
+    method: 'GET',
+  })
+  const data: ApiResponse<FileMetadata[]> = await response.json()
+  return data
+}
+
+export async function getFiles(): Promise<ApiResponse<FileMetadata[]>> {
+  const response = await fetchData('/v1/s3/', {
+    method: 'GET',
+  })
+  const data: ApiResponse<FileMetadata[]> = await response.json()
+  return data
+}
+
+export async function getFilesList(): Promise<ApiResponse<FileMetadata[]>> {
+  const response = await fetchData('/v1/s3/list', {
+    method: 'GET',
+  })
+  const data: ApiResponse<FileMetadata[]> = await response.json()
+  return data
 }

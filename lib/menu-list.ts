@@ -11,6 +11,7 @@ import {
   Brain,
   User2Icon,
   HomeIcon,
+  Images,
 } from 'lucide-react'
 
 type Submenu = {
@@ -175,6 +176,11 @@ export function getMenuList(pathname: string): Group[] {
           href: '/admin/users',
           label: 'Tài khoản',
           icon: Settings,
+        },
+        {
+          href: '/admin/images',
+          label: 'Hình ảnh',
+          icon: Images,
         },
       ],
     },
