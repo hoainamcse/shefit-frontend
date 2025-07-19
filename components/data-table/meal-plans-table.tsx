@@ -96,7 +96,7 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
           return (
             <div>
               <img
-                src={imgSrc || 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald'}
+                src={imgSrc || 'https://placehold.co/400?text=shefit.vn&font=Oswald'}
                 alt={`${row.getValue('title')} thumbnail`}
                 className="h-16 w-28 rounded-md object-cover"
               />

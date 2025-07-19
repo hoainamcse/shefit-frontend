@@ -54,7 +54,7 @@ interface EditMealPlanFormProps {
   onSuccess?: (data: MealPlan) => void
 }
 
-const defaultImageUrl = 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald'
+const defaultImageUrl = 'https://placehold.co/400?text=shefit.vn&font=Oswald'
 const defaultYoutubeUrl = 'https://www.youtube.com/'
 
 export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
@@ -209,7 +209,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
                 type="button"
                 variant="outline"
                 text="Thêm nguyên liệu"
-                onClick={() => append({ name: '', image: 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald' })}
+                onClick={() => append({ name: '', image: 'https://placehold.co/400?text=shefit.vn&font=Oswald' })}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">

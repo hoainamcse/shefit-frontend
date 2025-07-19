@@ -71,7 +71,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                     <div key={`menu-${exercise.id}`} className="text-xl overflow-hidden">
                       <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                         <img
-                          src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald'}
+                          src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/400?text=shefit.vn&font=Oswald'}
                           alt={exercise.name}
                           className="object-cover rounded-[20px] w-full h-full"
                         />
@@ -93,7 +93,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                       <div key={`menu-${exercise.id}`} className="text-xl overflow-hidden">
                         <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                           <img
-                            src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald'}
+                            src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/400?text=shefit.vn&font=Oswald'}
                             alt={exercise.name}
                             className="object-cover rounded-[20px] w-full h-full"
                           />
@@ -114,7 +114,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                       <div key={`menu-${exercise.id}`} className="text-xl overflow-hidden">
                         <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                           <img
-                            src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald'}
+                            src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/400?text=shefit.vn&font=Oswald'}
                             alt={exercise.name}
                             className="object-cover rounded-[20px] w-full h-full"
                             width={585}

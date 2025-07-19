@@ -34,7 +34,7 @@ export function EditCoachForm({ data, onSuccess }: EditExerciseFormProps) {
   const isEdit = !!data
   const defaultValue = {
     name: '',
-    image: 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald',
+    image: 'https://placehold.co/400?text=shefit.vn&font=Oswald',
     detail: '',
     description: '',
   } as FormValue

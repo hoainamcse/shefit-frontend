@@ -38,7 +38,7 @@ type EditDishFormProps = {
   onSuccess?: () => void
 }
 
-const defaultImageUrl = 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald'
+const defaultImageUrl = 'https://placehold.co/400?text=shefit.vn&font=Oswald'
 const defaultYoutubeUrl = 'https://www.youtube.com/'
 
 export function EditDishForm({ data, onSuccess }: EditDishFormProps) {

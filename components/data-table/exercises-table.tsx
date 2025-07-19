@@ -115,7 +115,7 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
           const thumbnail = getYouTubeThumbnail(row.getValue('youtube_url'))
           return (
             <a href={row.getValue('youtube_url')} target="_blank">
-              <img src={thumbnail || 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald'} alt={`${row.getValue('name')} thumbnail`} className="h-16 rounded-md object-cover" />
+              <img src={thumbnail || 'https://placehold.co/400?text=shefit.vn&font=Oswald'} alt={`${row.getValue('name')} thumbnail`} className="h-16 rounded-md object-cover" />
             </a>
           )
         },

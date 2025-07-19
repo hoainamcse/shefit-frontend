@@ -471,7 +471,7 @@ export default function FavouriteContent() {
                     <img
                       src={
                         getYouTubeThumbnail(exercise.exercise.youtube_url) ||
-                        'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald'
+                        'https://placehold.co/400?text=shefit.vn&font=Oswald'
                       }
                       alt={exercise.exercise?.name || ''}
                       className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full"

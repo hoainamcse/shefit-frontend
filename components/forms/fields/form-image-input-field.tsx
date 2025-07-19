@@ -79,7 +79,7 @@ function FormImageInputField<
               aria-label={label || name}
               tabIndex={0}
               autoComplete="off"
-              placeholder={inputProps.placeholder || 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald'}
+              placeholder={inputProps.placeholder || 'https://placehold.co/400?text=shefit.vn&font=Oswald'}
               onKeyDown={(e) => {
                 if ((e.key === 'Enter' || e.key === ' ') && isValidImageUrl(inputValue)) {
                   e.preventDefault()
@@ -199,7 +199,7 @@ function FormImageInputField<
             aria-label={label || name}
             tabIndex={0}
             autoComplete="off"
-            placeholder={inputProps.placeholder || 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald'}
+            placeholder={inputProps.placeholder || 'https://placehold.co/400?text=shefit.vn&font=Oswald'}
             onKeyDown={(e) => {
               if ((e.key === 'Enter' || e.key === ' ') && isValidImageUrl(inputValue)) {
                 e.preventDefault()

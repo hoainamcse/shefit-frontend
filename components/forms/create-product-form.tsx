@@ -118,7 +118,7 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
           price: 0,
           weight: 0,
           category_id: null,
-          image_urls: ['https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald'],
+          image_urls: ['https://placehold.co/400?text=shefit.vn&font=Oswald'],
           features: [],
           variants: [],
           sizes: [],

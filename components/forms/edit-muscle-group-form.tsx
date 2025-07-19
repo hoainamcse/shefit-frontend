@@ -30,7 +30,7 @@ interface EditMuscleGroupFormProps {
 
 export function EditMuscleGroupForm({ data, onSuccess }: EditMuscleGroupFormProps) {
   const isEdit = !!data
-  const defaultValue = { name: '', image: 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald' }
+  const defaultValue = { name: '', image: 'https://placehold.co/400?text=shefit.vn&font=Oswald' }
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),
