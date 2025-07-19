@@ -46,7 +46,7 @@ export const CoverMediaSelector: React.FC<CoverMediaSelectorProps> = ({
           tabIndex={0}
           onClick={() => {
             setShowYoutubeUrlInput(true)
-            form.setValue(coverImageName, 'https://placehold.co/600x400?text=example')
+            form.setValue(coverImageName, 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald')
           }}
         >
           Link Youtube

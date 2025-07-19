@@ -87,7 +87,7 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
           return (
             <div>
               <img
-                src={imgSrc || 'https://placehold.co/600x400?text=example'}
+                src={imgSrc || 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald'}
                 alt={`${row.getValue('name')} thumbnail`}
                 className="h-16 w-28 rounded-md object-cover"
               />

@@ -187,18 +187,11 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                               alt={course.course_name}
                               className="rounded-md w-full object-cover aspect-[401/566]"
                             />
-                            <div
-                              className={cn(
-                                'absolute bottom-[15%] -left-[42px] -right-[42px] h-16 bg-gradient-to-t from-background to-transparent -rotate-12 text-background flex flex-col items-center justify-center',
-                                mIndex === 0 && 'bg-primary',
-                                mIndex === 1 && 'bg-ring',
-                                mIndex === 2 && 'bg-[#B60606]'
-                              )}
-                            >
-                              <p className="uppercase text-sm lg:text-base font-semibold max-w-[75%] truncate">
+                            <div className="absolute top-8 left-2 px-2 w-[calc(100%-16px)] h-full">
+                              <p className="text-white text-lg font-medium uppercase mb-4">{course.difficulty_level}</p>
+                              <p className="text-white text-[40px] leading-[40px] uppercase font-[family-name:var(--font-black-ops-one)]">
                                 {course.course_name}
                               </p>
-                              <p className="capitalize text-sm lg:text-base">{course.difficulty_level}</p>
                             </div>
                           </div>
                           <p className="text-center text-neutral-500 text-base lg:text-xl">
@@ -216,18 +209,13 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                               alt={mealPlan.title}
                               className="rounded-md w-full object-cover aspect-[5/7]"
                             />
-                            <div
-                              className={cn(
-                                'absolute bottom-[15%] -left-[42px] -right-[42px] h-16 bg-gradient-to-t from-background to-transparent -rotate-12 text-background flex flex-col items-center justify-center',
-                                mIndex === 0 && 'bg-primary',
-                                mIndex === 1 && 'bg-ring',
-                                mIndex === 2 && 'bg-[#B60606]'
-                              )}
-                            >
-                              <p className="uppercase text-sm lg:text-base font-semibold max-w-[75%] truncate">
+                            <div className="absolute top-8 left-2 px-2 w-[calc(100%-16px)] h-full">
+                              <p className="text-white text-lg font-medium uppercase mb-4">
+                                {mealPlan.meal_plan_goal?.name}
+                              </p>
+                              <p className="text-white text-[40px] leading-[40px] uppercase font-[family-name:var(--font-black-ops-one)]">
                                 {mealPlan.title}
                               </p>
-                              <p className="capitalize text-sm lg:text-base">{mealPlan.subtitle}</p>
                             </div>
                           </div>
                           <p className="text-center text-neutral-500 text-lg lg:text-xl">

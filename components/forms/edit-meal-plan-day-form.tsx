@@ -31,7 +31,7 @@ type EditMealPlanDayFormProps = {
 
 export function EditMealPlanDayForm({ data, mealPlanID, onSuccess }: EditMealPlanDayFormProps) {
   const isEdit = !!data
-  const defaultValue = { day_number: 1, image: 'https://placehold.co/600x400?text=example' } as FormValue
+  const defaultValue = { day_number: 1, image: 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald' } as FormValue
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),

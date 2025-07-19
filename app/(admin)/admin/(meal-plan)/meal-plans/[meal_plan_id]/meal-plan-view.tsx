@@ -186,7 +186,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
               type="button"
               key={day.id}
               style={{
-                backgroundImage: day.image ? `url(${day.image})` : 'url(https://placehold.co/600x400?text=example)',
+                backgroundImage: day.image ? `url(${day.image})` : 'url(https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald)',
               }}
               className={`bg-cover h-20 w-40 bg-center rounded-md whitespace-nowrap text-white flex-shrink-0 ${
                 selectedDay?.id !== day.id && 'opacity-60 hover:opacity-100'

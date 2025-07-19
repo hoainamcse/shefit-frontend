@@ -30,7 +30,7 @@ interface EditEquipmentFormProps {
 
 export function EditEquipmentForm({ data, onSuccess }: EditEquipmentFormProps) {
   const isEdit = !!data
-  const defaultValue = { name: '', image: 'https://placehold.co/600x400?text=example' } as FormValue
+  const defaultValue = { name: '', image: 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald' } as FormValue
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),

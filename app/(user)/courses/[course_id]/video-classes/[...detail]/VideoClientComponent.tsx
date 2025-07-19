@@ -73,7 +73,7 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
                     <div className="hidden md:block">
                       <div className="relative group cursor-pointer">
                         <img
-                          src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/600x400?text=example'}
+                          src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald'}
                           alt=""
                           className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
                         />
@@ -100,7 +100,7 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
                       <div className="flex relative">
                         <div className="relative group cursor-pointer w-1/3 flex-shrink-0">
                           <img
-                            src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/600x400?text=example'}
+                            src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald'}
                             alt=""
                             className="aspect-square object-cover rounded-xl"
                             width={300}

@@ -35,8 +35,8 @@ export function EditBlogForm({ data, onSuccess }: EditBlogFormProps) {
   const defaultValue = {
     title: '',
     content: '',
-    thumbnail_image: 'https://placehold.co/600x400?text=example',
-    cover_image: 'https://placehold.co/600x400?text=example',
+    thumbnail_image: 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald',
+    cover_image: 'https://placehold.co/400/ffaeb0/white?text=shefit.vn&font=Oswald',
   } as FormValue
 
   const form = useForm<FormValue>({
