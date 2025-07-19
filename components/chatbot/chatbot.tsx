@@ -42,7 +42,7 @@ interface ChatBotProps {
   onClose?: () => void
 }
 
-export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
+export function ChatBot({ isOpen, onClose }: ChatBotProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [isFirstFetchDone, setIsFirstFetchDone] = useState(false)
   const [isFirstFetchGreetingsDone, setIsFirstFetchGreetingsDone] = useState(false)
@@ -569,7 +569,7 @@ export function ChatBotButton() {
   return (
     <>
       <MainButton
-        className={`fixed z-50 bottom-20 right-10 lg:right-4 rounded-full`}
+        className={`hidden lg:flex lg:fixed lg:z-50 lg:bottom-4 lg:right-4 rounded-full`}
         style={{
           background: 'linear-gradient(45deg,rgba(255, 174, 176, 1) 40%, rgba(19, 216, 167, 1) 90%)',
         }}

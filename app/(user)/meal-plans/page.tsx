@@ -1,6 +1,5 @@
 'use client'
 
-import Layout from '@/app/(user)/_components/layout'
 import { MultiSelect } from '@/components/ui/select'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'

@@ -1,26 +1,16 @@
-'use client'
-
 import { ChatBotButton } from '@/components/chatbot/chatbot'
 import { BottomNavbar } from './_components/bottom-navbar'
-import { usePathname } from 'next/navigation'
+import { Header } from './_components/header'
+import { Footer } from './_components/footer'
 
-export default function UserLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
-  const pathname = usePathname()
-  const isLogoutPage = pathname === '/auth/login' || pathname.includes('/auth/login')
-
+export default function UserLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="overflow-hidden">
-      {children}
-      {!isLogoutPage && (
-        <div className="hidden lg:block">
-          <ChatBotButton />
-        </div>
-      )}
+    <div>
+      <Header />
+      <main className="relative min-h-screen">{children}</main>
+      <Footer />
       <BottomNavbar />
+      <ChatBotButton />
     </div>
   )
 }

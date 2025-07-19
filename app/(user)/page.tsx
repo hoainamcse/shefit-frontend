@@ -1,5 +1,3 @@
-import { Header } from '@/app/(user)/_components/header'
-import { Footer } from '@/app/(user)/_components/footer'
 import { getConfiguration } from '@/network/server/configurations'
 import {
   SectionOne,
@@ -13,6 +11,7 @@ import {
   SectionEleven,
 } from './_components/section.server'
 import { SectionFive, SectionSix } from './_components/section.client'
+
 const homepageID = 3
 
 export default async function HomePage() {
@@ -34,7 +33,6 @@ export default async function HomePage() {
 
   return (
     <div>
-      <Header />
       <SectionOne data={section_1} />
       <SectionTwo data={section_2} />
       <SectionThree data={section_3} />
@@ -46,7 +44,6 @@ export default async function HomePage() {
       <SectionNine data={section_9} />
       <SectionTen data={section_10} />
       <SectionEleven data={section_11} />
-      <Footer />
     </div>
   )
 }

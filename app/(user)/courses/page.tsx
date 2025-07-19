@@ -1,6 +1,5 @@
 'use client'
 
-import Layout from '@/app/(user)/_components/layout'
 import { MultiSelect } from '@/components/ui/select'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
@@ -159,7 +158,7 @@ export default function CoursesPage() {
   const filteredAllCourses = [...filteredCourses, ...filteredCoursesZoom]
 
   return (
-    <Layout>
+    <>
       <PopularCoursesCarousel />
       <div className="mx-auto px-4 mt-8">
         <div className="mx-auto lg:my-12 my-0 flex flex-col gap-4">
@@ -496,6 +495,6 @@ export default function CoursesPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </Layout>
+    </>
   )
 }

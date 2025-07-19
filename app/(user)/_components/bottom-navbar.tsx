@@ -8,7 +8,7 @@ import { AccountIconGray } from '@/components/icons/AccountIconGray'
 import { GymIcon } from '@/components/icons/GymIcon'
 import { StarIconGray } from '@/components/icons/StarIconGray'
 import { useState } from 'react'
-import ChatBot from '@/components/chatbot/chatbot'
+import { ChatBot } from '@/components/chatbot/chatbot'
 
 export function BottomNavbar() {
   const [isChatOpen, setIsChatOpen] = useState(false)
