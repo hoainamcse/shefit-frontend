@@ -20,7 +20,7 @@ export default async function BlogDetail({ params }: { params: Promise<{ detail:
           className="lg:h-[680px] w-full object-cover h-[300px] rounded-xl"
         />
         <div>
-          <div className="font-[family-name:var(--font-coiny)] xl:text-4xl mb-5 max-lg:text-xl font-bold">
+          <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold xl:text-4xl mb-5 max-lg:text-xl">
             {blog.title}
           </div>
           <HtmlContent content={blog.content} className="text-gray-500 xl:text-lg max-lg:text-lg" />

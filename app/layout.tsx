@@ -1,6 +1,6 @@
 import localFont from 'next/font/local'
 import type { Metadata } from 'next'
-import { Roboto_Flex, Encode_Sans_Semi_Expanded, Black_Ops_One } from 'next/font/google'
+import { Roboto_Flex, Roboto, Roboto_Condensed, Encode_Sans_Semi_Expanded, Black_Ops_One } from 'next/font/google'
 
 import './globals.css'
 // import { ThemeProvider } from '@/components/providers/theme-provider'
@@ -64,6 +64,20 @@ const coiny = Roboto_Flex({
   subsets: ['latin', 'vietnamese'],
 })
 
+const roboto = Roboto({
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  display: 'swap',
+  variable: '--font-roboto',
+  subsets: ['latin', 'vietnamese'],
+})
+
+const robotoCondensed = Roboto_Condensed({
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  display: 'swap',
+  variable: '--font-roboto-condensed',
+  subsets: ['latin', 'vietnamese'],
+})
+
 const encode = Encode_Sans_Semi_Expanded({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
   display: 'swap',
@@ -91,7 +105,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${bdLifelessGrotesk.className} ${coiny.variable} ${encode.variable} ${blackOpsOne.variable} antialiased`}
+        className={`${bdLifelessGrotesk.className} ${coiny.variable} ${encode.variable} ${blackOpsOne.variable} ${roboto.variable} ${robotoCondensed.variable} antialiased`}
       >
         {/* <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange> */}
         <QueryProvider>

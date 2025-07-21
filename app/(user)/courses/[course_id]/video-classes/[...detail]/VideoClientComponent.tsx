@@ -29,7 +29,7 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
   return (
     <div className="mb-16">
       <div className="flex lg:justify-center justify-normal lg:items-center mb-4 flex-col gap-3 lg:gap-10">
-        <span className="font-bold font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-4xl">
+        <span className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl">
           Circuit {cIdx + 1}: {circuit.name}
         </span>
         <div className="text-[#737373] mb-2">{circuit.description}</div>

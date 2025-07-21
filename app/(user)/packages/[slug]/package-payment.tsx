@@ -182,10 +182,12 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
                     }
 
                     const paymentData = await paymentResponse.json()
-                    
-                    if (paymentData.status === 'success' && 
-                        paymentData.data && 
-                        paymentData.data.order_number === providedOrderId) {
+
+                    if (
+                      paymentData.status === 'success' &&
+                      paymentData.data &&
+                      paymentData.data.order_number === providedOrderId
+                    ) {
                       setPaymentVerified(true)
                       return { success: true, retry: false }
                     } else {
@@ -318,7 +320,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
             </AlertDialogHeader>
             {purchaseSuccess ? (
               <div className="flex flex-col items-center py-6">
-                <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] font-bold text-3xl mb-4">
+                <AlertDialogTitle className="text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-3xl mb-4">
                   ĐÃ MUA GÓI THÀNH CÔNG
                 </AlertDialogTitle>
                 <AlertDialogDescription className="text-center text-lg">
@@ -337,7 +339,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
               </div>
             ) : qrData ? (
               <div className="flex flex-col items-center gap-4 py-4">
-                <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] font-bold text-2xl">
+                <AlertDialogTitle className="text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-2xl">
                   Thanh toán đơn hàng
                 </AlertDialogTitle>
                 <div className="border rounded-md p-4 w-full flex justify-center">
@@ -384,7 +386,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
               </div>
             ) : (
               <div className="flex flex-col items-center py-6">
-                <AlertDialogTitle className="text-ring font-[family-name:var(--font-coiny)] font-bold text-xl">
+                <AlertDialogTitle className="text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-xl">
                   Đang tạo đơn hàng
                 </AlertDialogTitle>
                 <AlertDialogDescription className="text-center mt-4">

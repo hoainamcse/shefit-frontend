@@ -174,7 +174,9 @@ export default function FormDelivery({
 
   return (
     <div className="w-full flex flex-col gap-5">
-      <div className="font-[family-name:var(--font-coiny)] font-bold text-3xl lg:text-4xl">Thông tin vận chuyển</div>
+      <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-3xl lg:text-4xl">
+        Thông tin vận chuyển
+      </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmitOrder)} className="space-y-7">
           <FormField
@@ -353,7 +355,7 @@ export default function FormDelivery({
           >
             <DialogContent className="sm:max-w-lg">
               <DialogHeader>
-                <DialogTitle className="font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl xl:text-[40px] text-center my-4">
+                <DialogTitle className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl xl:text-[40px] text-center my-4">
                   Đặt hàng thành công
                 </DialogTitle>
                 <DialogDescription className="text-center text-lg">

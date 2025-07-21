@@ -392,7 +392,7 @@ export default function BodyQuizPage() {
         <div>
           <div className="w-full flex flex-col gap-5 lg:mt-20 mt-5">
             <div className="mb-10">
-              <div className="font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl text-ring font-bold mb-5">
+              <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl text-ring font-semibold lg:font-bold mb-5">
                 {bodyQuiz.title}
               </div>
               {bodyQuiz.description && <p className="text-gray-500 text-base">{bodyQuiz.description}</p>}

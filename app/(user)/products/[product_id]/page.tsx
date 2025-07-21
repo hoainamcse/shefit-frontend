@@ -428,7 +428,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
 
         {product.muscle_groups.length > 0 && (
           <div className="lg:px-8 px-4 mt-0 md:mt-16">
-            <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl lg:text-4xl mb-5 ">
+            <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl mb-5 ">
               Tính năng
             </div>
             <div className="grid xl:grid-cols-12 lg:grid-cols-10 md:grid-cols-6 sm:grid-cols-4 gap-10">

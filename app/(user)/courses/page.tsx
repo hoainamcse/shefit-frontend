@@ -162,7 +162,7 @@ export default function CoursesPage() {
       <PopularCoursesCarousel />
       <div className="mx-auto px-4 mt-8">
         <div className="mx-auto lg:my-12 my-0 flex flex-col gap-4">
-          <p className="md:text-center font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl lg:text-4xl uppercase lg:my-8">
+          <p className="md:text-center font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl uppercase lg:my-8">
             Tất cả khoá tập
           </p>
           <p className="text-sm lg:text-lg md:text-center text-[#737373]">
@@ -242,7 +242,7 @@ export default function CoursesPage() {
               )}
               <TabsContent value="video">
                 {filteredCourses.length === 0 ? (
-                  <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
+                  <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
                     Không có khoá tập video nào phù hợp.
                   </div>
                 ) : (
@@ -299,7 +299,7 @@ export default function CoursesPage() {
 
               <TabsContent value="live">
                 {filteredCoursesZoom.length === 0 ? (
-                  <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
+                  <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
                     Không có khoá tập zoom nào phù hợp.
                   </div>
                 ) : (
@@ -356,7 +356,7 @@ export default function CoursesPage() {
 
               <TabsContent value="free">
                 {filteredFreeCourses.length === 0 ? (
-                  <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
+                  <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
                     Không có khoá tập miễn phí nào phù hợp.
                   </div>
                 ) : (
@@ -417,7 +417,7 @@ export default function CoursesPage() {
 
               <TabsContent value="all">
                 {filteredAllCourses.length === 0 ? (
-                  <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
+                  <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
                     Không có khoá tập nào phù hợp.
                   </div>
                 ) : (
@@ -483,7 +483,7 @@ export default function CoursesPage() {
       <Dialog open={showAccessDialog} onOpenChange={setShowAccessDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-center font-[family-name:var(--font-coiny)] text-[#FF7873] text-lg"></DialogTitle>
+            <DialogTitle className="text-center lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-[#FF7873] text-lg"></DialogTitle>
           </DialogHeader>
           <div className="text-center py-4">
             <p className="text-base text-[#737373] mb-4 ">BẠN ĐÃ MUA GÓI MEMBER CÓ KHÓA TẬP NÀY</p>

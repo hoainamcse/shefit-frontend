@@ -294,7 +294,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
       <Accordion type="multiple" className="mt-3">
         {courseData.map((week, weekIndex) => (
           <AccordionItem key={week.week} value={`week-${week.week}`}>
-            <AccordionTrigger className="font-[family-name:var(--font-coiny)] text-ring text-2xl cursor-pointer font-bold">
+            <AccordionTrigger className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] text-ring text-2xl cursor-pointer font-semibold lg:font-bold">
               <div>Tuần {week.week}</div>
             </AccordionTrigger>
             <AccordionContent>

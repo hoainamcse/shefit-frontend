@@ -92,7 +92,7 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
         Quay về
       </Link>
 
-      <div className="font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-4xl mb-4 sm:mb-10 lg:mb-[87px] md:text-center font-semibold md:font-bold">
+      <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl mb-4 sm:mb-10 lg:mb-[87px] md:text-center">
         {dish?.name}
       </div>
 

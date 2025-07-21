@@ -126,13 +126,13 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
 
       <div className="flex flex-col">
         <div className="flex flex-col gap-2 mb-4 sm:mb-10 lg:mb-16">
-          <div className="font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl">
+          <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl">
             {exercise?.name}
           </div>
         </div>
 
         <div className="flex flex-col mb-[84px] lg:mb-16">
-          <div className="font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl mb-3.5">
+          <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl mb-3.5">
             Thông tin bài tập
           </div>
           <div className="text-[#737373] text-sm lg:text-lg whitespace-pre-line">{exercise?.description}</div>
@@ -141,7 +141,7 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
 
       {exercise?.equipments?.length > 0 && (
         <div className="flex flex-col mb-6 sm:mb-8 lg:mb-[52px]">
-          <p className="font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl mb-5 sm:mb-3.5">
+          <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl mb-5 sm:mb-3.5">
             Dụng cụ
           </p>
           <ScrollArea className="w-screen-max-xl px-0 md:px-5 lg:px-[52px]">
@@ -168,7 +168,9 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
 
       {exercise?.muscle_groups?.length > 0 && (
         <div className="flex flex-col mb-[52px]">
-          <p className="font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl lg:text-4xl mb-5">Nhóm cơ</p>
+          <p className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl mb-5">
+            Nhóm cơ
+          </p>
           <ScrollArea className="w-screen-max-xl">
             <div className="flex w-full space-x-5 px-0 md:px-5 lg:px-[52px]">
               {exercise.muscle_groups.map((muscleGroup: any, index: number) => (

@@ -451,7 +451,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
       >
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl xl:4xl text-center my-4">
+            <DialogTitle className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl xl:4xl text-center my-4">
               Đặt hàng thành công
             </DialogTitle>
             <DialogDescription className="text-center text-base">
@@ -582,7 +582,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
         </div>
 
         <div className="w-full flex flex-col gap-5">
-          <div className="font-[family-name:var(--font-coiny)] font-bold text-2xl lg:text-4xl">
+          <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-2xl lg:text-4xl">
             Thông tin vận chuyển
           </div>
           <Form {...form}>

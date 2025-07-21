@@ -108,8 +108,8 @@ export default function PurchasePackage() {
           </TabsList>
         )}
         <TabsContent value="all">
-          <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-2xl md:text-4xl mb-4 font-bold px-4 lg:px-12">
-            Mua Gói Độ Dáng
+          <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#FF7873] text-2xl md:text-4xl mb-4 px-4 lg:px-12">
+            Mua Gói Member
           </div>
 
           <div className="text-[#737373] text-sm md:text-lg mb-6 px-4 lg:px-12">
@@ -128,7 +128,7 @@ export default function PurchasePackage() {
                 <div key={subscription.id} className="bg-[#FFAEB01A] lg:rounded-[20px] lg:p-5 p-4 h-full">
                   <div className="flex flex-col 2xl:flex-row 2xl:gap-4">
                     <div className="flex flex-col gap-5 justify-between  w-full 2xl:w-1/2">
-                      <div className="font-[family-name:var(--font-coiny)] text-[#000000] text-lg lg:text-xl font-semibold">
+                      <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#000000] text-lg lg:text-xl">
                         {subscription.name}
                       </div>
                       <ul className="list-disc pl-7 text-sm md:text-lg text-[#737373] w-full space-y-2">

@@ -25,7 +25,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
     <div className="flex flex-col gap-10 pt-10 lg:pt-16 xl:pt-[93px] animate-fade-in">
       <div>
         <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-3 sm:mb-6 md:mb-10 lg:mb-[60px]">
-          <div className="font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-4xl font-bold">
+          <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl">
             Các bài tập nhóm {selectedMuscleGroup?.name}
           </div>
           <p className="text-[#737373] text-sm lg:text-lg">

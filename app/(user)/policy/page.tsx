@@ -14,11 +14,11 @@ export default async function PolicyPage() {
   }
   return (
     <div className="flex flex-col gap-10 mt-10">
-      <div className="font-[family-name:var(--font-coiny)] xl:text-4xl max-lg:text-2xl font-bold">
+      <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold xl:text-4xl max-lg:text-2xl">
         Chính sách bảo mật
       </div>
       <HtmlContent content={policyData.privacy_policy} className="text-gray-500 xl:text-lg max-lg:text-sm" />
-      <div className="font-[family-name:var(--font-coiny)] xl:text-4xl max-lg:text-2xl font-bold">
+      <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold xl:text-4xl max-lg:text-2xl">
         Chính Sách Bảo Vệ Thông Tin Cá Nhân Khách Hàng
       </div>
       <HtmlContent content={policyData.personal_policy} className="text-gray-500 xl:text-lg max-lg:text-sm" />

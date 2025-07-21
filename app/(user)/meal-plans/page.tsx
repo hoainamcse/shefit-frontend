@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react'
 import { getMealPlans } from '@/network/client/meal-plans'
 import { getGoals } from '@/network/client/goals'
 import { getCalories } from '@/network/client/calories'
-import type { MealPlan, MealPlanGoal } from '@/models/meal-plan'
+import type { MealPlan } from '@/models/meal-plan'
 import { Button } from '@/components/ui/button'
 import { Calorie } from '@/models/calorie'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -55,7 +55,7 @@ export default function MealPlansPage() {
   const [filter, setFilter] = useState({
     goals: [] as string[],
     calories: [] as string[],
-    showType: 'all', // 'all' or 'free'
+    showType: 'all',
   })
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -107,7 +107,7 @@ export default function MealPlansPage() {
   return (
     <div className="px-4">
       <div className="max-w-screen-md mx-auto">
-        <p className="font-[family-name:var(--font-coiny)] font-bold md:text-center text-ring text-2xl md:text-4xl mb-3.5 md:mb-7">
+        <p className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold md:text-center text-ring text-2xl md:text-4xl mb-3.5 md:mb-7">
           Chọn thực đơn
         </p>
         <p className="sm:text-center text-[#737373] text-sm mb-4">
@@ -161,7 +161,7 @@ export default function MealPlansPage() {
         )}
         <TabsContent value="all">
           {filteredMealPlans.length === 0 ? (
-            <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
+            <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
               Không có thực đơn nào phù hợp.
             </div>
           ) : (
@@ -201,7 +201,7 @@ export default function MealPlansPage() {
         </TabsContent>
         <TabsContent value="free">
           {filteredMealPlans.length === 0 ? (
-            <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
+            <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
               Không có thực đơn nào miễn phí phù hợp.
             </div>
           ) : (

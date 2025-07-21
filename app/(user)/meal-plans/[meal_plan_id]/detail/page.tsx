@@ -34,7 +34,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
           />
         </div>
         <div className="mr-auto text-lg my-20 max-lg:my-0 max-lg:p-4">
-          <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl md:text-4xl mb-5">
+          <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl md:text-4xl mb-5">
             Menu theo lịch
           </div>
         </div>

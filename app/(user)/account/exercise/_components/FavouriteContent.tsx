@@ -281,7 +281,7 @@ export default function FavouriteContent() {
           <DialogTrigger asChild>
             <div className="flex flex-col gap-16">
               <div>
-                <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+                <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
                   Khóa tập của bạn
                 </div>
                 <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có khóa tập nào</div>
@@ -290,7 +290,7 @@ export default function FavouriteContent() {
                 </Button>
               </div>
               <div>
-                <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+                <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
                   Động tác của bạn
                 </div>
                 <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có động tác nào</div>
@@ -299,7 +299,7 @@ export default function FavouriteContent() {
                 </Button>
               </div>
               <div>
-                <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+                <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
                   Thực đơn của bạn
                 </div>
                 <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có thực đơn nào</div>
@@ -308,7 +308,7 @@ export default function FavouriteContent() {
                 </Button>
               </div>
               <div>
-                <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+                <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
                   Món ăn của bạn
                 </div>
                 <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có món ăn nào</div>
@@ -349,7 +349,7 @@ export default function FavouriteContent() {
   return (
     <div className="mt-12">
       <div>
-        <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+        <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
           Khóa tập của bạn
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
@@ -401,7 +401,7 @@ export default function FavouriteContent() {
         </Link>
       </div>
       <div className="space-y-6 mt-12">
-        <h2 className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+        <h2 className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
           Thực đơn
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
@@ -444,7 +444,7 @@ export default function FavouriteContent() {
       </div>
 
       <div className="space-y-6 mt-12">
-        <h2 className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+        <h2 className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
           Động tác
         </h2>
         <div className="grid grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
@@ -496,7 +496,7 @@ export default function FavouriteContent() {
       </div>
 
       <div className="space-y-6 mt-12">
-        <h2 className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-coiny)] hover:no-underline font-bold">
+        <h2 className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
           Món ăn
         </h2>
         <div className="grid grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">

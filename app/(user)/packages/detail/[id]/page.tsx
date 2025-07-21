@@ -49,17 +49,17 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
           <SubscriptionInfo />
           <div className="flex justify-between text-base">
             <div className="flex flex-col gap-10 w-full">
-              <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-2xl md:text-4xl mb-8 font-bold text-center">
+              <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#FF7873] text-2xl md:text-4xl mb-8 text-center">
                 {subscriptionData?.name}
               </div>
               <div>
-                <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-2xl md:text-4xl mb-4 font-bold">
-                  Thông tin Gói
+                <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#FF7873] text-2xl md:text-4xl mb-4">
+                  Thông tin khóa
                 </div>
                 <HtmlContent className="whitespace-pre-line" content={subscriptionData?.description_2 || ''} />
               </div>
               <div>
-                <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-2xl md:text-4xl mb-4  font-bold">
+                <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#FF7873] text-2xl md:text-4xl mb-4">
                   Khóa Tập Thuộc Gói
                 </div>
                 <p className="mb-5">Các khóa tập bạn được truy cập khi mua gói member này</p>
@@ -106,7 +106,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
               </div>
               {subscriptionData?.meal_plan_ids && subscriptionData?.meal_plan_ids.length > 0 && (
                 <div>
-                  <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-2xl md:text-4xl mb-4 font-bold">
+                  <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#FF7873] text-2xl md:text-4xl mb-4">
                     Thực đơn
                   </div>
                   <HtmlContent
@@ -150,7 +150,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                 </div>
               )}
               <div>
-                <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-2xl md:text-4xl mb-4 font-bold">
+                <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#FF7873] text-2xl md:text-4xl mb-4">
                   Theo dõi kết quả
                 </div>
                 <HtmlContent className="whitespace-pre-line" content={subscriptionData?.result_checkup || ''} />

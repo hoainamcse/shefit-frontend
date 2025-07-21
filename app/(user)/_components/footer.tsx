@@ -20,7 +20,7 @@ export function Footer() {
             <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-4">
               <div className="grid grid-cols-2 max-sm:grid-cols-1">
                 <ul className="flex flex-col gap-3">
-                  <li className="font-bold text-base lg:text-2xl">Về Shefit</li>
+                  <li className="font-bold text-lg lg:text-2xl font-[family-name:var(--font-roboto)]">Về Shefit</li>
                   <li className="text-[#E8E5E5] text-sm lg:text-lg">
                     <Link href="/policy">Chính sách</Link>
                   </li>
@@ -29,7 +29,9 @@ export function Footer() {
                   </li>
                 </ul>
                 <ul className="flex flex-col gap-3">
-                  <li className="font-bold text-lg lg:text-xl uppercase">Fitness for woman</li>
+                  <li className="font-bold text-lg lg:text-xl uppercase font-[family-name:var(--font-roboto)]">
+                    Fitness for woman
+                  </li>
                   <li className="text-[#E8E5E5] text-sm lg:text-lg">
                     Độ dáng tại nhà cho phụ nữ với đa dạng các lớp tập live trực tuyến cùng HLV & Giáo Án Video quay
                     sẵn. Mang lại vóc dáng đẹp & sức khỏe vàng, thời gian tập đầy năng lượng & vui tươi. Tiết kiệm thời
@@ -39,7 +41,9 @@ export function Footer() {
               </div>
               <div className="w-full flex">
                 <ul className="ml-auto flex flex-col gap-3">
-                  <li className="font-bold text-lg lg:text-xl uppercase">Công ty TNHH Shefit Việt Nam</li>
+                  <li className="font-bold text-lg lg:text-xl uppercase font-[family-name:var(--font-roboto)]">
+                    Công ty TNHH Shefit Việt Nam
+                  </li>
                   <li className="text-[#E8E5E5] text-sm lg:text-lg">
                     Văn phòng: Khu The Sun Avenue, An Phú, Quận 2, Thành phố Hồ Chí Minh
                   </li>
@@ -73,7 +77,7 @@ export function Footer() {
               <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-4">
                 <div className="grid grid-cols-2 max-sm:grid-cols-1">
                   <ul className="flex flex-col gap-3 mb-2">
-                    <li className="font-bold text-lg">Về Shefit</li>
+                    <li className="font-bold text-lg font-[family-name:var(--font-roboto)]">Về Shefit</li>
                     <li className="text-[#E8E5E5] text-sm">
                       <Link href="/policy">Chính sách</Link>
                     </li>
@@ -82,7 +86,9 @@ export function Footer() {
                     </li>
                   </ul>
                   <ul className="flex flex-col gap-3">
-                    <li className="font-bold text-lg uppercase">Fitness for woman</li>
+                    <li className="font-bold text-lg uppercase font-[family-name:var(--font-roboto)]">
+                      Fitness for woman
+                    </li>
                     <li className="text-[#E8E5E5] text-sm">
                       Độ dáng tại nhà cho phụ nữ với đa dạng các lớp tập live trực tuyến cùng HLV & Giáo Án Video quay
                       sẵn. Mang lại vóc dáng đẹp & sức khỏe vàng, thời gian tập đầy năng lượng & vui tươi. Tiết kiệm
@@ -92,7 +98,9 @@ export function Footer() {
                 </div>
                 <div className="w-full flex">
                   <ul className="ml-auto flex flex-col gap-3">
-                    <li className="font-bold text-lg uppercase">Công ty TNHH Shefit Việt Nam</li>
+                    <li className="font-bold text-lg uppercase font-[family-name:var(--font-roboto)]">
+                      Công ty TNHH Shefit Việt Nam
+                    </li>
                     <li className="text-[#E8E5E5] text-sm">
                       Văn phòng: Khu The Sun Avenue, An Phú, Quận 2, Thành phố Hồ Chí Minh
                     </li>

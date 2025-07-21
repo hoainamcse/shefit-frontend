@@ -44,7 +44,7 @@ export default function ProductsPage() {
       <div className="flex flex-col gap-10 px-4 lg:px-12">
         <div className="mb-20 p-4 lg:mt-20 mt-0">
           <div className="flex flex-col gap-5 lg:mb-20 mb-10">
-            <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-4xl text-2xl font-bold">
+            <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring xl:text-4xl text-2xl">
               Dụng Cụ & Thực Phẩm
             </div>
             <p className="text-[#737373] text-sm lg:text-lg">Dụng cụ tập tại nhà & các loại thực phẩm Eat Clean</p>

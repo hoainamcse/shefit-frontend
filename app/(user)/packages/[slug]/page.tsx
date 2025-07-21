@@ -33,7 +33,7 @@ export default function PackageDetail({ params }: { params: Promise<{ slug: stri
           <div className="text-xl text-[#000000] font-semibold">Quay về</div>
         </Link>
 
-        <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[family-name:var(--font-coiny)] mb-7 font-bold">
+        <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold mb-7">
           Gói {subscription.data.name}
         </div>
 
@@ -84,7 +84,7 @@ export default function PackageDetail({ params }: { params: Promise<{ slug: stri
 
         <div>
           {subscription.data.relationships.gifts?.length > 0 && (
-            <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[family-name:var(--font-coiny)] mb-[14px] font-bold">
+            <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold mb-[14px]">
               Chọn quà tặng
               <div className="text-base md:text-xl text-[#737373] mb-7">Được ship đến tận nhà!</div>
               <div className="flex flex-col gap-7 mb-7">
@@ -141,7 +141,7 @@ export default function PackageDetail({ params }: { params: Promise<{ slug: stri
           )}
 
           <div>
-            <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[family-name:var(--font-coiny)] mb-[14px] font-bold">
+            <div className="text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold mb-[14px]">
               Hướng dẫn
             </div>
 

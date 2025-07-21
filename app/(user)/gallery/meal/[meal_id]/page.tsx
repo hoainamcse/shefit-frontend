@@ -14,7 +14,7 @@ export default async function Food({ params }: { params: Promise<{ meal_id: stri
     <div className="flex flex-col gap-10 mt-6 md:mt-10 lg:mt-[76px]">
       <div>
         <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-6 md:mb-10 lg:mb-[60px] xl:mb-[90px]">
-          <div className="font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-4xl font-bold">
+          <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl">
             Các món theo chế độ {selectedDiet?.name}
           </div>
           <p className="text-[#737373] text-sm lg:text-lg">{selectedDiet?.description}</p>

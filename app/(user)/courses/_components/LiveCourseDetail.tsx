@@ -137,7 +137,6 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
 
       const subscriptions = await getUserSubscriptions(session?.userId!.toString())
 
-      // Find all subscriptions that contain the current course
       const subscriptionsWithCourse =
         subscriptions.data?.filter((subscription) => {
           const hasCourses = subscription.subscription && subscription.subscription.courses
@@ -148,16 +147,13 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
 
       let hasAccess = false
 
-      // If user has subscriptions with this course
       if (subscriptionsWithCourse.length > 0) {
-        // Sort subscriptions by end date (latest first)
         const sortedSubscriptions = [...subscriptionsWithCourse].sort((a, b) => {
           const dateA = new Date(a.subscription_end_at)
           const dateB = new Date(b.subscription_end_at)
-          return dateB.getTime() - dateA.getTime() // Latest end date first
+          return dateB.getTime() - dateA.getTime()
         })
 
-        // Check if the latest subscription is still active and not expired
         const latestSubscription = sortedSubscriptions[0]
         const endDate = new Date(latestSubscription.subscription_end_at)
         const currentDate = new Date()
@@ -271,7 +267,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
                       .map((session_: Session) => (
                         <div key={session_.id} className="flex justify-between">
                           <div>
-                            <p className="font-[family-name:var(--font-coiny)] text-lg lg:text-2xl flex gap-2">
+                            <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-lg lg:text-2xl flex gap-2">
                               {session_.name}
                             </p>
                             <p className="text-[#737373] text-sm lg:text-lg">

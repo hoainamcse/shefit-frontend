@@ -8,7 +8,7 @@ export default async function BlogPage() {
   return (
     <div className="flex flex-col pt-10 lg:pt-16 xl:pt-[93px]">
       <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-10 lg:mb-16 xl:mb-[90px]">
-        <p className="font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-4xl font-semibold sm:font-bold">
+        <p className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl">
           Blog healthy
         </p>
         <p className="text-[#737373] text-sm lg:text-lg">Các lời khuyên hữu ích về tập luyện & ăn uống</p>

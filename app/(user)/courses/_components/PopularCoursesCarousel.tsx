@@ -29,7 +29,7 @@ export default function PopularCoursesCarousel() {
 
   return (
     <div className="mx-auto mt-0 lg:mt-8">
-      <p className="md:text-center font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-4xl lg:my-14 my-4 font-bold uppercase p-3">
+      <p className="md:text-center font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl lg:my-14 my-4 uppercase p-3">
         Khoá Tập Hot Nhất Tháng
       </p>
       <div className="mx-auto px-8 lg:px-6">
@@ -48,7 +48,7 @@ export default function PopularCoursesCarousel() {
                 <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                   <div className="text-center">
                     <img
-                      src={course.cover_image}
+                      src={course.image_homepage}
                       alt={course.course_name}
                       className="object-cover rounded-xl mb-4 aspect-[401/560] w-full"
                     />

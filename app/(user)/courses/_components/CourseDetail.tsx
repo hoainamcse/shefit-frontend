@@ -133,7 +133,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         </div>
         {!showDetails && course?.data?.relationships?.subscriptions?.length > 0 && (
           <div className="flex flex-col lg:gap-5 gap-2">
-            <div className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-4xl font-bold uppercase">
+            <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl uppercase">
               Gói Member
             </div>
             <div className="text-[#737373] text-lg lg:text-xl">Bạn cần mua các Gói Member sau để truy cập khóa tập</div>
@@ -190,7 +190,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         ) : (
           <>
             <div>
-              <p className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-4xl font-bold mb-4">
+              <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl mb-4">
                 Thông tin khóa
               </p>
               <HtmlContent
@@ -200,7 +200,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
             </div>
             {course?.data?.relationship?.equipments?.length > 0 && (
               <div>
-                <p className="font-[family-name:var(--font-coiny)] text-ring text-lg lg:text-xl font-bold mb-4">
+                <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-lg lg:text-xl mb-4">
                   Dụng cụ
                 </p>
                 <ScrollArea className="w-screen-max-xl">
@@ -226,7 +226,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
             )}
             {course?.data?.relationship?.muscle_groups?.length > 0 && (
               <div>
-                <p className="font-[family-name:var(--font-coiny)] text-ring text-lg lg:text-xl font-bold mb-4">
+                <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-lg lg:text-xl mb-4">
                   Nhóm cơ
                 </p>
                 <ScrollArea className="w-screen-max-xl">

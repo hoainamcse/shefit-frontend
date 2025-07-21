@@ -76,7 +76,7 @@ export default function Gallery() {
     <div className="flex flex-col gap-10 sm:gap-16 lg:gap-[90px] pt-10 lg:pt-16 xl:pt-[93px]">
       <div>
         <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-10 lg:mb-16 xl:mb-[90px]">
-          <div className="font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-4xl font-semibold sm:font-bold">
+          <div className="font-[family-name:var(--font-roboto-condensed)] text-ring text-2xl lg:text-4xl font-semibold">
             Bài tập theo nhóm cơ
           </div>
           <p className="text-[#737373] text-sm lg:text-lg">
@@ -163,7 +163,7 @@ export default function Gallery() {
       </div>
       <div>
         <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-10 lg:mb-16 xl:mb-[90px]">
-          <div className="font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-4xl font-semibold sm:font-bold">
+          <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl">
             Món theo chế độ ăn
           </div>
           <p className="text-[#737373] text-sm lg:text-lg">
