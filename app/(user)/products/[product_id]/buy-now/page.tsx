@@ -418,7 +418,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
   if (!cart || !product) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
-        <div className="text-xl">Không tìm thấy thông tin đơn hàng</div>
+        <div className="text-lg">Không tìm thấy thông tin đơn hàng</div>
         <Button onClick={() => router.push(`/products/${product_id}`)} className="bg-[#13D8A7] hover:bg-[#11c296]">
           Quay lại trang sản phẩm
         </Button>
@@ -451,10 +451,10 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
       >
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl xl:text-[40px] text-center my-4">
+            <DialogTitle className="font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl xl:4xl text-center my-4">
               Đặt hàng thành công
             </DialogTitle>
-            <DialogDescription className="text-center text-lg">
+            <DialogDescription className="text-center text-base">
               NV CSKH sẽ liên hệ để xác nhận đơn hàng
             </DialogDescription>
           </DialogHeader>
@@ -465,13 +465,13 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
         <Button
           onClick={handleCancel}
           disabled={isDeleting}
-          className="bg-transparent shadow-none text-black text-xl hover:bg-transparent p-0"
+          className="bg-transparent shadow-none text-black text-lg hover:bg-transparent p-0"
         >
           <ArrowLeftIcon className="h-4 w-4" /> {isDeleting ? 'Đang hủy...' : 'Quay lại'}
         </Button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
-        <div className="w-full text-2xl lg:mb-20 mb-4">
+        <div className="w-full text-xl lg:mb-20 mb-4">
           {cart?.product_variants.map((variant: any, index: number) => (
             <div key={`menu-${index}`} className="flex justify-between items-center mb-5">
               <img
@@ -480,19 +480,19 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
                 className="lg:size-[148px] size-[85px] rounded-lg mr-5"
               />
               <div className="w-full">
-                <div className="font-medium text-base lg:text-xl">{variant.name || 'Sản phẩm'}</div>
-                <div className="text-[#737373] text-base lg:text-xl">Size: {variant.size?.size}</div>
+                <div className="font-medium text-sm lg:text-lg">{variant.name || 'Sản phẩm'}</div>
+                <div className="text-[#737373] text-sm lg:text-lg">Size: {variant.size?.size}</div>
                 <div className="flex gap-3 items-center">
                   <div className="flex items-center gap-2">
                     <Button
-                      className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] h-8 w-10 lg:w-10 lg:h-10 text-base lg:text-xl font-bold items-center flex border-2"
+                      className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] h-8 w-10 lg:w-10 lg:h-10 text-sm lg:text-lg font-bold items-center flex border-2"
                       onClick={() => handleUpdateQuantity(variant.id, (variantQuantities[variant.id] || 1) - 1)}
                       disabled={quantityUpdating[variant.id]}
                     >
                       <MinusIcon />
                     </Button>
                     <Input
-                      className="h-8 lg:h-10 w-16 lg:w-16 text-center border-2 border-[#737373] text-base lg:text-xl font-bold pr-0 p-0"
+                      className="h-8 lg:h-10 w-16 lg:w-16 text-center border-2 border-[#737373] text-sm lg:text-lg font-bold pr-0 p-0"
                       type="number"
                       min={1}
                       value={variantQuantities[variant.id] || 1}
@@ -500,7 +500,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
                       disabled={quantityUpdating[variant.id]}
                     />
                     <Button
-                      className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] h-8 lg:h-10 w-10 lg:w-10 text-base lg:text-xl font-bold items-center flex border-2"
+                      className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] h-8 lg:h-10 w-10 lg:w-10 text-sm lg:text-lg font-bold items-center flex border-2"
                       onClick={() => handleUpdateQuantity(variant.id, (variantQuantities[variant.id] || 1) + 1)}
                       disabled={quantityUpdating[variant.id]}
                     >
@@ -509,16 +509,16 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
                   </div>
                 </div>
               </div>
-              <div className="text-[#737373] text-base lg:text-xl w-full text-right">
+              <div className="text-[#737373] text-sm lg:text-lg w-full text-right">
                 <div className="font-medium w-full">{variant.price?.toLocaleString()} VNĐ</div>
-                {variant.color?.name && <div className="text-base lg:text-xl mt-1">Màu: {variant.color.name}</div>}
+                {variant.color?.name && <div className="text-sm lg:text-lg mt-1">Màu: {variant.color.name}</div>}
               </div>
             </div>
           ))}
           <div className="flex flex-col gap-4 justify-between mt-20">
             <div className="flex justify-between">
-              <div className="text-base lg:text-xl">Tổng tiền</div>
-              <div className="text-[#00C7BE] font-semibold text-xl lg:text-2xl">
+              <div className="text-sm lg:text-lg">Tổng tiền</div>
+              <div className="text-[#00C7BE] font-semibold text-lg lg:text-xl">
                 {cart?.product_variants
                   ? cart.product_variants
                       .reduce(
@@ -533,12 +533,12 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
             </div>
 
             <div className="flex flex-col gap-2">
-              <div className="text-base lg:text-xl">Mã giảm giá</div>
+              <div className="text-sm lg:text-lg">Mã giảm giá</div>
               {appliedCoupon ? (
                 <div className="flex items-center justify-between border border-[#13D8A7] rounded-md p-3">
                   <div>
                     <div className="font-medium">{appliedCoupon.code}</div>
-                    <div className="text-sm text-[#737373]">
+                    <div className="text-xs text-[#737373]">
                       {appliedCoupon.discount_type === 'percentage'
                         ? `Giảm ${appliedCoupon.discount_value}%`
                         : `Giảm ${appliedCoupon.discount_value.toLocaleString()} VNĐ`}
@@ -572,8 +572,8 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
             </div>
             {discountAmount > 0 && (
               <div className="flex justify-between">
-                <div className="text-base lg:text-xl">Giảm giá</div>
-                <div className="text-[#DA1515] font-semibold text-base lg:text-xl">
+                <div className="text-sm lg:text-lg">Giảm giá</div>
+                <div className="text-[#DA1515] font-semibold text-sm lg:text-lg">
                   -{discountAmount.toLocaleString()} VNĐ
                 </div>
               </div>
@@ -582,7 +582,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
         </div>
 
         <div className="w-full flex flex-col gap-5">
-          <div className="font-[family-name:var(--font-coiny)] font-bold text-3xl lg:text-[40px]">
+          <div className="font-[family-name:var(--font-coiny)] font-bold text-2xl lg:text-4xl">
             Thông tin vận chuyển
           </div>
           <Form {...form}>
@@ -592,7 +592,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-base lg:text-xl">Tên</FormLabel>
+                    <FormLabel className="text-sm lg:text-lg">Tên</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="Nhập tên của bạn" />
                     </FormControl>
@@ -606,7 +606,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-base lg:text-xl">Số điện thoại</FormLabel>
+                    <FormLabel className="text-sm lg:text-lg">Số điện thoại</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="Nhập số điện thoại của bạn" />
                     </FormControl>
@@ -620,7 +620,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-base lg:text-xl">Thành phố</FormLabel>
+                    <FormLabel className="text-sm lg:text-lg">Thành phố</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -651,7 +651,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-base lg:text-xl">Địa chỉ</FormLabel>
+                    <FormLabel className="text-sm lg:text-lg">Địa chỉ</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="Nhập địa chỉ của bạn" />
                     </FormControl>
@@ -664,9 +664,9 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
                 control={form.control}
                 render={({ field }) => (
                   <FormItem className="flex justify-between items-center">
-                    <FormLabel className="text-base lg:text-xl">Phí ship</FormLabel>
+                    <FormLabel className="text-sm lg:text-lg">Phí ship</FormLabel>
                     <FormControl>
-                      <div className="text-[#8E8E93] text-base lg:text-xl">
+                      <div className="text-[#8E8E93] text-sm lg:text-lg">
                         {parseInt(field.value || '0').toLocaleString('vi-VN')} <span>VNĐ</span>
                       </div>
                     </FormControl>
@@ -679,9 +679,9 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
                 control={form.control}
                 render={({ field }) => (
                   <FormItem className="flex justify-between items-center">
-                    <FormLabel className="text-base lg:text-xl mt-2">Giảm giá</FormLabel>
+                    <FormLabel className="text-sm lg:text-lg mt-2">Giảm giá</FormLabel>
                     <FormControl>
-                      <div className="text-[#DA1515] text-base lg:text-xl">
+                      <div className="text-[#DA1515] text-sm lg:text-lg">
                         {parseInt(field.value || '0') > 0
                           ? `-${parseInt(field.value || '0').toLocaleString('vi-VN')}`
                           : '0'}{' '}
@@ -697,9 +697,9 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
                 control={form.control}
                 render={({ field }) => (
                   <FormItem className="flex justify-between items-center">
-                    <FormLabel className="text-base lg:text-xl font-semibold">Tổng tiền</FormLabel>
+                    <FormLabel className="text-sm lg:text-lg font-semibold">Tổng tiền</FormLabel>
                     <FormControl>
-                      <div className="text-[#00C7BE] text-xl lg:text-2xl font-semibold">
+                      <div className="text-[#00C7BE] text-lg lg:text-xl font-semibold">
                         {parseInt(field.value || '0').toLocaleString('vi-VN')} <span>VNĐ</span>
                       </div>
                     </FormControl>
@@ -712,10 +712,10 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
                 control={form.control}
                 render={({ field }) => (
                   <FormItem className="flex justify-between items-center">
-                    <FormLabel className="text-base lg:text-xl font-semibold mt-2">Phương thức</FormLabel>
+                    <FormLabel className="text-sm lg:text-lg font-semibold mt-2">Phương thức</FormLabel>
                     <FormControl>
                       <div className="flex gap-2 items-center">
-                        <div className="text-[#737373] text-xl lg:text-2xl leading-8 items-center">
+                        <div className="text-[#737373] text-lg lg:text-xl leading-8 items-center">
                           Thanh toán khi nhận hàng
                         </div>
                         <Checkbox className="size-8" />
@@ -730,7 +730,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-base lg:text-xl">Ghi chú thêm</FormLabel>
+                    <FormLabel className="text-sm lg:text-lg">Ghi chú thêm</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="Nhập ghi chú của bạn cho shop" />
                     </FormControl>
@@ -742,7 +742,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-[#13D8A7] hover:bg-[#11c296] rounded-full lg:h-16 h-11 text-base lg:text-2xl"
+                className="w-full bg-[#13D8A7] hover:bg-[#11c296] rounded-full lg:h-16 h-11 text-sm lg:text-xl"
               >
                 {isSubmitting ? 'Đang xử lý...' : 'Mua ngay'}
               </Button>

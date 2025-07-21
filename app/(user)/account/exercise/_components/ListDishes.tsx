@@ -147,29 +147,29 @@ export default function ListDishes() {
     return (
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
-          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-base lg:text-xl">
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-sm lg:text-lg">
             Thêm món ăn
           </Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-center text-xl lg:text-2xl font-bold">
+            <DialogTitle className="text-center text-lg lg:text-xl font-bold">
               VUI LÒNG ĐĂNG NHẬP VÀ MUA GÓI
             </DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center text-center gap-6">
-            <p className="text-base lg:text-xl">HÃY ĐĂNG NHẬP & MUA GÓI ĐỂ THÊM KHÓA TẬP & THỰC ĐƠN</p>
+            <p className="text-sm lg:text-lg">HÃY ĐĂNG NHẬP & MUA GÓI ĐỂ THÊM KHÓA TẬP & THỰC ĐƠN</p>
             <div className="flex gap-4 justify-center w-full px-10">
               <div className="flex-1">
                 <Button
-                  className="bg-[#13D8A7] rounded-full w-full text-base lg:text-xl"
+                  className="bg-[#13D8A7] rounded-full w-full text-sm lg:text-lg"
                   onClick={handleBuyPackageClick}
                 >
                   Mua gói
                 </Button>
               </div>
               <div className="flex-1">
-                <Button className="bg-[#13D8A7] rounded-full w-full text-base lg:text-xl" onClick={handleLoginClick}>
+                <Button className="bg-[#13D8A7] rounded-full w-full text-sm lg:text-lg" onClick={handleLoginClick}>
                   Đăng nhập
                 </Button>
               </div>
@@ -183,7 +183,7 @@ export default function ListDishes() {
   if (!selectedSubscription) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <p className="text-lg text-gray-500 mb-4">Vui lòng chọn gói đăng ký để xem món ăn</p>
+        <p className="text-base text-gray-500 mb-4">Vui lòng chọn gói đăng ký để xem món ăn</p>
       </div>
     )
   }
@@ -199,7 +199,7 @@ export default function ListDishes() {
   if (combinedDishes.length === 0) {
     return (
       <Link href="/gallery">
-        <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-base lg:text-xl">Thêm món ăn</Button>
+        <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg">Thêm món ăn</Button>
       </Link>
     )
   }
@@ -210,7 +210,7 @@ export default function ListDishes() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-center"></DialogTitle>
-            <DialogDescription className="text-center text-base lg:text-xl text-[#737373]">
+            <DialogDescription className="text-center text-sm lg:text-lg text-[#737373]">
               GÓI ĐÃ HẾT HẠN HÃY GIA HẠN GÓI ĐỂ TIẾP TỤC TRUY CẬP
             </DialogDescription>
           </DialogHeader>
@@ -218,7 +218,7 @@ export default function ListDishes() {
             <Button
               type="button"
               variant="default"
-              className="bg-[#13D8A7] hover:bg-[#0fb88e] text-white rounded-full w-full h-14 text-base lg:text-xl"
+              className="bg-[#13D8A7] hover:bg-[#0fb88e] text-white rounded-full w-full h-14 text-sm lg:text-lg"
               onClick={() => {
                 setRenewDialogOpen(false)
                 if (selectedSubscription?.subscription?.id) {
@@ -232,7 +232,7 @@ export default function ListDishes() {
         </DialogContent>
       </Dialog>
 
-      <div className="grid grid-cols-3 lg:gap-6 gap-4 mx-auto mt-6 text-lg lg:text-xl">
+      <div className="grid grid-cols-3 lg:gap-6 gap-4 mx-auto mt-6 text-sm lg:text-lg">
         {combinedDishes.map((dish) => (
           <div key={dish.id} className="group">
             <Link
@@ -273,7 +273,7 @@ export default function ListDishes() {
                   />
                   <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
-                <p className="font-medium text-base lg:text-xl">{dish.title}</p>
+                <p className="font-medium text-sm lg:text-lg">{dish.title}</p>
               </div>
             </Link>
           </div>
@@ -281,7 +281,7 @@ export default function ListDishes() {
       </div>
       <div className="mt-6">
         <Link href="/gallery">
-          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-base lg:text-xl lg:mt-12 mt-6">Thêm món ăn</Button>
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg lg:mt-12 mt-6">Thêm món ăn</Button>
         </Link>
       </div>
     </div>

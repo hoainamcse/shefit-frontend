@@ -313,35 +313,29 @@ export default function CurrentCart() {
         {cartData?.product_variants.map((variant: any, index: number) => (
           <div key={`menu-${index}`} className="flex justify-between items-center mb-5">
             <div className="flex justify-between items-center w-full gap-2 md:gap-5">
-              <img
-                src={variant.image_urls?.[0]}
-                alt={variant.name || ''}
-                className="aspect-square w-1/2 rounded-lg"
-              />
+              <img src={variant.image_urls?.[0]} alt={variant.name || ''} className="aspect-square w-1/2 rounded-lg" />
               <div>
-                <div className="font-medium text-base lg:text-xl">{variant.name || 'Sản phẩm'}</div>
-                {variant.size && <div className="text-[#737373] text-base lg:text-xl">Size: {variant.size.size}</div>}
-                {variant.color && (
-                  <div className="text-[#737373] text-base lg:text-xl">Color: {variant.color.name}</div>
-                )}
+                <div className="font-medium text-sm lg:text-lg">{variant.name || 'Sản phẩm'}</div>
+                {variant.size && <div className="text-[#737373] text-sm lg:text-lg">Size: {variant.size.size}</div>}
+                {variant.color && <div className="text-[#737373] text-sm lg:text-lg">Color: {variant.color.name}</div>}
                 <div className="flex gap-3 items-center">
                   <div className="flex items-center gap-2">
                     <Button
-                      className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] h-8 w-10 lg:w-10 lg:h-10 text-base lg:text-xl font-bold items-center flex border-2"
+                      className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] h-8 w-10 lg:w-10 lg:h-10 text-sm lg:text-lg font-bold items-center flex border-2"
                       onClick={() => handleUpdateQuantity(variant.id, (variantQuantities[variant.id] || 1) - 1)}
                       disabled={quantityUpdating[variant.id]}
                     >
                       <MinusIcon />
                     </Button>
                     <Input
-                      className="h-8 lg:h-10 w-16 lg:w-16 text-center border-2 border-[#737373] text-base lg:text-xl font-bold pr-0 p-0"
+                      className="h-8 lg:h-10 w-16 lg:w-16 text-center border-2 border-[#737373] text-sm lg:text-lg font-bold pr-0 p-0"
                       min={1}
                       value={variantQuantities[variant.id] || 1}
                       onChange={(e) => handleUpdateQuantity(variant.id, Number(e.target.value) || 1)}
                       disabled={quantityUpdating[variant.id]}
                     />
                     <Button
-                      className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] h-8 lg:h-10 w-10 lg:w-10 text-base lg:text-xl font-bold items-center flex border-2"
+                      className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] h-8 lg:h-10 w-10 lg:w-10 text-sm lg:text-lg font-bold items-center flex border-2"
                       onClick={() => handleUpdateQuantity(variant.id, (variantQuantities[variant.id] || 1) + 1)}
                       disabled={quantityUpdating[variant.id]}
                     >
@@ -352,8 +346,8 @@ export default function CurrentCart() {
               </div>
             </div>
             <div className="flex flex-col md:flex-row md:items-center w-full">
-              <div className="text-[#737373] w-full text-base lg:text-xl text-right lg:text-center">
-                <div className="text-base lg:text-xl text-right md:text-center">
+              <div className="text-[#737373] w-full text-sm lg:text-lg text-right lg:text-center">
+                <div className="text-sm lg:text-lg text-right md:text-center">
                   <span>{variant.price?.toLocaleString()}</span> VNĐ
                 </div>
               </div>
@@ -361,7 +355,7 @@ export default function CurrentCart() {
                 <DialogTrigger asChild>
                   <Button className="flex gap-2 bg-transparent hover:bg-transparent shadow-none items-center justify-end p-0">
                     <BinIcon />
-                    <p className="text-base lg:text-xl text-[#DA1515] items-center">Xóa</p>
+                    <p className="text-sm lg:text-lg text-[#DA1515] items-center">Xóa</p>
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[90vw] w-[350px]">
@@ -385,16 +379,16 @@ export default function CurrentCart() {
           </div>
         ))}
         <div className="flex justify-between mt-20">
-          <div className="text-base lg:text-xl">Tổng tiền</div>
-          <div className="text-[#00C7BE] font-semibold text-xl lg:text-2xl">{totalPrice} VNĐ</div>
+          <div className="text-sm lg:text-lg">Tổng tiền</div>
+          <div className="text-[#00C7BE] font-semibold text-lg lg:text-xl">{totalPrice} VNĐ</div>
         </div>
         <div className="flex flex-col gap-2 mt-4">
-          <div className="text-base lg:text-xl">Mã giảm giá</div>
+          <div className="text-sm lg:text-lg">Mã giảm giá</div>
           {appliedCoupon ? (
             <div className="flex items-center justify-between border border-[#13D8A7] rounded-md p-3">
               <div>
-                <div className="font-medium text-xl lg:text-2xl">{appliedCoupon.code}</div>
-                <div className="text-sm text-[#737373]">
+                <div className="font-medium text-lg lg:text-xl">{appliedCoupon.code}</div>
+                <div className="text-xs text-[#737373]">
                   {appliedCoupon.discount_type === 'percentage'
                     ? `Giảm ${appliedCoupon.discount_value}%`
                     : `Giảm ${appliedCoupon.discount_value.toLocaleString()} VNĐ`}
@@ -428,8 +422,8 @@ export default function CurrentCart() {
         </div>
         {discountAmount > 0 && (
           <div className="flex justify-between mt-2">
-            <div className="text-base lg:text-xl">Giảm giá</div>
-            <div className="text-[#DA1515] font-semibold text-xl lg:text-2xl">
+            <div className="text-sm lg:text-lg">Giảm giá</div>
+            <div className="text-[#DA1515] font-semibold text-lg lg:text-xl">
               -{discountAmount.toLocaleString()} VNĐ
             </div>
           </div>

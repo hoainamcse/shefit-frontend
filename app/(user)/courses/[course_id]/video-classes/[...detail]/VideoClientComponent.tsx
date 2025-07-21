@@ -29,7 +29,7 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
   return (
     <div className="mb-16">
       <div className="flex lg:justify-center justify-normal lg:items-center mb-4 flex-col gap-3 lg:gap-10">
-        <span className="font-bold font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px]">
+        <span className="font-bold font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-4xl">
           Circuit {cIdx + 1}: {circuit.name}
         </span>
         <div className="text-[#737373] mb-2">{circuit.description}</div>
@@ -66,14 +66,17 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
               <Dialog key={exercise.id}>
                 <DialogTrigger asChild>
                   <div
-                    className="text-xl cursor-pointer"
+                    className="text-lg cursor-pointer"
                     tabIndex={0}
                     aria-label={`Open exercise ${exercise.circuit_exercise_title}`}
                   >
                     <div className="hidden md:block">
                       <div className="relative group cursor-pointer">
                         <img
-                          src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/400?text=shefit.vn&font=Oswald'}
+                          src={
+                            getYouTubeThumbnail(exercise.youtube_url) ||
+                            'https://placehold.co/400?text=shefit.vn&font=Oswald'
+                          }
                           alt=""
                           className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
                         />
@@ -85,8 +88,8 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
 
                       <div className="flex justify-between">
                         <div>
-                          <p className="font-bold text-wrap text-xl lg:text-2xl">{exercise.circuit_exercise_title}</p>
-                          <p className="text-[#737373] text-base lg:text-xl text-wrap">
+                          <p className="font-bold text-wrap text-lg lg:text-xl">{exercise.circuit_exercise_title}</p>
+                          <p className="text-[#737373] text-sm lg:text-lg text-wrap">
                             {exercise.circuit_exercise_description}
                           </p>
                         </div>
@@ -100,7 +103,10 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
                       <div className="flex relative">
                         <div className="relative group cursor-pointer w-1/3 flex-shrink-0">
                           <img
-                            src={getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/400?text=shefit.vn&font=Oswald'}
+                            src={
+                              getYouTubeThumbnail(exercise.youtube_url) ||
+                              'https://placehold.co/400?text=shefit.vn&font=Oswald'
+                            }
                             alt=""
                             className="aspect-square object-cover rounded-xl"
                             width={300}
@@ -113,8 +119,8 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
                         </div>
 
                         <div className="flex-1 pl-3 flex flex-col">
-                          <p className="font-bold text-base lg:text-xl">{exercise.circuit_exercise_title}</p>
-                          <p className="text-[#737373] text-xs lg:text-base">{exercise.circuit_exercise_description}</p>
+                          <p className="font-bold text-sm lg:text-lg">{exercise.circuit_exercise_title}</p>
+                          <p className="text-[#737373] text-xs lg:text-sm">{exercise.circuit_exercise_description}</p>
                         </div>
 
                         <div className="absolute top-0 right-0">

@@ -27,10 +27,10 @@ export function SectionOne({ data }: { data: DataType['section_1'] }) {
         <div className="absolute inset-0 bg-gradient-to-r from-transparent from-50% to-black hidden lg:block" />
       </div>
       <div className="lg:absolute lg:inset-y-0 lg:left-[60%] lg:right-0 flex flex-col justify-center items-center lg:items-start gap-3 bg-[#FFA5A5] lg:bg-transparent text-center lg:text-start p-2 lg:p-3 lg:max-w-[600px] px-4 lg:px-0">
-        <h2 className="font-[family-name:var(--font-coiny)] text-white text-3xl lg:text-[40px] lg:leading-[47px] font-bold mt-2 lg:mt-0">
+        <h2 className="font-[family-name:var(--font-coiny)] text-white text-3xl lg:text-4xl font-bold mt-2 lg:mt-0">
           {data.title}
         </h2>
-        <div className="flex gap-1 text-[#FB4A64] text-base lg:text-xl font-bold flex-wrap justify-center lg:justify-start">
+        <div className="flex gap-1 text-[#FB4A64] text-sm lg:text-lg font-bold flex-wrap justify-center lg:justify-start">
           {data.features.map((item, index) => (
             <Fragment key={index}>
               {index > 0 && <>&#183;</>}
@@ -38,10 +38,10 @@ export function SectionOne({ data }: { data: DataType['section_1'] }) {
             </Fragment>
           ))}
         </div>
-        <div className="text-neutral-200 text-base lg:text-xl">{data.description}</div>
+        <div className="text-neutral-200 text-sm lg:text-lg">{data.description}</div>
         <MainButton
           text={data.cta.text}
-          className="rounded-full text-base lg:text-xl mb-2"
+          className="rounded-full text-sm lg:text-lg mb-2"
           size="lg"
           href={data.cta.href}
         />
@@ -54,13 +54,11 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
   return (
     <div className="my-8 lg:my-4">
       <div className="lg:max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4 py-8 lg:py-12 px-8 lg:px-16">
-        <h3 className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl lg:text-[40px] lg:leading-[47px] font-bold">
+        <h3 className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-2xl lg:text-4xl font-bold">
           {data.subtitle}
         </h3>
-        <h2 className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[47px] font-bold">
-          {data.title}
-        </h2>
-        <p className="text-[#FB4A64] text-base lg:text-xl">{data.description}</p>
+        <h2 className="font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl font-bold">{data.title}</h2>
+        <p className="text-[#FB4A64] text-sm lg:text-lg">{data.description}</p>
       </div>
       <img src={data.image} alt={data.image} className="aspect-[440/450] w-full max-w-full block lg:hidden" />
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-[120px] items-center px-8 lg:px-16">
@@ -71,7 +69,7 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
             className="aspect-[1065/746] rounded-md w-full max-w-full hidden lg:block"
           />
         </div>
-        <div className="lg:col-span-2 flex flex-col gap-6 text-base lg:text-xl">
+        <div className="lg:col-span-2 flex flex-col gap-6 text-sm lg:text-lg">
           <div className="hidden lg:flex lg:flex-col lg:items-start gap-6">
             {data.features.map((feature, index) => (
               <div key={index} className="flex items-start gap-4 text-ring">
@@ -81,14 +79,14 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
                   {index === 2 && <CupIcon size={32} />}
                 </span>
                 <div className="space-y-2">
-                  <h4 className="uppercase text-lg lg:text-3xl font-semibold text-[#FF7873]">{feature.title}</h4>
-                  <p className="text-[#1A1A1A] text-base lg:text-xl">{feature.description}</p>
+                  <h4 className="uppercase text-base lg:text-2xl font-semibold text-[#FF7873]">{feature.title}</h4>
+                  <p className="text-[#1A1A1A] text-sm lg:text-lg">{feature.description}</p>
                 </div>
               </div>
             ))}
             <MainButton
               text={data.cta.text}
-              className="rounded-full text-base lg:text-xl w-[296px] h-14"
+              className="rounded-full text-sm lg:text-lg w-[296px] h-14"
               size="lg"
               href={data.cta.href}
             />
@@ -103,13 +101,13 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
                     {index === 1 && <DumbbellIcon size={24} />}
                     {index === 2 && <CupIcon size={24} />}
                   </span>
-                  <h4 className="text-[#FF7873] text-lg font-semibold">{feature.title}</h4>
+                  <h4 className="text-[#FF7873] text-base font-semibold">{feature.title}</h4>
                 </div>
-                <p className="text-neutral-800 text-sm px-2">{feature.description}</p>
+                <p className="text-neutral-800 text-xs px-2">{feature.description}</p>
               </div>
             ))}
             <div className="mt-6 flex justify-center">
-              <MainButton text={data.cta.text} className="rounded-full text-base h-9" size="lg" href={data.cta.href} />
+              <MainButton text={data.cta.text} className="rounded-full text-sm h-9" size="lg" href={data.cta.href} />
             </div>
           </div>
         </div>
@@ -136,10 +134,8 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
     <div className="pt-8 lg:pt-24">
       <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4 px-6 lg:px-12 mb-8 lg:mb-[74px]">
-          <h2 className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[40px] xl:text-5xl xl:leading-[56px] font-bold">
-            {data.title}
-          </h2>
-          <p className="text-[#FB4A64] text-base lg:text-xl">{data.description}</p>
+          <h2 className="font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl font-bold">{data.title}</h2>
+          <p className="text-[#FB4A64] text-sm lg:text-lg">{data.description}</p>
         </div>
         <div className="max-w-7xl mx-auto">
           <div
@@ -157,22 +153,22 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                 <Link href={'#'}>
                   <div
                     className={cn(
-                      'group flex items-center gap-2 text-base lg:text-lg text-background font-medium rounded-md p-3',
+                      'group flex items-center gap-2 text-sm lg:text-base text-background font-medium rounded-md p-3',
                       mIndex === 0 && 'bg-[#FFAEB0]',
                       mIndex === 1 && 'bg-[#FC6363]',
                       mIndex === 2 && 'bg-[#B60606]'
                     )}
                   >
                     <PersonIcon />
-                    <span className="text-lg lg:text-xl font-semibold">{sub.name}</span>
+                    <span className="text-sm lg:text-base font-semibold">{sub.name}</span>
                     <span className="ml-auto transform transition-transform duration-300 group-hover:translate-x-1">
                       <ArrowIcon size={20} />
                     </span>
                   </div>
-                  <div className="flex-1 flex items-center justify-center text-lg lg:text-xl mt-4">
+                  <div className="flex-1 flex items-center justify-center text-base lg:text-lg mt-4">
                     <HtmlContent
                       content={sub.description_homepage}
-                      className="text-center px-2 text-neutral-500 text-base lg:text-xl whitespace-pre-line"
+                      className="text-center px-2 text-neutral-500 text-xs lg:text-base whitespace-pre-line"
                     />
                   </div>
                 </Link>
@@ -188,13 +184,15 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                               className="rounded-md w-full object-cover aspect-[401/566]"
                             />
                             <div className="absolute top-8 left-2 px-2 w-[calc(100%-16px)] h-full">
-                              <p className="text-white text-lg font-medium uppercase mb-4">{course.difficulty_level}</p>
-                              <p className="text-white text-[40px] leading-[40px] uppercase font-[family-name:var(--font-black-ops-one)]">
+                              <p className="text-white text-base font-medium uppercase mb-4">
+                                {course.difficulty_level}
+                              </p>
+                              <p className="text-white text-4xl uppercase font-[family-name:var(--font-black-ops-one)]">
                                 {course.course_name}
                               </p>
                             </div>
                           </div>
-                          <p className="text-center text-neutral-500 text-base lg:text-xl">
+                          <p className="text-center text-neutral-500 text-sm lg:text-lg">
                             {course.description_homepage_1}
                           </p>
                         </div>
@@ -210,15 +208,15 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                               className="rounded-md w-full object-cover aspect-[5/7]"
                             />
                             <div className="absolute top-8 left-2 px-2 w-[calc(100%-16px)] h-full">
-                              <p className="text-white text-lg font-medium uppercase mb-4">
+                              <p className="text-white text-base font-medium uppercase mb-4">
                                 {mealPlan.meal_plan_goal?.name}
                               </p>
-                              <p className="text-white text-[40px] leading-[40px] uppercase font-[family-name:var(--font-black-ops-one)]">
+                              <p className="text-white text-4xl uppercase font-[family-name:var(--font-black-ops-one)]">
                                 {mealPlan.title}
                               </p>
                             </div>
                           </div>
-                          <p className="text-center text-neutral-500 text-lg lg:text-xl">
+                          <p className="text-center text-neutral-500 text-sm lg:text-lg">
                             {mealPlan.description_homepage_1}
                           </p>
                         </div>
@@ -243,11 +241,11 @@ export function SectionFour({ data }: { data: DataType['section_4'] }) {
       <div className="container mx-auto">
         <div className="lg:bg-[#FF7873] bg-[#FFA5A5] lg:py-8 py-6 rounded-xl px-4">
           <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-2 lg:gap-4 text-background">
-            <HtmlContent content={data.title} className="text-xl lg:text-[40px] lg:leading-10 font-bold px-8 lg:px-0" />
+            <HtmlContent content={data.title} className="text-lg lg:text-4xl font-bold px-8 lg:px-0" />
             <p className="text-base lg:text-2xl whitespace-pre-line">{data.description}</p>
             <MainButton
               text={data.cta.text}
-              className="rounded-full w-full h-8 lg:h-[81px] text-sm lg:text-2xl font-bold"
+              className="rounded-full w-full h-8 lg:h-[81px] text-xs lg:text-xl font-bold"
               size="lg"
               href={data.cta.href}
             />
@@ -263,10 +261,10 @@ export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
     <div className="py-8 lg:py-12 px-8 sm:px-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4">
-          <h3 className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl lg:text-[40px] lg:leading-[47px] font-bold">
+          <h3 className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-2xl lg:text-4xl font-bold">
             Ăn uống khoa học
           </h3>
-          <h2 className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[47px] font-bold">
+          <h2 className="font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl font-bold">
             “Độ” dáng nhanh hơn với menu theo từng mục tiêu từ chuyên gia
           </h2>
         </div>
@@ -283,7 +281,7 @@ export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
                         className="rounded-lg w-full object-cover aspect-[4/3]"
                       />
                       <div className="absolute bottom-0 inset-x-0 h-[72px] lg:h-24 bg-[#28282894] flex items-center justify-between text-background rounded-b-lg px-3">
-                        <p className="font-medium text-2xl lg:text-3xl break-words max-w-[90%]">{item.title}</p>
+                        <p className="font-medium text-xl lg:text-2xl break-words max-w-[90%]">{item.title}</p>
                         <div className="w-10 h-10 flex-shrink-0 items-center">
                           <MainButton
                             size="icon"
@@ -304,7 +302,7 @@ export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
           </Carousel>
           <MainButton
             text="Xem menu"
-            className="rounded-full mt-4 w-44 text-lg lg:text-2xl bg-[#FB4A64] lg:bg-[#13D8A7]"
+            className="rounded-full mt-4 w-44 text-base lg:text-xl bg-[#FB4A64] lg:bg-[#13D8A7]"
             size="lg"
             href="/meal-plans"
           />
@@ -324,10 +322,10 @@ export async function SectionEight({ data }: { data: DataType['section_8'] }) {
     <div className="py-8 lg:py-12 px-8 sm:px-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-4">
-          <h2 className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl lg:text-[40px] lg:leading-[47px] font-bold">
+          <h2 className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-2xl lg:text-4xl font-bold">
             {data.title}
           </h2>
-          <p className="text-neutral-500 text-base">{data.description}</p>
+          <p className="text-neutral-500 text-sm">{data.description}</p>
         </div>
         <div className="space-y-4">
           <Carousel>
@@ -341,7 +339,7 @@ export async function SectionEight({ data }: { data: DataType['section_8'] }) {
                         alt={item.name}
                         className="rounded-2xl w-full object-cover aspect-square"
                       />
-                      <p className="text-lg font-medium">{item.name}</p>
+                      <p className="text-base font-medium">{item.name}</p>
                       <p className="text-[#00C7BE] font-medium">{VND.format(item.price)}</p>
                     </div>
                   </Link>
@@ -354,7 +352,7 @@ export async function SectionEight({ data }: { data: DataType['section_8'] }) {
           <div className="flex justify-center">
             <MainButton
               text="Xem gian hàng"
-              className="rounded-full mx-auto w-44 lg:w-[296px] text-lg lg:text-2xl"
+              className="rounded-full mx-auto w-44 lg:w-[296px] text-base lg:text-xl"
               size="lg"
               href="/products"
             />
@@ -370,7 +368,7 @@ export async function SectionNine({ data }: { data: DataType['section_9'] }) {
     <div className="py-8 lg:py-12 px-4 sm:px-6">
       <div className="mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-[400px] mx-auto text-center">
-          <h2 className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[47px] font-bold">
+          <h2 className="font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl font-bold">
             Dẫn dắt bởi <br />
             chuyên gia hàng đầu
           </h2>
@@ -389,8 +387,8 @@ export async function SectionNine({ data }: { data: DataType['section_9'] }) {
                         className="object-cover w-full h-full aspect-[409/588]"
                       />
                       <div className="text-center space-y-1 absolute bottom-5 left-0 w-full text-white">
-                        <p className="text-[20px] lg:text-[40px] font-semibold">{coach.name}</p>
-                        <p className="text-[16px] lg:text-[24px]">{coach.detail}</p>
+                        <p className="text-lg lg:text-4xl font-semibold">{coach.name}</p>
+                        <p className="text-sm lg:text-xl">{coach.detail}</p>
                       </div>
                     </div>
                   </div>
@@ -415,10 +413,10 @@ export function SectionTen({ data }: { data: DataType['section_10'] }) {
         <div className="bg-[#FF78734D] absolute inset-0 transition-opacity" />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-background">
           <div className="max-w-2xl space-y-4">
-            <h2 className="uppercase font-[family-name:var(--font-coiny)] text-2xl lg:text-[40px] lg:leading-[47px] lg:font-bold">
+            <h2 className="uppercase font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl lg:font-bold">
               {data.top.title}
             </h2>
-            <p className="text-[16px] lg:text-[24px]">{data.top.description}</p>
+            <p className="text-sm lg:text-xl">{data.top.description}</p>
           </div>
         </div>
       </div>
@@ -430,10 +428,10 @@ export function SectionTen({ data }: { data: DataType['section_10'] }) {
         <div className="bg-[#FF78734D] absolute inset-0 transition-opacity" />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-background">
           <div className="max-w-2xl space-y-4">
-            <h2 className="uppercase font-[family-name:var(--font-coiny)] text-2xl lg:text-[40px] lg:leading-[47px] lg:font-bold">
+            <h2 className="uppercase font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl lg:font-bold">
               {data.bottom.title}
             </h2>
-            <p className="text-[16px] lg:text-[24px]">{data.bottom.description}</p>
+            <p className="text-sm lg:text-xl">{data.bottom.description}</p>
           </div>
         </div>
       </div>
@@ -445,35 +443,35 @@ export function SectionEleven({ data }: { data: DataType['section_11'] }) {
   return (
     <div className="pb-8 pt-20 lg:py-12 mb-12 max-lg:px-5">
       <div className="max-lg:space-y-4">
-        <h2 className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[47px] w-full text-black block lg:hidden text-center">
+        <h2 className="font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl w-full text-black block lg:hidden text-center">
           Cộng đồng <span className="text-[#FF7873]">Shefit</span> <br /> Nơi chia sẻ hành trình độ dáng của bạn
         </h2>
         <div className="relative">
           <img src={data.image} alt={data.image} className="aspect-video w-full object-cover max-lg:rounded-[10px]" />
           <div className="absolute top-0 right-0 h-full w-1/2 flex-col items-center justify-center px-8 text-background hidden lg:flex">
             <div className="max-w-xl mx-auto text-center flex flex-col items-center gap-4">
-              <h2 className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[47px] font-bold w-full">
+              <h2 className="font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl font-bold w-full">
                 Cộng đồng <span className="text-[#FF7873]">Shefit</span>
               </h2>
-              <h2 className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[47px] font-bold w-full">
+              <h2 className="font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl font-bold w-full">
                 Nơi chia sẻ hành trình độ dáng của bạn
               </h2>
-              <p className="text-[16px] lg:text-[20px] w-full">{data.description}</p>
+              <p className="text-sm lg:text-lg w-full">{data.description}</p>
               <FacebookIcon size={56} />
               <MainButton
                 text={data.cta.text}
-                className="rounded-full w-44 lg:w-[444px] lg:h-16 text-lg lg:text-2xl"
+                className="rounded-full w-44 lg:w-[444px] lg:h-16 text-base lg:text-xl"
                 size="lg"
                 href={data.cta.href}
               />
             </div>
           </div>
           <div className="flex flex-col gap-4 lg:hidden items-center justify-center text-center">
-            <p className="px-5 mt-4 text-[16px] lg:text-[20px] w-full max-lg:text-gray-500">{data.description}</p>
+            <p className="px-5 mt-4 text-sm lg:text-lg w-full max-lg:text-gray-500">{data.description}</p>
             <FacebookIcon size={32} />
             <MainButton
               text={data.cta.text}
-              className="rounded-full w-44 text-lg lg:text-2xl"
+              className="rounded-full w-44 text-base lg:text-xl"
               size="lg"
               href={data.cta.href}
             />

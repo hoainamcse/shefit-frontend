@@ -138,12 +138,13 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
       const subscriptions = await getUserSubscriptions(session?.userId!.toString())
 
       // Find all subscriptions that contain the current course
-      const subscriptionsWithCourse = subscriptions.data?.filter((subscription) => {
-        const hasCourses = subscription.subscription && subscription.subscription.courses
-        if (!hasCourses) return false
+      const subscriptionsWithCourse =
+        subscriptions.data?.filter((subscription) => {
+          const hasCourses = subscription.subscription && subscription.subscription.courses
+          if (!hasCourses) return false
 
-        return subscription.subscription.courses.some(course => Number(course.id) === Number(courseId))
-      }) || []
+          return subscription.subscription.courses.some((course) => Number(course.id) === Number(courseId))
+        }) || []
 
       let hasAccess = false
 
@@ -234,7 +235,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
                 className="
                     rounded-full mx-[10px] my-5 w-[63px] h-[64px]
                     flex flex-col items-center justify-center
-                    font-medium text-xl cursor-pointer
+                    font-medium text-lg cursor-pointer
                     data-[state=active]:bg-[#91EBD5] data-[state=active]:text-white
                     bg-transparent hover:bg-[#91EBD5]/10
                     transition-colors duration-200"
@@ -261,7 +262,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
         {Array.from(new Set(live.data.map((item: LiveDayWithSessions) => item.day_of_week)) as Set<string>).map(
           (day) => (
             <TabsContent key={day} value={day} className="ml-2 mt-10">
-              <div className="space-y-2 text-sm leading-7 text-gray-600 dark:text-gray-500 flex flex-col gap-5">
+              <div className="space-y-2 text-xs leading-7 text-gray-600 dark:text-gray-500 flex flex-col gap-5">
                 {live.data
                   .filter((item: LiveDayWithSessions) => item.day_of_week === day)
                   .map((dayItem: LiveDayWithSessions) =>
@@ -270,22 +271,24 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
                       .map((session_: Session) => (
                         <div key={session_.id} className="flex justify-between">
                           <div>
-                            <p className="font-[family-name:var(--font-coiny)] text-xl lg:text-3xl flex gap-2">
+                            <p className="font-[family-name:var(--font-coiny)] text-lg lg:text-2xl flex gap-2">
                               {session_.name}
                             </p>
-                            <p className="text-[#737373] text-base lg:text-xl">
+                            <p className="text-[#737373] text-sm lg:text-lg">
                               {session_.description} / {formatToVNTime(session_.start_time)} -{' '}
                               {formatToVNTime(session_.end_time)}
                             </p>
                           </div>
                           {isClassAvailable(session_.start_time) ? (
                             <div className="cursor-pointer" onClick={(e) => handleJoinClass(e, session_)}>
-                              <div className="text-primary text-base lg:text-xl">
+                              <div className="text-primary text-sm lg:text-lg">
                                 {isCheckingAccess ? 'Đang kiểm tra...' : 'Vào lớp'}
                               </div>
                             </div>
                           ) : (
-                            <div className={cn('text-gray-400 text-base lg:text-xl cursor-not-allowed', 'relative group')}>
+                            <div
+                              className={cn('text-gray-400 text-sm lg:text-lg cursor-not-allowed', 'relative group')}
+                            >
                               Vào lớp
                               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                                 Lớp học chưa bắt đầu
@@ -305,18 +308,18 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
         <Dialog defaultOpen={true} onOpenChange={(open) => !open && setShowLoginDialog(false)}>
           <DialogContent className="bg-white p-6 rounded-2xl shadow-xl border-0 max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+              <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
             </DialogHeader>
             <div className="flex flex-col items-center text-center gap-6">
-              <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
+              <p className="text-base">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
               <div className="flex gap-4 justify-center w-full px-10">
                 <div className="flex-1">
-                  <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>
+                  <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleBuyPackageClick}>
                     Mua gói Member
                   </Button>
                 </div>
                 <div className="flex-1">
-                  <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
+                  <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleLoginClick}>
                     Đăng nhập
                   </Button>
                 </div>
@@ -330,14 +333,14 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
         <Dialog defaultOpen={true} onOpenChange={(open) => !open && setShowSubscribeDialog(false)}>
           <DialogContent className="bg-white p-6 rounded-2xl shadow-xl border-0 max-w-md">
             <DialogHeader className="items-center">
-              <DialogTitle className="text-lg text-center mb-4 text-[#737373]">
+              <DialogTitle className="text-base text-center mb-4 text-[#737373]">
                 MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP
               </DialogTitle>
             </DialogHeader>
             <div className="flex flex-col items-center gap-6">
               <div className="w-full">
                 <Button
-                  className="bg-[#13D8A7] hover:bg-[#11c296] text-white rounded-full w-full text-lg font-medium"
+                  className="bg-[#13D8A7] hover:bg-[#11c296] text-white rounded-full w-full text-base font-medium"
                   onClick={handleBuyPackageClick}
                 >
                   Mua gói Member

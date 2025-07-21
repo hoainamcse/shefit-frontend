@@ -251,7 +251,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
           href="/products"
           className="flex cursor-pointer items-center lg:mb-5 mb-2 lg:ml-8 ml-4 font-semibold gap-2"
         >
-          <BackIconBlack /> <span className="ml-1 text-base lg:text-xl">Quay về</span>
+          <BackIconBlack /> <span className="ml-1 text-sm lg:text-lg">Quay về</span>
         </Link>
         <div className="xl:w-4/5 max-lg:w-full xl:flex justify-between max-lg:block">
           <div className="px-8 w-full">
@@ -276,7 +276,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
               <CarouselNext />
             </Carousel>
           </div>
-          <div className="xl:w-2/5 max-lg:w-full xl:text-xl flex flex-col md:gap-3 gap-2 lg:px-8 px-4">
+          <div className="xl:w-2/5 max-lg:w-full xl:text-lg flex flex-col md:gap-3 gap-2 lg:px-8 px-4">
             {product.variants.some((variant: any) => variant.color_id !== null) && (
               <div className="flex flex-col gap-2 mb-4">
                 <div className="flex gap-2">
@@ -325,17 +325,17 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
               </div>
             )}
 
-            <p className="font-medium xl:text-3xl text-base">{product.name}</p>
-            <p className="text-[#737373] text-base lg:text-xl mt-1">
+            <p className="font-medium xl:text-2xl text-lg">{product.name}</p>
+            <p className="text-[#737373] text-sm lg:text-lg mt-1">
               {selectedColorId ? colors.find((color) => color.id === selectedColorId)?.name : ''}
             </p>
-            <p className="text-[#00C7BE] text-xl lg:text-2xl font-semibold">{product.price.toLocaleString()} vnđ</p>
+            <p className="text-[#00C7BE] text-lg lg:text-xl font-semibold">{product.price.toLocaleString()} vnđ</p>
 
             {product.variants.some(
               (variant: any) => variant.size_id !== null && (!selectedColorId || variant.color_id === selectedColorId)
             ) && (
               <div className="flex gap-2 md:my-4 my-0 items-center">
-                <div className="text-base lg:text-xl">Size:</div>
+                <div className="text-sm lg:text-lg">Size:</div>
                 <div className="flex flex-wrap gap-2">
                   {Array.from(
                     new Set(
@@ -360,7 +360,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
                     return (
                       <Button
                         key={sizeId}
-                        className="w-10 h-10 text-base lg:text-xl font-semibold"
+                        className="w-10 h-10 text-sm lg:text-lg font-semibold"
                         disabled={!hasInStockVariant || !selectedColorId}
                         onClick={() => {
                           if (variant) {
@@ -380,23 +380,23 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
               </div>
             )}
             <div className="flex gap-3 items-center">
-              <div className="text-nowrap lg:text-xl text-base">Số lượng:</div>
+              <div className="text-nowrap lg:text-lg text-sm">Số lượng:</div>
               <div className="flex items-center gap-2">
                 <Button
-                  className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-base lg:text-xl font-bold items-center flex border-2"
+                  className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-sm lg:text-lg font-bold items-center flex border-2"
                   onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
                 >
                   <MinusIcon />
                 </Button>
                 <Input
-                  className="w-24 text-center border-2 border-[#737373] text-base lg:text-xl font-bold pr-0 p-0"
+                  className="w-24 text-center border-2 border-[#737373] text-sm lg:text-lg font-bold pr-0 p-0"
                   type="number"
                   min={1}
                   value={quantity}
                   onChange={(e) => setQuantity(Number(e.target.value) || 1)}
                 />
                 <Button
-                  className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-base lg:text-xl font-bold items-center flex border-2"
+                  className="bg-white text-black border-[#737373] hover:bg-[#dbdbdb] size-9 text-sm lg:text-lg font-bold items-center flex border-2"
                   onClick={() => setQuantity((prev) => prev + 1)}
                 >
                   <AddIcon />
@@ -406,14 +406,14 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
             <div className="w-full flex gap-3 justify-center my-10 md:my-4">
               <Button
                 variant="outline"
-                className="w-full rounded-full bg-[#13D8A7] hover:bg-[#11c296] text-white hover:text-white text-base lg:text-xl"
+                className="w-full rounded-full bg-[#13D8A7] hover:bg-[#11c296] text-white hover:text-white text-sm lg:text-lg"
                 disabled={!(hasDefaultVariant || selectedVariantId) || isBuyingNow}
                 onClick={handleBuyNow}
               >
                 {isBuyingNow ? 'Đang xử lý...' : 'Mua ngay'}
               </Button>
               <Button
-                className="border-[#13D8A7] border-2 text-[#13D8A7] rounded-full w-full bg-white hover:bg-[#11c29628] text-base lg:text-xl"
+                className="border-[#13D8A7] border-2 text-[#13D8A7] rounded-full w-full bg-white hover:bg-[#11c29628] text-sm lg:text-lg"
                 disabled={!(hasDefaultVariant || selectedVariantId) || isAdding}
                 onClick={handleAddToCart}
               >
@@ -423,17 +423,17 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
           </div>
         </div>
         <div className="mb-20 lg:px-8 px-4 mt-0 md:mt-16">
-          <p className="text-[#737373] xl:text-xl max-lg:text-base">{product.description}</p>
+          <p className="text-[#737373] xl:text-lg max-lg:text-sm">{product.description}</p>
         </div>
 
         {product.muscle_groups.length > 0 && (
           <div className="lg:px-8 px-4 mt-0 md:mt-16">
-            <div className="font-[family-name:var(--font-coiny)] font-bold text-ring lg:text-[40px] mb-5 text-3xl">
+            <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl lg:text-4xl mb-5 ">
               Tính năng
             </div>
             <div className="grid xl:grid-cols-12 lg:grid-cols-10 md:grid-cols-6 sm:grid-cols-4 gap-10">
               {product.muscle_groups.map((muscleGroup) => (
-                <div key={muscleGroup.id} className="lg:text-xl text-base">
+                <div key={muscleGroup.id} className="lg:text-lg text-sm">
                   <div className="group">
                     <img
                       src={muscleGroup.image}
@@ -452,14 +452,14 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
       <Dialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center text-center gap-6">
-            <p className="text-lg text-[#737373] uppercase">Đăng nhập để thêm sản phẩm vào giỏ hàng</p>
+            <p className="text-base text-[#737373] uppercase">Đăng nhập để thêm sản phẩm vào giỏ hàng</p>
             <div className="flex gap-4 justify-center w-full px-10">
               <div className="flex-1">
                 <Button
-                  className="bg-[#13D8A7] hover:bg-[#13D8A7]/90 rounded-full w-full text-lg"
+                  className="bg-[#13D8A7] hover:bg-[#13D8A7]/90 rounded-full w-full text-base"
                   onClick={handleLoginClick}
                 >
                   Đăng nhập

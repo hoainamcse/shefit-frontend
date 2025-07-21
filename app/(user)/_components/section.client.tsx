@@ -63,7 +63,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
           <div className="max-w-[500px] px-4 lg:px-6 mx-auto flex flex-col items-center justify-center text-center gap-4">
             <HtmlContent
               content={data.title}
-              className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[47px] font-bold"
+              className="font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl font-bold"
             />
           </div>
 
@@ -71,10 +71,10 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
             <Tabs defaultValue="video" className="w-full">
               <div className="flex justify-center mb-8">
                 <TabsList className="bg-transparent shadow-none">
-                  <TabsTrigger value="video" className="px-8 text-primary text-lg font-medium rounded-xl">
+                  <TabsTrigger value="video" className="px-8 text-primary text-base font-medium rounded-xl">
                     Video
                   </TabsTrigger>
-                  <TabsTrigger value="zoom" className="px-8 text-primary text-lg font-medium rounded-xl">
+                  <TabsTrigger value="zoom" className="px-8 text-primary text-base font-medium rounded-xl">
                     Zoom
                   </TabsTrigger>
                 </TabsList>
@@ -82,7 +82,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
 
               <TabsContent value="video">
                 <div className="mx-auto text-center mb-6 lg:w-[70%] xl:w-[50%]">
-                  <p className="text-[#FB4A64] text-base lg:text-xl">{data.video?.description}</p>
+                  <p className="text-[#FB4A64] text-sm lg:text-lg">{data.video?.description}</p>
                 </div>
                 {data.video?.courses?.length ? (
                   <div className="relative w-full mx-auto py-4">
@@ -104,14 +104,6 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                     <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                                       <div className="absolute inset-0 flex flex-col">
                                         <div className="relative w-full h-full">
-                                          <div className="absolute top-8 left-2 px-2 w-[calc(100%-16px)] h-full">
-                                            <p className="text-white text-lg font-medium uppercase mb-4">
-                                              Khóa tập luyện với
-                                            </p>
-                                            <p className="text-white text-[40px] leading-[40px] uppercase font-[family-name:var(--font-black-ops-one)]">
-                                              {course.form_categories?.[0]?.name}
-                                            </p>
-                                          </div>
                                           <img
                                             src={course.cover_image}
                                             alt={course.course_name}
@@ -139,14 +131,6 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                 <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                                   <div className="relative">
                                     <div className="relative aspect-[273/381]">
-                                      <div className="absolute top-6 left-2 px-2 z-10">
-                                        <p className="text-white text-lg font-medium uppercase mb-2">
-                                          Khóa tập luyện với
-                                        </p>
-                                        <p className="text-white text-[40px] leading-[40px] uppercase font-[family-name:var(--font-black-ops-one)]">
-                                          {course.form_categories?.[0]?.name}
-                                        </p>
-                                      </div>
                                       <img
                                         src={course.cover_image}
                                         alt={course.course_name}
@@ -171,7 +155,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
 
               <TabsContent value="zoom">
                 <div className="mx-auto text-center mb-6 lg:w-[70%] xl:w-[50%]">
-                  <p className="text-[#FB4A64] text-base lg:text-xl">{data.zoom?.description}</p>
+                  <p className="text-[#FB4A64] text-sm lg:text-lg">{data.zoom?.description}</p>
                 </div>
                 {data.zoom?.courses?.length ? (
                   <div className="relative w-full mx-auto py-4">
@@ -193,14 +177,6 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                     <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                                       <div className="absolute inset-0 flex flex-col">
                                         <div className="relative w-full h-full">
-                                          <div className="absolute top-8 left-2 px-2 w-[calc(100%-16px)] h-full ">
-                                            <p className="text-white text-lg font-medium uppercase mb-4">
-                                              Khóa tập luyện với
-                                            </p>
-                                            <p className="text-white text-[40px] leading-[40px] uppercase font-[family-name:var(--font-black-ops-one)]">
-                                              {course.form_categories?.[0]?.name}
-                                            </p>
-                                          </div>
                                           <img
                                             src={course.cover_image}
                                             alt={course.course_name}
@@ -228,14 +204,6 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                 <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                                   <div className="relative">
                                     <div className="relative aspect-[273/381]">
-                                      <div className="absolute top-6 left-2 px-2 z-10">
-                                        <p className="text-white text-lg font-medium uppercase mb-2">
-                                          Khóa tập luyện với
-                                        </p>
-                                        <p className="text-white text-[40px] leading-[40px] uppercase font-[family-name:var(--font-black-ops-one)]">
-                                          {course.form_categories?.[0]?.name}
-                                        </p>
-                                      </div>
                                       <img
                                         src={course.cover_image}
                                         alt={course.course_name}
@@ -347,12 +315,6 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                         <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                           <div className="absolute inset-0 flex flex-col">
                             <div className="relative w-full h-full">
-                              <div className="absolute top-8 left-2 px-2 w-[calc(100%-16px)] h-full ">
-                                <p className="text-white text-lg font-medium uppercase mb-4">Khóa tập luyện với</p>
-                                <p className="text-white text-[40px] leading-[40px] uppercase font-[family-name:var(--font-black-ops-one)]">
-                                  {course.form_categories?.[0]?.name}
-                                </p>
-                              </div>
                               <img
                                 src={course.cover_image}
                                 alt={course.course_name}
@@ -381,12 +343,6 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                     <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                       <div className="relative">
                         <div className="relative aspect-[273/381]">
-                          <div className="absolute top-6 left-2 px-2 z-10">
-                            <p className="text-white text-lg font-medium uppercase mb-2">Khóa tập luyện với</p>
-                            <p className="text-white text-[40px] leading-[40px] uppercase font-[family-name:var(--font-black-ops-one)]">
-                              {course.form_categories?.[0]?.name}
-                            </p>
-                          </div>
                           <img
                             src={course.cover_image}
                             alt={course.course_name}
@@ -414,7 +370,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
           <div className="max-w-[500px] px-4 lg:px-6 mx-auto flex flex-col items-center justify-center text-center gap-4">
             <HtmlContent
               content={data.title}
-              className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] lg:leading-[47px] font-bold"
+              className="font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl font-bold"
             />
           </div>
 
@@ -426,7 +382,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                     <TabsTrigger
                       key={feature.id || index}
                       value={feature.id || index.toString()}
-                      className="px-8 text-primary text-lg font-medium rounded-xl"
+                      className="px-8 text-primary text-base font-medium rounded-xl"
                       onClick={() => setSelectedMethod(index)}
                     >
                       {feature.name || `Workout ${index + 1}`}
@@ -438,7 +394,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                 <div className="mx-auto text-center mb-6 px-8 lg:px-12">
                   <HtmlContent
                     content={parsedFeatures[selectedMethod].description}
-                    className="text-[#FB4A64] text-base lg:text-xl whitespace-pre-line"
+                    className="text-[#FB4A64] text-sm lg:text-lg whitespace-pre-line"
                   />
                 </div>
               )}

@@ -40,19 +40,19 @@ export default function ActionButtons({ exerciseId }: ActionButtonsProps) {
     <div className="gap-5 w-full flex justify-center">
       <Button
         onClick={() => handleSaveExercise(exerciseId)}
-        className="w-full rounded-full text-base lg:text-xl bg-[#13D8A7] text-white hover:bg-[#11c296 h-[42px] md:h-14 lg:h-[70px] border-2 border-[#13D8A7]"
+        className="w-full rounded-full text-sm lg:text-lg bg-[#13D8A7] text-white hover:bg-[#11c296 h-[42px] md:h-14 lg:h-[70px] border-2 border-[#13D8A7]"
       >
         Lưu
       </Button>
       <Dialog open={showLoginDialog} onOpenChange={(open) => setShowLoginDialog(open)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center text-center gap-6">
-            <p className="text-base lg:text-xl">ĐĂNG NHẬP ĐỂ LƯU BÀI TẬP</p>
+            <p className="text-sm lg:text-lg">ĐĂNG NHẬP ĐỂ LƯU BÀI TẬP</p>
             <div className="flex gap-4 justify-center w-full px-10">
-              <Button className="bg-[#13D8A7] rounded-full w-full text-base lg:text-xl" onClick={handleLoginClick}>
+              <Button className="bg-[#13D8A7] rounded-full w-full text-sm lg:text-lg" onClick={handleLoginClick}>
                 Đăng nhập
               </Button>
             </div>

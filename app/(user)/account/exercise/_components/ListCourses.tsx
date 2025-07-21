@@ -99,27 +99,27 @@ export function ListCourses() {
       <div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-[#13D8A7] text-white lg:text-xl text-base w-full rounded-full h-14 lg:mt-12">
+            <Button className="bg-[#13D8A7] text-white text-sm lg:text-lg w-full rounded-full h-14 lg:mt-12">
               Thêm khóa tập
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+              <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
             </DialogHeader>
             <div className="flex flex-col items-center text-center gap-6">
-              <p className="text-base lg:text-xl">HÃY ĐĂNG NHẬP & MUA GÓI ĐỂ THÊM KHÓA TẬP & THỰC ĐƠN</p>
+              <p className="text-sm lg:text-lg">HÃY ĐĂNG NHẬP & MUA GÓI ĐỂ THÊM KHÓA TẬP & THỰC ĐƠN</p>
               <div className="flex gap-4 justify-center w-full px-10">
                 <div className="flex-1">
                   <Button
-                    className="bg-[#13D8A7] rounded-full w-full text-base lg:text-xl"
+                    className="bg-[#13D8A7] rounded-full w-full text-sm lg:text-lg"
                     onClick={handleBuyPackageClick}
                   >
                     Mua gói
                   </Button>
                 </div>
                 <div className="flex-1">
-                  <Button className="bg-[#13D8A7] rounded-full w-full text-base lg:text-xl" onClick={handleLoginClick}>
+                  <Button className="bg-[#13D8A7] rounded-full w-full text-sm lg:text-lg" onClick={handleLoginClick}>
                     Đăng nhập
                   </Button>
                 </div>
@@ -142,7 +142,7 @@ export function ListCourses() {
   if (!selectedSubscription) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <p className="text-lg text-gray-500 mb-4">Vui lòng chọn gói đăng ký để xem khóa học</p>
+        <p className="text-base text-gray-500 mb-4">Vui lòng chọn gói đăng ký để xem khóa học</p>
       </div>
     )
   }
@@ -158,7 +158,7 @@ export function ListCourses() {
   if (courses.length === 0) {
     return (
       <Link href="/courses">
-        <Button className="bg-[#13D8A7] text-white text-base lg:text-xl w-full rounded-full h-14 mt-6">
+        <Button className="bg-[#13D8A7] text-white text-sm lg:text-lg w-full rounded-full h-14 mt-6">
           Thêm khóa tập
         </Button>
       </Link>
@@ -171,7 +171,7 @@ export function ListCourses() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-center"></DialogTitle>
-            <DialogDescription className="text-center text-base lg:text-xl text-[#737373]">
+            <DialogDescription className="text-center text-sm lg:text-lg text-[#737373]">
               GÓI ĐÃ HẾT HẠN HÃY GIA HẠN GÓI ĐỂ TIẾP TỤC TRUY CẬP
             </DialogDescription>
           </DialogHeader>
@@ -179,7 +179,7 @@ export function ListCourses() {
             <Button
               type="button"
               variant="default"
-              className="bg-[#13D8A7] hover:bg-[#0fb88e] text-white rounded-full w-full h-14 text-base lg:text-xl"
+              className="bg-[#13D8A7] hover:bg-[#0fb88e] text-white rounded-full w-full h-14 text-sm lg:text-lg"
               onClick={() => {
                 setRenewDialogOpen(false)
                 if (selectedSubscription?.subscription?.id) {
@@ -192,7 +192,7 @@ export function ListCourses() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-lg lg:text-xl">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-base lg:text-lg">
         {courses.map((course) => (
           <div key={course.id} className="group">
             <Link
@@ -231,13 +231,13 @@ export function ListCourses() {
                   </div>
                 </div>
                 <div className="flex justify-between">
-                  <div className="flex flex-col text-base lg:text-lg">
+                  <div className="flex flex-col text-sm lg:text-base">
                     <p className="font-medium">{course.course_name}</p>
                     <div className="flex gap-2">
-                      <p className="text-[#737373] text-base lg:text-lg">{course.trainer}</p>
+                      <p className="text-[#737373] text-sm lg:text-base">{course.trainer}</p>
                     </div>
                   </div>
-                  <div className="flex gap-2 justify-end flex-col items-end text-base lg:text-lg">
+                  <div className="flex gap-2 justify-end flex-col items-end text-sm lg:text-base">
                     {course.form_categories?.map((cat) => cat.name).join(', ')}
                   </div>
                 </div>

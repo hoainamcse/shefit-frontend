@@ -107,36 +107,35 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
     <>
       <div className="gap-5 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
         <Link href={`/meal-plans/${mealPlanId}/detail`} className="w-full" onClick={handleStartClick}>
-          <Button className="w-full rounded-full text-xl bg-[#13D8A7] text-white hover:bg-[#11c296] h-14">
+          <Button className="w-full rounded-full text-lg bg-[#13D8A7] text-white hover:bg-[#11c296] h-14">
             Bắt đầu
           </Button>
         </Link>
         {!isCheckingSubscription && !hasMealPlanInSubscription && (
           <Button
             onClick={() => handleSaveMealPlan(mealPlanId)}
-            className="w-full rounded-full text-xl bg-white text-[#13D8A7] h-14 border-2 border-[#13D8A7]"
+            className="w-full rounded-full text-lg bg-white text-[#13D8A7] h-14 border-2 border-[#13D8A7]"
           >
             Lưu
           </Button>
         )}
       </div>
 
-      {/* Login Dialog */}
       <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center text-center gap-6">
-            <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP THỰC ĐƠN</p>
+            <p className="text-sm">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP THỰC ĐƠN</p>
             <div className="flex gap-4 justify-center w-full px-10">
               <div className="flex-1">
-                <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>
+                <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleBuyPackageClick}>
                   Mua gói Member
                 </Button>
               </div>
               <div className="flex-1">
-                <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
+                <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleLoginClick}>
                   Đăng nhập
                 </Button>
               </div>
@@ -149,12 +148,12 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
       <Dialog open={showSubscribeDialog} onOpenChange={setShowSubscribeDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center text-center gap-6">
-            <p className="text-lg">HÃY MUA GÓI ĐỂ TRUY CẬP THỰC ĐƠN</p>
+            <p className="text-base">HÃY MUA GÓI ĐỂ TRUY CẬP THỰC ĐƠN</p>
             <div className="w-full px-10">
-              <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>
+              <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleBuyPackageClick}>
                 Mua gói Member
               </Button>
             </div>
@@ -164,12 +163,12 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
       <Dialog open={showLoginDialogSave} onOpenChange={setShowLoginDialogSave}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center text-center gap-6">
-            <p className="text-lg">ĐĂNG NHẬP ĐỂ LƯU THỰC ĐƠN</p>
+            <p className="text-base">ĐĂNG NHẬP ĐỂ LƯU THỰC ĐƠN</p>
             <div className="flex gap-4 justify-center w-full px-10">
-              <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
+              <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleLoginClick}>
                 Đăng nhập
               </Button>
             </div>

@@ -111,7 +111,7 @@ export function Header() {
         </div>
         <Sheet>
           {session ? null : (
-            <Link href="/auth/login" className="text-white ml-auto px-5 mt-1 text-lg block lg:hidden">
+            <Link href="/auth/login" className="text-white ml-auto px-5 mt-1 text-base block lg:hidden">
               Đăng nhập
             </Link>
           )}
@@ -122,7 +122,7 @@ export function Header() {
           </SheetTrigger>
           <SheetContent className="max-w-sm">
             <SheetHeader>
-              <SheetTitle className="text-ring uppercase text-xl font-bold">Menu</SheetTitle>
+              <SheetTitle className="text-ring uppercase text-lg font-bold">Menu</SheetTitle>
               <SheetDescription />
             </SheetHeader>
             <div>

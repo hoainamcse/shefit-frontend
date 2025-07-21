@@ -29,7 +29,7 @@ export default function PopularCoursesCarousel() {
 
   return (
     <div className="mx-auto mt-0 lg:mt-8">
-      <p className="md:text-center font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px] lg:my-14 my-4 font-bold uppercase p-3">
+      <p className="md:text-center font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-4xl lg:my-14 my-4 font-bold uppercase p-3">
         Khoá Tập Hot Nhất Tháng
       </p>
       <div className="mx-auto px-8 lg:px-6">
@@ -52,11 +52,11 @@ export default function PopularCoursesCarousel() {
                       alt={course.course_name}
                       className="object-cover rounded-xl mb-4 aspect-[401/560] w-full"
                     />
-                    <p className="font-medium text-base lg:text-xl">{course.course_name}</p>
-                    <p className="text-[#737373] text-base lg:text-xl">
+                    <p className="font-medium text-sm lg:text-lg">{course.course_name}</p>
+                    <p className="text-[#737373] text-sm lg:text-lg">
                       {course.form_categories.map((cat) => cat.name).join(', ')}
                     </p>
-                    <p className="text-[#737373] text-base lg:text-xl">{course.trainer}</p>
+                    <p className="text-[#737373] text-sm lg:text-lg">{course.trainer}</p>
                   </div>
                 </Link>
               </CarouselItem>

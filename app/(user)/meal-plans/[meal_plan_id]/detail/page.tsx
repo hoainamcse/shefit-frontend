@@ -21,7 +21,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
   return (
     <div className="flex flex-col max-w-screen-[1800px] mx-auto">
       <Link href={`/meal-plans/${meal_plan_id}`}>
-        <Button className="flex items-center gap-2 text-xl bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent  text-black shadow-none">
+        <Button className="flex items-center gap-2 text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent  text-black shadow-none">
           <BackIconBlack /> Quay về
         </Button>
       </Link>
@@ -33,8 +33,8 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
             className="w-full lg:h-[681px] h-[281px] object-cover rounded-sm lg:rounded-xl md:rounded-md"
           />
         </div>
-        <div className="mr-auto text-xl my-20 max-lg:my-0 max-lg:p-4">
-          <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl md:text-[40px] md:leading-[48px] mb-5">
+        <div className="mr-auto text-lg my-20 max-lg:my-0 max-lg:p-4">
+          <div className="font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl md:text-4xl mb-5">
             Menu theo lịch
           </div>
         </div>
@@ -44,7 +44,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
               <TabsTrigger
                 key={day.id}
                 value={`${day.day_number}`}
-                className="rounded-full mx-[10px] my-5 w-[63px] h-[64px] flex flex-col items-center justify-center font-medium text-[#000000] text-xl cursor-pointer data-[state=active]:bg-[#91EBD5] data-[state=active]:text-white bg-transparent hover:bg-[#91EBD5]/10 transition-colors duration-200"
+                className="rounded-full mx-[10px] my-5 w-[63px] h-[64px] flex flex-col items-center justify-center font-medium text-[#000000] text-lg cursor-pointer data-[state=active]:bg-[#91EBD5] data-[state=active]:text-white bg-transparent hover:bg-[#91EBD5]/10 transition-colors duration-200"
               >
                 <div>
                   Ngày <br /> {day.day_number}
@@ -65,7 +65,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
                     dishesData.map((dish: MealPlanDish) => (
                       <div
                         key={dish.id}
-                        className="mb-10 flex flex-col xl:w-full xl:text-xl max-lg:text-base gap-8 max-lg:px-4"
+                        className="mb-10 flex flex-col xl:w-full xl:text-lg max-lg:text-sm gap-8 max-lg:px-4"
                       >
                         <div>
                           <div className="font-medium">{dish.name}</div>

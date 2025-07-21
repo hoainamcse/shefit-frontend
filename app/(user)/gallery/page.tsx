@@ -76,10 +76,10 @@ export default function Gallery() {
     <div className="flex flex-col gap-10 sm:gap-16 lg:gap-[90px] pt-10 lg:pt-16 xl:pt-[93px]">
       <div>
         <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-10 lg:mb-16 xl:mb-[90px]">
-          <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px] font-semibold sm:font-bold">
+          <div className="font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-4xl font-semibold sm:font-bold">
             Bài tập theo nhóm cơ
           </div>
-          <p className="text-[#737373] text-base lg:text-xl">
+          <p className="text-[#737373] text-sm lg:text-lg">
             Xem video hướng dẫn chi tiết 1000+ bài đốt mỡ và cắt nét cơ theo từng vùng hình thể nữ giới
           </p>
         </div>
@@ -101,7 +101,7 @@ export default function Gallery() {
                     />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                   </div>
-                  <p className="font-medium lg:font-bold text-base lg:text-xl">{muscleGroup.name}</p>
+                  <p className="font-medium lg:font-bold text-sm lg:text-lg">{muscleGroup.name}</p>
                 </div>
               </Link>
             ) : (
@@ -115,7 +115,7 @@ export default function Gallery() {
                   <DialogTrigger asChild>
                     <div
                       key={`menu-${muscleGroup.id}`}
-                      className="text-xl cursor-pointer"
+                      className="text-lg cursor-pointer"
                       onClick={() => setDialogOpen(`muscle-${muscleGroup.id}`)}
                     >
                       <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
@@ -126,19 +126,19 @@ export default function Gallery() {
                         />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                       </div>
-                      <p className="font-medium lg:font-bold text-base lg:text-xl">{muscleGroup.name}</p>
+                      <p className="font-medium lg:font-bold text-sm lg:text-lg">{muscleGroup.name}</p>
                     </div>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+                      <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
                     </DialogHeader>
                     <div className="flex flex-col items-center text-center gap-6">
-                      <p className="text-base lg:text-xl">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN</p>
+                      <p className="text-sm lg:text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN</p>
                       <div className="flex gap-4 justify-center w-full px-10">
                         <div className="flex-1">
                           <Button
-                            className="bg-[#13D8A7] rounded-full w-full text-base lg:text-xl"
+                            className="bg-[#13D8A7] rounded-full w-full text-sm lg:text-lg"
                             onClick={handleBuyPackageClick}
                           >
                             Mua gói Member
@@ -146,7 +146,7 @@ export default function Gallery() {
                         </div>
                         <div className="flex-1">
                           <Button
-                            className="bg-[#13D8A7] rounded-full w-full text-base lg:text-xl"
+                            className="bg-[#13D8A7] rounded-full w-full text-sm lg:text-lg"
                             onClick={handleLoginClick}
                           >
                             Đăng nhập
@@ -163,10 +163,10 @@ export default function Gallery() {
       </div>
       <div>
         <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-10 lg:mb-16 xl:mb-[90px]">
-          <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px] font-semibold sm:font-bold">
+          <div className="font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-4xl font-semibold sm:font-bold">
             Món theo chế độ ăn
           </div>
-          <p className="text-[#737373] text-base lg:text-xl">
+          <p className="text-[#737373] text-sm lg:text-lg">
             Khám phá 500+ món ăn theo các chế độ ăn khác nhau phù hợp nhất với mục tiêu của bạn.
           </p>
         </div>
@@ -179,12 +179,12 @@ export default function Gallery() {
           {dietsData.data?.map((diet) =>
             session ? (
               <Link href={`/gallery/meal/${diet.id}`} key={diet.id}>
-                <div key={`menu-${diet.id}`} className="text-xl overflow-hidden">
+                <div key={`menu-${diet.id}`} className="text-lg overflow-hidden">
                   <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                     <img src={diet.image} alt="" className="object-cover rounded-[20px] w-full h-full" />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                   </div>
-                  <p className="font-medium lg:font-bold text-base lg:text-xl">{diet.name}</p>
+                  <p className="font-medium lg:font-bold text-sm lg:text-lg">{diet.name}</p>
                 </div>
               </Link>
             ) : (
@@ -198,30 +198,33 @@ export default function Gallery() {
                   <DialogTrigger asChild>
                     <div
                       key={`menu-${diet.id}`}
-                      className="text-xl cursor-pointer"
+                      className="text-lg cursor-pointer"
                       onClick={() => setDialogOpen(`diet-${diet.id}`)}
                     >
                       <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                         <img src={diet.image} alt="" className="object-cover rounded-[20px] w-full h-full" />
                         <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                       </div>
-                      <p className="font-medium lg:font-bold text-base lg:text-xl">{diet.name}</p>
+                      <p className="font-medium lg:font-bold text-sm lg:text-lg">{diet.name}</p>
                     </div>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+                      <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
                     </DialogHeader>
                     <div className="flex flex-col items-center text-center gap-6">
-                      <p className="text-base lg:text-xl">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN</p>
+                      <p className="text-sm lg:text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN</p>
                       <div className="flex gap-4 justify-center w-full px-10">
                         <div className="flex-1">
-                          <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleBuyPackageClick}>
+                          <Button
+                            className="bg-[#13D8A7] rounded-full w-full text-base"
+                            onClick={handleBuyPackageClick}
+                          >
                             Mua gói Member
                           </Button>
                         </div>
                         <div className="flex-1">
-                          <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
+                          <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleLoginClick}>
                             Đăng nhập
                           </Button>
                         </div>

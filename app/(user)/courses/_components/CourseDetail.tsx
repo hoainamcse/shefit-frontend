@@ -106,7 +106,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto z-10 absolute top-4 left-4 lg:left-20">
           <div className="flex items-center gap-[10px] cursor-pointer" onClick={() => router.back()}>
             <BackIcon color="#fff" style={{ marginBottom: '4px' }} />
-            <div className="text-xl text-[#fff] font-semibold">Quay về</div>
+            <div className="text-lg text-[#fff] font-semibold">Quay về</div>
           </div>
         </div>
       </div>
@@ -116,15 +116,15 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
           alt={`${courseId}`}
           className="rounded-xl w-full aspect-[1800/681] object-cover hidden lg:block"
         />
-        <div className="flex justify-between text-lg">
+        <div className="flex justify-between text-base">
           <div>
-            <p className="font-medium text-base lg:text-2xl">{course?.data?.course_name}</p>
-            <p className="text-[#737373] text-base lg:text-2xl">
+            <p className="font-medium text-sm lg:text-xl">{course?.data?.course_name}</p>
+            <p className="text-[#737373] text-sm lg:text-xl">
               {course?.data && courseLevelLabel[course.data.difficulty_level as CourseLevel]}
             </p>
-            <p className="text-[#737373] text-base lg:text-2xl">{course?.data?.trainer}</p>
+            <p className="text-[#737373] text-sm lg:text-xl">{course?.data?.trainer}</p>
           </div>
-          <div className="text-gray-500 text-base lg:text-2xl">
+          <div className="text-gray-500 text-sm lg:text-xl">
             {course?.data?.form_categories &&
               (Array.isArray(course.data.form_categories)
                 ? course.data.form_categories.map((cat: CourseForm) => courseFormLabel[cat]).join(', ')
@@ -133,12 +133,10 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         </div>
         {!showDetails && course?.data?.relationships?.subscriptions?.length > 0 && (
           <div className="flex flex-col lg:gap-5 gap-2">
-            <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl xl:text-[40px] font-bold uppercase leading-[50px]">
+            <div className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-4xl font-bold uppercase">
               Gói Member
             </div>
-            <div className="text-[#737373] text-xl lg:text-2xl">
-              Bạn cần mua các Gói Member sau để truy cập khóa tập
-            </div>
+            <div className="text-[#737373] text-lg lg:text-xl">Bạn cần mua các Gói Member sau để truy cập khóa tập</div>
             <div
               className="flex overflow-x-scroll gap-2 mt-4"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -149,14 +147,14 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
                   <Link
                     key={subscription.id}
                     href={`/packages/detail/${subscription.id}`}
-                    className={`text-base rounded-full hover:opacity-90 ${
+                    className={`text-sm rounded-full hover:opacity-90 ${
                       hasPurchased ? 'bg-[#319F43]' : 'bg-[#DA1515]'
                     }`}
                   >
                     <Button
                       key={subscription.id}
                       variant="default"
-                      className={`text-base rounded-full hover:opacity-90 py-2 px-5 ${
+                      className={`text-sm rounded-full hover:opacity-90 py-2 px-5 ${
                         hasPurchased ? 'bg-[#319F43]' : 'bg-[#DA1515]'
                       }`}
                     >
@@ -170,10 +168,12 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         )}
         {!showDetails && (
           <div className="bg-primary rounded-xl my-4 p-4 lg:p-10">
-            <p className="text-white text-center text-xl lg:text-[40px] lg:font-bold font-medium lg:mb-10 mb-1">Tóm tắt khoá học</p>
+            <p className="text-white text-center text-2xl lg:text-4xl lg:font-bold font-medium lg:mb-10 mb-1">
+              Tóm tắt khoá học
+            </p>
             <ul className="xl:px-20 max-lg:w-full mx-auto text-white h-full flex flex-col items-start list-disc pl-5">
               {course?.data?.summary.split('\n').map((line: string, index: number) => (
-                <li key={index} className="text-[#F7F7F7] text-base lg:text-2xl mb-1">
+                <li key={index} className="text-[#F7F7F7] text-sm lg:text-xl mb-1">
                   {line}
                 </li>
               ))}
@@ -190,17 +190,17 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         ) : (
           <>
             <div>
-              <p className="font-[family-name:var(--font-coiny)] text-ring text-3xl xl:text-[40px] font-bold mb-4">
+              <p className="font-[family-name:var(--font-coiny)] text-ring text-2xl xl:text-4xl font-bold mb-4">
                 Thông tin khóa
               </p>
               <HtmlContent
                 content={course?.data?.description}
-                className="text-[#737373] text-base lg:text-xl whitespace-pre-line"
+                className="text-[#737373] text-sm lg:text-lg whitespace-pre-line"
               />
             </div>
             {course?.data?.relationship?.equipments?.length > 0 && (
               <div>
-                <p className="font-[family-name:var(--font-coiny)] text-ring text-xl lg:text-2xl font-bold mb-4">
+                <p className="font-[family-name:var(--font-coiny)] text-ring text-lg lg:text-xl font-bold mb-4">
                   Dụng cụ
                 </p>
                 <ScrollArea className="w-screen-max-xl">
@@ -214,7 +214,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
                             className="w-[168px] h-[175px] object-cover"
                           />
                         </div>
-                        <figcaption className="pt-2 font-medium text-lg lg:text-xl text-muted-foreground">
+                        <figcaption className="pt-2 font-medium text-base lg:text-lg text-muted-foreground">
                           {equipment.name}
                         </figcaption>
                       </figure>
@@ -226,7 +226,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
             )}
             {course?.data?.relationship?.muscle_groups?.length > 0 && (
               <div>
-                <p className="font-[family-name:var(--font-coiny)] text-ring text-xl lg:text-2xl font-bold mb-4">
+                <p className="font-[family-name:var(--font-coiny)] text-ring text-lg lg:text-xl font-bold mb-4">
                   Nhóm cơ
                 </p>
                 <ScrollArea className="w-screen-max-xl">
@@ -240,7 +240,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
                             className="w-[168px] h-[175px] object-cover"
                           />
                         </div>
-                        <figcaption className="pt-2 font-medium text-lg lg:text-xl text-muted-foreground">
+                        <figcaption className="pt-2 font-medium text-base lg:text-lg text-muted-foreground">
                           {muscleGroup.name}
                         </figcaption>
                       </figure>

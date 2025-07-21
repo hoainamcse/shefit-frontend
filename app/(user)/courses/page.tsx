@@ -162,10 +162,10 @@ export default function CoursesPage() {
       <PopularCoursesCarousel />
       <div className="mx-auto px-4 mt-8">
         <div className="mx-auto lg:my-12 my-0 flex flex-col gap-4">
-          <p className="md:text-center font-[family-name:var(--font-coiny)] font-bold text-ring text-3xl lg:text-[40px] uppercase lg:my-8">
+          <p className="md:text-center font-[family-name:var(--font-coiny)] font-bold text-ring text-2xl lg:text-4xl uppercase lg:my-8">
             Tất cả khoá tập
           </p>
-          <p className="text-base lg:text-xl md:text-center text-[#737373]">
+          <p className="text-sm lg:text-lg md:text-center text-[#737373]">
             Lựa chọn khóa tập phù hợp với kinh nghiệm, mục tiêu và phom dáng của chị để bắt đầu hành trình độ dáng ngay
             hôm nay!
           </p>
@@ -242,7 +242,7 @@ export default function CoursesPage() {
               )}
               <TabsContent value="video">
                 {filteredCourses.length === 0 ? (
-                  <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-lg">
+                  <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
                     Không có khoá tập video nào phù hợp.
                   </div>
                 ) : (
@@ -275,18 +275,18 @@ export default function CoursesPage() {
                         </div>
                         <div className="flex justify-between">
                           <div>
-                            <p className="font-medium text-base lg:text-xl">{course.course_name}</p>
+                            <p className="font-medium text-sm lg:text-lg">{course.course_name}</p>
                             <div className="flex gap-2">
-                              <p className="text-[#737373] text-base lg:text-xl">
+                              <p className="text-[#737373] text-sm lg:text-lg">
                                 {courseLevelLabel[course.difficulty_level]}
                               </p>
-                              <p className="text-[#737373] text-base lg:text-xl">-</p>
-                              <p className="text-[#737373] text-base lg:text-xl">{course.course_format}</p>
+                              <p className="text-[#737373] text-sm lg:text-lg">-</p>
+                              <p className="text-[#737373] text-sm lg:text-lg">{course.course_format}</p>
                             </div>
-                            <p className="text-[#737373] text-base lg:text-xl">{course.trainer}</p>
+                            <p className="text-[#737373] text-sm lg:text-xl">{course.trainer}</p>
                           </div>
                           <div className="flex flex-col justify-between">
-                            <div className="text-gray-500 flex justify-end text-base lg:text-xl">
+                            <div className="text-gray-500 flex justify-end text-sm lg:text-lg">
                               {course.form_categories.map((cat) => cat.name).join(', ')}
                             </div>
                           </div>
@@ -299,7 +299,7 @@ export default function CoursesPage() {
 
               <TabsContent value="live">
                 {filteredCoursesZoom.length === 0 ? (
-                  <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-lg">
+                  <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
                     Không có khoá tập zoom nào phù hợp.
                   </div>
                 ) : (
@@ -332,18 +332,18 @@ export default function CoursesPage() {
                         </div>
                         <div className="flex justify-between">
                           <div>
-                            <p className="font-medium text-base lg:text-xl">{course.course_name}</p>
+                            <p className="font-medium text-sm lg:text-lg">{course.course_name}</p>
                             <div className="flex gap-2">
-                              <p className="text-[#737373] text-base lg:text-xl">
+                              <p className="text-[#737373] text-sm lg:text-lg">
                                 {courseLevelLabel[course.difficulty_level]}
                               </p>
-                              <p className="text-[#737373] text-base lg:text-xl">-</p>
-                              <p className="text-[#737373] text-base lg:text-xl">{course.course_format}</p>
+                              <p className="text-[#737373] text-sm lg:text-lg">-</p>
+                              <p className="text-[#737373] text-sm lg:text-lg">{course.course_format}</p>
                             </div>
-                            <p className="text-[#737373] text-base lg:text-xl">{course.trainer}</p>
+                            <p className="text-[#737373] text-sm lg:text-lg">{course.trainer}</p>
                           </div>
                           <div className="flex flex-col justify-between">
-                            <div className="text-gray-500 flex justify-end text-base lg:text-xl">
+                            <div className="text-gray-500 flex justify-end text-sm lg:text-lg">
                               {course.form_categories.map((cat) => cat.name).join(', ')}
                             </div>
                           </div>
@@ -356,7 +356,7 @@ export default function CoursesPage() {
 
               <TabsContent value="free">
                 {filteredFreeCourses.length === 0 ? (
-                  <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-lg">
+                  <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
                     Không có khoá tập miễn phí nào phù hợp.
                   </div>
                 ) : (
@@ -393,18 +393,18 @@ export default function CoursesPage() {
                         </div>
                         <div className="flex justify-between">
                           <div>
-                            <p className="font-medium text-base lg:text-xl">{course.course_name}</p>
+                            <p className="font-medium text-sm lg:text-lg">{course.course_name}</p>
                             <div className="flex gap-2">
-                              <p className="text-[#737373] text-base lg:text-xl">
+                              <p className="text-[#737373] text-sm lg:text-lg">
                                 {courseLevelLabel[course.difficulty_level]}
                               </p>
-                              <p className="text-[#737373] text-base lg:text-xl">-</p>
-                              <p className="text-[#737373] text-base lg:text-xl">{course.course_format}</p>
+                              <p className="text-[#737373] text-sm lg:text-lg">-</p>
+                              <p className="text-[#737373] text-sm lg:text-lg">{course.course_format}</p>
                             </div>
-                            <p className="text-[#737373] text-base lg:text-xl">{course.trainer}</p>
+                            <p className="text-[#737373] text-sm lg:text-lg">{course.trainer}</p>
                           </div>
                           <div className="flex flex-col justify-between">
-                            <div className="text-gray-500 flex justify-end text-base lg:text-xl">
+                            <div className="text-gray-500 flex justify-end text-sm lg:text-lg">
                               {course.form_categories.map((cat) => cat.name).join(', ')}
                             </div>
                           </div>
@@ -417,7 +417,7 @@ export default function CoursesPage() {
 
               <TabsContent value="all">
                 {filteredAllCourses.length === 0 ? (
-                  <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-lg">
+                  <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
                     Không có khoá tập nào phù hợp.
                   </div>
                 ) : (
@@ -454,18 +454,18 @@ export default function CoursesPage() {
                         </div>
                         <div className="flex justify-between">
                           <div>
-                            <p className="font-medium text-base lg:text-xl">{course.course_name}</p>
+                            <p className="font-medium text-sm lg:text-lg">{course.course_name}</p>
                             <div className="flex gap-2">
-                              <p className="text-[#737373] text-base lg:text-xl">
+                              <p className="text-[#737373] text-sm lg:text-lg">
                                 {courseLevelLabel[course.difficulty_level]}
                               </p>
-                              <p className="text-[#737373] text-base lg:text-xl">-</p>
-                              <p className="text-[#737373] text-base lg:text-xl">{course.course_format}</p>
+                              <p className="text-[#737373] text-sm lg:text-lg">-</p>
+                              <p className="text-[#737373] text-sm lg:text-lg">{course.course_format}</p>
                             </div>
-                            <p className="text-[#737373] text-base lg:text-xl">{course.trainer}</p>
+                            <p className="text-[#737373] text-sm lg:text-lg">{course.trainer}</p>
                           </div>
                           <div className="flex flex-col justify-between">
-                            <div className="text-gray-500 flex justify-end text-base lg:text-xl">
+                            <div className="text-gray-500 flex justify-end text-sm lg:text-lg">
                               {course.form_categories.map((cat) => cat.name).join(', ')}
                             </div>
                           </div>
@@ -483,13 +483,13 @@ export default function CoursesPage() {
       <Dialog open={showAccessDialog} onOpenChange={setShowAccessDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-center font-[family-name:var(--font-coiny)] text-[#FF7873] text-xl"></DialogTitle>
+            <DialogTitle className="text-center font-[family-name:var(--font-coiny)] text-[#FF7873] text-lg"></DialogTitle>
           </DialogHeader>
           <div className="text-center py-4">
-            <p className="text-lg text-[#737373] mb-4 ">BẠN ĐÃ MUA GÓI MEMBER CÓ KHÓA TẬP NÀY</p>
+            <p className="text-base text-[#737373] mb-4 ">BẠN ĐÃ MUA GÓI MEMBER CÓ KHÓA TẬP NÀY</p>
           </div>
           <div className="flex gap-4 justify-center w-full px-10">
-            <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={() => handleStartCourse()}>
+            <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={() => handleStartCourse()}>
               Bắt đầu học
             </Button>
           </div>

@@ -92,7 +92,7 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
         Quay về
       </Link>
 
-      <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px] mb-4 sm:mb-10 lg:mb-[87px] md:text-center font-semibold md:font-bold">
+      <div className="font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-4xl mb-4 sm:mb-10 lg:mb-[87px] md:text-center font-semibold md:font-bold">
         {dish?.name}
       </div>
 
@@ -132,8 +132,8 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
 
       <div className="flex flex-col gap-5">
         <div>
-          <div className="font-medium text-base lg:text-xl">{dish?.name}</div>
-          <div className="text-[#737373] text-base lg:text-xl">
+          <div className="font-medium text-sm lg:text-lg">{dish?.name}</div>
+          <div className="text-[#737373] text-sm lg:text-lg">
             <div className="flex flex-wrap gap-4">
               <p>Dinh dưỡng: {dish.nutrients}</p>
             </div>
@@ -142,8 +142,8 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
 
         {dish?.description && (
           <div>
-            <h3 className="font-semibold text-base lg:text-xl">Mô tả:</h3>
-            <p className="text-[#737373] text-base lg:text-xl whitespace-pre-line">{dish.description}</p>
+            <h3 className="font-semibold text-sm lg:text-lg">Mô tả:</h3>
+            <p className="text-[#737373] text-sm lg:text-lg whitespace-pre-line">{dish.description}</p>
           </div>
         )}
         <ActionButtons dishId={dish.id} />

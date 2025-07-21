@@ -44,10 +44,10 @@ export default function ProductsPage() {
       <div className="flex flex-col gap-10 px-4 lg:px-12">
         <div className="mb-20 p-4 lg:mt-20 mt-0">
           <div className="flex flex-col gap-5 lg:mb-20 mb-10">
-            <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-[40px] text-3xl font-bold">
+            <div className="font-[family-name:var(--font-coiny)] text-ring xl:text-4xl text-2xl font-bold">
               Dụng Cụ & Thực Phẩm
             </div>
-            <p className="text-[#737373] text-base lg:text-xl">Dụng cụ tập tại nhà & các loại thực phẩm Eat Clean</p>
+            <p className="text-[#737373] text-sm lg:text-lg">Dụng cụ tập tại nhà & các loại thực phẩm Eat Clean</p>
             <div className="gap-2 w-full hidden md:flex">
               <FilterCategory
                 placeholder="Loại"
@@ -80,7 +80,7 @@ export default function ProductsPage() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-10">
             {filteredProducts.map((product: Product) => (
               <Link href={`/products/${product.id}`} key={product.id}>
-                <div key={`menu-${product.id}`} className="text-xl">
+                <div key={`menu-${product.id}`} className="text-lg">
                   <div className="relative group">
                     <img
                       src={product.image_urls[0] || ''}
@@ -108,14 +108,14 @@ export default function ProductsPage() {
                         })
                     })()}
                   </div>
-                  <p className="font-medium lg:text-xl text-base">{product.name}</p>
-                  <p className="text-[#737373] lg:text-xl text-base">
+                  <p className="font-medium lg:text-lg text-sm">{product.name}</p>
+                  <p className="text-[#737373] lg:text-lg text-sm">
                     {Array.from(new Set(product.variants.map((variant) => variant.color_id)))
                       .map((colorId) => colors.find((color) => color.id === colorId)?.name)
                       .filter(Boolean)
                       .join(', ')}
                   </p>
-                  <p className="text-[#737373] lg:text-xl text-base">{product.price.toLocaleString()} VNĐ</p>
+                  <p className="text-[#737373] lg:text-lg text-sm">{product.price.toLocaleString()} VNĐ</p>
                 </div>
               </Link>
             ))}

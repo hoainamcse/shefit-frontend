@@ -109,7 +109,7 @@ export default function AccountInformation() {
               <FormInputField form={form} name="address" label="Địa chỉ" placeholder="Nhập địa chỉ" type="text" />
               <Button
                 type="button"
-                className="bg-[#13D8A7] h-[38px] w-full text-base md:text-xl font-normal rounded-[26px]"
+                className="bg-[#13D8A7] h-[38px] w-full text-sm md:text-lg font-normal rounded-[26px]"
                 onClick={() => {
                   form.reset({
                     ...form.getValues(),
@@ -153,7 +153,7 @@ export default function AccountInformation() {
 
               <Button
                 type="button"
-                className="bg-[#13D8A7] h-[38px] w-full text-base md:text-xl font-normal rounded-[26px]"
+                className="bg-[#13D8A7] h-[38px] w-full text-sm md:text-lg font-normal rounded-[26px]"
                 onClick={() => {
                   form.reset({
                     ...form.getValues(),

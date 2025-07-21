@@ -14,9 +14,9 @@ export default function Cart() {
   if (!session) {
     return (
       <div className="flex flex-col items-center text-center gap-6">
-        <p className="text-lg">HÃY ĐĂNG NHẬP ĐỂ XEM GIỎ HÀNG</p>
+        <p className="text-base">HÃY ĐĂNG NHẬP ĐỂ XEM GIỎ HÀNG</p>
         <div className="flex gap-4 justify-center w-full px-10">
-          <Button className="bg-[#13D8A7] rounded-full w-full text-lg max-w-[200px]" onClick={redirectToLogin}>
+          <Button className="bg-[#13D8A7] rounded-full w-full text-base max-w-[200px]" onClick={redirectToLogin}>
             Đăng nhập
           </Button>
         </div>
@@ -28,10 +28,10 @@ export default function Cart() {
     <div className="max-w-screen-3xl mx-auto px-4 lg:px-14">
       <Tabs defaultValue="current-cart">
         <TabsList className="w-full bg-background gap-x-20 mb-10">
-          <TabsTrigger value="current-cart" className="w-1/2 !shadow-none text-xl lg:text-2xl text-ring">
+          <TabsTrigger value="current-cart" className="w-1/2 !shadow-none text-lg lg:text-xl text-ring">
             Giỏ hàng
           </TabsTrigger>
-          <TabsTrigger value="purchased-order" className="w-1/2 !shadow-none text-xl lg:text-2xl text-ring">
+          <TabsTrigger value="purchased-order" className="w-1/2 !shadow-none text-lg lg:text-xl text-ring">
             Đơn hàng đã mua
           </TabsTrigger>
         </TabsList>

@@ -95,24 +95,24 @@ export default function PurchasePackage() {
           <TabsList className="bg-background gap-y-3 sm:gap-y-5 gap-x-7 pl-0 h-fit lg:h-9 mb-6 px-4 lg:px-12">
             <TabsTrigger
               value="all"
-              className={cn('text-ring bg-white !shadow-none border-2 border-[#FF7873] text-lg ')}
+              className={cn('text-ring bg-white !shadow-none border-2 border-[#FF7873] text-base ')}
             >
               Tất cả
             </TabsTrigger>
             <TabsTrigger
               value="purchased"
-              className={cn('text-ring bg-white !shadow-none border-2 border-[#FF7873] text-lg')}
+              className={cn('text-ring bg-white !shadow-none border-2 border-[#FF7873] text-base')}
             >
               Đã mua
             </TabsTrigger>
           </TabsList>
         )}
         <TabsContent value="all">
-          <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold px-4 lg:px-12">
+          <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-2xl md:text-4xl mb-4 font-bold px-4 lg:px-12">
             Mua Gói Độ Dáng
           </div>
 
-          <div className="text-[#737373] text-base md:text-xl mb-6 px-4 lg:px-12">
+          <div className="text-[#737373] text-sm md:text-lg mb-6 px-4 lg:px-12">
             {courseId
               ? 'Bạn cần mua một trong các Gói Member sau để truy cập vào khóa tập vừa xem'
               : 'Mua gói độ dáng để bắt đầu các khóa tập và thực đơn'}
@@ -128,10 +128,10 @@ export default function PurchasePackage() {
                 <div key={subscription.id} className="bg-[#FFAEB01A] lg:rounded-[20px] lg:p-5 p-4 h-full">
                   <div className="flex flex-col 2xl:flex-row 2xl:gap-4">
                     <div className="flex flex-col gap-5 justify-between  w-full 2xl:w-1/2">
-                      <div className="font-[family-name:var(--font-coiny)] text-[#000000] text-xl lg:text-2xl font-semibold">
+                      <div className="font-[family-name:var(--font-coiny)] text-[#000000] text-lg lg:text-xl font-semibold">
                         {subscription.name}
                       </div>
-                      <ul className="list-disc pl-7 text-base md:text-xl text-[#737373] w-full space-y-2">
+                      <ul className="list-disc pl-7 text-sm md:text-lg text-[#737373] w-full space-y-2">
                         {(() => {
                           const parser = new DOMParser()
                           const doc = parser.parseFromString(subscription.description_1, 'text/html')
@@ -147,7 +147,7 @@ export default function PurchasePackage() {
                         })()}
                       </ul>
                       <Link href={`/packages/detail/${subscription.id}${courseId ? `?course_id=${courseId}` : ''}`}>
-                        <Button className="bg-[#13D8A7] w-[190px] h-[38px] rounded-[26px] text-base md:text-xl font-normal md:pt-2.5 md:pb-1.5">
+                        <Button className="bg-[#13D8A7] w-[190px] h-[38px] rounded-[26px] text-sm md:text-lg font-normal md:pt-2.5 md:pb-1.5">
                           Chọn gói
                         </Button>
                       </Link>

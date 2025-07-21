@@ -16,7 +16,7 @@ export default async function CartDetail({ params }: { params: Promise<{ slug: n
     <div className="max-w-screen-3xl mx-auto px-2 lg:px-14">
       <Link href="/account?tab=cart">
         <Button className="bg-white hover:bg-white shadow-none items-center text-black my-10">
-          <BackIconBlack /> <div className="text-xl items-center">Chi tiết đơn hàng</div>
+          <BackIconBlack /> <div className="text-lg items-center">Chi tiết đơn hàng</div>
         </Button>
       </Link>
       <div className="xl:flex mt-10 w-full justify-between gap-20">
@@ -29,26 +29,26 @@ export default async function CartDetail({ params }: { params: Promise<{ slug: n
                 className="size-[148px] rounded-lg flex-shrink-0"
               />
               <div className="flex flex-col gap-3">
-                <div className="font-medium text-base lg:text-xl">{products[index]?.data?.name}</div>
-                <div className="text-[#737373] text-base lg:text-xl">{variant.color.name}</div>
-                <div className="text-[#737373] text-base lg:text-xl">Size: {variant.size.size}</div>
-                <div className="text-[#737373] text-base lg:text-xl">Số lượng: {variant.quantity}</div>
+                <div className="font-medium text-sm lg:text-lg">{products[index]?.data?.name}</div>
+                <div className="text-[#737373] text-sm lg:text-lg">{variant.color.name}</div>
+                <div className="text-[#737373] text-sm lg:text-lg">Size: {variant.size.size}</div>
+                <div className="text-[#737373] text-sm lg:text-lg">Số lượng: {variant.quantity}</div>
               </div>
               <div className="ml-auto text-right">
-                <div className="text-[#737373] text-base lg:text-xl">
+                <div className="text-[#737373] text-sm lg:text-lg">
                   <span>{products[index]?.data?.price?.toLocaleString() || 0}</span> VNĐ
                 </div>
               </div>
             </div>
           ))}
-          <div className="flex flex-col gap-2 mt-10 text-2xl items-center">
+          <div className="flex flex-col gap-2 mt-10 text-xl items-center">
             <div className="flex justify-between w-full">
-              <div className="text-base lg:text-xl">Phí vận chuyển</div>
-              <div className="text-[#737373] text-base lg:text-xl">{cart.data.shipping_fee.toLocaleString()} VNĐ</div>
+              <div className="text-sm lg:text-lg">Phí vận chuyển</div>
+              <div className="text-[#737373] text-sm lg:text-lg">{cart.data.shipping_fee.toLocaleString()} VNĐ</div>
             </div>
             <div className="flex justify-between w-full">
-              <div className="text-base lg:text-xl">Tổng tiền</div>
-              <div className="text-[#00C7BE] font-semibold text-xl lg:text-2xl">
+              <div className="text-sm lg:text-lg">Tổng tiền</div>
+              <div className="text-[#00C7BE] font-semibold text-lg lg:text-xl">
                 {cart.data.total.toLocaleString()} VNĐ
               </div>
             </div>

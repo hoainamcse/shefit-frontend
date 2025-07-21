@@ -294,16 +294,16 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
       <Accordion type="multiple" className="mt-3">
         {courseData.map((week, weekIndex) => (
           <AccordionItem key={week.week} value={`week-${week.week}`}>
-            <AccordionTrigger className="font-[family-name:var(--font-coiny)] text-ring text-[30px] cursor-pointer font-bold">
+            <AccordionTrigger className="font-[family-name:var(--font-coiny)] text-ring text-2xl cursor-pointer font-bold">
               <div>Tuần {week.week}</div>
             </AccordionTrigger>
             <AccordionContent>
-              <ol className="flex flex-col gap-2 text-xl">
+              <ol className="flex flex-col gap-2 text-lg">
                 {days.data
                   .sort((a: any, b: any) => a.id - b.id)
                   .map((day: any, index: number) => (
                     <li key={day.id} className="flex justify-between items-center">
-                      <div className="flex gap-1 text-base lg:text-xl">
+                      <div className="flex gap-1 text-sm lg:text-lg">
                         <span className="font-semibold text-gray-900 dark:text-gray-50">Ngày </span>
                         <span className="text-gray-900 dark:text-gray-50">{index + 1}</span>
                         <p>{day.description}</p>
@@ -334,15 +334,15 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
                           </DialogTrigger>
                           <DialogContent>
                             <DialogHeader>
-                              <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+                              <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
                             </DialogHeader>
                             <div className="flex flex-col items-center text-center gap-6">
                               {isFreeCourse ? (
                                 <>
-                                  <p className="text-lg">ĐĂNG NHẬP ĐỂ TRUY CẬP KHÓA TẬP FREE</p>
+                                  <p className="text-base">ĐĂNG NHẬP ĐỂ TRUY CẬP KHÓA TẬP FREE</p>
                                   <div className="flex justify-center w-full px-10">
                                     <Button
-                                      className="bg-[#13D8A7] rounded-full w-full text-lg max-w-xs"
+                                      className="bg-[#13D8A7] rounded-full w-full text-base max-w-xs"
                                       onClick={handleLoginClick}
                                     >
                                       Đăng nhập
@@ -351,11 +351,11 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
                                 </>
                               ) : (
                                 <>
-                                  <p className="text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
+                                  <p className="text-base">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
                                   <div className="flex gap-4 justify-center w-full px-10">
                                     <div className="flex-1">
                                       <Button
-                                        className="bg-[#13D8A7] rounded-full w-full text-lg"
+                                        className="bg-[#13D8A7] rounded-full w-full text-base"
                                         onClick={handleBuyPackageClick}
                                       >
                                         Mua gói Member
@@ -363,7 +363,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
                                     </div>
                                     <div className="flex-1">
                                       <Button
-                                        className="bg-[#13D8A7] rounded-full w-full text-lg"
+                                        className="bg-[#13D8A7] rounded-full w-full text-base"
                                         onClick={handleLoginClick}
                                       >
                                         Đăng nhập
@@ -387,14 +387,14 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
       <Dialog open={purchaseDialogOpen} onOpenChange={setPurchaseDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center text-center gap-6">
-            <p className="text-lg">HÃY MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
+            <p className="text-base">HÃY MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
             <div className="flex gap-4 justify-center w-full px-10">
               <div className="flex-1">
                 <Button
-                  className="bg-[#13D8A7] rounded-full w-full text-lg"
+                  className="bg-[#13D8A7] rounded-full w-full text-base"
                   onClick={() => {
                     setPurchaseDialogOpen(false)
                     handleBuyPackageClick()

@@ -39,22 +39,19 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const [selectedSubscription, setSelectedSubscription] = useState<Subscription | undefined>(undefined)
   const [showFavorites, setShowFavorites] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-
-  // Memoize the context value to prevent unnecessary re-renders of consuming components
-  const contextValue = React.useMemo(() => ({
-    selectedSubscription,
-    setSelectedSubscription,
-    showFavorites,
-    setShowFavorites,
-    isLoading,
-    setIsLoading,
-  }), [selectedSubscription, showFavorites, isLoading])
-
-  return (
-    <SubscriptionContext.Provider value={contextValue}>
-      {children}
-    </SubscriptionContext.Provider>
+  const contextValue = React.useMemo(
+    () => ({
+      selectedSubscription,
+      setSelectedSubscription,
+      showFavorites,
+      setShowFavorites,
+      isLoading,
+      setIsLoading,
+    }),
+    [selectedSubscription, showFavorites, isLoading]
   )
+
+  return <SubscriptionContext.Provider value={contextValue}>{children}</SubscriptionContext.Provider>
 }
 
 export function useSubscription() {

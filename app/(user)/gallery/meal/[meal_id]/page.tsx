@@ -14,10 +14,10 @@ export default async function Food({ params }: { params: Promise<{ meal_id: stri
     <div className="flex flex-col gap-10 mt-6 md:mt-10 lg:mt-[76px]">
       <div>
         <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-6 md:mb-10 lg:mb-[60px] xl:mb-[90px]">
-          <div className="font-[family-name:var(--font-coiny)] text-ring text-3xl lg:text-[40px] font-bold">
+          <div className="font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-4xl font-bold">
             Các món theo chế độ {selectedDiet?.name}
           </div>
-          <p className="text-[#737373] text-base lg:text-xl">{selectedDiet?.description}</p>
+          <p className="text-[#737373] text-sm lg:text-lg">{selectedDiet?.description}</p>
         </div>
         <div className="grid grid-cols-3 sm:gap-5 gap-4">
           {dish.data
@@ -29,7 +29,7 @@ export default async function Food({ params }: { params: Promise<{ meal_id: stri
                     <img src={item.image} alt="" className="object-cover rounded-[20px] w-full h-full" />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                   </div>
-                  <p className="font-medium lg:font-bold text-base lg:text-xl">{item.name}</p>
+                  <p className="font-medium lg:font-bold text-sm lg:text-lg">{item.name}</p>
                 </div>
               </Link>
             ))}

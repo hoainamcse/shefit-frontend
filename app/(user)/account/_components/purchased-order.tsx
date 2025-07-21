@@ -62,10 +62,10 @@ export default function PurchasedOrder() {
   if (!deliveredCarts.length) {
     return (
       <div className="flex flex-col items-center justify-center mt-20 w-full">
-        <p className="text-2xl mb-6 text-center">Bạn chưa có đơn hàng nào, xem sản phẩm của chúng tôi</p>
+        <p className="text-xl mb-6 text-center">Bạn chưa có đơn hàng nào, xem sản phẩm của chúng tôi</p>
         <Button
           onClick={handleBuyNow}
-          className="h-[60px] w-full max-w-[586px] bg-[#13D8A7] text-white px-6 py-2 rounded-full text-lg transition-colors"
+          className="h-[60px] w-full max-w-[586px] bg-[#13D8A7] text-white px-6 py-2 rounded-full text-base transition-colors"
         >
           Mua ngay
         </Button>
@@ -87,7 +87,7 @@ export default function PurchasedOrder() {
 
         return (
           <div key={`cart-${cart.id}`} className="flex items-center border-b border-gray-100 py-4 justify-between">
-            <div className="flex items-center gap-2 lg:gap-10 text-lg w-full">
+            <div className="flex items-center gap-2 lg:gap-10 text-base w-full">
               <div className="flex gap-4 w-full">
                 <img
                   src={thumbnailImage}
@@ -95,20 +95,20 @@ export default function PurchasedOrder() {
                   className="object-cover aspect-square rounded-lg lg:w-[148px] lg:h-[148px] w-[85px] h-[85px]"
                 />
                 <div className="flex flex-col justify-center">
-                  <div className="font-bold text-base lg:text-xl">Đơn Hàng Ngày</div>
-                  <div className="text-gray-500 text-base lg:text-xl">{formatDate(cart.created_at)}</div>
+                  <div className="font-bold text-sm lg:text-lg">Đơn Hàng Ngày</div>
+                  <div className="text-gray-500 text-sm lg:text-lg">{formatDate(cart.created_at)}</div>
                 </div>
                 <div className="flex justify-end ml-auto">
                   <div className="flex flex-col justify-center text-end">
                     <div className="flex items-center justify-end">
-                      <div className="font-bold text-[#737373] text-base lg:text-xl">
+                      <div className="font-bold text-[#737373] text-sm lg:text-lg">
                         {cart.total.toLocaleString()} vnđ
                       </div>
                     </div>
                     <div className="flex-shrink-0">
                       <Link
                         href={`/account/cart/${cart.id}`}
-                        className="text-[#00C7BE] hover:underline whitespace-nowrap text-base lg:text-xl"
+                        className="text-[#00C7BE] hover:underline whitespace-nowrap text-sm lg:text-lg"
                       >
                         Xem chi tiết
                       </Link>

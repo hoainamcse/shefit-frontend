@@ -63,17 +63,17 @@ export default function QuizResultPage() {
     <div className="flex flex-col gap-10 mt-10 p-10 relative">
       <Link
         href="/account?tab=body-quiz"
-        className="inline-flex items-center gap-2 text-xl font-semibold transition-colors mb-4 absolute top-5 left-13"
+        className="inline-flex items-center gap-2 text-lg font-semibold transition-colors mb-4 absolute top-5 left-13"
       >
         <BackIconBlack className="w-5 h-5" />
         <span>Quay về</span>
       </Link>
       <img src="/body-quiz-image.jpg" alt="body-quiz-image" className="h-[680px]" />
-      <div className="xl:text-3xl max-lg:text-xl flex flex-col gap-5">
+      <div className="xl:text-2xl max-lg:text-lg flex flex-col gap-5">
         <p>
           Kết quả ngày {formatDate(quizData.quiz_date)} - {quizData.body_quiz?.title || 'Đánh giá cơ thể'}
         </p>
-        <div className="space-y-6 text-xl text-gray-600">
+        <div className="space-y-6 text-lg text-gray-600">
           {quizData.body_quiz.questions.map((question, index) => (
             <div key={question.id} className="pb-4">
               <h3 className="font-medium text-gray-800 mb-1">
@@ -84,9 +84,9 @@ export default function QuizResultPage() {
           ))}
         </div>
         <p className="text-gray-500">
-          <span className="text-ring underline text-2xl">HLV Đánh Giá</span>
+          <span className="text-ring underline text-xl">HLV Đánh Giá</span>
         </p>
-        <div className="text-gray-500 xl:text-xl max-lg:base">{quizData.comment || 'Chưa có kết quả đánh giá'}</div>
+        <div className="text-gray-500 xl:text-lg max-lg:sm">{quizData.comment || 'Chưa có kết quả đánh giá'}</div>
       </div>
     </div>
   )

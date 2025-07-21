@@ -73,29 +73,29 @@ export default function SubscriptionInfo() {
     <div>
       <div className="flex items-center mb-2">
         {subscriptionStatus.status === 'active' ? (
-          <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#13D8A7] text-lg rounded-none border border-[#000000]">
+          <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#13D8A7] text-base rounded-none border border-[#000000]">
             Còn hạn
           </Button>
         ) : (
-          <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#E61417] text-lg rounded-none border border-[#000000]">
+          <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#E61417] text-base rounded-none border border-[#000000]">
             Hết hạn
           </Button>
         )}
       </div>
       {subscriptionStatus.startDate && (
-        <div className="flex gap-2 items-center mb-2 text-[#737373] text-base lg:text-xl">
+        <div className="flex gap-2 items-center mb-2 text-[#737373] text-sm lg:text-lg">
           <span>Ngày bắt đầu:</span>
           <span>{formatDate(subscriptionStatus.startDate)}</span>
         </div>
       )}
       {subscriptionStatus.endDate && (
-        <div className="flex gap-2 items-center mb-2 text-[#737373] text-base lg:text-xl">
+        <div className="flex gap-2 items-center mb-2 text-[#737373] text-sm lg:text-lg">
           <span>Ngày kết thúc:</span>
           <span>{formatDate(subscriptionStatus.endDate)}</span>
         </div>
       )}
       {subscriptionStatus.coupon_code && (
-        <div className="flex gap-2 items-center mb-2 text-[#737373] text-base lg:text-xl">
+        <div className="flex gap-2 items-center mb-2 text-[#737373] text-sm lg:text-lg">
           <span>Promocode:</span>
           <span>{subscriptionStatus.coupon_code}</span>
         </div>

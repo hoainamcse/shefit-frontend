@@ -90,7 +90,7 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
         {showDetails ? (
           <Button
             onClick={handleToggleDetails}
-            className="w-full rounded-full text-xl bg-[#13D8A7] text-white hover:bg-[#11c296] h-14"
+            className="w-full rounded-full text-lg bg-[#13D8A7] text-white hover:bg-[#11c296] h-14"
           >
             Trở về
           </Button>
@@ -98,7 +98,7 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
           <>
             <Button
               onClick={handleStartClick}
-              className="w-full rounded-full text-xl bg-[#13D8A7] text-white hover:bg-[#11c296] h-14"
+              className="w-full rounded-full text-lg bg-[#13D8A7] text-white hover:bg-[#11c296] h-14"
             >
               Bắt đầu
             </Button>
@@ -117,7 +117,7 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
                     toast.error('Có lỗi xảy ra khi lưu vào danh sách yêu thích!')
                   }
                 }}
-                className="w-full rounded-full text-xl bg-white text-[#13D8A7] h-14 border-2 border-[#13D8A7]"
+                className="w-full rounded-full text-lg bg-white text-[#13D8A7] h-14 border-2 border-[#13D8A7]"
               >
                 Lưu
               </Button>
@@ -129,12 +129,12 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
       <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center text-center gap-6">
-            <p className="text-lg">ĐĂNG NHẬP ĐỂ LƯU KHÓA TẬP</p>
+            <p className="text-base">ĐĂNG NHẬP ĐỂ LƯU KHÓA TẬP</p>
             <div className="flex gap-4 justify-center w-full px-10">
-              <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
+              <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleLoginClick}>
                 Đăng nhập
               </Button>
             </div>

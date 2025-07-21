@@ -36,7 +36,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
           className="absolute top-5 left-5 lg:left-20 flex items-center gap-[10px] cursor-pointer"
         >
           <BackIcon color="#000000" style={{ marginBottom: '4px' }} />
-          <div className="text-xl text-[#000000] font-semibold">Quay về</div>
+          <div className="text-lg text-[#000000] font-semibold">Quay về</div>
         </Link>
       </div>
       <div className="flex mx-auto flex-col gap-10 mt-10 w-full pb-24 px-4 lg:px-14">
@@ -47,19 +47,19 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
             className="lg:rounded-xl rounded-none mb-4 w-full object-cover lg:aspect-[1800/681] hidden lg:block"
           />
           <SubscriptionInfo />
-          <div className="flex justify-between text-lg">
+          <div className="flex justify-between text-base">
             <div className="flex flex-col gap-10 w-full">
-              <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-8 font-bold text-center">
+              <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-2xl md:text-4xl mb-8 font-bold text-center">
                 {subscriptionData?.name}
               </div>
               <div>
-                <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
+                <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-2xl md:text-4xl mb-4 font-bold">
                   Thông tin Gói
                 </div>
                 <HtmlContent className="whitespace-pre-line" content={subscriptionData?.description_2 || ''} />
               </div>
               <div>
-                <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4  font-bold">
+                <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-2xl md:text-4xl mb-4  font-bold">
                   Khóa Tập Thuộc Gói
                 </div>
                 <p className="mb-5">Các khóa tập bạn được truy cập khi mua gói member này</p>
@@ -106,10 +106,13 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
               </div>
               {subscriptionData?.meal_plan_ids && subscriptionData?.meal_plan_ids.length > 0 && (
                 <div>
-                  <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
+                  <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-2xl md:text-4xl mb-4 font-bold">
                     Thực đơn
                   </div>
-                  <HtmlContent className="whitespace-pre-line" content={subscriptionData?.meal_plan_description || ''} />
+                  <HtmlContent
+                    className="whitespace-pre-line"
+                    content={subscriptionData?.meal_plan_description || ''}
+                  />
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     {subscriptionData?.meal_plan_ids.map((mealPlanId: number) => {
                       const mealPlan = mealPlans?.data?.find((plan: any) => plan.id === mealPlanId)
@@ -147,7 +150,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                 </div>
               )}
               <div>
-                <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-3xl md:text-[40px] md:leading-[44px] mb-4 font-bold">
+                <div className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-2xl md:text-4xl mb-4 font-bold">
                   Theo dõi kết quả
                 </div>
                 <HtmlContent className="whitespace-pre-line" content={subscriptionData?.result_checkup || ''} />

@@ -174,7 +174,7 @@ export default function FormDelivery({
 
   return (
     <div className="w-full flex flex-col gap-5">
-      <div className="font-[family-name:var(--font-coiny)] font-bold text-3xl lg:text-[40px]">Thông tin vận chuyển</div>
+      <div className="font-[family-name:var(--font-coiny)] font-bold text-3xl lg:text-4xl">Thông tin vận chuyển</div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmitOrder)} className="space-y-7">
           <FormField

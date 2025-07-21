@@ -96,7 +96,7 @@ const VideoPlayer = ({
         style={{ cursor: "auto", background: "transparent" }}
         onClick={(e) => e.stopPropagation()}
       ></Button>
-      <div className="text-center mt-2 text-sm text-gray-500">
+      <div className="text-center mt-2 text-xs text-gray-500">
         {isCircuitMode
           ? `Circuit round ${circuitReplayCount}/${maxCircuitReplay} - Exercise ${currentExerciseIndex + 1}/${
               exerciseVideoList.length

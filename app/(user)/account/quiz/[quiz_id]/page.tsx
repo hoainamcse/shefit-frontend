@@ -215,7 +215,7 @@ export default function BodyQuizPage() {
     return (
       <div key={question.id} className="bg-white p-4 lg:p-6 rounded-lg shadow-sm border mb-6">
         <div className="space-y-4">
-          <h3 className="text-base lg:text-xl font-medium">
+          <h3 className="text-sm lg:text-lg font-medium">
             {question.title}
             {question.is_required && <span className="text-red-500 ml-1">*</span>}
           </h3>
@@ -232,15 +232,15 @@ export default function BodyQuizPage() {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <div className="text-base lg:text-xl">
+                  <div className="text-sm lg:text-lg">
                     {question.question_type === 'SINGLE_CHOICE' && (
                       <Select
                         onValueChange={field.onChange}
                         value={field.value as string}
                         defaultValue={typeof field.value === 'string' ? field.value : ''}
                       >
-                        <SelectTrigger className="w-full h-[50px] bg-white text-black text-base lg:text-xl">
-                          <SelectValue placeholder="Chọn câu trả lời" className="text-black text-base lg:text-xl" />
+                        <SelectTrigger className="w-full h-[50px] bg-white text-black text-sm lg:text-lg">
+                          <SelectValue placeholder="Chọn câu trả lời" className="text-black text-sm lg:text-lg" />
                         </SelectTrigger>
                         <SelectContent>
                           {question.choices?.map((choice, index) => (
@@ -273,7 +273,7 @@ export default function BodyQuizPage() {
                               />
                               <label
                                 htmlFor={choiceId}
-                                className="text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                               >
                                 {choice}
                               </label>
@@ -287,7 +287,7 @@ export default function BodyQuizPage() {
                         {...field}
                         type={question.input_type === 'integer' ? 'number' : 'text'}
                         placeholder="Nhập câu trả lời"
-                        className="w-full h-[50px] bg-white text-black text-base lg:text-xl"
+                        className="w-full h-[50px] bg-white text-black text-sm lg:text-lg"
                       />
                     )}
                   </div>
@@ -342,7 +342,7 @@ export default function BodyQuizPage() {
         />
         <Link
           href="/account?tab=body-quiz"
-          className="inline-flex items-center gap-2 text-xl font-semibold transition-colors absolute top-4 left-4 lg:left-16 lg:top-0"
+          className="inline-flex items-center gap-2 text-lg font-semibold transition-colors absolute top-4 left-4 lg:left-16 lg:top-0"
         >
           <BackIconBlack className="w-5 h-5" />
           <span>Quay về</span>
@@ -355,14 +355,14 @@ export default function BodyQuizPage() {
               <DialogTitle></DialogTitle>
             </DialogHeader>
             <div className="py-4">
-              <p className="text-center text-base lg:text-xl font-semibold text-[#737373] uppercase">
+              <p className="text-center text-sm lg:text-lg font-semibold text-[#737373] uppercase">
                 Gửi bài kiểm tra thành công!
               </p>
             </div>
             <DialogFooter>
               <Button
                 onClick={handleCloseDialog}
-                className="bg-[#13D8A7] hover:bg-[#13d8a7d0] rounded-full w-full h-[45px] text-base lg:text-xl font-semibold"
+                className="bg-[#13D8A7] hover:bg-[#13d8a7d0] rounded-full w-full h-[45px] text-sm lg:text-lg font-semibold"
               >
                 Trở về
               </Button>
@@ -373,14 +373,14 @@ export default function BodyQuizPage() {
         <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
           <DialogContent className="sm:max-w-[625px]">
             <DialogHeader>
-              <DialogTitle className="text-center text-xl lg:text-2xl"></DialogTitle>
-              <DialogDescription className="text-center text-xl lg:text-2xl">
+              <DialogTitle className="text-center text-lg lg:text-xl"></DialogTitle>
+              <DialogDescription className="text-center text-lg lg:text-xl">
                 HÃY ĐĂNG NHẬP/ĐĂNG KÝ TÀI KHOẢN ĐỂ XEM KẾT QUẢ BODY QUIZ
               </DialogDescription>
             </DialogHeader>
             <div className="flex gap-4 justify-center mt-4">
               <Button
-                className="bg-[#13D8A7] hover:bg-[#13d8a7d0] rounded-full w-1/3 h-[45px] text-base lg:text-xl"
+                className="bg-[#13D8A7] hover:bg-[#13d8a7d0] rounded-full w-1/3 h-[45px] text-sm lg:text-lg"
                 onClick={handleLoginClick}
               >
                 Đăng nhập
@@ -392,7 +392,7 @@ export default function BodyQuizPage() {
         <div>
           <div className="w-full flex flex-col gap-5 lg:mt-20 mt-5">
             <div className="mb-10">
-              <div className="font-[family-name:var(--font-coiny)] text-3xl lg:text-[40px] text-ring font-bold mb-5">
+              <div className="font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl text-ring font-bold mb-5">
                 {bodyQuiz.title}
               </div>
               {bodyQuiz.description && <p className="text-gray-500 text-base">{bodyQuiz.description}</p>}
@@ -405,7 +405,7 @@ export default function BodyQuizPage() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-[#13D8A7] hover:bg-[#13d8a7d0] text-white py-2 px-4 rounded-full w-full xl:h-20 text-base lg:text-xl transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="bg-[#13D8A7] hover:bg-[#13d8a7d0] text-white py-2 px-4 rounded-full w-full xl:h-20 text-sm lg:text-lg transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <div className="flex items-center justify-center">

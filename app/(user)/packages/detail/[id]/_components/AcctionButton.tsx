@@ -40,7 +40,7 @@ export default function AcctionButton() {
 
   if (isLoading) {
     return (
-      <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] w-full px-5 mx-auto text-lg" disabled>
+      <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] w-full px-5 mx-auto text-base" disabled>
         Đang tải...
       </Button>
     )
@@ -49,7 +49,7 @@ export default function AcctionButton() {
   if (isSubscribed) {
     return (
       <Link href={`/packages/${params?.id}`} className="mx-auto max-lg:w-full">
-        <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] max-md:w-full w-full px-5 mx-auto text-lg">
+        <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] max-md:w-full w-full px-5 mx-auto text-base">
           Gia hạn gói
         </Button>
       </Link>
@@ -57,7 +57,7 @@ export default function AcctionButton() {
   }
   return (
     <Link href={`/packages/${params?.id}`} className="mx-auto max-lg:w-full">
-      <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] max-md:w-full w-full px-5 mx-auto text-base lg:text-xl">
+      <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] max-md:w-full w-full px-5 mx-auto text-base lg:text-lg">
         Mua gói
       </Button>
     </Link>

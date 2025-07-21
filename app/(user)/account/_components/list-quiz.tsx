@@ -54,11 +54,9 @@ export default function ListQuiz({ bodyQuiz }: ListQuizProps) {
 
         {selectedQuiz && (
           <div className="space-y-4">
-            <p className="text-center text-[#737373] text-base lg:text-xl px-4">{selectedQuiz.description}</p>
+            <p className="text-center text-[#737373] text-sm lg:text-lg px-4">{selectedQuiz.description}</p>
             <Link href={`/account/quiz/${selectedQuiz.id}`} className="block">
-              <Button className="bg-[#13D8A7] w-full h-11 text-base lg:text-xl font-normal rounded-full">
-                Làm Quiz
-              </Button>
+              <Button className="bg-[#13D8A7] w-full h-11 text-sm lg:text-lg font-normal rounded-full">Làm Quiz</Button>
             </Link>
           </div>
         )}

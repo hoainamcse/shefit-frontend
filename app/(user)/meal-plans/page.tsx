@@ -107,10 +107,10 @@ export default function MealPlansPage() {
   return (
     <div className="px-4">
       <div className="max-w-screen-md mx-auto">
-        <p className="font-[family-name:var(--font-coiny)] font-bold md:text-center text-ring text-3xl md:text-[40px] md:leading-[48px] mb-3.5 md:mb-7">
+        <p className="font-[family-name:var(--font-coiny)] font-bold md:text-center text-ring text-2xl md:text-4xl mb-3.5 md:mb-7">
           Chọn thực đơn
         </p>
-        <p className="sm:text-center text-[#737373] text-base mb-4">
+        <p className="sm:text-center text-[#737373] text-sm mb-4">
           Lựa chọn thực đơn phù hợp với mục tiêu, với các món ăn đơn giản, dễ chuẩn bị hàng ngày. Ăn ngon miệng mà vẫn
           đảm bảo tăng cơ, giảm mỡ hiệu quả!
         </p>
@@ -161,7 +161,7 @@ export default function MealPlansPage() {
         )}
         <TabsContent value="all">
           {filteredMealPlans.length === 0 ? (
-            <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-lg">
+            <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
               Không có thực đơn nào phù hợp.
             </div>
           ) : (
@@ -201,7 +201,7 @@ export default function MealPlansPage() {
         </TabsContent>
         <TabsContent value="free">
           {filteredMealPlans.length === 0 ? (
-            <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-lg">
+            <div className="font-[family-name:var(--font-coiny)] w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
               Không có thực đơn nào miễn phí phù hợp.
             </div>
           ) : (

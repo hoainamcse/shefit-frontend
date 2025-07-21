@@ -22,7 +22,7 @@ function FilterCategory({
           <TabsTrigger
             key={item.value}
             value={item.value}
-            className="flex-1 bg-white h-[36px] text-lg shadow-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none max-w-[250px]"
+            className="flex-1 bg-white h-[36px] text-base shadow-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none max-w-[250px]"
             disabled={isLoading}
           >
             {item.label}
