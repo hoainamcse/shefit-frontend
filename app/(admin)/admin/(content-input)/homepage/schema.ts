@@ -5,7 +5,8 @@ export const formSchema = z.object({
     title: z.string(),
     features: z.array(z.string()),
     description: z.string(),
-    image: z.string(),
+    image_desktop: z.string(),
+    image_mobile: z.string(),
     cta: z.object({
       text: z.string(),
       href: z.string(),
@@ -21,7 +22,8 @@ export const formSchema = z.object({
         description: z.string(),
       })
     ),
-    image: z.string(),
+    image_desktop: z.string(),
+    image_mobile: z.string(),
     cta: z.object({
       text: z.string(),
       href: z.string(),

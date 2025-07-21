@@ -23,7 +23,10 @@ export function SectionOne({ data }: { data: DataType['section_1'] }) {
   return (
     <div className="lg:relative flex flex-col-reverse">
       <div className="relative">
-        <img src={data.image} alt={data.image} className="w-full object-cover aspect-square lg:aspect-[21/9]" />
+        {/* Mobile Image */}
+        <img src={data.image_mobile} alt={data.title} className="w-full object-cover aspect-square lg:hidden" />
+        {/* Desktop Image */}
+        <img src={data.image_desktop} alt={data.title} className="hidden lg:block w-full object-cover aspect-[21/9]" />
         <div className="absolute inset-0 bg-gradient-to-r from-transparent from-50% to-black hidden lg:block" />
       </div>
       <div className="lg:absolute lg:inset-y-0 lg:left-[60%] lg:right-0 flex flex-col justify-center items-center lg:items-start gap-3 bg-[#FFA5A5] lg:bg-transparent text-center lg:text-start p-2 lg:p-3 lg:max-w-[600px] px-4 lg:px-0">
@@ -60,12 +63,16 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
         <h2 className="font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl font-bold">{data.title}</h2>
         <p className="text-[#FB4A64] text-sm lg:text-lg">{data.description}</p>
       </div>
-      <img src={data.image} alt={data.image} className="aspect-[440/450] w-full max-w-full block lg:hidden" />
+      <img
+        src={data.image_mobile}
+        alt={data.image_mobile}
+        className="aspect-[440/450] w-full max-w-full block lg:hidden"
+      />
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-[120px] items-center px-8 lg:px-16">
         <div className="lg:col-span-3">
           <img
-            src={data.image}
-            alt={data.image}
+            src={data.image_desktop}
+            alt={data.image_desktop}
             className="aspect-[1065/746] rounded-md w-full max-w-full hidden lg:block"
           />
         </div>

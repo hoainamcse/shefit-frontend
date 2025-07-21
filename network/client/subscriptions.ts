@@ -61,6 +61,13 @@ export async function updateSubscriptionPrices(id: Subscription['id'], data: any
   return response.json()
 }
 
+export async function duplicateSubscription(id: Subscription['id']): Promise<ApiResponse<Subscription>> {
+  const response = await fetchData(`/v1/subscriptions/${id}/duplicate`, {
+    method: 'POST',
+  })
+  return response.json()
+}
+
 // Subscription Gift APIs
 export const queryKeySubscriptionGifts = 'subscription-gifts'
 

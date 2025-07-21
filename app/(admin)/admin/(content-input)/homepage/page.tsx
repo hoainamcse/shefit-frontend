@@ -191,7 +191,8 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
                 />
               </div>
               <FormTextareaField form={form} name="data.section_1.description" label="Mô tả" placeholder="Nhập mô tả" />
-              <ImageUploader form={form} name="data.section_1.image" label="Hình ảnh" />
+              <ImageUploader form={form} name="data.section_1.image_desktop" label="Hình ảnh desktop" />
+              <ImageUploader form={form} name="data.section_1.image_mobile" label="Hình ảnh mobile" />
               <div className="grid grid-cols-2 gap-4">
                 <FormInputField
                   form={form}
@@ -257,7 +258,8 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
                   />
                 </div>
               </div>
-              <ImageUploader form={form} name="data.section_2.image" label="Hình ảnh" />
+              <ImageUploader form={form} name="data.section_2.image_desktop" label="Hình ảnh desktop" />
+              <ImageUploader form={form} name="data.section_2.image_mobile" label="Hình ảnh mobile" />
               <div className="grid grid-cols-2 gap-4">
                 <FormInputField
                   form={form}
@@ -359,7 +361,7 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
               </Tabs>
             </TabsContent>
             <TabsContent value="tab-6" className="space-y-4">
-              <FormInputField form={form} name="data.section_5.title" label="Tiêu đề" placeholder="Nhập tiêu đề" />
+              <FormInputField form={form} name="data.section_6.title" label="Tiêu đề" placeholder="Nhập tiêu đề" />
               <div className="space-y-2">
                 <Label>Loại hình tập luyện</Label>
                 <Input

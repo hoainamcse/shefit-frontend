@@ -11,6 +11,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import {
   deleteBulkSubscription,
   deleteSubscription,
+  duplicateSubscription,
   getSubAdminSubscriptions,
   getSubscriptions,
   queryKeySubscriptions,
@@ -102,7 +103,9 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
-        cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
+        cell: ({ row }) => (
+          <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} onDuplicate={onDuplicateRow} />
+        ),
         size: 60,
         enableHiding: false,
       },
@@ -118,6 +121,19 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
 
   const onEditRow = (row: Subscription) => {
     router.push(`/admin/membership/${row.id}`)
+  }
+
+  const onDuplicateRow = (row: Subscription) => {
+    const duplicatePromise = () => duplicateSubscription(row.id)
+
+    toast.promise(duplicatePromise, {
+      loading: 'Đang nhân bản...',
+      success: (_) => {
+        refetch()
+        return 'Nhân bản gói tập thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
   }
 
   const onDeleteRow = async (row: Subscription) => {

@@ -85,16 +85,16 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
           const isYoutube = image.includes('youtube.com') || image.includes('youtu.be')
           const imgSrc = isYoutube ? getYouTubeThumbnail(image) : image
           return (
-            <div>
+            <div className="flex items-center justify-center w-20 h-20 bg-gray-50 rounded-md overflow-hidden">
               <img
                 src={imgSrc || 'https://placehold.co/400?text=shefit.vn&font=Oswald'}
                 alt={`${row.getValue('name')} thumbnail`}
-                className="h-16 w-28 rounded-md object-cover"
+                className="w-full h-full object-cover rounded-md"
               />
             </div>
           )
         },
-        size: 180,
+        size: 120,
         enableSorting: false,
       },
       {
