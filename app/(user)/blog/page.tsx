@@ -6,14 +6,14 @@ import { HtmlContent } from '@/components/html-content'
 export default async function BlogPage() {
   const blogs = await getBlogs()
   return (
-    <div>
-      <div className="max-w-screen-md mx-auto">
-        <p className="font-[family-name:var(--font-coiny)] font-bold md:text-center text-ring text-2xl md:text-4xl mb-3 md:mb-6">
+    <div className="flex flex-col pt-10 lg:pt-16 xl:pt-[93px]">
+      <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-10 lg:mb-16 xl:mb-[90px]">
+        <p className="font-[family-name:var(--font-coiny)] text-ring text-2xl lg:text-4xl font-semibold sm:font-bold">
           Blog healthy
         </p>
-        <p className="md:text-center text-gray-500 text-sm mb-16">Các lời khuyên hữu ích về tập luyện & ăn uống</p>
+        <p className="text-[#737373] text-sm lg:text-lg">Các lời khuyên hữu ích về tập luyện & ăn uống</p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 mx-auto mt-6 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 sm:gap-5 gap-4 mx-auto items-stretch">
         {blogs.data.map((blog: Blog, index: number) => (
           <Link key={`menu-${index}`} href={`/blog/${blog.id}`} className="h-full">
             <Card

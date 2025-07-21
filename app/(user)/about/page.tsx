@@ -14,8 +14,8 @@ export default async function About() {
   }
 
   return (
-    <div className="flex flex-col gap-10 lg:mt-4 mt-2 p-4 sm:p-6 md:p-8 xl:p-10">
-      <img src={aboutUsData['thumbnail_image']} alt="About Us" className="w-full h-auto rounded-lg" />
+    <div className="flex flex-col pt-10 lg:pt-16 xl:pt-[93px]">
+      <img src={aboutUsData['thumbnail_image']} alt="About Us" className="w-full h-auto rounded-lg mb-12" />
       <div>
         <div className="font-[family-name:var(--font-coiny)] lg:text-4xl text-2xl font-bold mb-6">Về Shefit</div>
         <HtmlContent
