@@ -1,6 +1,6 @@
 import localFont from 'next/font/local'
 import type { Metadata } from 'next'
-import { Roboto_Flex, Roboto, Roboto_Condensed, Encode_Sans_Semi_Expanded, Black_Ops_One } from 'next/font/google'
+import { Roboto_Flex, Roboto, Roboto_Condensed, Encode_Sans_Semi_Expanded, Black_Ops_One, Montserrat } from 'next/font/google'
 
 import './globals.css'
 // import { ThemeProvider } from '@/components/providers/theme-provider'
@@ -92,6 +92,13 @@ const blackOpsOne = Black_Ops_One({
   subsets: ['latin', 'vietnamese'],
 })
 
+const montserrat = Montserrat({
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  display: 'swap',
+  variable: '--font-montserrat',
+  subsets: ['latin', 'vietnamese'],
+})
+
 export const metadata: Metadata = {
   title: 'Shefit.vn',
   description: 'Start-up giúp cho chị em phái yếu có vóc dáng đẹp & sức khỏe dẻo dai một cách tiện lợi & tiết kiệm',
@@ -105,7 +112,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${bdLifelessGrotesk.className} ${coiny.variable} ${encode.variable} ${blackOpsOne.variable} ${roboto.variable} ${robotoCondensed.variable} antialiased`}
+        className={`${bdLifelessGrotesk.className} ${coiny.variable} ${encode.variable} ${blackOpsOne.variable} ${roboto.variable} ${robotoCondensed.variable} ${montserrat.variable} antialiased`}
       >
         {/* <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange> */}
         <QueryProvider>
