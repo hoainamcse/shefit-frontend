@@ -105,7 +105,10 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                       <div className="absolute inset-0 flex flex-col">
                                         <div className="relative w-full h-full">
                                           <div className="absolute top-12 left-2 px-2 w-[calc(100%-16px)] h-full">
-                                            <p className="text-gray-100 text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold">
+                                            <p
+                                              className="text-white [text-shadow:_0_1px_4px_rgba(0,0,0,0.5)]
+                                           text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold"
+                                            >
                                               {course.course_name}
                                             </p>
                                           </div>
@@ -137,7 +140,10 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                   <div className="relative">
                                     <div className="relative aspect-[273/381]">
                                       <div className="absolute top-12 left-2 px-2 w-[calc(100%-16px)] h-full">
-                                        <p className="text-gray-100 text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold">
+                                        <p
+                                          className="text-white [text-shadow:_0_1px_4px_rgba(0,0,0,0.5)]
+                                           text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold"
+                                        >
                                           {course.course_name}
                                         </p>
                                       </div>
@@ -189,7 +195,10 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                       <div className="absolute inset-0 flex flex-col">
                                         <div className="relative w-full h-full">
                                           <div className="absolute top-12 left-2 px-2 w-[calc(100%-16px)] h-full">
-                                            <p className="text-gray-100 text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold">
+                                            <p
+                                              className="text-white [text-shadow:_0_1px_4px_rgba(0,0,0,0.5)]
+                                           text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold"
+                                            >
                                               {course.course_name}
                                             </p>
                                           </div>
@@ -221,7 +230,10 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                   <div className="relative">
                                     <div className="relative aspect-[273/381]">
                                       <div className="absolute top-12 left-2 px-2 w-[calc(100%-16px)] h-full">
-                                        <p className="text-gray-100 text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold">
+                                        <p
+                                          className="text-white [text-shadow:_0_1px_4px_rgba(0,0,0,0.5)]
+                                           text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold"
+                                        >
                                           {course.course_name}
                                         </p>
                                       </div>
@@ -337,7 +349,10 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                           <div className="absolute inset-0 flex flex-col">
                             <div className="relative w-full h-full">
                               <div className="absolute top-12 left-2 px-2 w-[calc(100%-16px)] h-full">
-                                <p className="text-gray-100 text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold">
+                                <p
+                                  className="text-white [text-shadow:_0_1px_4px_rgba(0,0,0,0.5)]
+                                           text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold"
+                                >
                                   {course.course_name}
                                 </p>
                               </div>
@@ -371,7 +386,10 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                       <div className="relative">
                         <div className="relative aspect-[273/381]">
                           <div className="absolute top-12 left-2 px-2 w-[calc(100%-16px)] h-full">
-                            <p className="text-gray-100 text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold">
+                            <p
+                              className="text-white [text-shadow:_0_1px_4px_rgba(0,0,0,0.5)]
+                                           text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold"
+                            >
                               {course.course_name}
                             </p>
                           </div>
