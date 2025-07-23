@@ -80,10 +80,16 @@ export default function CoursesPage() {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      const videoCourses = await getCourses({ course_format: 'video' })
-      const zoomCourses = await getCourses({ course_format: 'live' })
-      setCourses(videoCourses.data)
-      setCoursesZoom(zoomCourses.data)
+      const [videoResponse, zoomResponse] = await Promise.all([
+        getCourses({ course_format: 'video' }),
+        getCourses({ course_format: 'live' }),
+      ])
+
+      const publicVideoCourses = videoResponse.data.filter((course: Course) => course.is_public === true)
+      const publicZoomCourses = zoomResponse.data.filter((course: Course) => course.is_public === true)
+
+      setCourses(publicVideoCourses)
+      setCoursesZoom(publicZoomCourses)
       setIsLoading(false)
     }
     fetchCourses()
@@ -241,11 +247,7 @@ export default function CoursesPage() {
                 </div>
               )}
               <TabsContent value="video">
-                {filteredCourses.length === 0 ? (
-                  <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
-                    Không có khoá tập video nào phù hợp.
-                  </div>
-                ) : (
+                {filteredCourses.length === 0 ? null : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
                     {filteredCourses.map((course) => (
                       <div key={`video-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
@@ -298,11 +300,7 @@ export default function CoursesPage() {
               </TabsContent>
 
               <TabsContent value="live">
-                {filteredCoursesZoom.length === 0 ? (
-                  <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
-                    Không có khoá tập zoom nào phù hợp.
-                  </div>
-                ) : (
+                {filteredCoursesZoom.length === 0 ? null : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
                     {filteredCoursesZoom.map((course) => (
                       <div key={`zoom-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
@@ -355,11 +353,7 @@ export default function CoursesPage() {
               </TabsContent>
 
               <TabsContent value="free">
-                {filteredFreeCourses.length === 0 ? (
-                  <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
-                    Không có khoá tập miễn phí nào phù hợp.
-                  </div>
-                ) : (
+                {filteredFreeCourses.length === 0 ? null : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
                     {filteredFreeCourses.map((course) => (
                       <div key={`free-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
@@ -416,11 +410,7 @@ export default function CoursesPage() {
               </TabsContent>
 
               <TabsContent value="all">
-                {filteredAllCourses.length === 0 ? (
-                  <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
-                    Không có khoá tập nào phù hợp.
-                  </div>
-                ) : (
+                {filteredAllCourses.length === 0 ? null : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
                     {filteredAllCourses.map((course) => (
                       <div key={`all-${course.id}`} className="max-w-[585px] w-full overflow-hidden">

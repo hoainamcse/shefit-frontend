@@ -71,7 +71,10 @@ export default function MealPlansPage() {
           getCalories(),
         ])
 
-        setMealPlans(mealPlansResponse.data || [])
+        const publicMealPlans = (mealPlansResponse.data || []).filter(
+          (mealPlan: MealPlan) => mealPlan.is_public === true
+        )
+        setMealPlans(publicMealPlans)
         const formattedGoals = (goalsResponse.data || []).map((goal) => ({
           id: goal.id.toString(),
           name: goal.name,
@@ -160,11 +163,7 @@ export default function MealPlansPage() {
           </div>
         )}
         <TabsContent value="all">
-          {filteredMealPlans.length === 0 ? (
-            <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
-              Không có thực đơn nào phù hợp.
-            </div>
-          ) : (
+          {filteredMealPlans.length === 0 ? null : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto mt-6 justify-items-center">
               {filteredMealPlans.map((mealPlan) => (
                 <div key={`menu-${mealPlan.id}`} className="w-full max-w-full overflow-hidden">
@@ -200,11 +199,7 @@ export default function MealPlansPage() {
           )}
         </TabsContent>
         <TabsContent value="free">
-          {filteredMealPlans.length === 0 ? (
-            <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold w-full flex justify-center items-center min-h-[120px] text-gray-400 md:text-base">
-              Không có thực đơn nào miễn phí phù hợp.
-            </div>
-          ) : (
+          {filteredMealPlans.length === 0 ? null : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto mt-6 justify-items-center">
               {filteredMealPlans.map((mealPlan) => (
                 <div

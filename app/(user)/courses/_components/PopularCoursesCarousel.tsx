@@ -32,7 +32,7 @@ export default function PopularCoursesCarousel() {
       <p className="md:text-center font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl lg:my-14 my-4 uppercase p-3">
         Khoá Tập Hot Nhất Tháng
       </p>
-      <div className="mx-auto px-8 lg:px-6">
+      <div className="mx-auto px-8">
         <Carousel
           opts={{
             align: 'start',
