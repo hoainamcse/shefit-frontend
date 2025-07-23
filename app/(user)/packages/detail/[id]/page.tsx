@@ -110,7 +110,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                     Thực đơn
                   </div>
                   <HtmlContent
-                    className="whitespace-pre-line"
+                    className="whitespace-pre-line mb-5"
                     content={subscriptionData?.meal_plan_description || ''}
                   />
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
