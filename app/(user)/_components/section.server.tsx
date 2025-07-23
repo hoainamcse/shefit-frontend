@@ -157,7 +157,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
           >
             {data.subscriptions.map((sub, mIndex) => (
               <div key={mIndex} className="flex flex-col h-full w-full space-y-4 px-4">
-                <Link href={'#'}>
+                <Link href={`/packages/detail/${sub.id}`}>
                   <div
                     className={cn(
                       'group flex items-center gap-2 text-sm lg:text-base text-background font-medium rounded-md p-3',
@@ -291,7 +291,7 @@ export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
                             size="icon"
                             icon={ArrowRight}
                             variant="secondary"
-                            href="#"
+                            href={`/meal-plans/${item.id}`}
                             className="rounded-full text-primary transform transition-transform duration-300 hover:translate-x-1"
                           />
                         </div>
