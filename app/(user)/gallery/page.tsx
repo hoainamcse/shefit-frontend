@@ -88,16 +88,16 @@ export default function Gallery() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         )}
-        <div className="grid grid-cols-3 sm:gap-5 gap-4">
+        <div className="grid grid-cols-4 sm:gap-5 gap-4">
           {muscleGroupsData.data.map((muscleGroup) =>
             session ? (
               <Link href={`/gallery/muscle/${muscleGroup.id}`} key={muscleGroup.id}>
                 <div key={`menu-${muscleGroup.id}`} className="overflow-hidden">
-                  <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
+                  <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square">
                     <img
                       src={muscleGroup.image ?? undefined}
                       alt=""
-                      className="object-cover rounded-[20px] w-full h-full"
+                      className="object-cover rounded-[8px] w-full h-full"
                     />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                   </div>
@@ -175,13 +175,13 @@ export default function Gallery() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         )}
-        <div className="grid grid-cols-3 sm:gap-5 gap-4">
+        <div className="grid grid-cols-4 sm:gap-5 gap-4">
           {dietsData.data?.map((diet) =>
             session ? (
               <Link href={`/gallery/meal/${diet.id}`} key={diet.id}>
                 <div key={`menu-${diet.id}`} className="text-lg overflow-hidden">
-                  <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
-                    <img src={diet.image} alt="" className="object-cover rounded-[20px] w-full h-full" />
+                  <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square">
+                    <img src={diet.image} alt="" className="object-cover rounded-[8px] w-full h-full" />
                     <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                   </div>
                   <p className="font-medium lg:font-bold text-sm lg:text-lg">{diet.name}</p>

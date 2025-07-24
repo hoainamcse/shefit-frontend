@@ -72,11 +72,11 @@ export function DietsTable({ onConfirmRowSelection }: DietsTableProps) {
             <img
               src={row.getValue('image')}
               alt={`${row.getValue('name')} thumbnail`}
-              className="h-16 w-28 rounded-md object-cover"
+              className="h-20 w-20 rounded-md object-cover"
             />
           </div>
         ),
-        size: 180,
+        size: 100,
         enableSorting: false,
       },
       {
