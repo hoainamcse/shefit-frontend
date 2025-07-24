@@ -66,14 +66,14 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
       <img
         src={data.image_mobile}
         alt={data.image_mobile}
-        className="aspect-[440/450] w-full max-w-full block lg:hidden"
+        className="aspect-[440/450] w-full max-w-full block lg:hidden object-cover"
       />
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-[120px] items-center px-8 lg:px-16">
         <div className="lg:col-span-3">
           <img
             src={data.image_desktop}
             alt={data.image_desktop}
-            className="aspect-[1065/746] rounded-md w-full max-w-full hidden lg:block"
+            className="aspect-[1065/746] rounded-md w-full max-w-full hidden lg:block object-cover"
           />
         </div>
         <div className="lg:col-span-2 flex flex-col gap-6 text-sm lg:text-lg">
@@ -124,8 +124,8 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
 }
 
 export async function SectionThree({ data }: { data: DataType['section_3'] }) {
-  let courses = []
-  let mealPlans = []
+  let courses: any[] = []
+  let mealPlans: any[] = []
   try {
     courses = await Promise.all(data.subscriptions.map((dt) => getCourses({ ids: dt.course_ids })))
     mealPlans = await Promise.all(data.subscriptions.map((dt) => getMealPlans({ ids: dt.meal_plan_ids })))
@@ -181,7 +181,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                 </Link>
                 <Carousel className="mx-4">
                   <CarouselContent>
-                    {courses[mIndex]?.data?.map((course, cIndex) => (
+                    {courses[mIndex]?.data?.map((course: any, cIndex: any) => (
                       <CarouselItem key={`course-${course.id}`} className="basis-3/4 lg:basis-full">
                         <div className="flex flex-col items-center gap-4">
                           <div className="relative w-full overflow-hidden">
@@ -197,7 +197,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                         </div>
                       </CarouselItem>
                     ))}
-                    {mealPlans[mIndex]?.data?.map((mealPlan, mpIndex) => (
+                    {mealPlans[mIndex]?.data?.map((mealPlan: any, mpIndex: any) => (
                       <CarouselItem key={`mealplan-${mealPlan.id}`} className="basis-2/3 lg:basis-full">
                         <div className="flex flex-col items-center gap-4">
                           <div className="relative w-full overflow-hidden">
