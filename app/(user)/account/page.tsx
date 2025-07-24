@@ -38,9 +38,9 @@ export default async function Account(props: { searchParams: Promise<{ tab: stri
   const tab = searchParams.tab || 'body-quiz'
 
   return (
-    <div>
+    <div className="mt-8">
       <Tabs value={tab} defaultValue="body-quiz">
-        <div className="pt-4 lg:pt-32 px-4 lg:px-[56px] pb-8 lg:pb-[80px]">
+        <div className="lg:pt-32 px-4 lg:px-[56px] pb-8 lg:pb-[80px]">
           <UserGreeting />
           <TabsList className="w-full lg:w-fit flex-wrap bg-background gap-y-3 sm:gap-y-5 lg:gap-x-7 pl-0 h-fit lg:h-9">
             {TABS.map((tabItem) => (

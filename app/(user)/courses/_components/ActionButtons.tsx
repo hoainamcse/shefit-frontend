@@ -42,10 +42,8 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
         const currentCourseId = Number(courseId)
 
         // Check if the course exists in any subscription's courses
-        const courseInSubscription = subscriptionsResponse.data?.some(subscription =>
-          subscription.subscription?.courses?.some(course =>
-            Number(course.id) === currentCourseId
-          )
+        const courseInSubscription = subscriptionsResponse.data?.some((subscription) =>
+          subscription.subscription?.courses?.some((course) => Number(course.id) === currentCourseId)
         )
 
         if (courseInSubscription) {
@@ -84,45 +82,49 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
     redirectToLogin()
   }
 
+  const showSaveButton = !showDetails && courseStatus !== 'exists'
+
   return (
     <div>
-      <div className="gap-5 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
-        {showDetails ? (
-          <Button
-            onClick={handleToggleDetails}
-            className="w-full rounded-full text-lg bg-[#13D8A7] text-white hover:bg-[#11c296] h-14"
-          >
-            Trở về
-          </Button>
-        ) : (
-          <>
+      <div className="lg:gap-5 gap-3 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
+        <div className={showSaveButton ? 'w-1/2' : 'w-full'}>
+          {showDetails ? (
+            <Button
+              onClick={handleToggleDetails}
+              className="w-full rounded-full text-lg bg-[#13D8A7] text-white hover:bg-[#11c296] h-14"
+            >
+              Trở về
+            </Button>
+          ) : (
             <Button
               onClick={handleStartClick}
               className="w-full rounded-full text-lg bg-[#13D8A7] text-white hover:bg-[#11c296] h-14"
             >
               Bắt đầu
             </Button>
-            {courseStatus !== 'exists' && (
-              <Button
-                onClick={async () => {
-                  if (!session) {
-                    setShowLoginDialog(true)
-                    return
-                  }
-                  try {
-                    await addFavouriteCourse(session.userId.toString(), courseId.toString())
-                    toast.success('Đã thêm vào danh sách yêu thích thành công!')
-                  } catch (error) {
-                    console.error('Error saving to favorites:', error)
-                    toast.error('Có lỗi xảy ra khi lưu vào danh sách yêu thích!')
-                  }
-                }}
-                className="w-full rounded-full text-lg bg-white text-[#13D8A7] h-14 border-2 border-[#13D8A7]"
-              >
-                Lưu
-              </Button>
-            )}
-          </>
+          )}
+        </div>
+        {showSaveButton && (
+          <div className="w-1/2">
+            <Button
+              onClick={async () => {
+                if (!session) {
+                  setShowLoginDialog(true)
+                  return
+                }
+                try {
+                  await addFavouriteCourse(session.userId.toString(), courseId.toString())
+                  toast.success('Đã thêm vào danh sách yêu thích thành công!')
+                } catch (error) {
+                  console.error('Error saving to favorites:', error)
+                  toast.error('Có lỗi xảy ra khi lưu vào danh sách yêu thích!')
+                }
+              }}
+              className="w-full rounded-full text-lg bg-white text-[#13D8A7] h-14 border-2 border-[#13D8A7] hover:bg-gray-50"
+            >
+              Lưu
+            </Button>
+          </div>
         )}
       </div>
 

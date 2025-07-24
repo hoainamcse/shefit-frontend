@@ -27,20 +27,34 @@ import { FacebookIcon } from '@/components/icons/FacebookIcon'
 import { useSession } from '@/hooks/use-session'
 import { signOut } from '@/network/server/auth'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { useState } from 'react'
 
 export function Header() {
   const { session } = useSession()
   const { redirectToLogin } = useAuthRedirect()
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
+
+  const handleSignOut = () => {
+    // The signOut server action will handle the redirection
+    signOut()
+  }
 
   const authButton = session ? (
     <MainButton
-      onClick={signOut}
+      onClick={handleSignOut}
       className="rounded-full w-32 lg:w-[151px] lg:h-10"
       text="Đăng xuất"
       variant="secondary"
     />
   ) : (
-    <MainButton className="rounded-full w-32 lg:w-[151px] lg:h-10" text="Đăng nhập" onClick={redirectToLogin} />
+    <MainButton
+      className="rounded-full w-32 lg:w-[151px] lg:h-10"
+      text="Đăng nhập"
+      onClick={() => {
+        redirectToLogin()
+        setIsSheetOpen(false)
+      }}
+    />
   )
 
   const navItems = [
@@ -109,7 +123,7 @@ export function Header() {
           ))}
           {authButton}
         </div>
-        <Sheet>
+        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           {session ? null : (
             <Link href="/auth/login" className="text-white ml-auto px-5 mt-1 text-base block lg:hidden">
               Đăng nhập
@@ -126,23 +140,17 @@ export function Header() {
               <SheetDescription />
             </SheetHeader>
             <div>
-              {navItems.map((item, index) =>
-                item.label === 'Gói Member' ? (
-                  <button
-                    key={`navItem-${index}`}
-                    onClick={() => (window.location.href = item.url)}
-                    className="flex items-center gap-1 mb-3 bg-transparent border-none text-foreground cursor-pointer w-full text-left"
-                  >
-                    {item.mobileIcon ? <item.mobileIcon /> : <item.icon />}
-                    {item.label}
-                  </button>
-                ) : (
-                  <Link key={`navItem-${index}`} href={item.url} className="flex items-center gap-1 mb-3">
-                    {item.mobileIcon ? <item.mobileIcon /> : <item.icon />}
-                    {item.label}
-                  </Link>
-                )
-              )}
+              {navItems.map((item, index) => (
+                <Link
+                  key={`navItem-${index}`}
+                  href={item.url}
+                  className="flex items-center gap-1 mb-3"
+                  onClick={() => setIsSheetOpen(false)}
+                >
+                  {item.mobileIcon ? <item.mobileIcon /> : <item.icon />}
+                  {item.label}
+                </Link>
+              ))}
             </div>
             <div className="flex flex-col items-center gap-8 absolute bottom-10 left-1/2 -translate-x-1/2">
               <SheetFooter className="mt-6">{authButton}</SheetFooter>

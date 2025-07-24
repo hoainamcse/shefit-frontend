@@ -105,19 +105,23 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
 
   return (
     <>
-      <div className="gap-5 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
-        <Link href={`/meal-plans/${mealPlanId}/detail`} className="w-full" onClick={handleStartClick}>
-          <Button className="w-full rounded-full text-lg bg-[#13D8A7] text-white hover:bg-[#11c296] h-14">
-            Bắt đầu
-          </Button>
-        </Link>
+      <div className="lg:gap-5 gap-3 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
+        <div className={!isCheckingSubscription && !hasMealPlanInSubscription ? 'w-1/2' : 'w-full'}>
+          <Link href={`/meal-plans/${mealPlanId}/detail`} className="w-full block" onClick={handleStartClick}>
+            <Button className="w-full rounded-full text-lg bg-[#13D8A7] text-white hover:bg-[#11c296] h-14">
+              Bắt đầu
+            </Button>
+          </Link>
+        </div>
         {!isCheckingSubscription && !hasMealPlanInSubscription && (
-          <Button
-            onClick={() => handleSaveMealPlan(mealPlanId)}
-            className="w-full rounded-full text-lg bg-white text-[#13D8A7] h-14 border-2 border-[#13D8A7]"
-          >
-            Lưu
-          </Button>
+          <div className="w-1/2">
+            <Button
+              onClick={() => handleSaveMealPlan(mealPlanId)}
+              className="w-full rounded-full text-lg bg-white text-[#13D8A7] h-14 border-2 border-[#13D8A7] hover:bg-gray-50"
+            >
+              Lưu
+            </Button>
+          </div>
         )}
       </div>
 
