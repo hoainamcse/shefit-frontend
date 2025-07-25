@@ -39,7 +39,7 @@ export default function ProductsPage() {
   }, [selectedCategory, products])
 
   return (
-    <>
+    <div className="overflow-hidden">
       <img src="/body-quiz-image.jpg" className="w-full object-cover lg:aspect-[1800/681] aspect-[440/280]" alt="" />
       <div className="flex flex-col gap-10 px-4 lg:px-12">
         <div className="mb-20 p-4 lg:mt-20 mt-0">
@@ -122,6 +122,6 @@ export default function ProductsPage() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }

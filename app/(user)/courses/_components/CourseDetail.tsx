@@ -99,7 +99,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
     <div>
       <div className="relative">
         <img
-          src={course?.data?.thumbnail_image}
+          src={course?.data?.thumbnail_image_mobile}
           alt={`${courseId}`}
           className="w-full aspect-[400/255] object-cover block lg:hidden"
         />
@@ -112,7 +112,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
       </div>
       <div className="flex mx-auto flex-col gap-10 lg:mt-10 mt-2 w-full pb-24 lg:px-10 px-4">
         <img
-          src={course?.data?.thumbnail_image}
+          src={course?.data?.thumbnail_image_desktop}
           alt={`${courseId}`}
           className="rounded-xl w-full aspect-[1800/681] object-cover hidden lg:block"
         />

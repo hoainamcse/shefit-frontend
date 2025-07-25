@@ -7,7 +7,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
   return (
     <div>
       <Header />
-      <main className="relative min-h-screen">{children}</main>
+      <main className="relative min-h-screen overflow-hidden">{children}</main>
       <Footer />
       <BottomNavbar />
       <ChatBotButton />

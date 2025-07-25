@@ -117,7 +117,7 @@ export default function MealPlansPage() {
           Lựa chọn thực đơn phù hợp với mục tiêu, với các món ăn đơn giản, dễ chuẩn bị hàng ngày. Ăn ngon miệng mà vẫn
           đảm bảo tăng cơ, giảm mỡ hiệu quả!
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-4xl mx-auto">
+        <div className="flex gap-4 w-full max-w-4xl mx-auto">
           <div className="w-full">
             <MultiSelectHero
               placeholder="Mục tiêu"

@@ -249,7 +249,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
       <div className="mb-20 lg:p-10 p-4 mt-4">
         <Link
           href="/products"
-          className="flex cursor-pointer items-center lg:mb-5 mb-2 lg:ml-8 ml-4 font-semibold gap-2"
+          className="flex cursor-pointer items-center mb-5 lg:ml-8 ml-4 font-semibold gap-2"
         >
           <BackIconBlack /> <span className="ml-1 text-sm lg:text-lg">Quay về</span>
         </Link>
