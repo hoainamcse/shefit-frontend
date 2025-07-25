@@ -14,10 +14,12 @@ type MealPlan = {
   subtitle: string
   chef_name: string
   meal_plan_goal: Goal | null
-  image: string
+  cover_image: string
   description: string
   meal_ingredients: MealPlanIngredient[]
-  number_of_days: number // ! not in schema
+  number_of_days: number
+  image_mobile: string
+  image_desktop: string
   is_public: boolean
   is_free: boolean
   free_days: number

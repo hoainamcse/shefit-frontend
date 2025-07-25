@@ -15,23 +15,23 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
     }
 
     return (
-      <div className="flex flex-col  mx-auto max-w-[1800px] ">
+      <div className="flex flex-col mx-auto max-w-[1800px]">
         <Link href="/meal-plans">
-          <Button className="flex items-center gap-2 text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent  text-black shadow-none">
+          <Button className="flex items-center gap-2 text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black shadow-none">
             <BackIconBlack /> Quay về
           </Button>
         </Link>
 
         <div className="items-center justify-center mb-20 mt-5 p-2 xl:p-4">
           <img
-            src={mealPlan.image}
+            src={mealPlan.image_mobile}
             alt="Menu detail image"
-            className="w-full aspect-[440/281] object-cover block lg:hidden rounded-md lg:rounded-xl"
+            className="w-full aspect-[440/281] object-cover block md:hidden rounded-md md:rounded-xl"
           />
           <img
-            src={mealPlan.image}
+            src={mealPlan.image_desktop}
             alt="Menu detail image"
-            className="w-full aspect-[1800/681] object-cover rounded-sm lg:rounded-xl md:rounded-md hidden lg:block"
+            className="w-full aspect-[1800/681] object-cover rounded-sm lg:rounded-xl md:rounded-md hidden md:block"
           />
           <div className="mr-auto text-lg mt-8 max-lg:p-4">
             <p className="font-bold text-sm lg:text-lg">{mealPlan.meal_plan_goal?.name}</p>

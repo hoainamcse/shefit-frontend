@@ -101,7 +101,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         <img
           src={course?.data?.thumbnail_image_mobile}
           alt={`${courseId}`}
-          className="w-full aspect-[400/255] object-cover block lg:hidden"
+          className="w-full aspect-[400/255] object-cover block md:hidden"
         />
         <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto z-10 absolute top-4 left-4 lg:left-20">
           <div className="flex items-center gap-[10px] cursor-pointer" onClick={() => router.back()}>
@@ -114,7 +114,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         <img
           src={course?.data?.thumbnail_image_desktop}
           alt={`${courseId}`}
-          className="rounded-xl w-full aspect-[1800/681] object-cover hidden lg:block"
+          className="rounded-xl w-full aspect-[1800/681] object-cover hidden md:block"
         />
         <div className="flex justify-between text-base">
           <div>
