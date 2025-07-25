@@ -15,6 +15,7 @@ type MealPlan = {
   chef_name: string
   meal_plan_goal: Goal | null
   cover_image: string
+  image: string
   description: string
   meal_ingredients: MealPlanIngredient[]
   number_of_days: number

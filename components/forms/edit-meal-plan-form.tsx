@@ -1,6 +1,6 @@
 'use client'
 
-import type { MealPlan } from '@/models/meal-plan'
+import type { MealPlan, MealPlanPayload } from '@/models/meal-plan'
 
 import { z } from 'zod'
 import { toast } from 'sonner'
@@ -114,7 +114,8 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
   })
 
   const mealPlanMutation = useMutation({
-    mutationFn: (values: FormValue) => (isEdit ? updateMealPlan(data.id, values) : createMealPlan(values)),
+    mutationFn: (values: FormValue) =>
+      isEdit ? updateMealPlan(data.id, values as MealPlanPayload) : createMealPlan(values as MealPlanPayload),
     onSettled(data, error) {
       if (data?.status === 'success') {
         toast.success(isEdit ? 'Cập nhật thực đơn thành công' : 'Tạo thực đơn thành công')
