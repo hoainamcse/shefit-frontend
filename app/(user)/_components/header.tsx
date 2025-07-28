@@ -42,13 +42,13 @@ export function Header() {
   const authButton = session ? (
     <MainButton
       onClick={handleSignOut}
-      className="rounded-full w-32 lg:w-[151px] lg:h-10"
+      className="rounded-full w-32 lg:w-[132px] lg:h-10"
       text="Đăng xuất"
       variant="secondary"
     />
   ) : (
     <MainButton
-      className="rounded-full w-32 lg:w-[151px] lg:h-10"
+      className="rounded-full w-32 lg:w-[132px] lg:h-10"
       text="Đăng nhập"
       onClick={() => {
         redirectToLogin()
@@ -108,7 +108,7 @@ export function Header() {
 
   return (
     <header className="bg-[#FF7873] sticky top-0 inset-x-0 z-50">
-      <div className="mx-auto flex justify-between items-center p-3 lg:px-16">
+      <div className="mx-auto flex justify-between items-center p-3 xl:px-16 lg:px-2">
         <Link href="/" className="flex-shrink-0">
           <Image src="/logo-mono-horizontal.png" alt="logo-mono-horizontal" width={136} height={40} />
         </Link>
@@ -118,7 +118,7 @@ export function Header() {
               <div className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 flex items-center justify-center">
                 <item.icon />
               </div>
-              <span className="whitespace-nowrap text-xs md:text-sm lg:text-base xl:text-lg">{item.label}</span>
+              <span className="whitespace-nowrap text-xs md:text-xs lg:text-base xl:text-lg">{item.label}</span>
             </Link>
           ))}
           {authButton}

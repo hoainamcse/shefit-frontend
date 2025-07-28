@@ -79,8 +79,9 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
   }
 
   const handleStartClick = async (e: React.MouseEvent) => {
+    e.preventDefault()
+
     if (!session) {
-      e.preventDefault()
       setShowLoginDialog(true)
       return
     }
@@ -94,12 +95,14 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
         return subscription.meal_plans.some((mp: { id: number }) => Number(mp.id) === Number(mealPlanId))
       })
 
-      if (!hasAccess) {
-        e.preventDefault()
+      if (hasAccess) {
+        window.location.href = `/meal-plans/${mealPlanId}/detail`
+      } else {
         setShowSubscribeDialog(true)
       }
     } catch (error) {
       console.error('Error checking meal plan access:', error)
+      setShowSubscribeDialog(true)
     }
   }
 
@@ -107,11 +110,11 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
     <>
       <div className="lg:gap-5 gap-3 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
         <div className={!isCheckingSubscription && !hasMealPlanInSubscription ? 'w-1/2' : 'w-full'}>
-          <Link href={`/meal-plans/${mealPlanId}/detail`} className="w-full block" onClick={handleStartClick}>
+          <div className="w-full block" onClick={handleStartClick}>
             <Button className="w-full rounded-full text-lg bg-[#13D8A7] text-white hover:bg-[#11c296] h-14">
               Bắt đầu
             </Button>
-          </Link>
+          </div>
         </div>
         {!isCheckingSubscription && !hasMealPlanInSubscription && (
           <div className="w-1/2">
