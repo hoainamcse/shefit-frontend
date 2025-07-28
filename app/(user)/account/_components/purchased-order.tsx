@@ -15,6 +15,8 @@ export default function PurchasedOrder() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true)
+
       if (!session) {
         setLoading(false)
         return
@@ -62,7 +64,7 @@ export default function PurchasedOrder() {
   if (!deliveredCarts.length) {
     return (
       <div className="flex flex-col items-center justify-center mt-20 w-full">
-        <p className="text-xl mb-6 text-center">Bạn chưa có đơn hàng nào, xem sản phẩm của chúng tôi</p>
+        <p className="text-lg md:text-xl mb-6 text-center">Bạn chưa có đơn hàng nào, xem sản phẩm của chúng tôi</p>
         <Button
           onClick={handleBuyNow}
           className="h-[60px] w-full max-w-[586px] bg-[#13D8A7] text-white px-6 py-2 rounded-full text-base transition-colors"

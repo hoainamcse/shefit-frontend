@@ -21,11 +21,15 @@ type UserSubscription = {
 }
 
 
- type UserSubscriptionDetail = Omit<UserSubscription,
+type UserSubscriptionDetail = Omit<UserSubscription,
   'subscription_id' | 'gift_id' | 'exercise_ids' | 'meal_plan_ids' | 'dish_ids'> & {
   id: number
   gifts: Gift
-  subscription: {id: number; courses: { id: number; course_name: string }[]}
+  subscription: {
+    id: number
+    subscription_end_at: string
+    courses: { id: number; course_name: string }[]
+  }
   exercises: Pick<Exercise, 'id' | 'name'>[]
   meal_plans: Pick<MealPlan, 'id' | 'title'>[]
   dishes: Pick<Dish, 'id' | 'name'>[]

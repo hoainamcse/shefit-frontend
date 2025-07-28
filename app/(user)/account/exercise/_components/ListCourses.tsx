@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect, useMemo } from 'react'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import { Lock } from 'lucide-react'
-import { courseFormLabel } from '@/lib/label'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import {
   Dialog,
@@ -35,6 +34,12 @@ export function ListCourses() {
   const [renewDialogOpen, setRenewDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [courses, setCourses] = useState<CourseWithCategory[]>([])
+
+  const isSubscriptionExpired = useMemo(() => {
+    if (!selectedSubscription?.subscription_end_at) return true
+    const endDate = new Date(selectedSubscription.subscription_end_at)
+    return new Date() > endDate
+  }, [selectedSubscription])
 
   const handleLoginClick = () => {
     setDialogOpen(false)
@@ -196,14 +201,9 @@ export function ListCourses() {
         {courses.map((course) => (
           <div key={course.id} className="group">
             <Link
-              href={
-                selectedSubscription?.status === 'expired'
-                  ? '#'
-                  : `/courses/${course.id}/${course.course_format}-classes`
-              }
-              className={selectedSubscription?.status === 'expired' ? 'cursor-not-allowed' : ''}
+              href={isSubscriptionExpired ? '#' : `/courses/${course.id}/${course.course_format}-classes`}
               onClick={
-                selectedSubscription?.status === 'expired'
+                isSubscriptionExpired
                   ? (e) => {
                       e.preventDefault()
                       setRenewDialogOpen(true)
@@ -222,7 +222,7 @@ export function ListCourses() {
                       alt={course.course_name}
                       className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
                     />
-                    {selectedSubscription?.status === 'expired' && (
+                    {isSubscriptionExpired && (
                       <div className="absolute inset-0 bg-black/50 rounded-xl z-20 flex items-center justify-center">
                         <Lock className="w-12 h-12 text-white" />
                       </div>

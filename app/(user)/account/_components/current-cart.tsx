@@ -41,10 +41,13 @@ export default function CurrentCart() {
 
   useEffect(() => {
     async function fetchCartData() {
+      setLoading(true)
+
       if (!session) {
         setLoading(false)
         return
       }
+
       try {
         const cartsRes = await getUserCart(Number(session.userId))
         const userCarts = (cartsRes?.data as UserCart[]) || []
@@ -222,28 +225,6 @@ export default function CurrentCart() {
     toast.success('Đã hủy mã giảm giá')
   }
 
-  if (!pendingCarts.length || !pendingCarts[0]?.cart?.product_variants?.length) {
-    return (
-      <div className="flex flex-col items-center justify-center mt-20 w-full">
-        <p className="text-2xl mb-6 text-center">Bạn chưa có sản phẩm nào trong giỏ hàng</p>
-        <Button
-          onClick={handleBuyNow}
-          disabled={processing}
-          className="h-[60px] w-full max-w-[586px] bg-[#13D8A7] text-white px-6 py-2 rounded-full text-lg transition-colors"
-        >
-          {processing ? 'Đang xử lý...' : 'Mua ngay'}
-        </Button>
-      </div>
-    )
-  }
-
-  const cartData = pendingCarts[0]?.cart
-  const totalPrice = cartData?.product_variants
-    ? cartData.product_variants
-        .reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0)
-        .toLocaleString()
-    : '0'
-
   const handleRemove = async (variantId: number) => {
     if (!session) {
       toast.error('Vui lòng đăng nhập để thực hiện thao tác này')
@@ -300,12 +281,35 @@ export default function CurrentCart() {
     }
   }
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="flex justify-center items-center h-40">
+      <div className="flex justify-center mt-20">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     )
+  }
+
+  if (!pendingCarts.length || !pendingCarts[0]?.cart?.product_variants?.length) {
+    return (
+      <div className="flex flex-col items-center justify-center mt-20 w-full">
+        <p className="text-lg md:text-xl mb-6 text-center">Bạn chưa có sản phẩm nào trong giỏ hàng</p>
+        <Button
+          onClick={handleBuyNow}
+          disabled={processing}
+          className="h-[60px] w-full max-w-[586px] bg-[#13D8A7] text-white px-6 py-2 rounded-full text-lg transition-colors"
+        >
+          {processing ? 'Đang xử lý...' : 'Mua ngay'}
+        </Button>
+      </div>
+    )
+  }
+
+  const cartData = pendingCarts[0]?.cart
+  const totalPrice = cartData?.product_variants
+    ? cartData.product_variants
+        .reduce((total: number, variant: any) => total + variant.price * variant.quantity, 0)
+        .toLocaleString()
+    : '0'
 
   return (
     <div className="xl:flex mt-10 w-full justify-between gap-20">

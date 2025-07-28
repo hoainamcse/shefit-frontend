@@ -184,9 +184,9 @@ export default function FormDelivery({
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-base lg:text-xl">Tên</FormLabel>
+                <FormLabel className="text-sm lg:text-lg">Tên</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Nhập tên của bạn" className="text-base lg:text-xl" />
+                  <Input {...field} placeholder="Nhập tên của bạn" className="text-sm lg:text-lg" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -198,9 +198,9 @@ export default function FormDelivery({
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-base lg:text-xl">Số điện thoại</FormLabel>
+                <FormLabel className="text-sm lg:text-lg">Số điện thoại</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Nhập số điện thoại của bạn" className="text-base lg:text-xl" />
+                  <Input {...field} placeholder="Nhập số điện thoại của bạn" className="text-sm lg:text-lg" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -212,7 +212,7 @@ export default function FormDelivery({
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-base lg:text-xl">Thành phố</FormLabel>
+                <FormLabel className="text-sm lg:text-lg">Thành phố</FormLabel>
                 <FormControl>
                   <Select
                     value={field.value}
@@ -243,7 +243,7 @@ export default function FormDelivery({
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-base lg:text-xl">Địa chỉ</FormLabel>
+                <FormLabel className="text-sm lg:text-lg">Địa chỉ</FormLabel>
                 <FormControl>
                   <Input {...field} placeholder="Nhập địa chỉ của bạn" />
                 </FormControl>
@@ -257,9 +257,9 @@ export default function FormDelivery({
             control={form.control}
             render={({ field }) => (
               <FormItem className="flex justify-between items-center">
-                <FormLabel className="text-base lg:text-xl">Phí ship</FormLabel>
+                <FormLabel className="text-sm lg:text-lg">Phí ship</FormLabel>
                 <FormControl>
-                  <div className="text-[#8E8E93] text-base lg:text-xl">
+                  <div className="text-[#8E8E93] text-sm lg:text-lg">
                     {parseInt(field.value || '0').toLocaleString('vi-VN')} <span>VNĐ</span>
                   </div>
                 </FormControl>
@@ -273,9 +273,9 @@ export default function FormDelivery({
             control={form.control}
             render={({ field }) => (
               <FormItem className="flex justify-between items-center">
-                <FormLabel className="text-base lg:text-xl mt-2">Giảm giá</FormLabel>
+                <FormLabel className="text-sm lg:text-lg mt-2">Giảm giá</FormLabel>
                 <FormControl>
-                  <div className="text-[#DA1515] text-base lg:text-xl">
+                  <div className="text-[#DA1515] text-sm lg:text-lg">
                     {parseInt(field.value || '0') > 0
                       ? `-${parseInt(field.value || '0').toLocaleString('vi-VN')}`
                       : '0'}{' '}
@@ -292,7 +292,7 @@ export default function FormDelivery({
             control={form.control}
             render={({ field }) => (
               <FormItem className="flex justify-between items-center">
-                <FormLabel className="text-base lg:text-xl font-semibold">Tổng tiền</FormLabel>
+                <FormLabel className="text-sm lg:text-lg font-semibold">Tổng tiền</FormLabel>
                 <FormControl>
                   <div className="text-[#00C7BE] text-xl lg:text-2xl font-semibold">
                     {parseInt(field.value || '0').toLocaleString('vi-VN')} <span>VNĐ</span>
@@ -308,7 +308,7 @@ export default function FormDelivery({
             control={form.control}
             render={({ field }) => (
               <FormItem className="flex justify-between items-center">
-                <FormLabel className="text-base lg:text-xl font-semibold mt-2">Phương thức</FormLabel>
+                <FormLabel className="text-sm lg:text-lg font-semibold mt-2">Phương thức</FormLabel>
                 <FormControl>
                   <div className="flex gap-2 items-center">
                     <div className="text-[#737373] text-xl lg:text-2xl leading-8 items-center">
@@ -327,7 +327,7 @@ export default function FormDelivery({
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-base lg:text-xl">Ghi chú thêm</FormLabel>
+                <FormLabel className="text-sm lg:text-lg">Ghi chú thêm</FormLabel>
                 <FormControl>
                   <Input {...field} placeholder="Nhập ghi chú của bạn cho shop" />
                 </FormControl>

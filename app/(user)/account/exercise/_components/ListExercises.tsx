@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useSubscription } from './SubscriptionContext'
@@ -37,6 +37,12 @@ export default function ListExercises() {
   const [combinedExercises, setCombinedExercises] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
+
+  const isSubscriptionExpired = useMemo(() => {
+    if (!selectedSubscription?.subscription_end_at) return true
+    const endDate = new Date(selectedSubscription.subscription_end_at)
+    return new Date() > endDate
+  }, [selectedSubscription])
 
   const handleLoginClick = () => {
     setDialogOpen(false)
@@ -255,13 +261,12 @@ export default function ListExercises() {
           <div key={exercise.id} className="group">
             <Link
               href={
-                selectedSubscription?.status === 'expired'
+                isSubscriptionExpired
                   ? '#'
                   : `/gallery/muscle/${exercise.muscle_groups?.[0]?.id || exercise.muscle?.id || ''}/${exercise.id}`
               }
-              className={selectedSubscription?.status === 'expired' ? 'cursor-not-allowed' : ''}
               onClick={
-                selectedSubscription?.status === 'expired'
+                isSubscriptionExpired
                   ? (e) => {
                       e.preventDefault()
                       setRenewDialogOpen(true)
@@ -271,7 +276,7 @@ export default function ListExercises() {
             >
               <div>
                 <div className="relative group lg:max-w-[585px]">
-                  {selectedSubscription?.status === 'expired' && (
+                  {isSubscriptionExpired && (
                     <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50 rounded-xl">
                       <Lock className="text-white w-12 h-12" />
                     </div>

@@ -6,10 +6,29 @@ import PurchasedOrder from './purchased-order'
 import { useSession } from '@/hooks/use-session'
 import { Button } from '@/components/ui/button'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { useState, useEffect } from 'react'
 
 export default function Cart() {
   const { session } = useSession()
   const { redirectToLogin } = useAuthRedirect()
+  const [isSessionReady, setIsSessionReady] = useState(false)
+  const [activeTab, setActiveTab] = useState('current-cart')
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsSessionReady(true)
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (!isSessionReady) {
+    return (
+      <div className="flex justify-center mt-20">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
 
   if (!session) {
     return (
@@ -26,7 +45,7 @@ export default function Cart() {
 
   return (
     <div className="max-w-screen-3xl mx-auto px-4 lg:px-14">
-      <Tabs defaultValue="current-cart">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="w-full bg-background gap-x-20 mb-10">
           <TabsTrigger value="current-cart" className="w-1/2 !shadow-none text-lg lg:text-xl text-ring">
             Giỏ hàng
@@ -36,10 +55,10 @@ export default function Cart() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="current-cart">
-          <CurrentCart />
+          <CurrentCart key="current-cart" />
         </TabsContent>
         <TabsContent value="purchased-order">
-          <PurchasedOrder />
+          <PurchasedOrder key="purchased-order" />
         </TabsContent>
       </Tabs>
     </div>

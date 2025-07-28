@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/dialog'
 import { getMealPlans, getMealPlan } from '@/network/server/meal-plans'
 import { MealPlan } from '@/models/meal-plan'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { getFavouriteMealPlans } from '@/network/client/user-favourites'
@@ -35,6 +35,12 @@ export default function ListMealPlans() {
   const [combinedMealPlans, setCombinedMealPlans] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
+
+  const isSubscriptionExpired = useMemo(() => {
+    if (!selectedSubscription?.subscription_end_at) return true
+    const endDate = new Date(selectedSubscription.subscription_end_at)
+    return new Date() > endDate
+  }, [selectedSubscription])
 
   useEffect(() => {
     const fetchAndFilterMealPlans = async () => {
@@ -97,6 +103,7 @@ export default function ListMealPlans() {
                 subtitle: response.data.subtitle,
                 chef_name: response.data.chef_name,
                 image: response.data.image,
+                cover_image: response.data.cover_image || response.data.image,
                 number_of_days: response.data.number_of_days,
               }
             }
@@ -252,13 +259,13 @@ export default function ListMealPlans() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
         {combinedMealPlans.map((mealPlan) => {
           const mealPlanId = getMealPlanId(mealPlan as FavouriteMealPlan | MealPlan)
+
           return mealPlanId ? (
             <div key={mealPlanId} className="group">
               <Link
-                href={selectedSubscription?.status === 'expired' ? '#' : `/meal-plans/${mealPlanId}`}
-                className={selectedSubscription?.status === 'expired' ? 'cursor-not-allowed' : ''}
+                href={isSubscriptionExpired ? '#' : `/meal-plans/${mealPlanId}`}
                 onClick={
-                  selectedSubscription?.status === 'expired'
+                  isSubscriptionExpired
                     ? (e) => {
                         e.preventDefault()
                         setRenewDialogOpen(true)
@@ -268,7 +275,7 @@ export default function ListMealPlans() {
               >
                 <div>
                   <div className="relative group lg:max-w-[585px]">
-                    {selectedSubscription?.status === 'expired' && (
+                    {isSubscriptionExpired && (
                       <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50 rounded-xl">
                         <Lock className="text-white w-12 h-12" />
                       </div>
@@ -277,7 +284,7 @@ export default function ListMealPlans() {
                       <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                     </div>
                     <img
-                      src={mealPlan.image}
+                      src={mealPlan.cover_image}
                       alt={mealPlan.title}
                       className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
                     />

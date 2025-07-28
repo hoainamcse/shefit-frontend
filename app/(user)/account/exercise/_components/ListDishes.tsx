@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useSubscription } from './SubscriptionContext'
@@ -35,6 +35,11 @@ export default function ListDishes() {
   const [combinedDishes, setCombinedDishes] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
+  const isSubscriptionExpired = useMemo(() => {
+    if (!selectedSubscription?.subscription_end_at) return true
+    const endDate = new Date(selectedSubscription.subscription_end_at)
+    return new Date() > endDate
+  }, [selectedSubscription])
 
   const handleLoginClick = () => {
     setDialogOpen(false)
@@ -161,10 +166,7 @@ export default function ListDishes() {
             <p className="text-sm lg:text-lg">HÃY ĐĂNG NHẬP & MUA GÓI ĐỂ THÊM KHÓA TẬP & THỰC ĐƠN</p>
             <div className="flex gap-4 justify-center w-full px-10">
               <div className="flex-1">
-                <Button
-                  className="bg-[#13D8A7] rounded-full w-full text-sm lg:text-lg"
-                  onClick={handleBuyPackageClick}
-                >
+                <Button className="bg-[#13D8A7] rounded-full w-full text-sm lg:text-lg" onClick={handleBuyPackageClick}>
                   Mua gói
                 </Button>
               </div>
@@ -236,14 +238,9 @@ export default function ListDishes() {
         {combinedDishes.map((dish) => (
           <div key={dish.id} className="group">
             <Link
-              href={
-                selectedSubscription?.status === 'expired'
-                  ? '#'
-                  : `/gallery/meal/${dish.diet?.id || dish.diet_id}/${dish.id}`
-              }
-              className={selectedSubscription?.status === 'expired' ? 'cursor-not-allowed' : ''}
+              href={isSubscriptionExpired ? '#' : `/gallery/meal/${dish.diet?.id || dish.diet_id}/${dish.id}`}
               onClick={
-                selectedSubscription?.status === 'expired'
+                isSubscriptionExpired
                   ? (e) => {
                       e.preventDefault()
                       setRenewDialogOpen(true)
@@ -253,7 +250,7 @@ export default function ListDishes() {
             >
               <div>
                 <div className="relative group lg:max-w-[585px]">
-                  {selectedSubscription?.status === 'expired' && (
+                  {isSubscriptionExpired && (
                     <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50 rounded-xl">
                       <Lock className="text-white w-12 h-12" />
                     </div>
@@ -281,7 +278,9 @@ export default function ListDishes() {
       </div>
       <div className="mt-6">
         <Link href="/gallery">
-          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg lg:mt-12 mt-6">Thêm món ăn</Button>
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg lg:mt-12 mt-6">
+            Thêm món ăn
+          </Button>
         </Link>
       </div>
     </div>

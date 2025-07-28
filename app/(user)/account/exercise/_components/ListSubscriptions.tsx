@@ -13,6 +13,7 @@ export default function ListSubscriptions() {
   const [isLoading, setIsLoading] = useState(true)
   const [userSubscriptions, setUserSubscriptions] = useState<any[]>([])
   const [subscriptionNames, setSubscriptionNames] = useState<{ [key: number]: string }>({})
+  const [namesLoaded, setNamesLoaded] = useState(false)
   const {
     selectedSubscription,
     setSelectedSubscription,
@@ -22,10 +23,6 @@ export default function ListSubscriptions() {
   } = useSubscription()
 
   useEffect(() => {
-    setShowFavorites(true)
-  }, [setShowFavorites])
-
-  useEffect(() => {
     async function fetchData() {
       if (!session) return
 
@@ -33,13 +30,35 @@ export default function ListSubscriptions() {
         setContextLoading(true)
         const userSubsResponse = await getUserSubscriptions(session.userId)
         if (userSubsResponse.data && userSubsResponse.data.length > 0) {
-          const sortedSubscriptions = [...userSubsResponse.data].sort(
-            (a, b) => new Date(b.subscription_end_at).getTime() - new Date(a.subscription_end_at).getTime()
-          )
+          const currentDate = new Date()
+
+          const sortedSubscriptions = [...userSubsResponse.data].sort((a, b) => {
+            const aEndDate = new Date(a.subscription_end_at)
+            const bEndDate = new Date(b.subscription_end_at)
+            const aIsActive = currentDate <= aEndDate
+            const bIsActive = currentDate <= bEndDate
+
+            if (aIsActive && !bIsActive) return -1
+            if (!aIsActive && bIsActive) return 1
+
+            return bEndDate.getTime() - aEndDate.getTime()
+          })
 
           setUserSubscriptions(sortedSubscriptions)
+
           if (!selectedSubscription) {
-            setSelectedSubscription(sortedSubscriptions[0])
+            const firstActiveSubscription = sortedSubscriptions.find((sub) => {
+              const endDate = new Date(sub.subscription_end_at)
+              return currentDate <= endDate
+            })
+
+            if (firstActiveSubscription) {
+              setSelectedSubscription(firstActiveSubscription)
+              setShowFavorites(false)
+            } else {
+              setSelectedSubscription(sortedSubscriptions[0])
+              setShowFavorites(false)
+            }
           }
           const namesPromises = sortedSubscriptions.map(async (sub) => {
             try {
@@ -53,16 +72,20 @@ export default function ListSubscriptions() {
 
           const subscriptionData = await Promise.all(namesPromises)
           const namesMap: { [key: number]: string } = {}
+          let hasEmptyNames = false
 
           subscriptionData.forEach((item) => {
             if (item) {
               namesMap[item.id] = item.name
+              if (!item.name) hasEmptyNames = true
             }
           })
 
           setSubscriptionNames(namesMap)
+          setNamesLoaded(true)
         } else {
           setSelectedSubscription(undefined)
+          setShowFavorites(true)
         }
       } catch (error) {
         console.error('Error fetching subscriptions:', error)
@@ -89,10 +112,9 @@ export default function ListSubscriptions() {
     }
   }
 
-  const isActive = selectedSubscription?.status === 'active'
   const currentDate = new Date()
   const endDate = selectedSubscription?.subscription_end_at ? new Date(selectedSubscription.subscription_end_at) : null
-  const isExpired = endDate ? currentDate > endDate : false
+  const isActive = endDate ? currentDate <= endDate : false
 
   return session ? (
     <div className="flex flex-col lg:flex-row gap-5 mb-6 w-full">
@@ -105,18 +127,33 @@ export default function ListSubscriptions() {
             <SelectValue placeholder={isLoading ? 'Đang tải...' : 'Gói member của bạn'} />
           </SelectTrigger>
           <SelectContent className="w-full max-h-[300px] overflow-y-auto">
-            <SelectItem key="favorites" value="favorites">
-              Yêu thích
-            </SelectItem>
-            {userSubscriptions.map((subscription) => {
-              const subscriptionId = subscription.id.toString()
-              return (
-                <SelectItem key={subscriptionId} value={subscriptionId} className="cursor-pointer hover:bg-gray-100">
-                  {subscriptionNames[subscription.subscription?.id] ||
-                    `Gói tập ${subscription.subscription?.id || subscription.id}`}
+            {!namesLoaded ? (
+              <div className="px-3 py-2 text-sm text-gray-500">Đang tải danh sách gói tập...</div>
+            ) : (
+              <>
+                {userSubscriptions.map((subscription) => {
+                  const subscriptionId = subscription.id.toString()
+                  const endDate = new Date(subscription.subscription_end_at)
+                  const isSubscriptionActive = currentDate <= endDate
+                  const subscriptionName = subscriptionNames[subscription.subscription?.id]
+
+                  if (!subscriptionName) return null
+
+                  return (
+                    <SelectItem
+                      key={subscriptionId}
+                      value={subscriptionId}
+                      className="cursor-pointer hover:bg-gray-100"
+                    >
+                      {subscriptionName}
+                    </SelectItem>
+                  )
+                })}
+                <SelectItem key="favorites" value="favorites">
+                  Yêu thích
                 </SelectItem>
-              )
-            })}
+              </>
+            )}
           </SelectContent>
         </Select>
       </div>
@@ -124,9 +161,13 @@ export default function ListSubscriptions() {
       {!showFavorites && (
         <>
           {isActive ? (
-            <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#13D8A7] text-base rounded-none border border-[#000000]">Còn hạn</Button>
+            <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#13D8A7] text-base rounded-none border border-[#000000]">
+              Còn hạn
+            </Button>
           ) : (
-            <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#E61417] text-base rounded-none border border-[#000000]">Hết hạn</Button>
+            <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#E61417] text-base rounded-none border border-[#000000]">
+              Hết hạn
+            </Button>
           )}
 
           <div className="flex lg:flex-row gap-5 mt-auto text-base justify-between text-[#737373] font-bold">

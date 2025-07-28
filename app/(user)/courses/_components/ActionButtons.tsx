@@ -37,11 +37,9 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
       }
 
       try {
-        // First check in user subscriptions
         const subscriptionsResponse = await getUserSubscriptions(session.userId.toString())
         const currentCourseId = Number(courseId)
 
-        // Check if the course exists in any subscription's courses
         const courseInSubscription = subscriptionsResponse.data?.some((subscription) =>
           subscription.subscription?.courses?.some((course) => Number(course.id) === currentCourseId)
         )
@@ -51,7 +49,6 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
           return
         }
 
-        // If not found in subscriptions, check in user courses as a fallback
         const coursesResponse = await getUserCourses(session.userId.toString())
         const userCourse = (coursesResponse.data as UserCourseItem[])?.find((course) => {
           const userCourseId = Number(course.course_id)

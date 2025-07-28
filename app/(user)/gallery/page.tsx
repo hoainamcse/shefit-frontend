@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { getUserSubscriptions } from '@/network/client/users'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,6 +20,8 @@ export default function Gallery() {
   const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const [dialogOpen, setDialogOpen] = useState<string | false>(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [hasActiveSubscription, setHasActiveSubscription] = useState(false)
+  const [isCheckingSubscription, setIsCheckingSubscription] = useState(true)
   const [muscleGroupsData, setMuscleGroupsData] = useState<ListResponse<MuscleGroup>>({
     status: '',
     data: [],
@@ -39,6 +42,35 @@ export default function Gallery() {
     setDialogOpen(false)
     redirectToAccount('buy-package')
   }
+
+  useEffect(() => {
+    const checkSubscription = async () => {
+      if (!session) {
+        setHasActiveSubscription(false)
+        setIsCheckingSubscription(false)
+        return
+      }
+
+      try {
+        const subscriptions = await getUserSubscriptions(session.userId.toString())
+        const currentDate = new Date()
+        const hasValidSubscription = subscriptions.data?.some((subscription) => {
+          if (!subscription.subscription_end_at) return false
+          const endDate = new Date(subscription.subscription_end_at)
+          return currentDate <= endDate
+        })
+
+        setHasActiveSubscription(hasValidSubscription || false)
+      } catch (error) {
+        console.error('Error checking subscription:', error)
+        setHasActiveSubscription(false)
+      } finally {
+        setIsCheckingSubscription(false)
+      }
+    }
+
+    checkSubscription()
+  }, [session])
 
   useEffect(() => {
     async function fetchMuscleGroups() {
@@ -90,7 +122,7 @@ export default function Gallery() {
         )}
         <div className="grid grid-cols-4 sm:gap-5 gap-4">
           {muscleGroupsData.data.map((muscleGroup) =>
-            session ? (
+            session && hasActiveSubscription && !isCheckingSubscription ? (
               <Link href={`/gallery/muscle/${muscleGroup.id}`} key={muscleGroup.id}>
                 <div key={`menu-${muscleGroup.id}`} className="overflow-hidden">
                   <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square">
@@ -134,7 +166,11 @@ export default function Gallery() {
                       <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
                     </DialogHeader>
                     <div className="flex flex-col items-center text-center gap-6">
-                      <p className="text-sm lg:text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN</p>
+                      <p className="text-sm lg:text-lg">
+                        {session
+                          ? 'MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN'
+                          : 'ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN'}
+                      </p>
                       <div className="flex gap-4 justify-center w-full px-10">
                         <div className="flex-1">
                           <Button
@@ -144,14 +180,16 @@ export default function Gallery() {
                             Mua gói Member
                           </Button>
                         </div>
-                        <div className="flex-1">
-                          <Button
-                            className="bg-[#13D8A7] rounded-full w-full text-sm lg:text-lg"
-                            onClick={handleLoginClick}
-                          >
-                            Đăng nhập
-                          </Button>
-                        </div>
+                        {!session && (
+                          <div className="flex-1">
+                            <Button
+                              className="bg-[#13D8A7] rounded-full w-full text-sm lg:text-lg"
+                              onClick={handleLoginClick}
+                            >
+                              Đăng nhập
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </DialogContent>
@@ -177,7 +215,7 @@ export default function Gallery() {
         )}
         <div className="grid grid-cols-4 sm:gap-5 gap-4">
           {dietsData.data?.map((diet) =>
-            session ? (
+            session && hasActiveSubscription && !isCheckingSubscription ? (
               <Link href={`/gallery/meal/${diet.id}`} key={diet.id}>
                 <div key={`menu-${diet.id}`} className="text-lg overflow-hidden">
                   <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square">
@@ -213,7 +251,11 @@ export default function Gallery() {
                       <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
                     </DialogHeader>
                     <div className="flex flex-col items-center text-center gap-6">
-                      <p className="text-sm lg:text-lg">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN</p>
+                      <p className="text-sm lg:text-lg">
+                        {session
+                          ? 'MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN'
+                          : 'ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP BÀI TẬP & MÓN ĂN'}
+                      </p>
                       <div className="flex gap-4 justify-center w-full px-10">
                         <div className="flex-1">
                           <Button
@@ -223,11 +265,13 @@ export default function Gallery() {
                             Mua gói Member
                           </Button>
                         </div>
-                        <div className="flex-1">
-                          <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleLoginClick}>
-                            Đăng nhập
-                          </Button>
-                        </div>
+                        {!session && (
+                          <div className="flex-1">
+                            <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleLoginClick}>
+                              Đăng nhập
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </DialogContent>

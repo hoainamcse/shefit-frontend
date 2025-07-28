@@ -192,7 +192,7 @@ export default function FavouriteContent() {
                   ...response.data,
                   id: mealPlanId,
                   name: response.data.title,
-                  cover_image: response.data.image,
+                  cover_image: response.data.cover_image,
                   summary: response.data.subtitle,
                   trainer: response.data.chef_name,
                   duration_weeks: response.data.number_of_days ? Math.ceil(response.data.number_of_days / 7) : 1,
@@ -282,36 +282,36 @@ export default function FavouriteContent() {
             <div className="flex flex-col gap-16">
               <div>
                 <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
-                  Khóa tập của bạn
+                  Khóa tập yêu thích
                 </div>
-                <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có khóa tập nào</div>
+                <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có khóa tập yêu thích nào</div>
                 <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-sm lg:text-lg">
                   Thêm khóa tập
                 </Button>
               </div>
               <div>
                 <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
-                  Động tác của bạn
+                  Động tác yêu thích
                 </div>
-                <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có động tác nào</div>
+                <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có động tác yêu thích nào</div>
                 <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-sm lg:text-lg">
                   Thêm động tác
                 </Button>
               </div>
               <div>
                 <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
-                  Thực đơn của bạn
+                  Thực đơn yêu thích
                 </div>
-                <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có thực đơn nào</div>
+                <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có thực đơn yêu thích nào</div>
                 <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-sm lg:text-lg">
                   Thêm thực đơn
                 </Button>
               </div>
               <div>
                 <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
-                  Món ăn của bạn
+                  Món ăn yêu thích
                 </div>
-                <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có món ăn nào</div>
+                <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có món ăn yêu thích nào</div>
                 <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-sm lg:text-lg">
                   Thêm món ăn
                 </Button>
@@ -350,7 +350,7 @@ export default function FavouriteContent() {
     <div className="mt-12">
       <div>
         <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
-          Khóa tập của bạn
+          Khóa tập yêu thích
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
           {isLoadingCourses ? (
@@ -402,7 +402,7 @@ export default function FavouriteContent() {
       </div>
       <div className="space-y-6 mt-12">
         <h2 className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
-          Thực đơn
+          Thực đơn yêu thích
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
           {isLoadingMealPlans ? (
@@ -417,7 +417,7 @@ export default function FavouriteContent() {
                     <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                   </div>
                   <img
-                    src={meal_plan.image}
+                    src={meal_plan.cover_image || meal_plan.image}
                     alt={meal_plan.title}
                     className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
                   />
@@ -445,7 +445,7 @@ export default function FavouriteContent() {
 
       <div className="space-y-6 mt-12">
         <h2 className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
-          Động tác
+          Động tác yêu thích
         </h2>
         <div className="grid grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
           {isLoadingExercises ? (
@@ -497,7 +497,7 @@ export default function FavouriteContent() {
 
       <div className="space-y-6 mt-12">
         <h2 className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
-          Món ăn
+          Món ăn yêu thích
         </h2>
         <div className="grid grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
           {isLoadingDishes ? (

@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import { addFavouriteMealPlan } from '@/network/client/user-favourites'
+import { addFavouriteMealPlan, getFavouriteMealPlans } from '@/network/client/user-favourites'
 import { toast } from 'sonner'
 import { useSession } from '@/hooks/use-session'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -20,8 +19,9 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [showSubscribeDialog, setShowSubscribeDialog] = useState(false)
   const [showLoginDialogSave, setShowLoginDialogSave] = useState(false)
-  const [hasMealPlanInSubscription, setHasMealPlanInSubscription] = useState(false)
-  const [isCheckingSubscription, setIsCheckingSubscription] = useState(true)
+  const [isInFavorites, setIsInFavorites] = useState(false)
+  const [hasValidSubscription, setHasValidSubscription] = useState(false)
+  const [isCheckingData, setIsCheckingData] = useState(true)
 
   const handleLoginClick = () => {
     setShowLoginDialog(false)
@@ -34,32 +34,42 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
     redirectToAccount('buy-package')
   }
 
+  const isSubscriptionValid = (subscriptionEndAt: string): boolean => {
+    if (!subscriptionEndAt) return false
+    const endDate = new Date(subscriptionEndAt)
+    const currentDate = new Date()
+    return endDate > currentDate
+  }
+
   useEffect(() => {
-    const checkMealPlanInSubscriptions = async () => {
+    const checkMealPlanData = async () => {
       if (!session) {
-        setIsCheckingSubscription(false)
+        setIsCheckingData(false)
         return
       }
 
       try {
-        const subscriptions = await getUserSubscriptions(session.userId.toString())
-
-        const hasMealPlan = subscriptions.data?.some((subscription) => {
-          const hasActiveSubscription = subscription.status === 'active' && subscription.meal_plans
-          if (!hasActiveSubscription) return false
-
-          return subscription.meal_plans.some((mealPlan) => Number(mealPlan.id) === Number(mealPlanId))
+        const favorites = await getFavouriteMealPlans(session.userId.toString())
+        const inFavorites = favorites.data?.some((favorite) => {
+          return Number(favorite.meal_plan?.id) === Number(mealPlanId)
         })
+        setIsInFavorites(inFavorites || false)
 
-        setHasMealPlanInSubscription(!!hasMealPlan)
+        const subscriptions = await getUserSubscriptions(session.userId.toString())
+        const hasValidSub = subscriptions.data?.some((subscription) => {
+          return subscription.subscription_end_at && isSubscriptionValid(subscription.subscription_end_at)
+        })
+        setHasValidSubscription(hasValidSub || false)
       } catch (error) {
-        console.error('Error checking meal plan in subscriptions:', error)
+        console.error('Error checking meal plan data:', error)
+        setIsInFavorites(false)
+        setHasValidSubscription(false)
       } finally {
-        setIsCheckingSubscription(false)
+        setIsCheckingData(false)
       }
     }
 
-    checkMealPlanInSubscriptions()
+    checkMealPlanData()
   }, [session, mealPlanId])
 
   const handleSaveMealPlan = async (mealPlanId: number) => {
@@ -71,7 +81,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
     try {
       await addFavouriteMealPlan(session.userId, mealPlanId.toString())
       toast.success('Đã lưu thực đơn thành công!')
-      setHasMealPlanInSubscription(true)
+      setIsInFavorites(true)
     } catch (error) {
       console.error('Error saving meal plan:', error)
       toast.error('Có lỗi xảy ra khi lưu thực đơn!')
@@ -88,14 +98,16 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
 
     try {
       const subscriptions = await getUserSubscriptions(session.userId.toString())
-      const hasAccess = subscriptions.data?.some((subscription) => {
-        const hasActiveSubscription = subscription.status === 'active' && subscription.meal_plans
-        if (!hasActiveSubscription) return false
-
-        return subscription.meal_plans.some((mp: { id: number }) => Number(mp.id) === Number(mealPlanId))
+      const hasValidSub = subscriptions.data?.some((subscription) => {
+        return subscription.subscription_end_at && isSubscriptionValid(subscription.subscription_end_at)
       })
 
-      if (hasAccess) {
+      const favorites = await getFavouriteMealPlans(session.userId.toString())
+      const inFavorites = favorites.data?.some((favorite) => {
+        return Number(favorite.meal_plan?.id) === Number(mealPlanId)
+      })
+
+      if (hasValidSub || inFavorites) {
         window.location.href = `/meal-plans/${mealPlanId}/detail`
       } else {
         setShowSubscribeDialog(true)
@@ -109,14 +121,15 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
   return (
     <>
       <div className="lg:gap-5 gap-3 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
-        <div className={!isCheckingSubscription && !hasMealPlanInSubscription ? 'w-1/2' : 'w-full'}>
+        <div className={isInFavorites ? 'w-full' : 'w-1/2'}>
           <div className="w-full block" onClick={handleStartClick}>
             <Button className="w-full rounded-full text-lg bg-[#13D8A7] text-white hover:bg-[#11c296] h-14">
               Bắt đầu
             </Button>
           </div>
         </div>
-        {!isCheckingSubscription && !hasMealPlanInSubscription && (
+
+        {!isCheckingData && !isInFavorites && (
           <div className="w-1/2">
             <Button
               onClick={() => handleSaveMealPlan(mealPlanId)}
@@ -151,7 +164,6 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Subscribe Dialog */}
       <Dialog open={showSubscribeDialog} onOpenChange={setShowSubscribeDialog}>
         <DialogContent>
           <DialogHeader>
@@ -167,6 +179,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
           </div>
         </DialogContent>
       </Dialog>
+
       <Dialog open={showLoginDialogSave} onOpenChange={setShowLoginDialogSave}>
         <DialogContent>
           <DialogHeader>

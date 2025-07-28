@@ -14,6 +14,7 @@ interface Subscription {
   coupon_code: string
   subscription: {
     id: number
+    subscription_end_at: string
     courses: Array<{
       id: number
       course_name: string
