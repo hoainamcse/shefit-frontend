@@ -27,6 +27,8 @@ type Course = {
   is_one_on_one: boolean
   // muscle_groups: MuscleGroup[]
   // equipments: Equipment[]
+  equipment_ids: number[]
+  muscle_group_ids: number[]
   form_categories: FormCategory[]
   workout_methods: WorkoutMethod[]
   description_homepage_1: string

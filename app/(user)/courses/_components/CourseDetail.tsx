@@ -15,6 +15,9 @@ import Link from 'next/link'
 import { useSession } from '@/hooks/use-session'
 import { getUserSubscriptions } from '@/network/client/users'
 import { HtmlContent } from '@/components/html-content'
+import { getEquipments } from '@/network/client/equipments'
+import { getMuscleGroups } from '@/network/client/muscle-groups'
+
 interface CourseDetailProps {
   courseId: Course['id']
   typeCourse: 'video' | 'live'
@@ -25,6 +28,8 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
   const { session } = useSession()
   const [showDetails, setShowDetails] = useState(false)
   const [course, setCourse] = useState<any>(null)
+  const [equipments, setEquipments] = useState<any[]>([])
+  const [muscleGroups, setMuscleGroups] = useState<any[]>([])
   const [isFooterVisible, setIsFooterVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [userSubscriptions, setUserSubscriptions] = useState<number[]>([])
@@ -40,7 +45,27 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
       try {
         const courseData = await getCourse(courseId)
         setCourse(courseData)
-        setIsLoading(false)
+
+        if (courseData?.data?.equipment_ids?.length > 0) {
+          try {
+            const equipmentsData = await getEquipments({ ids: courseData.data.equipment_ids })
+            setEquipments(equipmentsData?.data || [])
+          } catch (error) {
+            console.error('Error fetching equipments:', error)
+            setEquipments([])
+          }
+        }
+
+        if (courseData?.data?.muscle_group_ids?.length > 0) {
+          try {
+            const muscleGroupsData = await getMuscleGroups({ ids: courseData.data.muscle_group_ids })
+            setMuscleGroups(muscleGroupsData?.data || [])
+          } catch (error) {
+            console.error('Error fetching muscle groups:', error)
+            setMuscleGroups([])
+          }
+        }
+
         if (session?.userId) {
           const userSubscriptionsData = await getUserSubscriptions(session.userId.toString())
           const subscribedIds = userSubscriptionsData.data?.map((sub) => sub.subscription.id) || []
@@ -167,8 +192,8 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
           </div>
         )}
         {!showDetails && (
-          <div className="bg-primary rounded-xl my-4 p-4 lg:p-10">
-            <p className="text-white text-center text-2xl lg:text-4xl lg:font-bold font-medium lg:mb-10 mb-1">
+          <div className="bg-primary rounded-xl my-4 p-4 lg:p-5">
+            <p className="text-white text-center text-lg lg:text-4xl lg:font-bold font-medium lg:mb-10 mb-1 font-[family-name:var(--font-roboto)]">
               Tóm tắt khoá học
             </p>
             <ul className="xl:px-20 max-lg:w-full mx-auto text-white h-full flex flex-col items-start list-disc pl-5">
@@ -198,14 +223,14 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
                 className="text-[#737373] text-sm lg:text-lg whitespace-pre-line"
               />
             </div>
-            {course?.data?.relationship?.equipments?.length > 0 && (
+            {equipments.length > 0 && (
               <div>
-                <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-lg lg:text-xl mb-4">
+                <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl mb-4">
                   Dụng cụ
                 </p>
                 <ScrollArea className="w-screen-max-xl">
                   <div className="flex w-max space-x-4 py-4">
-                    {course?.data?.equipments?.map((equipment: any, index: number) => (
+                    {equipments.map((equipment: any, index: number) => (
                       <figure key={`equipment-${equipment.id}-${index}`} className="shrink-0">
                         <div className="overflow-hidden rounded-md">
                           <img
@@ -224,14 +249,14 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
                 </ScrollArea>
               </div>
             )}
-            {course?.data?.relationship?.muscle_groups?.length > 0 && (
+            {muscleGroups.length > 0 && (
               <div>
-                <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-lg lg:text-xl mb-4">
+                <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl mb-4">
                   Nhóm cơ
                 </p>
                 <ScrollArea className="w-screen-max-xl">
                   <div className="flex w-max space-x-4 py-4">
-                    {course?.data?.relationship?.muscle_groups?.map((muscleGroup: any, index: number) => (
+                    {muscleGroups.map((muscleGroup: any, index: number) => (
                       <figure key={`muscleGroup-${muscleGroup.id}-${index}`} className="shrink-0">
                         <div className="overflow-hidden rounded-md">
                           <img

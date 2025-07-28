@@ -131,7 +131,6 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
   }> = []
 
   try {
-    // Fetch data cho từng subscription riêng biệt dựa trên course_ids và meal_plan_ids
     subscriptionsWithData = await Promise.all(
       data.subscriptions.map(async (subscription) => {
         const [coursesResponse, mealPlansResponse] = await Promise.all([
@@ -202,7 +201,6 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                 </Link>
                 <Carousel className="mx-4">
                   <CarouselContent>
-                    {/* Hiển thị courses tương ứng với subscription này */}
                     {item.courses.map((course: any, cIndex: any) => (
                       <CarouselItem key={`course-${course.id}`} className="basis-3/4 lg:basis-full">
                         <div className="flex flex-col items-center gap-4">
@@ -219,7 +217,6 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                         </div>
                       </CarouselItem>
                     ))}
-                    {/* Hiển thị meal plans tương ứng với subscription này */}
                     {item.mealPlans.map((mealPlan: any, mpIndex: any) => (
                       <CarouselItem key={`mealplan-${mealPlan.id}`} className="basis-2/3 lg:basis-full">
                         <div className="flex flex-col items-center gap-4">

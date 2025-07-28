@@ -44,8 +44,10 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
             </div>
           </div>
           <div className="w-full max-lg:p-4">
-            <div className="bg-primary lg:py-10 py-4 w-full rounded-[20px] my-20 max-lg:my-2 px-4">
-              <p className="font-bold text-lg lg:text-xl text-white text-center mb-2">Kết quả</p>
+            <div className="bg-primary rounded-xl my-4 p-4 lg:p-5">
+              <p className="text-white text-center text-lg lg:text-4xl lg:font-bold font-medium lg:mb-10 mb-1 font-[family-name:var(--font-roboto)]">
+                Tóm tắt thực đơn
+              </p>
               <ul className="xl:px-20 max-lg:w-full mx-auto text-white h-full flex flex-col items-start list-disc pl-5">
                 {mealPlan.subtitle.split('\n').map((line, index) => (
                   <li key={index} className="text-[#F7F7F7] text-sm lg:text-lg mb-1">
