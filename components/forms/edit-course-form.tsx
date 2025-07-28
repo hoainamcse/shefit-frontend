@@ -1,6 +1,6 @@
 'use client'
 
-import type { Course, CourseFormat } from '@/models/course'
+import type { Course, CourseFormat, CoursePayload } from '@/models/course'
 
 import { z } from 'zod'
 import { toast } from 'sonner'
@@ -133,7 +133,7 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
   )
 
   const courseMutation = useMutation({
-    mutationFn: (values: FormValue) => (isEdit ? updateCourse(data.id, values) : createCourse(values)),
+    mutationFn: (values: FormValue) => (isEdit ? updateCourse(data.id, values as CoursePayload) : createCourse(values as CoursePayload)),
     onSettled(data, error) {
       if (data?.status === 'success') {
         toast.success(isEdit ? 'Cập nhật khoá tập thành công' : 'Tạo khoá tập thành công')
