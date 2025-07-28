@@ -35,7 +35,8 @@ import { WorkoutMethodsTable } from '../data-table/workout-methods-table'
 
 // ! Follow CoursePayload model in models/course.ts
 const formSchema = z.object({
-  thumbnail_image: z.string().url(),
+  thumbnail_image_mobile: z.string().url(),
+  thumbnail_image_desktop: z.string().url(),
   description: z.string(),
   course_name: z.string().min(1, 'Tên khoá tập không được để trống'),
   course_format: z.enum(['video', 'live']),
@@ -56,6 +57,7 @@ const formSchema = z.object({
   description_homepage_1: z.string(),
   image_homepage: z.string().url(),
   workout_method_ids: z.array(z.string()),
+  display_order: z.number(),
 })
 
 type FormValue = z.infer<typeof formSchema>
@@ -73,7 +75,8 @@ const defaultYoutubeUrl = 'https://www.youtube.com/'
 export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: EditCourseFormProps) {
   const isEdit = !!data
   const defaultValue = {
-    thumbnail_image: defaultImageUrl,
+    thumbnail_image_mobile: defaultImageUrl,
+    thumbnail_image_desktop: defaultImageUrl,
     description: '',
     course_name: '',
     course_format: courseFormat,
@@ -94,6 +97,7 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
     description_homepage_1: '',
     image_homepage: defaultImageUrl,
     workout_method_ids: [],
+    display_order: 0,
   } as FormValue
 
   const form = useForm<FormValue>({
@@ -102,7 +106,8 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
       ? (() => {
           const isYoutube = typeof data.cover_image === 'string' && data.cover_image.includes('youtube.com')
           return {
-            thumbnail_image: data.thumbnail_image,
+            thumbnail_image_mobile: data.thumbnail_image_mobile || defaultImageUrl,
+            thumbnail_image_desktop: data.thumbnail_image_desktop || defaultImageUrl,
             description: data.description,
             course_name: data.course_name,
             course_format: data.course_format,
@@ -123,6 +128,7 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
             equipment_ids: data.relationships?.equipments.map((e) => e.id.toString()) || [],
             subscription_ids: data.relationships?.subscriptions.map((s) => s.id.toString()) || [],
             workout_method_ids: data.relationships?.workout_methods.map((wm) => wm.id.toString()) || [],
+            display_order: data.display_order || 0,
           }
         })()
       : defaultValue,
@@ -169,7 +175,7 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
     <>
       <Form {...form}>
         <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <FormInputField
               form={form}
               name="course_name"
@@ -177,27 +183,34 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
               withAsterisk
               placeholder="Nhập tên khoá tập"
             />
+            <FormNumberField form={form} name="display_order" label="Thứ tự hiển thị" placeholder="e.g., 10" />
             <FormInputField form={form} name="trainer" label="Tên HLV" placeholder="Nhập tên HLV" />
           </div>
-          <FormTextareaField form={form} name="summary" label="Tóm tắt" placeholder="Nhập tóm tắt" />
           <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
 
           <div className="grid grid-cols-2 gap-4">
             <ImageUploader
               form={form}
-              name="thumbnail_image"
-              label="Hình ảnh đại diện"
+              name="thumbnail_image_mobile"
+              label="Hình ảnh đại diện Mobile"
               accept={{ 'image/*': [] }}
               maxFileCount={1}
             />
-            <CoverMediaSelector
+            <ImageUploader
               form={form}
-              showYoutubeUrlInput={showYoutubeUrlInput}
-              setShowYoutubeUrlInput={setShowYoutubeUrlInput}
-              coverImageName="cover_image"
-              youtubeUrlName="youtube_url"
+              name="thumbnail_image_desktop"
+              label="Hình ảnh đại diện Desktop"
+              accept={{ 'image/*': [] }}
+              maxFileCount={1}
             />
           </div>
+          <CoverMediaSelector
+            form={form}
+            showYoutubeUrlInput={showYoutubeUrlInput}
+            setShowYoutubeUrlInput={setShowYoutubeUrlInput}
+            coverImageName="cover_image"
+            youtubeUrlName="youtube_url"
+          />
           <FormTextareaField
             form={form}
             name="description_homepage_1"

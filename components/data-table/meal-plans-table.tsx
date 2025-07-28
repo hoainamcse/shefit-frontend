@@ -37,7 +37,13 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyMealPlans, pagination],
-    queryFn: () => getMealPlans({ page: pagination.pageIndex, per_page: pagination.pageSize }),
+    queryFn: () =>
+      getMealPlans({
+        page: pagination.pageIndex,
+        per_page: pagination.pageSize,
+        sort_by: 'display_order',
+        sort_order: 'asc',
+      }),
     placeholderData: keepPreviousData,
   })
 

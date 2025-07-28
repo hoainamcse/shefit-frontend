@@ -5,6 +5,7 @@ import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { getMealPlan } from '@/network/server/meal-plans'
 import ActionButtons from './ActionButtons'
 import { HtmlContent } from '@/components/html-content'
+
 export default async function MealPlanPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   try {
     const { meal_plan_id } = await params
@@ -49,10 +50,13 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
             </div>
             <div className="w-full px-4 md:px-0">
               <div className="bg-primary rounded-xl my-4 p-4 lg:p-5">
-                <p className="text-white text-center text-lg lg:text-4xl lg:font-bold font-medium lg:mb-10 mb-1 font-[family-name:var(--font-roboto)]">
+                <p className="text-white text-center text-lg lg:text-4xl lg:font-bold font-medium lg:mb-5 mb-2 font-[family-name:var(--font-roboto)]">
                   Tóm tắt thực đơn
                 </p>
-                <ul className="xl:px-20 max-lg:w-full mx-auto text-white h-full flex flex-col items-start list-disc pl-5">
+                <ul
+                  className="xl:px-20 max-lg:w-full mx-auto text-white flex flex-col items-start list-disc pl-5 max-h-[5em] lg:max-h-[7em]"
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', overflowY: 'auto' }}
+                >
                   {mealPlan.subtitle.split('\n').map((line, index) => (
                     <li key={index} className="text-[#F7F7F7] text-sm lg:text-lg mb-1">
                       {line}

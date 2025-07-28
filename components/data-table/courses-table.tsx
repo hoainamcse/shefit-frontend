@@ -43,8 +43,8 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
         per_page: pagination.pageSize,
         ...(courseFormat ? { course_format: courseFormat } : {}),
         is_one_on_one: isOneOnOne,
-        sort_by: 'created_at',
-        sort_order: 'desc',
+        sort_by: 'display_order',
+        sort_order: 'asc',
       }),
     placeholderData: keepPreviousData,
   })

@@ -28,6 +28,7 @@ type MealPlan = {
   calorie: Calorie | null
   description_homepage_1: string
   image_homepage: string
+  display_order: number
 }
 
 type MealPlanGoal = {

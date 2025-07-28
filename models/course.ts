@@ -10,7 +10,8 @@ type CourseLevel = 'beginner' | 'intermediate' | 'advanced'
 
 type Course = {
   id: number
-  thumbnail_image: string
+  thumbnail_image_mobile: string
+  thumbnail_image_desktop: string
   description: string
   course_name: string
   course_format: CourseFormat
@@ -41,6 +42,7 @@ type Course = {
     form_categories: FormCategory[]
     workout_methods: WorkoutMethod[]
   }
+  display_order: number
 }
 
 type CoursePayload = Omit<

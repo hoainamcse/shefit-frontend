@@ -29,7 +29,9 @@ const formSchema = z.object({
   subtitle: z.string(),
   chef_name: z.string(),
   meal_plan_goal_id: z.number().nullable(),
-  image: z.string().url(),
+  image_mobile: z.string().url(),
+  image_desktop: z.string().url(),
+  cover_image: z.string().url(),
   youtube_url: z.string().url().optional(),
   description: z.string(),
   meal_ingredients: z.array(
@@ -45,6 +47,7 @@ const formSchema = z.object({
   calorie_id: z.coerce.number().nullable(),
   description_homepage_1: z.string(),
   image_homepage: z.string().url(),
+  display_order: z.number().min(0),
 })
 
 type FormValue = z.infer<typeof formSchema>
@@ -64,9 +67,10 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
     subtitle: '',
     chef_name: '',
     meal_plan_goal_id: null,
-    image: defaultImageUrl,
+    image_mobile: defaultImageUrl,
+    image_desktop: defaultImageUrl,
+    cover_image: defaultImageUrl,
     youtube_url: defaultYoutubeUrl,
-
     description: '',
     meal_ingredients: [],
     is_public: true,
@@ -76,20 +80,23 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
     diet_id: null,
     description_homepage_1: '',
     image_homepage: defaultImageUrl,
+    display_order: 0,
   } as FormValue
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: isEdit
       ? (() => {
-          const isYoutube = typeof data.image === 'string' && data.image.includes('youtube.com')
+          const isYoutube = typeof data.cover_image === 'string' && data.cover_image.includes('youtube.com')
           return {
             title: data.title,
             subtitle: data.subtitle,
             chef_name: data.chef_name,
             meal_plan_goal_id: data.meal_plan_goal?.id || null,
-            image: isYoutube ? defaultImageUrl : data.image,
-            youtube_url: isYoutube ? data.image : defaultYoutubeUrl,
+            image_mobile: data.image_mobile || defaultImageUrl,
+            image_desktop: data.image_desktop || defaultImageUrl,
+            cover_image: isYoutube ? defaultImageUrl : data.cover_image,
+            youtube_url: isYoutube ? data.cover_image : defaultYoutubeUrl,
             description: data.description,
             meal_ingredients: data.meal_ingredients,
             is_public: data.is_public,
@@ -99,6 +106,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
             diet_id: data.diet?.id || null,
             description_homepage_1: data.description_homepage_1 || '',
             image_homepage: data.image_homepage || defaultImageUrl,
+            display_order: data.display_order || 0,
           }
         })()
       : defaultValue,
@@ -129,7 +137,10 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
   const onSubmit = (values: FormValue) => {
     if (showYoutubeUrlInput && values.youtube_url) {
       const { youtube_url, ...submitValues } = values
-      mealPlanMutation.mutate({ ...submitValues, image: youtube_url })
+      mealPlanMutation.mutate({
+        ...submitValues,
+        cover_image: youtube_url,
+      })
     } else {
       mealPlanMutation.mutate(values)
     }
@@ -146,14 +157,40 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
     <>
       <Form {...form}>
         <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-          <FormInputField form={form} name="title" label="Tên thực đơn" withAsterisk placeholder="Nhập tên thực đơn" />
+          <div className="grid grid-cols-2 gap-4">
+            <FormInputField
+              form={form}
+              name="title"
+              label="Tên thực đơn"
+              withAsterisk
+              placeholder="Nhập tên thực đơn"
+            />
+            <FormNumberField form={form} name="display_order" label="Thứ tự hiển thị" placeholder="e.g., 10" />
+          </div>
+
           <FormTextareaField form={form} name="subtitle" label="Tóm tắt" placeholder="Nhập tóm tắt" />
           <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
+          <div className="grid grid-cols-2 gap-4">
+            <ImageUploader
+              form={form}
+              name="image_mobile"
+              label="Hình ảnh đại diện Mobile"
+              accept={{ 'image/*': [] }}
+              maxFileCount={1}
+            />
+            <ImageUploader
+              form={form}
+              name="image_desktop"
+              label="Hình ảnh đại diện Desktop"
+              accept={{ 'image/*': [] }}
+              maxFileCount={1}
+            />
+          </div>
           <CoverMediaSelector
             form={form}
             showYoutubeUrlInput={showYoutubeUrlInput}
             setShowYoutubeUrlInput={setShowYoutubeUrlInput}
-            coverImageName="image"
+            coverImageName="cover_image"
             youtubeUrlName="youtube_url"
           />
           <FormTextareaField

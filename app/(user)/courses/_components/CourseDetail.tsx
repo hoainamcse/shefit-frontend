@@ -15,6 +15,7 @@ import Link from 'next/link'
 import { useSession } from '@/hooks/use-session'
 import { getUserSubscriptions } from '@/network/client/users'
 import { HtmlContent } from '@/components/html-content'
+import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { getEquipments } from '@/network/client/equipments'
 import { getMuscleGroups } from '@/network/client/muscle-groups'
 
@@ -122,22 +123,22 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
 
   return (
     <div>
-      <div className="relative">
+      <div className="relative ">
+        <Button
+          onClick={() => router.back()}
+          className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black shadow-none"
+        >
+          <BackIconBlack /> Quay về
+        </Button>
         <img
           src={course?.data?.thumbnail_image_mobile}
           alt={`${courseId}`}
           className="w-full aspect-[400/255] object-cover block md:hidden"
         />
-        <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto z-10 absolute top-4 left-4 lg:left-20">
-          <div className="flex items-center gap-[10px] cursor-pointer" onClick={() => router.back()}>
-            <BackIcon color="#fff" style={{ marginBottom: '4px' }} />
-            <div className="text-lg text-[#fff] font-semibold">Quay về</div>
-          </div>
-        </div>
       </div>
-      <div className="flex mx-auto flex-col gap-10 lg:mt-10 mt-2 w-full pb-24 lg:px-10 px-4">
+      <div className="flex mx-auto flex-col gap-10 lg:mt-5 mt-2 w-full pb-24 lg:px-10 px-4">
         <img
-          src={course?.data?.thumbnail_image_desktop}
+          src={course?.data?.thumbnail_image_mobile}
           alt={`${courseId}`}
           className="rounded-xl w-full aspect-[1800/681] object-cover hidden md:block"
         />

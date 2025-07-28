@@ -597,7 +597,9 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
             // Sync features in form state
             const currentFeatures = form.getValues('data.section_6.features') || []
             const newFeatures = row.map((cat: any) => {
-              const existing = currentFeatures.find((f: any) => f.workout_method.id === cat.id)
+              const existing = currentFeatures.find(
+                (f: any) => f.workout_method.id === cat.id && f.workout_method.name === cat.name
+              )
               return existing || { workout_method: cat, description: '', courses: [] }
             })
             form.setValue('data.section_6.features', newFeatures, { shouldDirty: true })
