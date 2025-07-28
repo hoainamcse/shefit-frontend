@@ -124,11 +124,32 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
 }
 
 export async function SectionThree({ data }: { data: DataType['section_3'] }) {
-  let courses: any[] = []
-  let mealPlans: any[] = []
+  let subscriptionsWithData: Array<{
+    subscription: any
+    courses: any[]
+    mealPlans: any[]
+  }> = []
+
   try {
-    courses = await Promise.all(data.subscriptions.map((dt) => getCourses({ ids: dt.course_ids })))
-    mealPlans = await Promise.all(data.subscriptions.map((dt) => getMealPlans({ ids: dt.meal_plan_ids })))
+    // Fetch data cho từng subscription riêng biệt dựa trên course_ids và meal_plan_ids
+    subscriptionsWithData = await Promise.all(
+      data.subscriptions.map(async (subscription) => {
+        const [coursesResponse, mealPlansResponse] = await Promise.all([
+          subscription.courses?.length > 0
+            ? getCourses({ ids: subscription.courses.map((c: any) => c.id) })
+            : Promise.resolve({ data: [] }),
+          subscription.meal_plans?.length > 0
+            ? getMealPlans({ ids: subscription.meal_plans.map((mp: any) => mp.id) })
+            : Promise.resolve({ data: [] }),
+        ])
+
+        return {
+          subscription,
+          courses: coursesResponse?.data || [],
+          mealPlans: mealPlansResponse?.data || [],
+        }
+      })
+    )
   } catch (error) {
     return (
       <div className="container mx-auto">
@@ -155,9 +176,9 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                 : 'lg:grid-cols-3'
             )}
           >
-            {data.subscriptions.map((sub, mIndex) => (
+            {subscriptionsWithData.map((item, mIndex) => (
               <div key={mIndex} className="flex flex-col h-full w-full space-y-4 px-4">
-                <Link href={`/packages/detail/${sub.id}`}>
+                <Link href={`/packages/detail/${item.subscription.id}`}>
                   <div
                     className={cn(
                       'group flex items-center gap-2 text-sm lg:text-base text-background font-medium rounded-md p-3',
@@ -167,21 +188,22 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                     )}
                   >
                     <PersonIcon />
-                    <span className="text-sm lg:text-base font-semibold">{sub.name}</span>
+                    <span className="text-sm lg:text-base font-semibold">{item.subscription.name}</span>
                     <span className="ml-auto transform transition-transform duration-300 group-hover:translate-x-1">
                       <ArrowIcon size={20} />
                     </span>
                   </div>
                   <div className="flex-1 flex items-center justify-center text-base lg:text-lg mt-4">
                     <HtmlContent
-                      content={sub.description_homepage}
+                      content={item.subscription.description_homepage}
                       className="text-center px-2 text-neutral-500 text-xs lg:text-base whitespace-pre-line"
                     />
                   </div>
                 </Link>
                 <Carousel className="mx-4">
                   <CarouselContent>
-                    {courses[mIndex]?.data?.map((course: any, cIndex: any) => (
+                    {/* Hiển thị courses tương ứng với subscription này */}
+                    {item.courses.map((course: any, cIndex: any) => (
                       <CarouselItem key={`course-${course.id}`} className="basis-3/4 lg:basis-full">
                         <div className="flex flex-col items-center gap-4">
                           <div className="relative w-full overflow-hidden">
@@ -197,7 +219,8 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                         </div>
                       </CarouselItem>
                     ))}
-                    {mealPlans[mIndex]?.data?.map((mealPlan: any, mpIndex: any) => (
+                    {/* Hiển thị meal plans tương ứng với subscription này */}
+                    {item.mealPlans.map((mealPlan: any, mpIndex: any) => (
                       <CarouselItem key={`mealplan-${mealPlan.id}`} className="basis-2/3 lg:basis-full">
                         <div className="flex flex-col items-center gap-4">
                           <div className="relative w-full overflow-hidden">
