@@ -81,8 +81,8 @@ export default function CoursesPage() {
   useEffect(() => {
     const fetchCourses = async () => {
       const [videoResponse, zoomResponse] = await Promise.all([
-        getCourses({ course_format: 'video' }),
-        getCourses({ course_format: 'live' }),
+        getCourses({ course_format: 'video', sort_by: 'display_order', sort_order: 'asc' }),
+        getCourses({ course_format: 'live', sort_by: 'display_order', sort_order: 'asc' }),
       ])
 
       const publicVideoCourses = videoResponse.data.filter((course: Course) => course.is_public === true)

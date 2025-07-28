@@ -80,7 +80,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
     diet_id: null,
     description_homepage_1: '',
     image_homepage: defaultImageUrl,
-    display_order: 0,
+    display_order: 1,
   } as FormValue
 
   const form = useForm<FormValue>({
@@ -113,7 +113,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
   })
 
   const [showYoutubeUrlInput, setShowYoutubeUrlInput] = useState(
-    isEdit && data?.image?.includes('youtube.com') ? true : false
+    isEdit && data?.cover_image?.includes('youtube.com') ? true : false
   )
 
   const { fields, append, remove } = useFieldArray({
@@ -135,6 +135,8 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
   })
 
   const onSubmit = (values: FormValue) => {
+    console.log(values)
+    console.log(showYoutubeUrlInput)
     if (showYoutubeUrlInput && values.youtube_url) {
       const { youtube_url, ...submitValues } = values
       mealPlanMutation.mutate({

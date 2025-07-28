@@ -97,7 +97,7 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
     description_homepage_1: '',
     image_homepage: defaultImageUrl,
     workout_method_ids: [],
-    display_order: 0,
+    display_order: 1,
   } as FormValue
 
   const form = useForm<FormValue>({
@@ -139,7 +139,8 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
   )
 
   const courseMutation = useMutation({
-    mutationFn: (values: FormValue) => (isEdit ? updateCourse(data.id, values as CoursePayload) : createCourse(values as CoursePayload)),
+    mutationFn: (values: FormValue) =>
+      isEdit ? updateCourse(data.id, values as CoursePayload) : createCourse(values as CoursePayload),
     onSettled(data, error) {
       if (data?.status === 'success') {
         toast.success(isEdit ? 'Cập nhật khoá tập thành công' : 'Tạo khoá tập thành công')

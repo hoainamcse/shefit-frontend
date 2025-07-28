@@ -66,7 +66,7 @@ export default function MealPlansPage() {
         setIsLoading(true)
 
         const [mealPlansResponse, goalsResponse, caloriesResponse] = await Promise.all([
-          getMealPlans(),
+          getMealPlans({ sort_by: 'display_order', sort_order: 'asc' }),
           getGoals(),
           getCalories(),
         ])
