@@ -36,11 +36,9 @@ export function CoachCard({ coach, reverse = false }: CoachCardProps) {
               className={`h-[calc(100%-40px)] xl:my-10 lg:my-8 md:my-5 flex items-center max-md:mx-auto max-md:text-center xl:text-xl lg:text-lg text-gray-500 md:h-[158px] lg:h-[160px] xl:h-[208px] xl:px-16 lg:px-10 md:px-8 max-md:text-sm overflow-y-auto ${styles.scrollBox}`}
             >
               <div className="my-auto max-md:mx-auto max-md:text-center xl:text-xl lg:text-lg text-gray-500 whitespace-pre-line">
-                <ul className="list-disc">
-                  {coach.description.split('\n').map((line, index) => (
-                    <li key={index}>{line}</li>
-                  ))}
-                </ul>
+                {coach.description.split('\n').map((line, index) => (
+                  <div key={index}>{line}</div>
+                ))}
               </div>
             </div>
           </div>

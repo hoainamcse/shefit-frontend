@@ -266,7 +266,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
                             className="w-[168px] h-[175px] object-cover"
                           />
                         </div>
-                        <figcaption className="pt-2 font-medium text-base lg:text-lg text-muted-foreground">
+                        <figcaption className="pt-2 font-medium text-base lg:text-lg text-muted-foreground text-center">
                           {muscleGroup.name}
                         </figcaption>
                       </figure>
