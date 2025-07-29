@@ -75,10 +75,6 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                             className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
                           />
                           <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-
-                          <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
-                            <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
-                          </Link>
                         </div>
                         <div className="flex justify-between">
                           <div>
@@ -91,11 +87,6 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                               {Array.isArray(course.form_categories)
                                 ? course.form_categories.map((cat) => cat.name).join(', ')
                                 : courseFormLabel[course.form_categories]}
-                            </div>
-                            <div className="flex justify-end">
-                              {course.is_free ? (
-                                <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
-                              ) : null}
                             </div>
                           </div>
                         </div>
@@ -125,9 +116,6 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                               className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
                             />
                             <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
-                            <Link href={`/meal-plans/${mealPlan.id}`}>
-                              <NextButton className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1" />
-                            </Link>
                           </div>
                           <div className="relative">
                             <div>
@@ -136,11 +124,6 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                               <p className="text-[#737373]">
                                 Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
                               </p>
-                            </div>
-                            <div className="absolute bottom-0 right-0">
-                              {mealPlan.is_free ? (
-                                <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
-                              ) : null}
                             </div>
                           </div>
                         </div>

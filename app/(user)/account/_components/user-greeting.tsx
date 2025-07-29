@@ -29,7 +29,7 @@ export default function UserGreeting() {
   }, [session])
 
   return (
-    <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-[#FF7873] text-2xl lg:text-4xl leading-[33px] lg:leading-[60px] mb-8 sm:mb-10">
+    <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-[#FF7873] text-2xl lg:text-4xl leading-[33px] lg:leading-[60px] mb-4 md:mb-10">
       {loading ? <div>Loading...</div> : `Xin chào ${fullname || 'chị'}`}
     </div>
   )

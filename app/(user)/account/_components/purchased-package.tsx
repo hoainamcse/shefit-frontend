@@ -115,14 +115,14 @@ export default function PurchasedPackage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 lg:px-12">
           {subscriptions.map((subscription) => (
             <div key={subscription.id} className="bg-[#FFAEB01A] lg:rounded-[20px] lg:p-5 p-4 h-full relative">
-              <div className="flex flex-col 2xl:flex-row 2xl:gap-4">
-                <div className="flex flex-col gap-5 justify-between px-2 w-full 2xl:w-1/2">
+              <div className="flex flex-col 2xl:flex-row 2xl:gap-4 h-full justify-between">
+                <div className="flex flex-col gap-5 justify-between h-full w-full 2xl:w-1/2">
                   <div className="flex flex-col items-start justify-between gap-2">
                     <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-[#000000] text-lg lg:text-xl">
                       {subscription.name || `Gói #${subscription.subscription.id}`}
                     </div>
                     <Button
-                      className={`block lg:hidden text-white text-xs rounded-none border border-[#000000] md:text-sm lg:text-lg w-[100px] h-[36px] lg:w-[160px] lg:h-[46px] ${
+                      className={`block 2xl:hidden text-white text-xs rounded-none border border-[#000000] md:text-sm lg:text-lg w-[100px] h-[36px] lg:w-[160px] lg:h-[46px] ${
                         subscription.isValid ? 'bg-[#13D8A7]' : 'bg-[#E61417]'
                       }`}
                     >
@@ -145,7 +145,6 @@ export default function PurchasedPackage() {
                       )}
                     </div>
                   </div>
-
                   <Link
                     href={`/packages/detail/${subscription.subscription.id}`}
                     className="h-fit text-sm lg:text-lg text-[#13D8A7] mt-4"
@@ -157,7 +156,7 @@ export default function PurchasedPackage() {
                 </div>
                 <div className="w-full 2xl:w-1/2 mt-4 2xl:mt-0 flex flex-col gap-4">
                   <Button
-                    className={`ml-auto hidden lg:block rounded-none border border-[#000000] text-white text-xs md:text-sm lg:text-lg w-[100px] h-[36px] lg:w-[160px] lg:h-[46px] ${
+                    className={`ml-auto hidden 2xl:block rounded-none border border-[#000000] text-white text-xs md:text-sm lg:text-lg w-[100px] h-[36px] lg:w-[160px] lg:h-[46px] ${
                       subscription.isValid ? 'bg-[#13D8A7]' : 'bg-[#E61417]'
                     }`}
                   >

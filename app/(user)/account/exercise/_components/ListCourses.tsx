@@ -144,14 +144,6 @@ export function ListCourses() {
     )
   }
 
-  if (!selectedSubscription) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12">
-        <p className="text-base text-gray-500 mb-4">Vui lòng chọn gói đăng ký để xem khóa học</p>
-      </div>
-    )
-  }
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-32">

@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import PurchasedPackage from './purchased-package'
 import { cn } from '@/lib/utils'
 import { useSession } from '@/hooks/use-session'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { ListResponse } from '@/models/response'
 import { Subscription } from '@/models/subscription'
 import { useSearchParams } from 'next/navigation'
@@ -20,38 +20,51 @@ export default function PurchasePackage() {
   const courseId = searchParams.get('course_id')
   const mealPlansId = searchParams.get('meal_plans_id')
 
-  const [subscriptions, setSubscriptions] = useState<ListResponse<Subscription>>({
+  const [allSubscriptions, setAllSubscriptions] = useState<ListResponse<Subscription>>({
     status: '',
     data: [],
     paging: { page: 1, per_page: 10, total: 0 },
   })
   const [isLoading, setIsLoading] = useState(true)
   const [purchasedSubscriptionIds, setPurchasedSubscriptionIds] = useState<number[]>([])
-  const [userSubscriptions, setUserSubscriptions] = useState<any[]>([])
+  const [isUserSubscriptionsLoaded, setIsUserSubscriptionsLoaded] = useState(false)
 
   useEffect(() => {
+    let isMounted = true
+
     async function fetchUserSubscriptions() {
-      if (!session) return
+      if (!session?.userId) return
 
       try {
         const response = await getUserSubscriptions(session.userId)
 
-        if (response.data && response.data.length > 0) {
+        if (isMounted && response.data && response.data.length > 0) {
           const subscribedIds = response.data.map((sub) => Number(sub.subscription.id))
           setPurchasedSubscriptionIds(subscribedIds)
-          setUserSubscriptions(response.data)
         }
       } catch (error) {
         console.error('Error fetching user subscriptions:', error)
+      } finally {
+        if (isMounted) {
+          setIsUserSubscriptionsLoaded(true)
+        }
       }
     }
 
     if (session) {
       fetchUserSubscriptions()
+    } else {
+      setIsUserSubscriptionsLoaded(true)
     }
-  }, [session])
+
+    return () => {
+      isMounted = false
+    }
+  }, [session?.userId])
 
   useEffect(() => {
+    let isMounted = true
+
     async function fetchSubscriptions() {
       try {
         setIsLoading(true)
@@ -65,27 +78,42 @@ export default function PurchasePackage() {
           data = await getSubscriptions()
         }
 
-        if (session && userSubscriptions.length > 0) {
-          if (!courseId && !mealPlansId) {
-            data = {
-              ...data,
-              data: data.data.filter((sub) => !purchasedSubscriptionIds.includes(Number(sub.id))),
-            }
-          }
+        if (isMounted) {
+          setAllSubscriptions(data)
         }
-
-        setSubscriptions(data)
       } catch (error) {
         console.error('Error fetching subscriptions:', error)
       } finally {
-        setIsLoading(false)
+        if (isMounted) {
+          setIsLoading(false)
+        }
       }
     }
 
     fetchSubscriptions()
-  }, [courseId, mealPlansId, session, purchasedSubscriptionIds, userSubscriptions])
 
-  if (isLoading) {
+    return () => {
+      isMounted = false
+    }
+  }, [courseId, mealPlansId])
+
+  const filteredSubscriptions = useMemo(() => {
+    if (!session || courseId || mealPlansId || !isUserSubscriptionsLoaded) {
+      return allSubscriptions.data
+    }
+
+    return allSubscriptions.data.filter((sub) => !purchasedSubscriptionIds.includes(Number(sub.id)))
+  }, [allSubscriptions.data, session, courseId, mealPlansId, purchasedSubscriptionIds, isUserSubscriptionsLoaded])
+
+  const parseDescription = useCallback((description: string) => {
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(description, 'text/html')
+    const paragraphs = Array.from(doc.querySelectorAll('p')).map((p) => p.innerHTML)
+
+    return paragraphs.filter((item: string) => item.trim() !== '')
+  }, [])
+
+  if (isLoading || (session && !isUserSubscriptionsLoaded)) {
     return (
       <div className="pb-16 md:pb-16 px-5 lg:px-12 sm:px-9">
         <div className="flex justify-center items-center h-40">
@@ -127,7 +155,7 @@ export default function PurchasePackage() {
               : 'Mua gói độ dáng để bắt đầu các khóa tập và thực đơn'}
           </div>
 
-          {subscriptions.data.length === 0 ? (
+          {filteredSubscriptions.length === 0 ? (
             <div className="text-center text-[#737373] py-8">
               {courseId
                 ? 'Không có gói nào phù hợp với khóa học này'
@@ -137,48 +165,44 @@ export default function PurchasePackage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16 lg:px-12">
-              {subscriptions.data.map((subscription) => (
-                <div key={subscription.id} className="bg-[#FFAEB01A] lg:rounded-[20px] lg:p-5 p-4 h-full">
-                  <div className="flex flex-col 2xl:flex-row 2xl:gap-4">
-                    <div className="flex flex-col gap-5 justify-between  w-full 2xl:w-1/2">
-                      <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#000000] text-lg lg:text-xl">
-                        {subscription.name}
-                      </div>
-                      <ul className="list-disc pl-7 text-sm md:text-lg text-[#737373] w-full space-y-2">
-                        {(() => {
-                          const parser = new DOMParser()
-                          const doc = parser.parseFromString(subscription.description_1, 'text/html')
-                          const paragraphs = Array.from(doc.querySelectorAll('p')).map((p) => p.innerHTML)
+              {filteredSubscriptions.map((subscription) => {
+                const parsedDescription = parseDescription(subscription.description_1)
 
-                          return paragraphs
-                            .filter((item: string) => item.trim() !== '')
-                            .map((content: string, index: number) => (
-                              <li key={index} className="[&>p]:m-0 [&>p]:inline list-item">
-                                <HtmlContent content={content} className="whitespace-pre-line" />
-                              </li>
-                            ))
-                        })()}
-                      </ul>
-                      <Link
-                        href={`/packages/detail/${subscription.id}${
-                          courseId ? `?course_id=${courseId}` : mealPlansId ? `?meal_plans_id=${mealPlansId}` : ''
-                        }`}
-                      >
-                        <Button className="bg-[#13D8A7] w-[190px] h-[38px] rounded-[26px] text-sm md:text-lg font-normal md:pt-2.5 md:pb-1.5">
-                          Chọn gói
-                        </Button>
-                      </Link>
-                    </div>
-                    <div className="w-full 2xl:w-1/2 mt-4 2xl:mt-0">
-                      <img
-                        src={subscription.cover_image}
-                        alt=""
-                        className="aspect-[400/255] object-cover rounded-[20px] w-full h-auto"
-                      />
+                return (
+                  <div key={subscription.id} className="bg-[#FFAEB01A] lg:rounded-[20px] lg:p-5 p-4 h-full">
+                    <div className="flex flex-col 2xl:flex-row 2xl:gap-4 h-full justify-between">
+                      <div className="flex flex-col gap-5 justify-between h-full w-full 2xl:w-1/2">
+                        <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#000000] text-lg lg:text-xl">
+                          {subscription.name}
+                        </div>
+                        <ul className="list-disc pl-7 text-sm md:text-lg text-[#737373] w-full space-y-2">
+                          {parsedDescription.map((content: string, index: number) => (
+                            <li key={index} className="[&>p]:m-0 [&>p]:inline list-item">
+                              <HtmlContent content={content} className="whitespace-pre-line" />
+                            </li>
+                          ))}
+                        </ul>
+                        <Link
+                          href={`/packages/detail/${subscription.id}${
+                            courseId ? `?course_id=${courseId}` : mealPlansId ? `?meal_plans_id=${mealPlansId}` : ''
+                          }`}
+                        >
+                          <Button className="bg-[#13D8A7] w-[190px] h-[38px] rounded-[26px] text-sm md:text-lg font-normal md:pt-2.5 md:pb-1.5">
+                            Chọn gói
+                          </Button>
+                        </Link>
+                      </div>
+                      <div className="w-full 2xl:w-1/2 mt-4 2xl:mt-0">
+                        <img
+                          src={subscription.cover_image}
+                          alt=""
+                          className="aspect-[400/255] object-cover rounded-[20px] w-full h-auto"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </TabsContent>
