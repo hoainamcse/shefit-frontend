@@ -14,12 +14,20 @@ type EnhancedSubscription = UserSubscriptionDetail & {
   description_1?: string
   description_2?: string
   cover_image?: string
+  isValid?: boolean
 }
 
 export default function PurchasedPackage() {
   const { session } = useSession()
   const [subscriptions, setSubscriptions] = useState<EnhancedSubscription[]>([])
   const [isLoading, setIsLoading] = useState(true)
+
+  const isSubscriptionValid = (subscriptionEndAt: string): boolean => {
+    if (!subscriptionEndAt) return false
+    const endDate = new Date(subscriptionEndAt)
+    const currentDate = new Date()
+    return endDate > currentDate
+  }
 
   useEffect(() => {
     async function fetchUserSubscriptions() {
@@ -38,6 +46,8 @@ export default function PurchasedPackage() {
                 try {
                   if (sub.subscription.id) {
                     const detailsResponse = await getSubscription(sub.subscription.id.toString())
+                    const isValid = sub.subscription_end_at ? isSubscriptionValid(sub.subscription_end_at) : false
+
                     if (detailsResponse.data) {
                       return {
                         ...sub,
@@ -45,13 +55,20 @@ export default function PurchasedPackage() {
                         description_1: detailsResponse.data.description_1,
                         description_2: detailsResponse.data.description_2,
                         cover_image: detailsResponse.data.cover_image,
+                        isValid,
                       }
                     }
                   }
-                  return sub
+                  return {
+                    ...sub,
+                    isValid: sub.subscription_end_at ? isSubscriptionValid(sub.subscription_end_at) : false,
+                  }
                 } catch (err) {
                   console.error(`Error fetching details for subscription ${sub.subscription}:`, err)
-                  return sub
+                  return {
+                    ...sub,
+                    isValid: sub.subscription_end_at ? isSubscriptionValid(sub.subscription_end_at) : false,
+                  }
                 }
               })
             )
@@ -106,10 +123,10 @@ export default function PurchasedPackage() {
                     </div>
                     <Button
                       className={`block lg:hidden text-white text-xs rounded-none border border-[#000000] md:text-sm lg:text-lg w-[100px] h-[36px] lg:w-[160px] lg:h-[46px] ${
-                        subscription.status === 'active' ? 'bg-[#13D8A7]' : 'bg-[#E61417]'
+                        subscription.isValid ? 'bg-[#13D8A7]' : 'bg-[#E61417]'
                       }`}
                     >
-                      {subscription.status === 'active' ? 'Còn hạn' : 'Hết hạn'}
+                      {subscription.isValid ? 'Còn hạn' : 'Hết hạn'}
                     </Button>
                     <div className="space-y-3">
                       <div className="flex text-[#737373] text-sm lg:text-lg gap-2">
@@ -141,10 +158,10 @@ export default function PurchasedPackage() {
                 <div className="w-full 2xl:w-1/2 mt-4 2xl:mt-0 flex flex-col gap-4">
                   <Button
                     className={`ml-auto hidden lg:block rounded-none border border-[#000000] text-white text-xs md:text-sm lg:text-lg w-[100px] h-[36px] lg:w-[160px] lg:h-[46px] ${
-                      subscription.status === 'active' ? 'bg-[#13D8A7]' : 'bg-[#E61417]'
+                      subscription.isValid ? 'bg-[#13D8A7]' : 'bg-[#E61417]'
                     }`}
                   >
-                    {subscription.status === 'active' ? 'Còn hạn' : 'Hết hạn'}
+                    {subscription.isValid ? 'Còn hạn' : 'Hết hạn'}
                   </Button>
                   <img
                     src={subscription.cover_image}

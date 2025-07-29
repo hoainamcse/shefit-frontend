@@ -18,6 +18,7 @@ export default function PurchasePackage() {
   const { session } = useSession()
   const searchParams = useSearchParams()
   const courseId = searchParams.get('course_id')
+  const mealPlansId = searchParams.get('meal_plans_id')
 
   const [subscriptions, setSubscriptions] = useState<ListResponse<Subscription>>({
     status: '',
@@ -26,6 +27,7 @@ export default function PurchasePackage() {
   })
   const [isLoading, setIsLoading] = useState(true)
   const [purchasedSubscriptionIds, setPurchasedSubscriptionIds] = useState<number[]>([])
+  const [userSubscriptions, setUserSubscriptions] = useState<any[]>([])
 
   useEffect(() => {
     async function fetchUserSubscriptions() {
@@ -37,6 +39,7 @@ export default function PurchasePackage() {
         if (response.data && response.data.length > 0) {
           const subscribedIds = response.data.map((sub) => Number(sub.subscription.id))
           setPurchasedSubscriptionIds(subscribedIds)
+          setUserSubscriptions(response.data)
         }
       } catch (error) {
         console.error('Error fetching user subscriptions:', error)
@@ -56,14 +59,18 @@ export default function PurchasePackage() {
 
         if (courseId) {
           data = await getSubscriptions({ course_id: parseInt(courseId) })
+        } else if (mealPlansId) {
+          data = await getSubscriptions({ meal_plans_id: parseInt(mealPlansId) })
         } else {
           data = await getSubscriptions()
         }
 
-        if (session && purchasedSubscriptionIds.length > 0) {
-          data = {
-            ...data,
-            data: data.data.filter((sub) => !purchasedSubscriptionIds.includes(Number(sub.id))),
+        if (session && userSubscriptions.length > 0) {
+          if (!courseId && !mealPlansId) {
+            data = {
+              ...data,
+              data: data.data.filter((sub) => !purchasedSubscriptionIds.includes(Number(sub.id))),
+            }
           }
         }
 
@@ -76,7 +83,7 @@ export default function PurchasePackage() {
     }
 
     fetchSubscriptions()
-  }, [courseId, session, purchasedSubscriptionIds])
+  }, [courseId, mealPlansId, session, purchasedSubscriptionIds, userSubscriptions])
 
   if (isLoading) {
     return (
@@ -115,12 +122,18 @@ export default function PurchasePackage() {
           <div className="text-[#737373] text-sm md:text-lg mb-6 px-4 lg:px-12">
             {courseId
               ? 'Bạn cần mua một trong các Gói Member sau để truy cập vào khóa tập vừa xem'
+              : mealPlansId
+              ? 'Bạn cần mua một trong các Gói Member sau để truy cập vào thực đơn vừa xem'
               : 'Mua gói độ dáng để bắt đầu các khóa tập và thực đơn'}
           </div>
 
           {subscriptions.data.length === 0 ? (
             <div className="text-center text-[#737373] py-8">
-              {courseId ? 'Không có gói nào phù hợp với khóa học này' : 'Không có gói nào khả dụng'}
+              {courseId
+                ? 'Không có gói nào phù hợp với khóa học này'
+                : mealPlansId
+                ? 'Không có gói nào phù hợp với thực đơn này'
+                : 'Không có gói nào khả dụng'}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16 lg:px-12">
@@ -146,7 +159,11 @@ export default function PurchasePackage() {
                             ))
                         })()}
                       </ul>
-                      <Link href={`/packages/detail/${subscription.id}${courseId ? `?course_id=${courseId}` : ''}`}>
+                      <Link
+                        href={`/packages/detail/${subscription.id}${
+                          courseId ? `?course_id=${courseId}` : mealPlansId ? `?meal_plans_id=${mealPlansId}` : ''
+                        }`}
+                      >
                         <Button className="bg-[#13D8A7] w-[190px] h-[38px] rounded-[26px] text-sm md:text-lg font-normal md:pt-2.5 md:pb-1.5">
                           Chọn gói
                         </Button>

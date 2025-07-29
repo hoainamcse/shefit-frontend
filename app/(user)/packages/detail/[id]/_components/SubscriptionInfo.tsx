@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 
 interface SubscriptionStatus {
   hasSubscription: boolean
-  status: 'active' | 'expired' | null
+  isValid: boolean
   startDate: string | null
   endDate: string | null
   coupon_code: string | null
@@ -22,11 +22,18 @@ export default function SubscriptionInfo() {
   const [isLoading, setIsLoading] = useState(true)
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus>({
     hasSubscription: false,
-    status: null,
+    isValid: false,
     startDate: null,
     endDate: null,
     coupon_code: null,
   })
+
+  const isSubscriptionValid = (subscriptionEndAt: string): boolean => {
+    if (!subscriptionEndAt) return false
+    const endDate = new Date(subscriptionEndAt)
+    const currentDate = new Date()
+    return endDate > currentDate
+  }
 
   useEffect(() => {
     async function fetchUserSubscriptions() {
@@ -43,9 +50,13 @@ export default function SubscriptionInfo() {
         const userSubscription = response.data?.find((subscription) => subscription.subscription.id === subscriptionId)
 
         if (userSubscription) {
+          const isValid = userSubscription.subscription_end_at
+            ? isSubscriptionValid(userSubscription.subscription_end_at)
+            : false
+
           setSubscriptionStatus({
             hasSubscription: true,
-            status: userSubscription.status as 'active' | 'expired',
+            isValid,
             startDate: userSubscription.subscription_start_at,
             endDate: userSubscription.subscription_end_at,
             coupon_code: userSubscription.coupon_code,
@@ -72,7 +83,7 @@ export default function SubscriptionInfo() {
   return (
     <div>
       <div className="flex items-center mb-2">
-        {subscriptionStatus.status === 'active' ? (
+        {subscriptionStatus.isValid ? (
           <Button className="w-[100px] h-[46px] lg:w-[160px] lg:h-[54px] bg-[#13D8A7] text-base rounded-none border border-[#000000]">
             Còn hạn
           </Button>

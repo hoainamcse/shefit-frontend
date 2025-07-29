@@ -18,6 +18,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
   const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [showSubscribeDialog, setShowSubscribeDialog] = useState(false)
+  const [showRenewDialog, setShowRenewDialog] = useState(false)
   const [showLoginDialogSave, setShowLoginDialogSave] = useState(false)
   const [isInFavorites, setIsInFavorites] = useState(false)
   const [hasValidSubscription, setHasValidSubscription] = useState(false)
@@ -28,10 +29,26 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
     redirectToLogin()
   }
 
+  const saveCurrentUrl = () => {
+    if (typeof window !== 'undefined') {
+      const currentUrl = window.location.pathname + window.location.search
+      sessionStorage.setItem('redirectAfterLogin', currentUrl)
+    }
+  }
+
   const handleBuyPackageClick = () => {
     setShowLoginDialog(false)
     setShowSubscribeDialog(false)
-    redirectToAccount('buy-package')
+    setShowRenewDialog(false)
+
+    if (typeof window !== 'undefined') {
+      saveCurrentUrl()
+      const currentUrl = window.location.pathname + window.location.search
+      const accountUrl = `/account?tab=buy-package&meal_plans_id=${mealPlanId}&redirect=${encodeURIComponent(
+        currentUrl
+      )}`
+      window.location.href = accountUrl
+    }
   }
 
   const isSubscriptionValid = (subscriptionEndAt: string): boolean => {
@@ -98,17 +115,28 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
 
     try {
       const subscriptions = await getUserSubscriptions(session.userId.toString())
+
       const hasValidSub = subscriptions.data?.some((subscription) => {
-        return subscription.subscription_end_at && isSubscriptionValid(subscription.subscription_end_at)
+        const isValid = subscription.subscription_end_at && isSubscriptionValid(subscription.subscription_end_at)
+        return isValid
       })
 
-      const favorites = await getFavouriteMealPlans(session.userId.toString())
-      const inFavorites = favorites.data?.some((favorite) => {
-        return Number(favorite.meal_plan?.id) === Number(mealPlanId)
+      const mealPlanInSubscription = subscriptions.data?.some((subscription) => {
+        if (!subscription.meal_plan_ids || !Array.isArray(subscription.meal_plan_ids)) {
+          return false
+        }
+
+        const includesAsNumber = subscription.meal_plan_ids.includes(Number(mealPlanId))
+        const includesAsString = subscription.meal_plan_ids.includes(mealPlanId)
+        const includesAsIs = subscription.meal_plan_ids.includes(mealPlanId)
+
+        return includesAsNumber || includesAsString || includesAsIs
       })
 
-      if (hasValidSub || inFavorites) {
+      if (hasValidSub) {
         window.location.href = `/meal-plans/${mealPlanId}/detail`
+      } else if (mealPlanInSubscription) {
+        setShowRenewDialog(true)
       } else {
         setShowSubscribeDialog(true)
       }
@@ -174,6 +202,22 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
             <div className="w-full px-10">
               <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleBuyPackageClick}>
                 Mua gói Member
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showRenewDialog} onOpenChange={setShowRenewDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center text-center gap-6">
+            <p className="text-base">GÓI CỦA BẠN ĐÃ HẾT HẠN, HÃY GIA HẠN ĐỂ TIẾP TỤC TRUY CẬP</p>
+            <div className="w-full px-10">
+              <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleBuyPackageClick}>
+                Gia hạn gói
               </Button>
             </div>
           </div>

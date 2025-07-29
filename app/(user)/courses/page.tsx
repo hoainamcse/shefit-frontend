@@ -96,9 +96,18 @@ export default function CoursesPage() {
   }, [])
 
   const checkCourseAccess = (courseId: number, userSubscriptions: UserSubscriptionDetail[]): boolean => {
-    return userSubscriptions.some(
-      (userSub) => userSub.status === 'active' && userSub.subscription.courses.some((course) => course.id === courseId)
-    )
+    const isSubscriptionValid = (subscriptionEndAt: string): boolean => {
+      if (!subscriptionEndAt) return false
+      const endDate = new Date(subscriptionEndAt)
+      const currentDate = new Date()
+      return endDate > currentDate
+    }
+
+    return userSubscriptions.some((userSub) => {
+      const hasValidSubscription = userSub.subscription_end_at && isSubscriptionValid(userSub.subscription_end_at)
+      const hasCourse = userSub.subscription.courses.some((course) => course.id === courseId)
+      return hasValidSubscription && hasCourse
+    })
   }
 
   const handleMembershipClick = async (course: Course) => {
@@ -476,7 +485,7 @@ export default function CoursesPage() {
             <DialogTitle className="text-center lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-[#FF7873] text-lg"></DialogTitle>
           </DialogHeader>
           <div className="text-center py-4">
-            <p className="text-base text-[#737373] mb-4 ">BẠN ĐÃ MUA GÓI MEMBER CÓ KHÓA TẬP NÀY</p>
+            <p className="text-base text-[#737373] mb-4">BẠN ĐÃ MUA GÓI MEMBER CÓ KHÓA TẬP NÀY</p>
           </div>
           <div className="flex gap-4 justify-center w-full px-10">
             <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={() => handleStartCourse()}>
