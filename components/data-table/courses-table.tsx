@@ -8,7 +8,14 @@ import { useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { deleteBulkCourse, deleteCourse, duplicateCourse, getCourses, queryKeyCourses } from '@/network/client/courses'
+import {
+  deleteBulkCourse,
+  deleteCourse,
+  duplicateCourse,
+  getCourses,
+  queryKeyCourses,
+  updateCourseDisplayOrder,
+} from '@/network/client/courses'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -19,11 +26,22 @@ import { courseFormLabel, courseLevelLabel } from '@/lib/label'
 import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
 import { Badge } from '../ui/badge'
+import { Button } from '../ui/button'
+import { Check, Edit, X } from 'lucide-react'
+import { Input } from '../ui/input'
 
 interface CoursesTableProps {
   courseFormat?: CourseFormat
   isOneOnOne?: boolean
   onConfirmRowSelection?: (selectedRows: Course[]) => void
+}
+
+interface EditingState {
+  [key: string]: {
+    isEditing: boolean
+    value: number
+    originalValue: number
+  }
 }
 
 export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSelection }: CoursesTableProps) {
@@ -34,6 +52,7 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
     pageSize: 25,
   })
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [editingState, setEditingState] = useState<EditingState>({})
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyCourses, { ...pagination, courseFormat, isOneOnOne }],
@@ -48,6 +67,61 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
       }),
     placeholderData: keepPreviousData,
   })
+
+  const handleEditDisplayOrder = (courseId: string, currentValue: number) => {
+    setEditingState((prev) => ({
+      ...prev,
+      [courseId]: {
+        isEditing: true,
+        value: currentValue || 0,
+        originalValue: currentValue,
+      },
+    }))
+  }
+
+  const handleCancelEdit = (courseId: string) => {
+    setEditingState((prev) => {
+      const newState = { ...prev }
+      delete newState[courseId]
+      return newState
+    })
+  }
+
+  const handleSaveDisplayOrder = async (courseId: string) => {
+    const editState = editingState[courseId]
+    if (!editState) return
+
+    const newValue = editState.value
+    if (isNaN(newValue) || newValue < 0) {
+      toast.error('Vui lòng nhập số hợp lệ (≥ 0)')
+      return
+    }
+
+    try {
+      await updateCourseDisplayOrder(Number(courseId), newValue)
+
+      setEditingState((prev) => {
+        const newState = { ...prev }
+        delete newState[courseId]
+        return newState
+      })
+
+      refetch()
+      toast.success('Cập nhật STT thành công')
+    } catch (error) {
+      toast.error('Đã có lỗi xảy ra khi cập nhật')
+    }
+  }
+
+  const handleInputChange = (mealPlanId: string, value: number) => {
+    setEditingState((prev) => ({
+      ...prev,
+      [mealPlanId]: {
+        ...prev[mealPlanId],
+        value,
+      },
+    }))
+  }
 
   const columns = useMemo<ColumnDef<Course>[]>(
     () => [
@@ -70,6 +144,61 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
         size: 28,
         enableSorting: false,
         enableHiding: false,
+      },
+      {
+        header: 'STT',
+        accessorKey: 'display_order',
+        cell: ({ row }) => {
+          const course = row.original
+          const editState = editingState[course.id]
+          const displayOrder = row.getValue('display_order') as number
+
+          if (editState?.isEditing) {
+            return (
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  min="0"
+                  value={editState.value}
+                  onChange={(e) => handleInputChange(course.id.toString(), Number(e.target.value))}
+                  className="w-20 h-8"
+                  autoFocus
+                />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 p-0 text-green-600 hover:text-green-700"
+                  onClick={() => handleSaveDisplayOrder(course.id.toString())}
+                >
+                  <Check className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                  onClick={() => handleCancelEdit(course.id.toString())}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            )
+          }
+
+          return (
+            <div className="flex items-center px-3 gap-3 group">
+              <span className="font-medium">{displayOrder || 0}</span>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => handleEditDisplayOrder(course.id.toString(), displayOrder)}
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+            </div>
+          )
+        },
+        size: 140,
       },
       {
         header: 'Tên khoá tập',
@@ -134,7 +263,7 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
         enableHiding: false,
       },
     ],
-    []
+    [editingState]
   )
 
   const router = useRouter()

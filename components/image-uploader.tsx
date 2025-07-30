@@ -224,26 +224,42 @@ export function ImageUploader<TFieldValues extends FieldValues>(props: ImageUplo
   const handleRemoveLocalFile = (index: number) => {
     if (disabled) return
     const updatedLocalFiles = localFiles.filter((_, i) => i !== index)
+    // Simply update local previews
     setLocalFiles(updatedLocalFiles)
+
+    // If all local files have been removed, optionally set a placeholder back on the form
+    if (updatedLocalFiles.length === 0) {
+      form.setValue(
+        name,
+        'https://placehold.co/400?text=shefit.vn&font=Oswald' as PathValue<TFieldValues, Path<TFieldValues>>,
+        { shouldValidate: true, shouldDirty: true }
+      )
+    }
   }
 
   const handleRemoveFormImage = (index?: number) => {
     if (disabled) return
+    const placeholder = 'https://placehold.co/400?text=shefit.vn&font=Oswald'
     const currentFormValue = form.watch(name)
 
     if (maxFileCount === 1 || typeof index === 'undefined' || !Array.isArray(currentFormValue)) {
-      // Clear the single image field or if it's not an array
-      form.setValue(name, '' as PathValue<TFieldValues, Path<TFieldValues>>, {
+      // Either single-upload mode or we didn't get a specific index
+      form.setValue(name, placeholder as PathValue<TFieldValues, Path<TFieldValues>>, {
         shouldValidate: true,
         shouldDirty: true,
       })
     } else if (Array.isArray(currentFormValue) && typeof index === 'number') {
-      // Remove a specific image from an array of URLs
+      // Multi-upload: remove the item at the given index
       const newFormUrls = currentFormValue.filter((_: unknown, i: number) => i !== index)
-      form.setValue(name, newFormUrls as PathValue<TFieldValues, Path<TFieldValues>>, {
-        shouldValidate: true,
-        shouldDirty: true,
-      })
+
+      form.setValue(
+        name,
+        (newFormUrls.length > 0 ? newFormUrls : placeholder) as PathValue<TFieldValues, Path<TFieldValues>>,
+        {
+          shouldValidate: true,
+          shouldDirty: true,
+        }
+      )
     }
     toast.info('Image removed from form.')
   }
@@ -344,7 +360,13 @@ export function ImageUploader<TFieldValues extends FieldValues>(props: ImageUplo
             )}
           </div>
         )}
+
       </Dropzone>
+      {(form.formState.errors as Record<string, any>)[name as string]?.message && (
+        <p className="mt-1 text-sm text-destructive">
+          {(form.formState.errors as Record<string, any>)[name as string]?.message}
+        </p>
+      )}
 
       {/* Display Area for Form Images and Local Previews */}
       {(displayedFormImageUrls.length > 0 || localFiles.length > 0) && (

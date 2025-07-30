@@ -62,6 +62,14 @@ export async function duplicateMealPlan(id: MealPlan['id']): Promise<ApiResponse
   return response.json()
 }
 
+export async function updateMealPlanDisplayOrder(meal_plan_id: MealPlan['id'], display_order: number): Promise<ApiResponse<string>> {
+  const response = await fetchData(`/v1/meal-plans/${meal_plan_id}/update-display-order`, {
+    method: 'PUT',
+    body: JSON.stringify({ display_order }),
+  })
+  return response.json()
+}
+
 // Meal Plan Day APIs
 export const queryKeyMealPlanDays = 'meal-plan-days'
 

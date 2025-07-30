@@ -15,6 +15,7 @@ import {
   getSubAdminSubscriptions,
   getSubscriptions,
   queryKeySubscriptions,
+  updateSubscriptionDisplayOrder,
 } from '@/network/client/subscriptions'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
@@ -24,9 +25,20 @@ import { Spinner } from '@/components/spinner'
 import { AddButton } from '../buttons/add-button'
 import { useSession } from '@/hooks/use-session'
 import { MainButton } from '../buttons/main-button'
+import { Button } from '../ui/button'
+import { Check, Edit, X } from 'lucide-react'
+import { Input } from '../ui/input'
 
 interface SubscriptionsTableProps {
   onConfirmRowSelection?: (selectedRows: Subscription[]) => void
+}
+
+interface EditingState {
+  [key: string]: {
+    isEditing: boolean
+    value: number
+    originalValue: number
+  }
 }
 
 export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTableProps) {
@@ -37,18 +49,86 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
     pageSize: 25,
   })
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [editingState, setEditingState] = useState<EditingState>({})
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeySubscriptions, pagination],
     queryFn: () =>
       session
         ? session.role === 'sub_admin'
-          ? getSubAdminSubscriptions({ page: pagination.pageIndex, per_page: pagination.pageSize })
-          : getSubscriptions({ page: pagination.pageIndex, per_page: pagination.pageSize })
+          ? getSubAdminSubscriptions({
+              page: pagination.pageIndex,
+              per_page: pagination.pageSize,
+              sort_by: 'display_order',
+              sort_order: 'asc',
+            })
+          : getSubscriptions({
+              page: pagination.pageIndex,
+              per_page: pagination.pageSize,
+              sort_by: 'display_order',
+              sort_order: 'asc',
+            })
         : Promise.resolve(null),
     placeholderData: keepPreviousData,
     enabled: !!session,
   })
+
+  const handleEditDisplayOrder = (subscriptionId: string, currentValue: number) => {
+    console.log('subscriptionId', subscriptionId)
+
+    setEditingState((prev) => ({
+      ...prev,
+      [subscriptionId]: {
+        isEditing: true,
+        value: currentValue || 0,
+        originalValue: currentValue,
+      },
+    }))
+  }
+
+  const handleCancelEdit = (subscriptionId: string) => {
+    setEditingState((prev) => {
+      const newState = { ...prev }
+      delete newState[subscriptionId]
+      return newState
+    })
+  }
+
+  const handleSaveDisplayOrder = async (subscriptionId: string) => {
+    const editState = editingState[subscriptionId]
+    if (!editState) return
+
+    const newValue = editState.value
+    if (isNaN(newValue) || newValue < 0) {
+      toast.error('Vui lòng nhập số hợp lệ (≥ 0)')
+      return
+    }
+
+    try {
+      await updateSubscriptionDisplayOrder(subscriptionId, newValue)
+
+      setEditingState((prev) => {
+        const newState = { ...prev }
+        delete newState[subscriptionId]
+        return newState
+      })
+
+      refetch()
+      toast.success('Cập nhật STT thành công')
+    } catch (error) {
+      toast.error('Đã có lỗi xảy ra khi cập nhật')
+    }
+  }
+
+  const handleInputChange = (subscriptionId: string, value: number) => {
+    setEditingState((prev) => ({
+      ...prev,
+      [subscriptionId]: {
+        ...prev[subscriptionId],
+        value,
+      },
+    }))
+  }
 
   const columns = useMemo<ColumnDef<Subscription>[]>(
     () => [
@@ -71,6 +151,61 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
         size: 28,
         enableSorting: false,
         enableHiding: false,
+      },
+      {
+        header: 'STT',
+        accessorKey: 'display_order',
+        cell: ({ row }) => {
+          const subscription = row.original
+          const editState = editingState[subscription.id]
+          const displayOrder = row.getValue('display_order') as number
+
+          if (editState?.isEditing) {
+            return (
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  min="0"
+                  value={editState.value}
+                  onChange={(e) => handleInputChange(subscription.id.toString(), Number(e.target.value))}
+                  className="w-20 h-8"
+                  autoFocus
+                />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 p-0 text-green-600 hover:text-green-700"
+                  onClick={() => handleSaveDisplayOrder(subscription.id.toString())}
+                >
+                  <Check className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                  onClick={() => handleCancelEdit(subscription.id.toString())}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            )
+          }
+
+          return (
+            <div className="flex items-center px-3 gap-3 group">
+              <span className="font-medium">{displayOrder || 0}</span>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => handleEditDisplayOrder(subscription.id.toString(), displayOrder)}
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+            </div>
+          )
+        },
+        size: 140,
       },
       {
         header: 'Tên gói tập',
@@ -110,7 +245,7 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
         enableHiding: false,
       },
     ],
-    []
+    [editingState]
   )
 
   const router = useRouter()

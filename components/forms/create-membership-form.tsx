@@ -15,7 +15,7 @@ import { Trash2, Plus } from 'lucide-react'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent } from '../ui/card'
 import { Subscription } from '@/models/subscription'
-import { FormInputField, FormSelectField, FormRichTextField } from './fields'
+import { FormInputField, FormSelectField, FormRichTextField, FormNumberField } from './fields'
 import { useRouter } from 'next/navigation'
 import { createSubscription, updateSubscription, updateSubscriptionPrices } from '@/network/client/subscriptions'
 import { createGift, updateGift } from '@/network/client/subscriptions'
@@ -81,6 +81,7 @@ const formSchema = z.object({
       })
     )
     .optional(),
+  display_order: z.number(),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -124,6 +125,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
             course_format: data.course_format as 'video' | 'live' | 'both',
             gifts: data.relationships?.gifts || [],
             description_homepage: data.description_homepage || '',
+            display_order: data.display_order || 0,
           }
         })()
       : {
@@ -141,6 +143,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
           meal_plan_ids: [],
           meal_plan_description: '',
           description_homepage: '',
+          display_order: 0,
         },
   })
 
@@ -285,22 +288,26 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
         <CardContent className="pt-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormInputField
-                form={form}
-                name="name"
-                label="Tên gói"
-                placeholder="Nhập tên gói thành viên"
-                withAsterisk
-              />
+              <div className="grid grid-cols-3 gap-4">
+                <FormInputField
+                  form={form}
+                  name="name"
+                  label="Tên gói"
+                  placeholder="Nhập tên gói thành viên"
+                  withAsterisk
+                />
 
-              <FormSelectField
-                form={form}
-                name="course_format"
-                label="Loại hình"
-                data={AVAILABLE_COURSE_FORMATS}
-                placeholder="Chọn loại hình"
-                withAsterisk
-              />
+                <FormNumberField form={form} name="display_order" label="Thứ tự hiển thị" placeholder="e.g., 10" />
+
+                <FormSelectField
+                  form={form}
+                  name="course_format"
+                  label="Loại hình"
+                  data={AVAILABLE_COURSE_FORMATS}
+                  placeholder="Chọn loại hình"
+                  withAsterisk
+                />
+              </div>
 
               <FormRichTextField
                 form={form}

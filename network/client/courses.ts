@@ -68,6 +68,14 @@ export async function duplicateCourse(id: Course['id']): Promise<ApiResponse<Cou
   return response.json()
 }
 
+export async function updateCourseDisplayOrder(course_id: Course['id'], display_order: number): Promise<ApiResponse<string>> {
+  const response = await fetchData(`/v1/courses/${course_id}/update-display-order`, {
+    method: 'PUT',
+    body: JSON.stringify({ display_order }),
+  })
+  return response.json()
+}
+
 // Course Week APIs
 export const queryKeyCourseWeeks = 'course-weeks'
 

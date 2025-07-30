@@ -68,6 +68,14 @@ export async function duplicateSubscription(id: Subscription['id']): Promise<Api
   return response.json()
 }
 
+export async function updateSubscriptionDisplayOrder(id: Subscription['id'], display_order: number): Promise<ApiResponse<string>> {
+  const response = await fetchData(`/v1/subscriptions/${id}/update-display-order`, {
+    method: 'PUT',
+    body: JSON.stringify({ display_order }),
+  })
+  return response.json()
+}
+
 // Subscription Gift APIs
 export const queryKeySubscriptionGifts = 'subscription-gifts'
 

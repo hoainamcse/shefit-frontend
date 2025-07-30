@@ -14,6 +14,7 @@ import {
   duplicateMealPlan,
   getMealPlans,
   queryKeyMealPlans,
+  updateMealPlanDisplayOrder,
 } from '@/network/client/meal-plans'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
@@ -23,9 +24,19 @@ import { Spinner } from '@/components/spinner'
 import { AddButton } from '../buttons/add-button'
 import { MainButton } from '../buttons/main-button'
 import { getYouTubeThumbnail } from '@/lib/youtube'
+import { Input } from '../ui/input'
+import { Button } from '../ui/button'
+import { Check, Edit, X } from 'lucide-react'
 
 interface MealPlansTableProps {
   onConfirmRowSelection?: (selectedRows: MealPlan[]) => void
+}
+interface EditingState {
+  [key: string]: {
+    isEditing: boolean
+    value: number
+    originalValue: number
+  }
 }
 
 export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
@@ -34,6 +45,7 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
     pageSize: 25,
   })
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [editingState, setEditingState] = useState<EditingState>({})
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyMealPlans, pagination],
@@ -46,6 +58,61 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
       }),
     placeholderData: keepPreviousData,
   })
+
+  const handleEditDisplayOrder = (mealPlanId: string, currentValue: number) => {
+    setEditingState((prev) => ({
+      ...prev,
+      [mealPlanId]: {
+        isEditing: true,
+        value: currentValue || 0,
+        originalValue: currentValue,
+      },
+    }))
+  }
+
+  const handleCancelEdit = (mealPlanId: string) => {
+    setEditingState((prev) => {
+      const newState = { ...prev }
+      delete newState[mealPlanId]
+      return newState
+    })
+  }
+
+  const handleSaveDisplayOrder = async (mealPlanId: string) => {
+    const editState = editingState[mealPlanId]
+    if (!editState) return
+
+    const newValue = editState.value
+    if (isNaN(newValue) || newValue < 0) {
+      toast.error('Vui lòng nhập số hợp lệ (≥ 0)')
+      return
+    }
+
+    try {
+      await updateMealPlanDisplayOrder(Number(mealPlanId), newValue)
+
+      setEditingState((prev) => {
+        const newState = { ...prev }
+        delete newState[mealPlanId]
+        return newState
+      })
+
+      refetch()
+      toast.success('Cập nhật STT thành công')
+    } catch (error) {
+      toast.error('Đã có lỗi xảy ra khi cập nhật')
+    }
+  }
+
+  const handleInputChange = (mealPlanId: string, value: number) => {
+    setEditingState((prev) => ({
+      ...prev,
+      [mealPlanId]: {
+        ...prev[mealPlanId],
+        value,
+      },
+    }))
+  }
 
   const columns = useMemo<ColumnDef<MealPlan>[]>(
     () => [
@@ -68,6 +135,61 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
         size: 28,
         enableSorting: false,
         enableHiding: false,
+      },
+      {
+        header: 'STT',
+        accessorKey: 'display_order',
+        cell: ({ row }) => {
+          const mealPlan = row.original
+          const editState = editingState[mealPlan.id]
+          const displayOrder = row.getValue('display_order') as number
+
+          if (editState?.isEditing) {
+            return (
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  min="0"
+                  value={editState.value}
+                  onChange={(e) => handleInputChange(mealPlan.id.toString(), Number(e.target.value))}
+                  className="w-20 h-8"
+                  autoFocus
+                />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 p-0 text-green-600 hover:text-green-700"
+                  onClick={() => handleSaveDisplayOrder(mealPlan.id.toString())}
+                >
+                  <Check className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                  onClick={() => handleCancelEdit(mealPlan.id.toString())}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            )
+          }
+
+          return (
+            <div className="flex items-center px-3 gap-3 group">
+              <span className="font-medium">{displayOrder || 0}</span>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => handleEditDisplayOrder(mealPlan.id.toString(), displayOrder)}
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+            </div>
+          )
+        },
+        size: 140,
       },
       {
         header: 'Tên thực đơn',
@@ -122,7 +244,7 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
         enableHiding: false,
       },
     ],
-    []
+    [editingState]
   )
 
   const router = useRouter()

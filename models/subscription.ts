@@ -50,6 +50,7 @@ type Subscription = {
         meal_plans: Pick<MealPlan, 'id' | 'title'>[]
         gifts: Gift[]
     }
+    display_order: number
 }
 
 type SubscriptionPayload = Omit<Subscription, 'id' | 'created_at' | 'updated_at' | 'gifts' | 'courses' | 'meal_plans' | 'relationships'> & {
