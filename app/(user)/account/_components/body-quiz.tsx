@@ -77,7 +77,7 @@ export default function BodyQuiz() {
   }, [session])
   return (
     <div>
-      <div className="bg-[#FFAEB01A] py-[33px] px-5 sm:px-9 lg:px-[87px]">
+      <div className="bg-[#FFAEB01A] py-[33px] px-4 sm:px-9 lg:px-[87px]">
         <div className="text-center text-[#000000] text-2xl lg:text-4xl lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold lg:mb-7 mb-4">
           Body Quiz
         </div>
@@ -92,7 +92,7 @@ export default function BodyQuiz() {
       </div>
 
       {session && (
-        <div className="py-12 sm:py-16 lg:py-20 px-5 sm:px-9 lg:px-[60px]">
+        <div className="py-12 sm:py-16 lg:py-20 px-4 sm:px-9 lg:px-[60px]">
           <div className="text-[#FF7873] text-2xl lg:text-4xl lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold mb-10">
             Kết quả
           </div>

@@ -38,7 +38,7 @@ export default async function Account(props: { searchParams: Promise<{ tab: stri
   const tab = searchParams.tab || 'body-quiz'
 
   return (
-    <div className="lg:mt-8 mt-4">
+    <div className="lg:mt-8 mt-6">
       <Tabs value={tab} defaultValue="body-quiz">
         <div className="lg:pt-8 px-4 lg:px-[56px] pb-8 lg:pb-[80px]">
           <UserGreeting />

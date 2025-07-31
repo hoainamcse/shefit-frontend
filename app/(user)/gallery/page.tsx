@@ -120,7 +120,7 @@ export default function Gallery() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         )}
-        <div className="grid grid-cols-4 sm:gap-5 gap-4">
+        <div className="grid grid-cols-3 lg:grid-cols-4 sm:gap-5 gap-4">
           {muscleGroupsData.data.map((muscleGroup) =>
             session && hasActiveSubscription && !isCheckingSubscription ? (
               <Link href={`/gallery/muscle/${muscleGroup.id}`} key={muscleGroup.id}>
@@ -213,7 +213,7 @@ export default function Gallery() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         )}
-        <div className="grid grid-cols-4 sm:gap-5 gap-4">
+        <div className="grid grid-cols-3 lg:grid-cols-4 sm:gap-5 gap-4">
           {dietsData.data?.map((diet) =>
             session && hasActiveSubscription && !isCheckingSubscription ? (
               <Link href={`/gallery/meal/${diet.id}`} key={diet.id}>
