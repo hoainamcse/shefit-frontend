@@ -192,13 +192,13 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                       <ArrowIcon size={20} />
                     </span>
                   </div>
-                  <div className="flex-1 flex items-center justify-center text-base lg:text-lg mt-4">
-                    <HtmlContent
-                      content={item.subscription.description_homepage}
-                      className="text-center px-2 text-neutral-500 text-xs lg:text-base whitespace-pre-line"
-                    />
-                  </div>
                 </Link>
+                <div className="flex-1 flex items-center justify-center text-base lg:text-lg mt-4">
+                  <HtmlContent
+                    content={item.subscription.description_homepage}
+                    className="text-center px-2 text-neutral-500 text-xs lg:text-base whitespace-pre-line"
+                  />
+                </div>
                 <Carousel className="mx-4">
                   <CarouselContent>
                     {item.courses.map((course: any) => (
