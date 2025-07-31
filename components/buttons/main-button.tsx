@@ -10,6 +10,7 @@ interface MainButtonProps extends ButtonProps {
   loading?: boolean
   icon?: LucideIcon
   href?: string
+  target?: string
 }
 
 const buttonVariant = {
@@ -22,7 +23,7 @@ const buttonVariant = {
 }
 
 const MainButton = React.forwardRef<HTMLButtonElement, MainButtonProps>(
-  ({ text = '', loading = false, icon: Icon, disabled, variant, className, href, ...props }, ref) => {
+  ({ text = '', loading = false, icon: Icon, disabled, variant, className, href, target, ...props }, ref) => {
     return (
       <Button
         ref={ref}
@@ -33,7 +34,7 @@ const MainButton = React.forwardRef<HTMLButtonElement, MainButtonProps>(
         {...props}
       >
         {href ? (
-          <Link href={href}>
+          <Link href={href} target={target}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : Icon ? <Icon className="h-4 w-4" /> : null}
             {text}
           </Link>

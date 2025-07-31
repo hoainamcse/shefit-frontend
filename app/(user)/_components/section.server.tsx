@@ -505,6 +505,7 @@ export function SectionEleven({ data }: { data: DataType['section_11'] }) {
                 className="rounded-full w-44 lg:w-[444px] lg:h-16 text-base lg:text-xl"
                 size="lg"
                 href={data.cta.href}
+                target="_blank"
               />
             </div>
           </div>
@@ -516,6 +517,7 @@ export function SectionEleven({ data }: { data: DataType['section_11'] }) {
               className="rounded-full w-44 text-base lg:text-xl"
               size="lg"
               href={data.cta.href}
+              target="_blank"
             />
           </div>
         </div>
