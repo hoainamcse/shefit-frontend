@@ -201,7 +201,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                 </Link>
                 <Carousel className="mx-4">
                   <CarouselContent>
-                    {item.courses.map((course: any, cIndex: any) => (
+                    {item.courses.map((course: any) => (
                       <CarouselItem key={`course-${course.id}`} className="basis-3/4 lg:basis-full">
                         <div className="flex flex-col items-center gap-4">
                           <div className="relative w-full overflow-hidden">
@@ -217,7 +217,7 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                         </div>
                       </CarouselItem>
                     ))}
-                    {item.mealPlans.map((mealPlan: any, mpIndex: any) => (
+                    {item.mealPlans.map((mealPlan: any) => (
                       <CarouselItem key={`mealplan-${mealPlan.id}`} className="basis-2/3 lg:basis-full">
                         <div className="flex flex-col items-center gap-4">
                           <div className="relative w-full overflow-hidden">
@@ -226,14 +226,6 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
                               alt={mealPlan.title}
                               className="rounded-md w-full object-cover aspect-[5/7]"
                             />
-                            <div className="absolute top-8 left-2 px-2 w-[calc(100%-16px)] h-full">
-                              <p className="text-white text-base font-medium uppercase mb-4">
-                                {mealPlan.meal_plan_goal?.name}
-                              </p>
-                              <p className="text-white text-4xl uppercase font-[family-name:var(--font-black-ops-one)]">
-                                {mealPlan.title}
-                              </p>
-                            </div>
                           </div>
                           <p className="text-center text-neutral-500 text-sm lg:text-lg">
                             {mealPlan.description_homepage_1}
@@ -286,11 +278,9 @@ export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
       <div className="container mx-auto space-y-8 lg:space-y-10">
         <div className="max-w-[800px] mx-auto flex flex-col items-center justify-center text-center gap-4">
           <h3 className="font-[family-name:var(--font-coiny)] text-[#FF7873] text-2xl lg:text-4xl font-bold">
-            Ăn uống khoa học
+            {data.title}
           </h3>
-          <h2 className="font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl font-bold">
-            “Độ” dáng nhanh hơn với menu theo từng mục tiêu từ chuyên gia
-          </h2>
+          <h2 className="font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl font-bold">{data.subtitle}</h2>
         </div>
         <div className="max-w-6xl mx-auto flex flex-col items-center justify-center gap-4">
           <Carousel>
@@ -397,7 +387,7 @@ export async function SectionNine({ data }: { data: DataType['section_9'] }) {
             chuyên gia hàng đầu
           </h2>
         </div>
-        <div className="relative">
+        <div className="relative hidden lg:block">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {data.coaches.map((coach, index) => (
               <div key={index} className={`relative ${index % 2 !== 0 ? 'lg:translate-y-12' : ''}`}>
@@ -420,6 +410,34 @@ export async function SectionNine({ data }: { data: DataType['section_9'] }) {
               </div>
             ))}
           </div>
+        </div>
+        <div className="block lg:hidden px-4">
+          <Carousel>
+            <CarouselContent>
+              {data.coaches.map((coach, index) => (
+                <CarouselItem key={index} className="basis-1/2 lg:basis-1/6">
+                  <div className="relative w-full aspect-[409/588]">
+                    <div className="absolute inset-0">
+                      <div className="relative w-full h-full aspect-[409/588]">
+                        <div className="absolute bottom-0 left-0 bg-primary -z-10 w-full h-full" />
+                        <img
+                          src={coach.image || '/temp/homepage-6.png'}
+                          alt={coach.name}
+                          className="object-cover w-full h-full aspect-[409/588]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-center w-full lg:mt-4 mt-2">
+                    <p className="text-lg lg:text-4xl font-semibold">{coach.name}</p>
+                    <p className="text-sm lg:text-xl text-[#8E8E93]">{coach.detail}</p>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </div>
       </div>
     </div>
