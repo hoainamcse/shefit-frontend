@@ -77,10 +77,9 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
                             getYouTubeThumbnail(exercise.youtube_url) ||
                             'https://placehold.co/400?text=shefit.vn&font=Oswald'
                           }
-                          alt=""
-                          className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
+                          alt={exercise.circuit_exercise_title}
+                          className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                         />
-                        <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                         <div className="absolute inset-0 flex items-center justify-center">
                           <PlayCircle className="w-16 h-16 text-white opacity-70 group-hover:opacity-100 transition-opacity" />
                         </div>
@@ -107,12 +106,11 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
                               getYouTubeThumbnail(exercise.youtube_url) ||
                               'https://placehold.co/400?text=shefit.vn&font=Oswald'
                             }
-                            alt=""
-                            className="aspect-square object-cover rounded-xl"
+                            alt={exercise.circuit_exercise_title}
+                            className="aspect-square object-cover rounded-xl brightness-100 group-hover:brightness-110 transition-all duration-300"
                             width={300}
                             height={300}
                           />
-                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <PlayCircle className="w-12 h-12 text-white opacity-70 group-hover:opacity-100 transition-opacity" />
                           </div>

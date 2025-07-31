@@ -85,9 +85,8 @@ export default function ProductsPage() {
                     <img
                       src={product.image_urls[0] || ''}
                       alt={product.name}
-                      className="aspect-square object-cover rounded-xl mb-4 w-full"
+                      className="aspect-square object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                     />
-                    <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>
                   <div className="flex gap-2 mb-2">
                     {(() => {

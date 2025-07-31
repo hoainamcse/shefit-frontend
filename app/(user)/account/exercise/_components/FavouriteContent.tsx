@@ -419,9 +419,8 @@ export default function FavouriteContent() {
                   <img
                     src={meal_plan.cover_image || meal_plan.image}
                     alt={meal_plan.title}
-                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
+                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                   />
-                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
                 <p className="font-medium text-sm lg:text-lg">{meal_plan.title}</p>
                 <p className="text-[#737373] text-sm lg:text-lg">{meal_plan.subtitle}</p>
@@ -474,9 +473,8 @@ export default function FavouriteContent() {
                         'https://placehold.co/400?text=shefit.vn&font=Oswald'
                       }
                       alt={exercise.exercise?.name || ''}
-                      className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full"
+                      className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                     />
-                    <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   </div>
                   <p className="font-medium text-sm lg:text-lg">{exercise.exercise?.name}</p>
                 </div>
@@ -528,9 +526,8 @@ export default function FavouriteContent() {
                   <img
                     src={dish.image}
                     alt={dish.title}
-                    className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full"
+                    className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                   />
-                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
                 <p className="font-medium text-sm lg:text-lg">{dish.title}</p>
               </Link>

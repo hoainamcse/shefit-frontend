@@ -258,9 +258,8 @@ export default function ListDishes() {
                   <img
                     src={dish.image}
                     alt={dish.title}
-                    className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full"
+                    className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                   />
-                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                 </div>
                 <p className="font-medium text-sm lg:text-lg">{dish.title}</p>
               </div>

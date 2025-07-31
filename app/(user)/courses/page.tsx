@@ -264,9 +264,8 @@ export default function CoursesPage() {
                           <img
                             src={course.cover_image}
                             alt={course.course_name}
-                            className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
+                            className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                           />
-                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                           <Link href={`/courses/${course.id}/video-classes`}>
                             <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
                           </Link>
@@ -317,9 +316,8 @@ export default function CoursesPage() {
                           <img
                             src={course.cover_image}
                             alt={course.course_name}
-                            className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
+                            className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                           />
-                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                           <Link href={`/courses/${course.id}/live-classes`}>
                             <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
                           </Link>
@@ -370,9 +368,8 @@ export default function CoursesPage() {
                           <img
                             src={course.cover_image}
                             alt={course.course_name}
-                            className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
+                            className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                           />
-                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                           <Link
                             href={`/courses/${course.id}/${
                               course.course_format === 'video' ? 'video' : 'live'
@@ -427,9 +424,8 @@ export default function CoursesPage() {
                           <img
                             src={course.cover_image}
                             alt={course.course_name}
-                            className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
+                            className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                           />
-                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                           <Link
                             href={`/courses/${course.id}/${
                               course.course_format === 'video' ? 'video' : 'live'

@@ -129,9 +129,8 @@ export default function Gallery() {
                     <img
                       src={muscleGroup.image ?? undefined}
                       alt=""
-                      className="object-cover rounded-[8px] w-full h-full"
+                      className="object-cover rounded-[8px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                     />
-                    <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[8px]" />
                   </div>
                   <p className="font-medium lg:font-bold text-sm lg:text-lg">{muscleGroup.name}</p>
                 </div>
@@ -154,9 +153,8 @@ export default function Gallery() {
                         <img
                           src={muscleGroup.image ?? undefined}
                           alt=""
-                          className="object-cover rounded-[8px] w-full h-full"
+                          className="object-cover rounded-[8px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                         />
-                        <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[8px]" />
                       </div>
                       <p className="font-medium lg:font-bold text-sm lg:text-lg">{muscleGroup.name}</p>
                     </div>
@@ -219,8 +217,7 @@ export default function Gallery() {
               <Link href={`/gallery/meal/${diet.id}`} key={diet.id}>
                 <div key={`menu-${diet.id}`} className="text-lg overflow-hidden">
                   <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square">
-                    <img src={diet.image} alt="" className="object-cover rounded-[8px] w-full h-full" />
-                    <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[8px]" />
+                    <img src={diet.image} alt="" className="object-cover rounded-[8px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300" />
                   </div>
                   <p className="font-medium lg:font-bold text-sm lg:text-lg">{diet.name}</p>
                 </div>
@@ -240,8 +237,7 @@ export default function Gallery() {
                       onClick={() => setDialogOpen(`diet-${diet.id}`)}
                     >
                       <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square">
-                        <img src={diet.image} alt="" className="object-cover rounded-[8px] w-full h-full" />
-                        <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[8px]" />
+                        <img src={diet.image} alt="" className="object-cover rounded-[8px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300" />
                       </div>
                       <p className="font-medium lg:font-bold text-sm lg:text-lg">{diet.name}</p>
                     </div>

@@ -72,9 +72,8 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                           <img
                             src={course.cover_image || subscriptionData?.cover_image}
                             alt={course.course_name || course.id.toString()}
-                            className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
+                            className="aspect-[5/3] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                           />
-                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                         </div>
                         <div className="flex justify-between">
                           <div>
@@ -113,9 +112,8 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                             <img
                               src={mealPlan.cover_image}
                               alt={mealPlan.title}
-                              className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
+                              className="aspect-[5/3] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                             />
-                            <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                           </div>
                           <div className="relative">
                             <div>

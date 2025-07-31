@@ -75,9 +75,8 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                             'https://placehold.co/400?text=shefit.vn&font=Oswald'
                           }
                           alt={exercise.name}
-                          className="object-cover rounded-[20px] w-full h-full"
+                          className="object-cover rounded-[20px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                         />
-                        <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                       </div>
                       <p className="font-medium lg:font-bold text-sm lg:text-lg">{exercise.name}</p>
                     </div>
@@ -100,9 +99,8 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                               'https://placehold.co/400?text=shefit.vn&font=Oswald'
                             }
                             alt={exercise.name}
-                            className="object-cover rounded-[20px] w-full h-full"
+                            className="object-cover rounded-[20px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                           />
-                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                         </div>
                         <p className="font-medium lg:font-bold text-sm lg:text-lg">{exercise.name}</p>
                       </div>
@@ -124,11 +122,10 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
                               'https://placehold.co/400?text=shefit.vn&font=Oswald'
                             }
                             alt={exercise.name}
-                            className="object-cover rounded-[20px] w-full h-full"
+                            className="object-cover rounded-[20px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                             width={585}
                             height={373}
                           />
-                          <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
                         </div>
                         <p className="font-medium lg:font-bold text-sm lg:text-lg">{exercise.name}</p>
                       </div>

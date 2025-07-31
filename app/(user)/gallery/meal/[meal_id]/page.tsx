@@ -26,8 +26,7 @@ export default async function Food({ params }: { params: Promise<{ meal_id: stri
               <Link href={`/gallery/meal/${meal_id}/${item.id}`} key={index}>
                 <div key={`menu-${index}`} className="overflow-hidden">
                   <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
-                    <img src={item.image} alt="" className="object-cover rounded-[20px] w-full h-full" />
-                    <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-[20px]" />
+                    <img src={item.image} alt="" className="object-cover rounded-[20px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300" />
                   </div>
                   <p className="font-medium lg:font-bold text-sm lg:text-lg">{item.name}</p>
                 </div>

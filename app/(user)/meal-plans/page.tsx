@@ -231,9 +231,8 @@ export default function MealPlansPage() {
                       <img
                         src={mealPlan.cover_image}
                         alt={mealPlan.title}
-                        className="aspect-[585/373] object-cover rounded-xl mb-4 w-full"
+                        className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                       />
-                      <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                       <NextButton
                         className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1"
                         href={`/meal-plans/${mealPlan.id}`}
@@ -276,9 +275,8 @@ export default function MealPlansPage() {
                       <img
                         src={mealPlan.cover_image}
                         alt={mealPlan.title}
-                        className="aspect-[5/3] object-cover rounded-xl mb-4 w-full lg:h-[373px] md:h-[300px] sm:h-[280px] h-[261px]"
+                        className="aspect-[5/3] object-cover rounded-xl mb-4 w-full lg:h-[373px] md:h-[300px] sm:h-[280px] h-[261px] brightness-100 group-hover:brightness-110 transition-all duration-300"
                       />
-                      <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                       <NextButton
                         className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1"
                         href={`/meal-plans/${mealPlan.id}`}

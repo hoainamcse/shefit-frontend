@@ -286,9 +286,8 @@ export default function ListExercises() {
                       getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/400?text=shefit.vn&font=Oswald'
                     }
                     alt={exercise.name}
-                    className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full"
+                    className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                   />
-                  <div className="bg-[#00000033] group-hover:opacity-0 absolute inset-0 transition-opacity rounded-xl" />
                   {selectedSubscription?.status !== 'expired' && (
                     <button
                       className="absolute inset-0 m-auto w-16 h-16 flex items-center justify-center"
