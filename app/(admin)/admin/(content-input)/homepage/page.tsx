@@ -7,7 +7,7 @@ import type { Coach } from '@/models/coach'
 
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { PanelsTopLeftIcon } from 'lucide-react'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -36,6 +36,13 @@ import { Course } from '@/models/course'
 import { CoursesTable } from '@/components/data-table/courses-table'
 import { WorkoutMethod } from '@/models/workout-method'
 import { WorkoutMethodsTable } from '@/components/data-table/workout-methods-table'
+import { getSubscriptions, queryKeySubscriptions } from '@/network/client/subscriptions'
+import { getCourses, queryKeyCourses } from '@/network/client/courses'
+import { getWorkoutMethods, queryKeyWorkoutMethods } from '@/network/client/workout-methods'
+import { getCoaches, queryKeyCoaches } from '@/network/client/coaches'
+import { getProducts, queryKeyProducts } from '@/network/client/products'
+import { getMealPlans, queryKeyMealPlans } from '@/network/client/meal-plans'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const configurationID = 3
 
@@ -47,7 +54,7 @@ export default function HomepagePage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center">
+      <div className="flex h-screen items-center align-center justify-center">
         <Spinner className="bg-ring dark:bg-white" />
       </div>
     )
@@ -55,7 +62,7 @@ export default function HomepagePage() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center">
+      <div className="flex items-center align-center justify-center">
         <p className="text-destructive">{error.message}</p>
       </div>
     )
@@ -131,19 +138,126 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
   const [openWorkoutMethodsTable, setOpenWorkoutMethodsTable] = useState(false)
   const [openVideoCourseTable, setOpenVideoCourseTable] = useState(false)
   const [openZoomCourseTable, setOpenZoomCourseTable] = useState(false)
-  const [openDialogCategoryId, setOpenDialogCategoryId] = useState<string | null>(null)
+  const [openDialogWorkoutMethodId, setOpenDialogWorkoutMethodId] = useState<string | null>(null)
 
-  const [selectedSubscriptions, setSelectedSubscriptions] = useState<Subscription[]>(
-    data.data.section_3.subscriptions || []
-  )
-  const [selectedMealPlans, setSelectedMealPlans] = useState<MealPlan[]>(data.data.section_7.meal_plans || [])
-  const [selectedProducts, setSelectedProducts] = useState<Product[]>(data.data.section_8.products || [])
-  const [selectedCoaches, setSelectedCoaches] = useState<Coach[]>(data.data.section_9.coaches || [])
-  const [selectedWorkoutMethods, setSelectedWorkoutMethods] = useState<WorkoutMethod[]>(
-    data.data.section_6.features?.map((f: any) => f.workout_method) || []
-  )
-  const [selectedVideoCourse, setSelectedVideoCourse] = useState<Course[]>(data.data.section_5.video.courses || [])
-  const [selectedZoomCourse, setSelectedZoomCourse] = useState<Course[]>(data.data.section_5.zoom.courses || [])
+  const [selectedSubscriptions, setSelectedSubscriptions] = useState<Subscription[]>([] as Subscription[])
+  const [selectedMealPlans, setSelectedMealPlans] = useState<MealPlan[]>([] as MealPlan[])
+  const [selectedProducts, setSelectedProducts] = useState<Product[]>([] as Product[])
+  const [selectedCoaches, setSelectedCoaches] = useState<Coach[]>([] as Coach[])
+  const [selectedWorkoutMethods, setSelectedWorkoutMethods] = useState<WorkoutMethod[]>([] as WorkoutMethod[])
+  const [selectedVideoCourses, setSelectedVideoCourses] = useState<Course[]>([] as Course[])
+  const [selectedZoomCourses, setSelectedZoomCourses] = useState<Course[]>([] as Course[])
+
+  const { data: initialSubscriptions, isLoading: isLoadingSubscriptions } = useQuery({
+    queryKey: [queryKeySubscriptions],
+    queryFn: () => getSubscriptions({ ids: data.data.section_3.subscription_ids.join(',') }),
+    enabled: data.data.section_3.subscription_ids.length > 0,
+  })
+
+  const { data: initialVideoCourses, isLoading: isLoadingVideoCourses } = useQuery({
+    queryKey: [queryKeyCourses],
+    queryFn: () => getCourses({ ids: data.data.section_5.video.course_ids.join(','), course_format: 'video' }),
+    enabled: data.data.section_5.video.course_ids.length > 0,
+  })
+
+  const { data: initialZoomCourses, isLoading: isLoadingZoomCourses } = useQuery({
+    queryKey: [queryKeyCourses],
+    queryFn: () => getCourses({ ids: data.data.section_5.zoom.course_ids.join(','), course_format: 'live' }),
+    enabled: data.data.section_5.zoom.course_ids.length > 0,
+  })
+
+  const workoutMethodIds = data.data.section_6.features.map((f: any) => f.workout_method_id)
+
+  const { data: initialWorkoutMethods, isLoading: isLoadingWorkoutMethods } = useQuery({
+    queryKey: [queryKeyWorkoutMethods],
+    queryFn: () => getWorkoutMethods({ ids: workoutMethodIds.join(',') }),
+    enabled: workoutMethodIds.length > 0,
+  })
+
+  // Prefer user-selected workout methods; fall back to the initial ones coming from the API
+  const workoutMethods = selectedWorkoutMethods.length > 0 ? selectedWorkoutMethods : initialWorkoutMethods?.data ?? []
+
+  // Component to render tab content for a single workout method while keeping hooks outside the parent map
+  const WorkoutMethodTab: React.FC<{ w: WorkoutMethod; featureIdx: number }> = ({ w, featureIdx }) => {
+    const [selectedCourses, setSelectedCourses] = useState<Course[]>([])
+
+    // Watch the course_ids array for this workout method so we can fetch existing courses
+    const courseIds: number[] = (form.watch(`data.section_6.features.${featureIdx}.course_ids`) as number[]) || []
+
+    const { data: initialCourses, isLoading: isLoadingCourses } = useQuery({
+      queryKey: [queryKeyCourses, courseIds],
+      queryFn: () => getCourses({ ids: courseIds.join(',') }),
+      enabled: courseIds.length > 0,
+    })
+
+    return (
+      <div key={w.id}>
+        <TabsContent value={`tab-${w.id}`} className="pt-4">
+          <FormTextareaField
+            form={form}
+            name={`data.section_6.features.${featureIdx}.description`}
+            label="Mô tả"
+            placeholder="Nhập mô tả cho loại hình này"
+          />
+          <div className="space-y-2">
+            <Label>Khoá tập</Label>
+            {isLoadingCourses && selectedCourses.length === 0 ? (
+              <Skeleton className="h-10 w-full bg-muted" />
+            ) : (
+              <Input
+                value={
+                  selectedCourses.length > 0
+                    ? selectedCourses.map((c) => c.course_name).join(', ')
+                    : initialCourses?.data.map((c) => c.course_name).join(', ')
+                }
+                onFocus={() => setOpenDialogWorkoutMethodId(w.id.toString())}
+                placeholder="Chọn khoá tập"
+                readOnly
+              />
+            )}
+          </div>
+        </TabsContent>
+
+        <EditDialog
+          title="Chọn Khoá tập"
+          description="Chọn một hoặc nhiều khoá tập đã có hoặc tạo mới để liên kết với cấu hình này."
+          open={openDialogWorkoutMethodId === w.id.toString()}
+          onOpenChange={(open) => setOpenDialogWorkoutMethodId(open ? w.id.toString() : null)}
+        >
+          <CoursesTable
+            onConfirmRowSelection={(row) => {
+              setSelectedCourses(row)
+              form.setValue(
+                `data.section_6.features.${featureIdx}.course_ids`,
+                row.map((c: any) => c.id),
+                { shouldDirty: true }
+              )
+              form.trigger(`data.section_6.features.${featureIdx}.course_ids`)
+              setOpenDialogWorkoutMethodId(null)
+            }}
+          />
+        </EditDialog>
+      </div>
+    )
+  }
+
+  const { data: initialMealPlans, isLoading: isLoadingMealPlans } = useQuery({
+    queryKey: [queryKeyMealPlans],
+    queryFn: () => getMealPlans({ ids: data.data.section_7.meal_plan_ids.join(',') }),
+    enabled: data.data.section_7.meal_plan_ids.length > 0,
+  })
+
+  const { data: initialProducts, isLoading: isLoadingProducts } = useQuery({
+    queryKey: [queryKeyProducts],
+    queryFn: () => getProducts({ ids: data.data.section_8.product_ids.join(',') }),
+    enabled: data.data.section_8.product_ids.length > 0,
+  })
+
+  const { data: initialCoaches, isLoading: isLoadingCoaches } = useQuery({
+    queryKey: [queryKeyCoaches, data.data.section_9.coach_ids],
+    queryFn: () => getCoaches({ ids: data.data.section_9.coach_ids.join(',') }),
+    enabled: data.data.section_9.coach_ids.length > 0,
+  })
 
   return (
     <>
@@ -280,12 +394,20 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
               <FormTextareaField form={form} name="data.section_3.description" label="Mô tả" placeholder="Nhập mô tả" />
               <div className="space-y-2">
                 <Label>Gói tập</Label>
-                <Input
-                  value={selectedSubscriptions.map((c) => c.name).join(', ')}
-                  onFocus={() => setOpenSubscriptionsTable(true)}
-                  placeholder="Chọn gói tập"
-                  readOnly
-                />
+                {isLoadingSubscriptions && selectedSubscriptions.length === 0 ? (
+                  <Skeleton className="h-10 w-full bg-muted" />
+                ) : (
+                  <Input
+                    value={
+                      selectedSubscriptions.length > 0
+                        ? selectedSubscriptions.map((s) => s.name).join(', ')
+                        : initialSubscriptions?.data.map((s) => s.name).join(', ')
+                    }
+                    onFocus={() => setOpenSubscriptionsTable(true)}
+                    placeholder="Chọn gói tập"
+                    readOnly
+                  />
+                )}
               </div>
             </TabsContent>
             <TabsContent value="tab-4" className="space-y-4">
@@ -329,12 +451,20 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
                     />
                     <div className="space-y-2">
                       <Label>Khoá tập</Label>
-                      <Input
-                        value={selectedVideoCourse.map((c: any) => c.course_name).join(', ')}
-                        onFocus={() => setOpenVideoCourseTable(true)}
-                        placeholder="Chọn khoá tập"
-                        readOnly
-                      />
+                      {isLoadingVideoCourses && selectedVideoCourses.length === 0 ? (
+                        <Skeleton className="h-10 w-full bg-muted" />
+                      ) : (
+                        <Input
+                          value={
+                            selectedVideoCourses.length > 0
+                              ? selectedVideoCourses.map((s) => s.course_name).join(', ')
+                              : initialVideoCourses?.data.map((s) => s.course_name).join(', ')
+                          }
+                          onFocus={() => setOpenVideoCourseTable(true)}
+                          placeholder="Chọn khoá tập"
+                          readOnly
+                        />
+                      )}
                     </div>
                   </TabsContent>
                 </div>
@@ -349,12 +479,20 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
                     />
                     <div className="space-y-2">
                       <Label>Khoá tập</Label>
-                      <Input
-                        value={selectedZoomCourse.map((c: any) => c.course_name).join(', ')}
-                        onFocus={() => setOpenZoomCourseTable(true)}
-                        placeholder="Chọn khoá tập"
-                        readOnly
-                      />
+                      {isLoadingZoomCourses && selectedZoomCourses.length === 0 ? (
+                        <Skeleton className="h-10 w-full bg-muted" />
+                      ) : (
+                        <Input
+                          value={
+                            selectedZoomCourses.length > 0
+                              ? selectedZoomCourses.map((s) => s.course_name).join(', ')
+                              : initialZoomCourses?.data.map((s) => s.course_name).join(', ')
+                          }
+                          onFocus={() => setOpenZoomCourseTable(true)}
+                          placeholder="Chọn khoá tập"
+                          readOnly
+                        />
+                      )}
                     </div>
                   </TabsContent>
                 </div>
@@ -364,69 +502,41 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
               <FormInputField form={form} name="data.section_6.title" label="Tiêu đề" placeholder="Nhập tiêu đề" />
               <div className="space-y-2">
                 <Label>Loại hình tập luyện</Label>
-                <Input
-                  value={selectedWorkoutMethods.map((c: any) => c?.name).join(', ')}
-                  onFocus={() => setOpenWorkoutMethodsTable(true)}
-                  placeholder="Chọn loại hình"
-                  readOnly
-                />
+                {isLoadingWorkoutMethods && selectedWorkoutMethods.length === 0 ? (
+                  <Skeleton className="h-10 w-full bg-muted" />
+                ) : (
+                  <Input
+                    value={
+                      selectedWorkoutMethods.length > 0
+                        ? selectedWorkoutMethods.map((s) => s.name).join(', ')
+                        : initialWorkoutMethods?.data.map((s) => s.name).join(', ')
+                    }
+                    onFocus={() => setOpenWorkoutMethodsTable(true)}
+                    placeholder="Chọn loại hình"
+                    readOnly
+                  />
+                )}
               </div>
-              {selectedWorkoutMethods.length > 0 && (
-                <Tabs defaultValue={selectedWorkoutMethods[0]?.id.toString()} className="mt-4">
-                  <TabsList className="overflow-x-auto">
-                    {selectedWorkoutMethods.map((cat) => (
-                      <TabsTrigger key={cat?.id} value={cat?.id.toString()} className="min-w-[100px]">
-                        {cat?.name}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                  {selectedWorkoutMethods.map((cat: any) => {
-                    const features = form.watch('data.section_6.features') || []
-                    const featureIdx = features.findIndex((f: any) => f.workout_method?.id === cat?.id)
-                    const courses = features[featureIdx]?.courses || []
-                    return (
-                      <div key={cat?.id}>
-                        <TabsContent value={cat?.id.toString()} key={cat?.id} className="pt-4">
-                          <FormTextareaField
-                            form={form}
-                            name={`data.section_6.features.${featureIdx}.description`}
-                            label="Mô tả"
-                            placeholder="Nhập mô tả cho loại hình này"
-                          />
-                          <div className="space-y-2">
-                            <Label>Khoá tập</Label>
-                            <Input
-                              value={courses.map((c: any) => c.course_name).join(', ')}
-                              onFocus={() => setOpenDialogCategoryId(cat?.id.toString())}
-                              placeholder="Chọn khoá tập"
-                              readOnly
-                            />
-                          </div>
-                        </TabsContent>
-                        <EditDialog
-                          title="Chọn Khoá tập"
-                          description="Chọn một hoặc nhiều khoá tập đã có hoặc tạo mới để liên kết với cấu hình này."
-                          open={openDialogCategoryId === cat?.id.toString()}
-                          onOpenChange={(open) => setOpenDialogCategoryId(open ? cat?.id.toString() : null)}
-                        >
-                          <CoursesTable
-                            onConfirmRowSelection={(row) => {
-                              const updatedFeatures = [...features]
-                              updatedFeatures[featureIdx] = {
-                                ...updatedFeatures[featureIdx],
-                                courses: row,
-                              }
+              {isLoadingWorkoutMethods && selectedWorkoutMethods.length === 0 ? (
+                <Skeleton className="h-32 w-full bg-muted" />
+              ) : (
+                workoutMethods.length > 0 && (
+                  <Tabs defaultValue={`tab-${workoutMethods[0]?.id ?? ''}`} className="mt-4">
+                    <TabsList className="overflow-x-auto">
+                      {workoutMethods.map((w) => (
+                        <TabsTrigger key={w.id} value={`tab-${w.id}`} className="min-w-[100px]">
+                          {w.name}
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
 
-                              form.setValue('data.section_6.features', updatedFeatures, { shouldDirty: true })
-                              form.trigger('data.section_6.features')
-                              setOpenDialogCategoryId(null)
-                            }}
-                          />
-                        </EditDialog>
-                      </div>
-                    )
-                  })}
-                </Tabs>
+                    {workoutMethods.map((w) => {
+                      const features = form.watch('data.section_6.features') || []
+                      const featureIdx = features.findIndex((f: any) => f.workout_method_id === w.id)
+                      return <WorkoutMethodTab key={w.id} w={w} featureIdx={featureIdx} />
+                    })}
+                  </Tabs>
+                )
               )}
             </TabsContent>
             <TabsContent value="tab-7" className="space-y-4">
@@ -436,12 +546,20 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
               </div>
               <div className="space-y-2">
                 <Label>Thực đơn</Label>
-                <Input
-                  value={selectedMealPlans.map((ml) => ml.title).join(', ')}
-                  onFocus={() => setOpenMealPlansTable(true)}
-                  placeholder="Chọn thực đơn"
-                  readOnly
-                />
+                {isLoadingMealPlans && selectedMealPlans.length === 0 ? (
+                  <Skeleton className="h-10 w-full bg-muted" />
+                ) : (
+                  <Input
+                    value={
+                      selectedMealPlans.length > 0
+                        ? selectedMealPlans.map((ml) => ml.title).join(', ')
+                        : initialMealPlans?.data.map((ml) => ml.title).join(', ')
+                    }
+                    onFocus={() => setOpenMealPlansTable(true)}
+                    placeholder="Chọn thực đơn"
+                    readOnly
+                  />
+                )}
               </div>
             </TabsContent>
             <TabsContent value="tab-8" className="space-y-4">
@@ -449,23 +567,39 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
               <FormTextareaField form={form} name="data.section_8.description" label="Mô tả" placeholder="Nhập mô tả" />
               <div className="space-y-2">
                 <Label>Sản phẩm</Label>
-                <Input
-                  value={selectedProducts.map((p) => p.name).join(', ')}
-                  onFocus={() => setOpenProductsTable(true)}
-                  placeholder="Chọn sản phẩm"
-                  readOnly
-                />
+                {isLoadingProducts && selectedProducts.length === 0 ? (
+                  <Skeleton className="h-10 w-full bg-muted" />
+                ) : (
+                  <Input
+                    value={
+                      selectedProducts.length > 0
+                        ? selectedProducts.map((p) => p.name).join(', ')
+                        : initialProducts?.data.map((p) => p.name).join(', ')
+                    }
+                    onFocus={() => setOpenProductsTable(true)}
+                    placeholder="Chọn sản phẩm"
+                    readOnly
+                  />
+                )}
               </div>
             </TabsContent>
             <TabsContent value="tab-9" className="space-y-4">
               <div className="space-y-2">
                 <Label>Huấn luyện viên</Label>
-                <Input
-                  value={selectedCoaches.map((c) => c.name).join(', ')}
-                  onFocus={() => setOpenCoachesTable(true)}
-                  placeholder="Chọn huấn luyện viên"
-                  readOnly
-                />
+                {isLoadingCoaches && selectedCoaches.length === 0 ? (
+                  <Skeleton className="h-10 w-full bg-muted" />
+                ) : (
+                  <Input
+                    value={
+                      selectedCoaches.length > 0
+                        ? selectedCoaches.map((c) => c.name).join(', ')
+                        : initialCoaches?.data?.map((c) => c.name).join(', ')
+                    }
+                    onFocus={() => setOpenCoachesTable(true)}
+                    placeholder="Chọn huấn luyện viên"
+                    readOnly
+                  />
+                )}
               </div>
             </TabsContent>
             <TabsContent value="tab-10" className="space-y-4">
@@ -534,8 +668,12 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
         <SubscriptionsTable
           onConfirmRowSelection={(row) => {
             setSelectedSubscriptions(row)
-            form.setValue('data.section_3.subscriptions', row, { shouldDirty: true })
-            form.trigger('data.section_3.subscriptions')
+            form.setValue(
+              'data.section_3.subscription_ids',
+              row.map((s) => Number(s.id)),
+              { shouldDirty: true }
+            )
+            form.trigger('data.section_3.subscription_ids')
             setOpenSubscriptionsTable(false)
           }}
         />
@@ -549,8 +687,12 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
         <MealPlansTable
           onConfirmRowSelection={(row) => {
             setSelectedMealPlans(row)
-            form.setValue('data.section_7.meal_plans', row, { shouldDirty: true })
-            form.trigger('data.section_7.meal_plans')
+            form.setValue(
+              'data.section_7.meal_plan_ids',
+              row.map((s) => Number(s.id)),
+              { shouldDirty: true }
+            )
+            form.trigger('data.section_7.meal_plan_ids')
             setOpenMealPlansTable(false)
           }}
         />
@@ -564,8 +706,12 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
         <ProductsTable
           onConfirmRowSelection={(row) => {
             setSelectedProducts(row)
-            form.setValue('data.section_8.products', row, { shouldDirty: true })
-            form.trigger('data.section_8.products')
+            form.setValue(
+              'data.section_8.product_ids',
+              row.map((s) => Number(s.id)),
+              { shouldDirty: true }
+            )
+            form.trigger('data.section_8.product_ids')
             setOpenProductsTable(false)
           }}
         />
@@ -579,8 +725,12 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
         <CoachesTable
           onConfirmRowSelection={(row) => {
             setSelectedCoaches(row)
-            form.setValue('data.section_9.coaches', row, { shouldDirty: true })
-            form.trigger('data.section_9.coaches')
+            form.setValue(
+              'data.section_9.coach_ids',
+              row.map((c) => c.id),
+              { shouldDirty: true }
+            )
+            form.trigger('data.section_9.coach_ids')
             setOpenCoachesTable(false)
           }}
         />
@@ -597,10 +747,8 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
             // Sync features in form state
             const currentFeatures = form.getValues('data.section_6.features') || []
             const newFeatures = row.map((cat: any) => {
-              const existing = currentFeatures.find(
-                (f: any) => f.workout_method.id === cat.id && f.workout_method.name === cat.name
-              )
-              return existing || { workout_method: cat, description: '', courses: [] }
+              const existing = currentFeatures.find((f: any) => f.workout_method_id === cat.id)
+              return existing || { workout_method_id: cat.id, description: '', course_ids: [] }
             })
             form.setValue('data.section_6.features', newFeatures, { shouldDirty: true })
             form.trigger('data.section_6.features')
@@ -617,9 +765,13 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
         <CoursesTable
           courseFormat="video"
           onConfirmRowSelection={(row) => {
-            setSelectedVideoCourse(row)
-            form.setValue('data.section_5.video.courses', row, { shouldDirty: true })
-            form.trigger('data.section_5.video.courses')
+            setSelectedVideoCourses(row)
+            form.setValue(
+              'data.section_5.video.course_ids',
+              row.map((s) => Number(s.id)),
+              { shouldDirty: true }
+            )
+            form.trigger('data.section_5.video.course_ids')
             setOpenVideoCourseTable(false)
           }}
         />
@@ -633,9 +785,13 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
         <CoursesTable
           courseFormat="live"
           onConfirmRowSelection={(row) => {
-            setSelectedZoomCourse(row)
-            form.setValue('data.section_5.zoom.courses', row, { shouldDirty: true })
-            form.trigger('data.section_5.zoom.courses')
+            setSelectedZoomCourses(row)
+            form.setValue(
+              'data.section_5.zoom.course_ids',
+              row.map((s) => Number(s.id)),
+              { shouldDirty: true }
+            )
+            form.trigger('data.section_5.zoom.course_ids')
             setOpenZoomCourseTable(false)
           }}
         />

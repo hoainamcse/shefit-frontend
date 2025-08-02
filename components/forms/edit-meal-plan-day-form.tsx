@@ -18,7 +18,7 @@ import { ImageUploader } from '../image-uploader'
 // ! Follow MealPlanDayPayload model in models/meal-plan.ts
 export const formSchema = z.object({
   day_number: z.number().min(1),
-  image: z.string().url(),
+  image: z.string().url().or(z.literal('')),
 })
 
 export type FormValue = z.infer<typeof formSchema>

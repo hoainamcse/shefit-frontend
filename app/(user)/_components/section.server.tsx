@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { z } from 'zod'
-import { Fragment } from 'react'
+import { Fragment, Suspense } from 'react'
 import { ArrowRight } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
@@ -16,6 +16,12 @@ import { DumbbellIcon } from '@/components/icons/DumbbellIcon'
 import { formSchema } from '@/app/(admin)/admin/(content-input)/homepage/schema'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import { FacebookIcon } from '@/components/icons/FacebookIcon'
+import { getSubscriptions } from '@/network/server/subscriptions'
+import { Subscription } from '@/models/subscription'
+import { Course } from '@/models/course'
+import { MealPlan } from '@/models/meal-plan'
+import { getCoaches } from '@/network/server/coaches'
+import { getProducts } from '@/network/server/products'
 
 type DataType = z.infer<typeof formSchema>
 
@@ -123,25 +129,19 @@ export function SectionTwo({ data }: { data: DataType['section_2'] }) {
   )
 }
 
-export async function SectionThree({ data }: { data: DataType['section_3'] }) {
+async function SectionThreeData({ data }: { data: DataType['section_3'] }) {
   let subscriptionsWithData: Array<{
-    subscription: any
-    courses: any[]
-    mealPlans: any[]
+    subscription: Subscription
+    courses: Course[]
+    mealPlans: MealPlan[]
   }> = []
 
   try {
+    const subscriptionsResponse = await getSubscriptions({ ids: data.subscription_ids.join(',') })
     subscriptionsWithData = await Promise.all(
-      data.subscriptions.map(async (subscription) => {
-        const [coursesResponse, mealPlansResponse] = await Promise.all([
-          subscription.courses?.length > 0
-            ? getCourses({ ids: subscription.courses.map((c: any) => c.id) })
-            : Promise.resolve({ data: [] }),
-          subscription.meal_plans?.length > 0
-            ? getMealPlans({ ids: subscription.meal_plans.map((mp: any) => mp.id) })
-            : Promise.resolve({ data: [] }),
-        ])
-
+      subscriptionsResponse.data.map(async (subscription: Subscription) => {
+        const coursesResponse = await getCourses({ ids: subscription.courses.map((c: any) => c.id) })
+        const mealPlansResponse = await getMealPlans({ ids: subscription.meal_plans.map((mp: any) => mp.id) })
         return {
           subscription,
           courses: coursesResponse?.data || [],
@@ -168,9 +168,9 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
           <div
             className={cn(
               'grid grid-cols-1 gap-8 lg:gap-20 items-stretch justify-items-center',
-              data.subscriptions.length === 1
+              subscriptionsWithData.length === 1
                 ? 'lg:grid-cols-1 max-w-md mx-auto'
-                : data.subscriptions.length === 2
+                : subscriptionsWithData.length === 2
                 ? 'lg:grid-cols-2 max-w-xl mx-auto'
                 : 'lg:grid-cols-3'
             )}
@@ -246,6 +246,37 @@ export async function SectionThree({ data }: { data: DataType['section_3'] }) {
   )
 }
 
+export function SectionThree({ data }: { data: DataType['section_3'] }) {
+  return (
+    <Suspense fallback={<SectionThreeSkeleton />}>
+      <SectionThreeData data={data} />
+    </Suspense>
+  )
+}
+
+function SectionThreeSkeleton() {
+  return (
+    <div className="pt-8 lg:pt-24 animate-pulse">
+      <div className="container mx-auto space-y-8 lg:space-y-10">
+        <div className="max-w-[800px] mx-auto flex flex-col items-center text-center gap-4 px-6 lg:px-12 mb-8 lg:mb-[74px]">
+          <div className="h-8 w-3/4 bg-gray-300 rounded" />
+          <div className="h-4 w-1/2 bg-gray-200 rounded" />
+        </div>
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-20 items-stretch justify-items-center">
+            {Array.from({ length: 3 }).map((_, idx) => (
+              <div key={idx} className="flex flex-col h-full w-full space-y-4 px-4">
+                <div className="h-10 bg-gray-300 rounded" />
+                <div className="h-96 bg-gray-200 rounded" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function SectionFour({ data }: { data: DataType['section_4'] }) {
   return (
     <div className="pt-[120px] lg:pt-24 pb-[88px] lg:pb-[72px] px-4 sm:px-6">
@@ -273,6 +304,7 @@ export function SectionFour({ data }: { data: DataType['section_4'] }) {
 }
 
 export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
+  const mealPlans = await getMealPlans({ ids: data.meal_plan_ids.join(',') })
   return (
     <div className="py-8 lg:py-12 px-8 sm:px-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
@@ -285,7 +317,7 @@ export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
         <div className="max-w-6xl mx-auto flex flex-col items-center justify-center gap-4">
           <Carousel>
             <CarouselContent>
-              {data.meal_plans.map((item) => (
+              {mealPlans.data.map((item) => (
                 <CarouselItem key={item.id} className="basis-2/3 lg:basis-1/3">
                   <div className="flex flex-col items-center gap-4">
                     <div className="relative w-full overflow-hidden">
@@ -332,6 +364,8 @@ export async function SectionEight({ data }: { data: DataType['section_8'] }) {
     currency: 'VND',
   })
 
+  const productsData = await getProducts({ ids: data.product_ids.join(',') })
+
   return (
     <div className="py-8 lg:py-12 px-8 sm:px-12">
       <div className="container mx-auto space-y-8 lg:space-y-10">
@@ -344,7 +378,7 @@ export async function SectionEight({ data }: { data: DataType['section_8'] }) {
         <div className="space-y-4">
           <Carousel>
             <CarouselContent>
-              {data.products.map((item, index) => (
+              {productsData.data.map((item, index) => (
                 <CarouselItem key={item.id} className="basis-1/2 lg:basis-1/6">
                   <Link href={`/products/${item.id}`}>
                     <div className="grid grid-rows-[auto_1fr_auto] gap-1 lg:gap-2 h-full">
@@ -378,6 +412,7 @@ export async function SectionEight({ data }: { data: DataType['section_8'] }) {
 }
 
 export async function SectionNine({ data }: { data: DataType['section_9'] }) {
+  const coachesData = await getCoaches({ ids: data.coach_ids.join(',') })
   return (
     <div className="py-8 lg:py-12 px-4 sm:px-6">
       <div className="mx-auto space-y-8 lg:space-y-10">
@@ -389,7 +424,7 @@ export async function SectionNine({ data }: { data: DataType['section_9'] }) {
         </div>
         <div className="relative hidden lg:block">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {data.coaches.map((coach, index) => (
+            {coachesData.data.map((coach, index) => (
               <div key={index} className={`relative ${index % 2 !== 0 ? 'lg:translate-y-12' : ''}`}>
                 <div className="relative w-full aspect-[409/588]">
                   <div className="absolute inset-0">
@@ -414,7 +449,7 @@ export async function SectionNine({ data }: { data: DataType['section_9'] }) {
         <div className="block lg:hidden px-4">
           <Carousel>
             <CarouselContent>
-              {data.coaches.map((coach, index) => (
+              {coachesData.data.map((coach, index) => (
                 <CarouselItem key={index} className="basis-1/2 lg:basis-1/6">
                   <div className="relative w-full aspect-[409/588]">
                     <div className="absolute inset-0">

@@ -15,6 +15,9 @@ import Link from 'next/link'
 import { z } from 'zod'
 import { formSchema } from '@/app/(admin)/admin/(content-input)/homepage/schema'
 import { HtmlContent } from '@/components/html-content'
+import { getCourses } from '../../../network/client/courses'
+import { useQuery } from '@tanstack/react-query'
+import { getWorkoutMethods } from '@/network/client/workout-methods'
 
 type DataType = z.infer<typeof formSchema>
 
@@ -22,14 +25,40 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
   const getMiddleIndex = (length: number) => Math.floor(length / 2)
 
   const [selectedVideoIndex, setSelectedVideoIndex] = useState(() =>
-    data?.video?.courses?.length ? getMiddleIndex(data.video.courses.length) : 0
+    data?.video?.course_ids?.length ? getMiddleIndex(data.video.course_ids.length) : 0
   )
   const [selectedZoomIndex, setSelectedZoomIndex] = useState(() =>
-    data?.zoom?.courses?.length ? getMiddleIndex(data.zoom.courses.length) : 0
+    data?.zoom?.course_ids?.length ? getMiddleIndex(data.zoom.course_ids.length) : 0
   )
   const [videoEmblaApi, setVideoEmblaApi] = useState<any>(null)
   const [zoomEmblaApi, setZoomEmblaApi] = useState<any>(null)
 
+  const videoCourseIds = data.video?.course_ids || []
+  const zoomCourseIds = data.zoom?.course_ids || []
+
+  const {
+    data: videoCoursesData,
+    isLoading: isVideoLoading,
+    error: videoError,
+    refetch: refetchVideoCourses,
+  } = useQuery({
+    queryKey: ['videoCourses', videoCourseIds],
+    queryFn: () => getCourses({ ids: videoCourseIds.join(','), include_relationships: 'true' }),
+    enabled: videoCourseIds.length > 0,
+  })
+
+  const {
+    data: zoomCoursesData,
+    isLoading: isZoomLoading,
+    error: zoomError,
+    refetch: refetchZoomCourses,
+  } = useQuery({
+    queryKey: ['zoomCourses', zoomCourseIds],
+    queryFn: () => getCourses({ ids: zoomCourseIds.join(','), include_relationships: 'true' }),
+    enabled: zoomCourseIds.length > 0,
+  })
+
+  // Sync carousel selection indices
   useEffect(() => {
     if (!videoEmblaApi) return
 
@@ -51,6 +80,34 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
     zoomEmblaApi.on('select', onZoomSelect)
     return () => zoomEmblaApi.off('select', onZoomSelect)
   }, [zoomEmblaApi])
+
+  // Guard UI states
+  if (isVideoLoading || isZoomLoading) {
+    return (
+      <div className="py-8 lg:py-12 animate-pulse">
+        <div className="bg-[#FFF3F3] mx-auto space-y-8 lg:space-y-10">
+          <div className="max-w-[500px] px-4 lg:px-6 py-6 mx-auto flex flex-col items-center justify-center text-center gap-4">
+            <div className="h-20 bg-gray-200 w-4/5 rounded"></div>
+          </div>
+          <div className="mx-auto px-8 lg:px-12 !mt-6">
+            <div className="flex justify-center mb-8 space-x-4">
+              <div className="h-12 w-28 bg-gray-200 rounded-xl"></div>
+              <div className="h-12 w-28 bg-gray-200 rounded-xl"></div>
+            </div>
+            <div className="flex space-x-4 overflow-x-auto py-4">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <div key={index} className="bg-gray-200 rounded-lg w-[250px] h-[400px] flex-shrink-0"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (videoError || zoomError) {
+    return <div className="text-center py-8">Error loading courses</div>
+  }
 
   if (!data) {
     return <div className="text-center py-8">Chưa có dữ liệu hiển thị</div>
@@ -84,12 +141,12 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                 <div className="mx-auto text-center mb-6 lg:w-[70%] xl:w-[50%]">
                   <p className="text-[#FB4A64] text-sm lg:text-lg">{data.video?.description}</p>
                 </div>
-                {data.video?.courses?.length ? (
+                {videoCoursesData?.data?.length ? (
                   <div className="relative w-full mx-auto py-4">
                     <div className="hidden lg:block">
                       <CustomCarousel setApi={setVideoEmblaApi} className="w-full">
                         <CustomCarouselContent className="items-center">
-                          {data.video?.courses?.map((course, index) => {
+                          {videoCoursesData?.data?.map((course, index) => {
                             const isSelected = selectedVideoIndex === index
                             return (
                               <CustomCarouselItem key={course.id} index={index} className="px-2">
@@ -104,14 +161,6 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                     <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                                       <div className="absolute inset-0 flex flex-col">
                                         <div className="relative w-full h-full">
-                                          <div className="absolute top-12 left-2 px-2 w-[calc(100%-16px)] h-full">
-                                            {/* <p
-                                              className="text-white [text-shadow:_0_1px_4px_rgba(0,0,0,0.5)]
-                                           text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold"
-                                            >
-                                              {course.course_name}
-                                            </p> */}
-                                          </div>
                                           <img
                                             src={course.image_homepage}
                                             alt={course.course_name}
@@ -133,21 +182,12 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                     <div className="block lg:hidden">
                       <Carousel className="w-full">
                         <CarouselContent>
-                          {data.video.courses.map((course: any, index: number) => (
+                          {videoCoursesData?.data?.map((course: any, index: number) => (
                             <CarouselItem key={course.id || index} className="basis-3/4 md:basis-1/3  lg:basis-full">
                               <div className="relative overflow-hidden rounded-lg">
                                 <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                                   <div className="relative">
                                     <div className="relative aspect-[273/381]">
-                                      <div className="absolute top-12 left-2 px-2 w-[calc(100%-16px)] h-full">
-                                        {/* <p
-                                          className="text-white [text-shadow:_0_1px_4px_rgba(0,0,0,0.5)]
-                                           text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold"
-                                        >
-                                          {course.course_name}
-                                        </p> */}
-                                      </div>
-
                                       <img
                                         src={course.image_homepage}
                                         alt={course.course_name}
@@ -174,12 +214,12 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                 <div className="mx-auto text-center mb-6 lg:w-[70%] xl:w-[50%]">
                   <p className="text-[#FB4A64] text-sm lg:text-lg">{data.zoom?.description}</p>
                 </div>
-                {data.zoom?.courses?.length ? (
+                {zoomCoursesData?.data?.length ? (
                   <div className="relative w-full mx-auto py-4">
                     <div className="hidden lg:block">
                       <CustomCarousel setApi={setZoomEmblaApi} className="w-full">
                         <CustomCarouselContent className="items-center">
-                          {data.zoom?.courses?.map((course, index) => {
+                          {zoomCoursesData?.data?.map((course, index) => {
                             const isSelected = selectedZoomIndex === index
                             return (
                               <CustomCarouselItem key={course.id} index={index} className="px-2">
@@ -194,14 +234,6 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                     <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                                       <div className="absolute inset-0 flex flex-col">
                                         <div className="relative w-full h-full">
-                                          <div className="absolute top-12 left-2 px-2 w-[calc(100%-16px)] h-full">
-                                            {/* <p
-                                              className="text-white [text-shadow:_0_1px_4px_rgba(0,0,0,0.5)]
-                                           text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold"
-                                            >
-                                              {course.course_name}
-                                            </p> */}
-                                          </div>
                                           <img
                                             src={course.image_homepage}
                                             alt={course.course_name}
@@ -223,20 +255,12 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                     <div className="block lg:hidden">
                       <Carousel className="w-full">
                         <CarouselContent>
-                          {data.zoom?.courses?.map((course: any, index: number) => (
+                          {zoomCoursesData?.data?.map((course: any, index: number) => (
                             <CarouselItem key={course.id || index} className="basis-3/4 md:basis-1/3  lg:basis-full">
                               <div className="relative overflow-hidden rounded-lg">
                                 <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                                   <div className="relative">
                                     <div className="relative aspect-[273/381]">
-                                      <div className="absolute top-12 left-2 px-2 w-[calc(100%-16px)] h-full">
-                                        {/* <p
-                                          className="text-white [text-shadow:_0_1px_4px_rgba(0,0,0,0.5)]
-                                           text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold"
-                                        >
-                                          {course.course_name}
-                                        </p> */}
-                                      </div>
                                       <img
                                         src={course.image_homepage}
                                         alt={course.course_name}
@@ -273,6 +297,58 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
     return <div className="text-center py-8">Chưa có dữ liệu hiển thị</div>
   }
 
+  const {
+    data: workoutMethodsData,
+    isLoading: isWorkoutMethodsLoading,
+    error: workoutMethodsError,
+    refetch: refetchWorkoutMethods,
+  } = useQuery({
+    queryKey: ['workout-methods', data],
+    queryFn: () => getWorkoutMethods({ ids: data.features.map((feature: any) => feature.workout_method_id).join(',') }),
+    enabled: data.features.map((feature: any) => feature.workout_method_id).length > 0,
+  })
+
+  // Fetch all courses for the workout methods in one batched request
+  const allCourseIds = data.features.flatMap((f: any) => f.course_ids || [])
+  const {
+    data: coursesData,
+    isLoading: isCoursesLoading,
+    error: coursesError,
+  } = useQuery({
+    queryKey: ['section-six-courses', allCourseIds],
+    queryFn: () => getCourses({ ids: allCourseIds.join(','), include_relationships: 'true' }),
+    enabled: allCourseIds.length > 0,
+  })
+
+  // Guard UI states
+  if (isWorkoutMethodsLoading || isCoursesLoading) {
+    return (
+      <div className="py-20 lg:pt-20 lg:pb-40 animate-pulse">
+        <div className="bg-[#DADADA] mx-auto">
+          <div className="py-16 md:py-12 space-y-8 lg:space-y-10">
+            <div className="max-w-[500px] px-4 lg:px-6 mx-auto flex flex-col items-center justify-center text-center gap-4">
+              <div className="h-10 bg-gray-300 w-4/5 rounded"></div>
+            </div>
+            <div className="mx-auto px-8 lg:px-12 mt-6 flex flex-wrap justify-center gap-4">
+              {Array.from({ length: 4 }).map((_, idx) => (
+                <div key={idx} className="h-10 w-32 bg-gray-300 rounded-xl"></div>
+              ))}
+            </div>
+            <div className="flex space-x-4 overflow-x-auto px-8 lg:px-12 py-4">
+              {Array.from({ length: 5 }).map((_, idx) => (
+                <div key={idx} className="bg-gray-300 rounded-lg w-[250px] h-[400px] flex-shrink-0" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (workoutMethodsError || coursesError) {
+    return <div className="text-center py-8">Error loading dữ liệu</div>
+  }
+
   const parsedFeatures = data.features.map((feature: any, index: number) => {
     if (typeof feature === 'string') {
       return {
@@ -283,12 +359,12 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
     }
 
     if (feature && typeof feature === 'object') {
-      const workoutMethod = feature.workout_method || {}
+      const workoutMethod = workoutMethodsData?.data.find((method: any) => method.id === feature.workout_method_id)
       return {
-        id: (workoutMethod.id || index).toString(),
-        name: workoutMethod.name || `Workout ${index + 1}`,
+        id: (workoutMethod?.id || index).toString(),
+        name: workoutMethod?.name || `Workout ${index + 1}`,
         description: feature.description || '',
-        courses: Array.isArray(feature.courses) ? feature.courses : [],
+        courses: coursesData?.data?.filter((c: any) => (feature.course_ids || []).includes(c.id)) || [],
       }
     }
 
@@ -348,15 +424,6 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                         <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                           <div className="absolute inset-0 flex flex-col">
                             <div className="relative w-full h-full">
-                              <div className="absolute top-12 left-2 px-2 w-[calc(100%-16px)] h-full">
-                                {/* <p
-                                  className="text-white [text-shadow:_0_1px_4px_rgba(0,0,0,0.5)]
-                                           text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold"
-                                >
-                                  {course.course_name}
-                                </p> */}
-                              </div>
-
                               <img
                                 src={course.image_homepage}
                                 alt={course.course_name}
@@ -385,14 +452,6 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                     <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                       <div className="relative">
                         <div className="relative aspect-[273/381]">
-                          <div className="absolute top-12 left-2 px-2 w-[calc(100%-16px)] h-full">
-                            {/* <p
-                              className="text-white [text-shadow:_0_1px_4px_rgba(0,0,0,0.5)]
-                                           text-4xl uppercase font-[family-name:var(--font-montserrat)] font-extrabold"
-                            >
-                              {course.course_name}
-                            </p> */}
-                          </div>
                           <img
                             src={course.image_homepage}
                             alt={course.course_name}

@@ -32,7 +32,7 @@ export const formSchema = z.object({
   section_3: z.object({
     title: z.string(),
     description: z.string(),
-    subscriptions: z.array(z.any()),
+    subscription_ids: z.array(z.number()),
   }),
   section_4: z.object({
     title: z.string(),
@@ -46,35 +46,35 @@ export const formSchema = z.object({
     title: z.string(),
     video: z.object({
       description: z.string(),
-      courses: z.array(z.any()),
+      course_ids: z.array(z.number()),
     }),
     zoom: z.object({
       description: z.string(),
-      courses: z.array(z.any()),
+      course_ids: z.array(z.number()),
     }),
   }),
   section_6: z.object({
     title: z.string(),
     features: z.array(
       z.object({
-        workout_method: z.any(),
+        workout_method_id: z.number(),
         description: z.string(),
-        courses: z.array(z.any()),
+        course_ids: z.array(z.number()),
       })
     ),
   }),
   section_7: z.object({
     title: z.string(),
     subtitle: z.string(),
-    meal_plans: z.array(z.any()),
+    meal_plan_ids: z.array(z.number()),
   }),
   section_8: z.object({
     title: z.string(),
     description: z.string(),
-    products: z.array(z.any()),
+    product_ids: z.array(z.number()),
   }),
   section_9: z.object({
-    coaches: z.array(z.any()),
+    coach_ids: z.array(z.number()),
   }),
   section_10: z.object({
     top: z.object({
