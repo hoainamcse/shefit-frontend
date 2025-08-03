@@ -33,7 +33,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
         />
         <Link
           href="/account?tab=buy-package"
-          className="absolute top-5 left-5 lg:left-20 flex items-center gap-[10px] cursor-pointer"
+          className="lg:hidden absolute top-5 left-5 lg:left-20 flex items-center gap-[10px] cursor-pointer"
         >
           <BackIcon color="#000000" style={{ marginBottom: '4px' }} />
           <div className="text-lg text-[#000000] font-semibold">Quay về</div>
