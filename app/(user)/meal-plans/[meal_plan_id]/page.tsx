@@ -53,16 +53,16 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
                 <p className="text-white text-center text-lg lg:text-4xl lg:font-bold font-medium lg:mb-5 mb-2 font-[family-name:var(--font-roboto)]">
                   Tóm tắt thực đơn
                 </p>
-                <ul
+                <div
                   className="xl:px-20 max-lg:w-full mx-auto text-white flex flex-col items-start list-disc pl-5 max-h-[5em] lg:max-h-[7em]"
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', overflowY: 'auto' }}
                 >
                   {mealPlan.subtitle.split('\n').map((line, index) => (
-                    <li key={index} className="text-[#F7F7F7] text-sm lg:text-lg mb-1">
+                    <div key={index} className="text-[#F7F7F7] text-sm lg:text-lg mb-1">
                       {line}
-                    </li>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             </div>
             <div className="mr-auto text-lg my-20 max-lg:my-0 max-lg:p-4">

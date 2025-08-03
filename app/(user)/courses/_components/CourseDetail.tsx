@@ -197,13 +197,13 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
             <p className="text-white text-center text-lg lg:text-4xl lg:font-bold font-medium lg:mb-10 mb-1 font-[family-name:var(--font-roboto)]">
               Tóm tắt khoá học
             </p>
-            <ul className="xl:px-20 max-lg:w-full mx-auto text-white h-full flex flex-col items-start list-disc pl-5">
+            <div className="xl:px-20 max-lg:w-full mx-auto text-white h-full flex flex-col items-start list-disc pl-5">
               {course?.data?.summary.split('\n').map((line: string, index: number) => (
-                <li key={index} className="text-[#F7F7F7] text-sm lg:text-xl mb-1">
+                <div key={index} className="text-[#F7F7F7] text-sm lg:text-xl mb-1">
                   {line}
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         )}
 
