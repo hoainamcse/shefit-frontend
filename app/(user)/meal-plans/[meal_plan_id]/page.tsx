@@ -5,6 +5,7 @@ import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { getMealPlan } from '@/network/server/meal-plans'
 import ActionButtons from './ActionButtons'
 import { HtmlContent } from '@/components/html-content'
+import { BackIcon } from '@/components/icons/BackIcon'
 
 export default async function MealPlanPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   try {
@@ -17,11 +18,11 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
 
     return (
       <div>
-        <div className="relative">
-          <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto z-10 absolute top-4 left-2 lg:left-20  md:hidden">
+        <div className="relative block md:hidden">
+          <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto z-10 absolute top-3">
             <Link href="/meal-plans" className="flex items-center">
-              <Button className="flex items-center gap-2 text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black shadow-none">
-                <BackIconBlack /> Quay về
+              <Button className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.9),0_0_8px_rgba(0,0,0,0.7)] shadow-none font-medium">
+                <BackIcon /> Quay về
               </Button>
             </Link>
           </div>
@@ -38,7 +39,7 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
               alt="Menu detail image"
               className="w-full aspect-[1800/681] object-cover rounded-sm lg:rounded-xl md:rounded-md hidden md:block"
             />
-            <div className="mr-auto text-lg md:mt-8 px-4 md:px-0 md:py-10">
+            <div className="mr-auto text-lg md:mt-8 px-1 md:px-0 md:py-10">
               <p className="font-bold text-sm lg:text-lg">{mealPlan.meal_plan_goal?.name}</p>
               <p className="text-[#737373] text-sm lg:text-lg">{mealPlan.title}</p>
               <div className="flex items-center gap-2">
@@ -48,9 +49,9 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
                 )}
               </div>
             </div>
-            <div className="w-full px-4 md:px-0">
+            <div className="w-full px-1 md:px-0">
               <div className="bg-primary rounded-xl my-4 p-4 lg:p-5">
-                <p className="text-white text-center text-lg lg:text-4xl lg:font-bold font-medium lg:mb-5 mb-2 font-[family-name:var(--font-roboto)]">
+                <p className="text-white text-center text-lg lg:text-4xl lg:font-bold font-medium lg:mb-4 mb-2 font-[family-name:var(--font-roboto)]">
                   Tóm tắt thực đơn
                 </p>
                 <div
@@ -65,8 +66,8 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
                 </div>
               </div>
             </div>
-            <div className="mr-auto text-lg my-20 max-lg:my-0 max-lg:p-4">
-              <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl md:text-4xl mb-5">
+            <div className="mr-auto text-lg my-20 max-lg:my-0 px-1 md:px-0">
+              <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl md:text-4xl mb-4">
                 Thông tin thực đơn
               </div>
               <HtmlContent
@@ -75,7 +76,7 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
               />
             </div>
             {mealPlan.meal_ingredients.length > 0 && (
-              <div className="mr-auto text-lg mt-10 w-full max-lg:p-4">
+              <div className="mr-auto text-lg mt-10 w-full px-1 md:px-0">
                 <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl md:text-4xl mb-5">
                   Thành phần chính
                 </div>

@@ -123,12 +123,12 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
 
   return (
     <div>
-      <div className="relative ">
+      <div className="relative block md:hidden">
         <Button
           onClick={() => router.back()}
-          className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black shadow-none"
+          className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.9),0_0_8px_rgba(0,0,0,0.7)] shadow-none absolute top-3 font-medium"
         >
-          <BackIconBlack /> Quay về
+          <BackIcon /> Quay về
         </Button>
         <img
           src={course?.data?.thumbnail_image_mobile}
@@ -136,7 +136,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
           className="w-full aspect-[400/255] object-cover block md:hidden"
         />
       </div>
-      <div className="flex mx-auto flex-col gap-10 lg:mt-5 mt-2 w-full pb-24 lg:px-10 px-4">
+      <div className="flex flex-col mx-auto max-w-[1800px] gap-10 lg:mt-5 mt-2 w-full pb-24 p-3 xl:p-4">
         <img
           src={course?.data?.thumbnail_image_mobile}
           alt={`${courseId}`}
@@ -194,7 +194,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         )}
         {!showDetails && course?.data?.summary && (
           <div className="bg-primary rounded-xl my-4 p-4 lg:p-5">
-            <p className="text-white text-center text-lg lg:text-4xl lg:font-bold font-medium lg:mb-10 mb-1 font-[family-name:var(--font-roboto)]">
+            <p className="text-white text-center text-lg lg:text-4xl lg:font-bold font-medium lg:mb-4 mb-1 font-[family-name:var(--font-roboto)]">
               Tóm tắt khoá học
             </p>
             <div className="xl:px-10 max-lg:w-full mx-auto text-white h-full flex flex-col items-start list-disc pl-5">

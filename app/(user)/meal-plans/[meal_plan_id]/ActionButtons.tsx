@@ -124,7 +124,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
 
   return (
     <>
-      <div className="lg:gap-5 gap-3 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
+      <div className="lg:gap-5 gap-3 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-1">
         <div className={isInFavorites ? 'w-full' : 'w-1/2'}>
           <div className="w-full block" onClick={handleStartClick}>
             <Button className="w-full rounded-full text-lg bg-[#13D8A7] text-white hover:bg-[#11c296] h-14">

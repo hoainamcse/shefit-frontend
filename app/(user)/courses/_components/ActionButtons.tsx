@@ -83,7 +83,7 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
 
   return (
     <div>
-      <div className="lg:gap-5 gap-3 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-5">
+      <div className="lg:gap-5 gap-3 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-3">
         <div className={showSaveButton ? 'w-1/2' : 'w-full'}>
           {showDetails ? (
             <Button
