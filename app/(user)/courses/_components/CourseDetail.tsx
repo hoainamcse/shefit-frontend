@@ -192,13 +192,13 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
             </div>
           </div>
         )}
-        {!showDetails && (
+        {!showDetails && course?.data?.summary && (
           <div className="bg-primary rounded-xl my-4 p-4 lg:p-5">
             <p className="text-white text-center text-lg lg:text-4xl lg:font-bold font-medium lg:mb-10 mb-1 font-[family-name:var(--font-roboto)]">
               Tóm tắt khoá học
             </p>
-            <div className="xl:px-20 max-lg:w-full mx-auto text-white h-full flex flex-col items-start list-disc pl-5">
-              {course?.data?.summary.split('\n').map((line: string, index: number) => (
+            <div className="xl:px-10 max-lg:w-full mx-auto text-white h-full flex flex-col items-start list-disc pl-5">
+              {course.data.summary.split('\n').map((line: string, index: number) => (
                 <div key={index} className="text-[#F7F7F7] text-sm lg:text-xl mb-1">
                   {line}
                 </div>
@@ -224,53 +224,57 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
                 className="text-[#737373] text-sm lg:text-lg whitespace-pre-line"
               />
             </div>
-            {equipments.length > 0 && (
+            {course?.data?.equipment_ids?.length > 0 && equipments.length > 0 && (
               <div>
                 <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl mb-4">
                   Dụng cụ
                 </p>
                 <ScrollArea className="w-screen-max-xl">
                   <div className="flex w-max space-x-4 py-4">
-                    {equipments.map((equipment: any, index: number) => (
-                      <figure key={`equipment-${equipment.id}-${index}`} className="shrink-0">
-                        <div className="overflow-hidden rounded-md">
-                          <img
-                            src={equipment.image}
-                            alt={equipment.name}
-                            className="w-[168px] h-[175px] object-cover"
-                          />
-                        </div>
-                        <figcaption className="pt-2 font-medium text-base lg:text-lg text-muted-foreground">
-                          {equipment.name}
-                        </figcaption>
-                      </figure>
-                    ))}
+                    {equipments
+                      .filter((equipment: any) => course.data.equipment_ids.includes(equipment.id))
+                      .map((equipment: any, index: number) => (
+                        <figure key={`equipment-${equipment.id}-${index}`} className="shrink-0">
+                          <div className="overflow-hidden rounded-md">
+                            <img
+                              src={equipment.image}
+                              alt={equipment.name}
+                              className="w-[168px] h-[175px] object-cover"
+                            />
+                          </div>
+                          <figcaption className="pt-2 font-medium text-base lg:text-lg text-muted-foreground text-center">
+                            {equipment.name}
+                          </figcaption>
+                        </figure>
+                      ))}
                   </div>
                   <ScrollBar orientation="horizontal" />
                 </ScrollArea>
               </div>
             )}
-            {muscleGroups.length > 0 && (
+            {course?.data?.muscle_group_ids?.length > 0 && muscleGroups.length > 0 && (
               <div>
                 <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl mb-4">
                   Nhóm cơ
                 </p>
                 <ScrollArea className="w-screen-max-xl">
                   <div className="flex w-max space-x-4 py-4">
-                    {muscleGroups.map((muscleGroup: any, index: number) => (
-                      <figure key={`muscleGroup-${muscleGroup.id}-${index}`} className="shrink-0">
-                        <div className="overflow-hidden rounded-md">
-                          <img
-                            src={muscleGroup.image}
-                            alt={muscleGroup.name}
-                            className="w-[168px] h-[175px] object-cover"
-                          />
-                        </div>
-                        <figcaption className="pt-2 font-medium text-base lg:text-lg text-muted-foreground text-center">
-                          {muscleGroup.name}
-                        </figcaption>
-                      </figure>
-                    ))}
+                    {muscleGroups
+                      .filter((muscleGroup: any) => course.data.muscle_group_ids.includes(muscleGroup.id))
+                      .map((muscleGroup: any, index: number) => (
+                        <figure key={`muscleGroup-${muscleGroup.id}-${index}`} className="shrink-0">
+                          <div className="overflow-hidden rounded-md">
+                            <img
+                              src={muscleGroup.image}
+                              alt={muscleGroup.name}
+                              className="w-[168px] h-[175px] object-cover"
+                            />
+                          </div>
+                          <figcaption className="pt-2 font-medium text-base lg:text-lg text-muted-foreground text-center">
+                            {muscleGroup.name}
+                          </figcaption>
+                        </figure>
+                      ))}
                   </div>
                   <ScrollBar orientation="horizontal" />
                 </ScrollArea>

@@ -8,15 +8,9 @@ import { getMealPlans } from '@/network/client/meal-plans'
 import { getGoals } from '@/network/client/goals'
 import { getCalories } from '@/network/client/calories'
 import type { MealPlan } from '@/models/meal-plan'
-import { Button } from '@/components/ui/button'
 import { Calorie } from '@/models/calorie'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { useRouter } from 'next/navigation'
-import { useSession } from '@/hooks/use-session'
-import { getUserSubscriptions } from '@/network/client/users'
-import { UserSubscriptionDetail } from '@/models/user-subscriptions'
 
 function MultiSelectHero({
   placeholder,
@@ -55,8 +49,6 @@ const NextButton = ({ href, className }: { href: string; className?: string }) =
 }
 
 export default function MealPlansPage() {
-  const router = useRouter()
-  const { session } = useSession()
   const [calories, setCalories] = useState<Calorie[]>([])
   const [mealPlanGoals, setMealPlanGoals] = useState<Array<{ id: string; name: string }>>([])
   const [filter, setFilter] = useState({
@@ -66,9 +58,6 @@ export default function MealPlansPage() {
   })
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [showAccessDialog, setShowAccessDialog] = useState(false)
-  const [selectedMealPlan, setSelectedMealPlan] = useState<MealPlan | null>(null)
-  const [isCheckingAccess, setIsCheckingAccess] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -100,55 +89,6 @@ export default function MealPlansPage() {
 
     fetchData()
   }, [])
-
-  const checkMealPlanAccess = (mealPlanId: number, userSubscriptions: UserSubscriptionDetail[]): boolean => {
-    const isSubscriptionValid = (subscriptionEndAt: string): boolean => {
-      if (!subscriptionEndAt) return false
-      const endDate = new Date(subscriptionEndAt)
-      const currentDate = new Date()
-      return endDate > currentDate
-    }
-
-    return userSubscriptions.some((userSub) => {
-      const hasValidSubscription = userSub.subscription_end_at && isSubscriptionValid(userSub.subscription_end_at)
-      const hasMealPlan = userSub.meal_plans?.some((mealPlan: any) => mealPlan.id === mealPlanId)
-      return hasValidSubscription && hasMealPlan
-    })
-  }
-
-  const handleMembershipClick = async (mealPlan: MealPlan) => {
-    if (!session?.userId) {
-      router.push(`/account?tab=buy-package&meal_plans_id=${mealPlan.id}`)
-      return
-    }
-
-    setIsCheckingAccess(true)
-
-    try {
-      const userSubscriptions = await getUserSubscriptions(session.userId.toString())
-      const hasAccess = checkMealPlanAccess(mealPlan.id, userSubscriptions.data)
-
-      if (hasAccess) {
-        setSelectedMealPlan(mealPlan)
-        setShowAccessDialog(true)
-      } else {
-        router.push(`/account?tab=buy-package&meal_plans_id=${mealPlan.id}`)
-      }
-    } catch (error) {
-      console.error('Error checking meal plan access:', error)
-      router.push(`/account?tab=buy-package&meal_plans_id=${mealPlan.id}`)
-    } finally {
-      setIsCheckingAccess(false)
-    }
-  }
-
-  const handleStartMealPlan = () => {
-    if (selectedMealPlan) {
-      router.push(`/meal-plans/${selectedMealPlan.id}`)
-      setShowAccessDialog(false)
-      setSelectedMealPlan(null)
-    }
-  }
 
   const filteredMealPlans = mealPlans.filter((mealPlan) => {
     const goalId = mealPlan.meal_plan_goal
@@ -237,19 +177,6 @@ export default function MealPlansPage() {
                         className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1"
                         href={`/meal-plans/${mealPlan.id}`}
                       />
-                      <div className="absolute top-2 right-2">
-                        {mealPlan.is_free ? (
-                          <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
-                        ) : (
-                          <Button
-                            className="bg-[#737373] text-white w-[136px] rounded-full"
-                            onClick={() => handleMembershipClick(mealPlan)}
-                            disabled={isCheckingAccess}
-                          >
-                            {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
-                          </Button>
-                        )}
-                      </div>
                     </div>
                     <div className="relative">
                       <div>
@@ -281,19 +208,6 @@ export default function MealPlansPage() {
                         className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1"
                         href={`/meal-plans/${mealPlan.id}`}
                       />
-                      <div className="absolute top-2 right-2">
-                        {mealPlan.is_free ? (
-                          <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
-                        ) : (
-                          <Button
-                            className="bg-[#737373] text-white w-[136px] rounded-full"
-                            onClick={() => handleMembershipClick(mealPlan)}
-                            disabled={isCheckingAccess}
-                          >
-                            {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
-                          </Button>
-                        )}
-                      </div>
                     </div>
                     <div className="relative">
                       <div>
@@ -309,22 +223,6 @@ export default function MealPlansPage() {
           </TabsContent>
         </Tabs>
       </div>
-
-      <Dialog open={showAccessDialog} onOpenChange={setShowAccessDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-center lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-[#FF7873] text-lg"></DialogTitle>
-          </DialogHeader>
-          <div className="text-center py-4">
-            <p className="text-base text-[#737373] mb-4">BẠN ĐÃ MUA GÓI MEMBER CÓ THỰC ĐƠN NÀY</p>
-          </div>
-          <div className="flex gap-4 justify-center w-full px-10">
-            <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={() => handleStartMealPlan()}>
-              Bắt đầu thực đơn
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   )
 }

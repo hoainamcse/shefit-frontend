@@ -23,11 +23,18 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
   try {
     const subscriptions = await getUserSubscriptions(session.userId.toString())
 
-    const hasAccess = subscriptions.data?.some((subscription: any) => {
-      const hasActiveSubscription = subscription.status === 'active' && subscription.meal_plans
-      if (!hasActiveSubscription) return false
+    const isSubscriptionValid = (subscription: any): boolean => {
+      if (!subscription?.subscription_end_at) return false
 
-      return subscription.meal_plans.some((mp: { id: number }) => Number(mp.id) === Number(meal_plan_id))
+      const endDate = new Date(subscription.subscription_end_at)
+      const currentDate = new Date()
+      const isActive = subscription.status === 'active'
+
+      return isActive && endDate > currentDate
+    }
+
+    const hasAccess = subscriptions.data?.some((subscription: any) => {
+      return isSubscriptionValid(subscription)
     })
 
     if (!hasAccess) {

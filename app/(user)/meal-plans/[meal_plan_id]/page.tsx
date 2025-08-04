@@ -54,7 +54,7 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
                   Tóm tắt thực đơn
                 </p>
                 <div
-                  className="xl:px-20 max-lg:w-full mx-auto text-white flex flex-col items-start list-disc pl-5 max-h-[5em] lg:max-h-[7em]"
+                  className="xl:px-10 max-lg:w-full mx-auto text-white flex flex-col items-start list-disc pl-5 max-h-[5em] lg:max-h-[7em]"
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', overflowY: 'auto' }}
                 >
                   {mealPlan.subtitle.split('\n').map((line, index) => (

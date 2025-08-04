@@ -18,10 +18,8 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
   const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [showSubscribeDialog, setShowSubscribeDialog] = useState(false)
-  const [showRenewDialog, setShowRenewDialog] = useState(false)
   const [showLoginDialogSave, setShowLoginDialogSave] = useState(false)
   const [isInFavorites, setIsInFavorites] = useState(false)
-  const [hasValidSubscription, setHasValidSubscription] = useState(false)
   const [isCheckingData, setIsCheckingData] = useState(true)
 
   const handleLoginClick = () => {
@@ -39,23 +37,23 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
   const handleBuyPackageClick = () => {
     setShowLoginDialog(false)
     setShowSubscribeDialog(false)
-    setShowRenewDialog(false)
 
     if (typeof window !== 'undefined') {
       saveCurrentUrl()
       const currentUrl = window.location.pathname + window.location.search
-      const accountUrl = `/account?tab=buy-package&meal_plans_id=${mealPlanId}&redirect=${encodeURIComponent(
-        currentUrl
-      )}`
+      const accountUrl = `/account?tab=buy-package&redirect=${encodeURIComponent(currentUrl)}`
       window.location.href = accountUrl
     }
   }
 
-  const isSubscriptionValid = (subscriptionEndAt: string): boolean => {
-    if (!subscriptionEndAt) return false
-    const endDate = new Date(subscriptionEndAt)
+  const isSubscriptionValid = (subscription: any): boolean => {
+    if (!subscription?.subscription_end_at) return false
+
+    const endDate = new Date(subscription.subscription_end_at)
     const currentDate = new Date()
-    return endDate > currentDate
+    const isActive = subscription.status === 'active'
+
+    return isActive && endDate > currentDate
   }
 
   useEffect(() => {
@@ -71,16 +69,9 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
           return Number(favorite.meal_plan?.id) === Number(mealPlanId)
         })
         setIsInFavorites(inFavorites || false)
-
-        const subscriptions = await getUserSubscriptions(session.userId.toString())
-        const hasValidSub = subscriptions.data?.some((subscription) => {
-          return subscription.subscription_end_at && isSubscriptionValid(subscription.subscription_end_at)
-        })
-        setHasValidSubscription(hasValidSub || false)
       } catch (error) {
         console.error('Error checking meal plan data:', error)
         setIsInFavorites(false)
-        setHasValidSubscription(false)
       } finally {
         setIsCheckingData(false)
       }
@@ -114,34 +105,19 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
     }
 
     try {
-      const subscriptions = await getUserSubscriptions(session.userId.toString())
+      const response = await getUserSubscriptions(session.userId.toString())
 
-      const hasValidSub = subscriptions.data?.some((subscription) => {
-        const isValid = subscription.subscription_end_at && isSubscriptionValid(subscription.subscription_end_at)
-        return isValid
+      const hasValidSubscription = response.data?.some((subscription: any) => {
+        return isSubscriptionValid(subscription)
       })
 
-      const mealPlanInSubscription = subscriptions.data?.some((subscription) => {
-        if (!subscription.meal_plan_ids || !Array.isArray(subscription.meal_plan_ids)) {
-          return false
-        }
-
-        const includesAsNumber = subscription.meal_plan_ids.includes(Number(mealPlanId))
-        const includesAsString = subscription.meal_plan_ids.includes(mealPlanId)
-        const includesAsIs = subscription.meal_plan_ids.includes(mealPlanId)
-
-        return includesAsNumber || includesAsString || includesAsIs
-      })
-
-      if (hasValidSub) {
+      if (hasValidSubscription) {
         window.location.href = `/meal-plans/${mealPlanId}/detail`
-      } else if (mealPlanInSubscription) {
-        setShowRenewDialog(true)
       } else {
         setShowSubscribeDialog(true)
       }
     } catch (error) {
-      console.error('Error checking meal plan access:', error)
+      console.error('Error checking subscription status:', error)
       setShowSubscribeDialog(true)
     }
   }
@@ -198,26 +174,10 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
             <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center text-center gap-6">
-            <p className="text-base">HÃY MUA GÓI ĐỂ TRUY CẬP THỰC ĐƠN</p>
+            <p className="text-base">MUA GÓI MEMBER ĐỂ TRUY CẬP THỰC ĐƠN</p>
             <div className="w-full px-10">
               <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleBuyPackageClick}>
                 Mua gói Member
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={showRenewDialog} onOpenChange={setShowRenewDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col items-center text-center gap-6">
-            <p className="text-base">GÓI CỦA BẠN ĐÃ HẾT HẠN, HÃY GIA HẠN ĐỂ TIẾP TỤC TRUY CẬP</p>
-            <div className="w-full px-10">
-              <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleBuyPackageClick}>
-                Gia hạn gói
               </Button>
             </div>
           </div>
