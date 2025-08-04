@@ -10,6 +10,7 @@ import { sortByKey } from '@/lib/helpers'
 import { redirect } from 'next/navigation'
 import { getSession } from '@/lib/session'
 import { getUserSubscriptions } from '@/network/server/users'
+import { BackIcon } from '@/components/icons/BackIcon'
 
 export default async function MealPlanDetailPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   const { meal_plan_id } = await params
@@ -55,11 +56,11 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
 
   return (
     <div>
-      <div className="relative">
-        <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto z-10 absolute top-4 left-2 lg:left-20  md:hidden">
+      <div className="relative block md:hidden">
+        <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto z-10 absolute top-1">
           <Link href={`/meal-plans/${meal_plan_id}`} className="flex items-center">
-            <Button className="flex items-center gap-2 text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black shadow-none">
-              <BackIconBlack /> Quay về
+            <Button className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.9),0_0_8px_rgba(0,0,0,0.7)] shadow-none absolute top-1 font-medium">
+              <BackIcon /> Quay về
             </Button>
           </Link>
         </div>
@@ -70,7 +71,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
         />
       </div>
       <div className="flex flex-col max-w-screen-[1800px] mx-auto">
-        <div className=" items-center justify-center mb-20 md:mt-5 mt-0 p-2 xl:p-4">
+        <div className="items-center justify-center mb-20 md:mt-5 mt-0 p-2 xl:p-4">
           <div className="relative w-full">
             <img
               src={mealPlan.image_desktop}
@@ -78,7 +79,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
               className="w-full aspect-[1800/681] object-cover rounded-sm lg:rounded-xl md:rounded-md hidden md:block"
             />
           </div>
-          <div className="mr-auto text-lg my-20 max-lg:my-0 max-lg:p-4">
+          <div className="mr-auto text-lg my-20 max-lg:my-0 max-lg:p-1">
             <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl md:text-4xl md:mb-5 mb-0">
               Menu theo lịch
             </div>
@@ -101,7 +102,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
             {sortedMealPlanByDay.map((day: any) => (
               <TabsContent key={`image-${day.id}`} value={`${day.day_number}`} className="mt-0">
                 {day.image && (
-                  <div className="w-full mb-6 px-4 md:px-0">
+                  <div className="w-full mb-6 px-1 md:px-0">
                     <img
                       src={day.image}
                       alt={`Ngày ${day.day_number}`}
@@ -125,7 +126,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
                       dishesData.map((dish: MealPlanDish) => (
                         <div
                           key={dish.id}
-                          className="mb-10 flex flex-col xl:w-full xl:text-lg max-lg:text-sm gap-8 max-lg:px-4"
+                          className="mb-10 flex flex-col xl:w-full xl:text-lg max-lg:text-sm gap-8 max-lg:px-1"
                         >
                           <div>
                             <div className="font-medium">{dish.name}</div>
