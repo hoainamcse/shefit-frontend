@@ -109,7 +109,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                         <div key={`menu-${mealPlan.id}`}>
                           <div className="relative group">
                             <img
-                              src={mealPlan.cover_image}
+                              src={mealPlan.assets.thumbnail}
                               alt={mealPlan.title}
                               className="aspect-[5/3] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                             />

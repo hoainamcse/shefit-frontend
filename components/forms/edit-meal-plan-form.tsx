@@ -9,19 +9,21 @@ import { Trash2Icon } from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
+
 import { createMealPlan, updateMealPlan } from '@/network/client/meal-plans'
-import { FormInputField, FormNumberField, FormSwitchField, FormTextareaField } from './fields'
-import { CaloriesTable } from '../data-table/calories-table'
+import { Form } from '../ui/form'
+import { Label } from '../ui/label'
+import { Input } from '../ui/input'
+import { Separator } from '../ui/separator'
+import { ImageUploader } from '../image-uploader'
+import { AddButton } from '../buttons/add-button'
+import { GoalTable } from '../data-table/goal-table'
+import { EditSheet } from '../data-table/edit-sheet'
+import { MainButton } from '../buttons/main-button'
 import { EditDialog } from '../data-table/edit-dialog'
 import { DietsTable } from '../data-table/diets-table'
-import { MainButton } from '../buttons/main-button'
-import { AddButton } from '../buttons/add-button'
-import { Input } from '../ui/input'
-import { Label } from '../ui/label'
-import { Form } from '../ui/form'
-import { CoverMediaSelector } from './cover-media-selector'
-import { ImageUploader } from '../image-uploader'
-import { GoalTable } from '../data-table/goal-table'
+import { CaloriesTable } from '../data-table/calories-table'
+import { FormInputField, FormNumberField, FormSwitchField, FormTextareaField } from './fields'
 
 // ! Follow MealPlanPayload model in models/meal-plan.ts
 const formSchema = z.object({
@@ -29,10 +31,13 @@ const formSchema = z.object({
   subtitle: z.string(),
   chef_name: z.string(),
   meal_plan_goal_id: z.number().nullable(),
-  image_mobile: z.string().url(),
-  image_desktop: z.string().url(),
-  cover_image: z.string().url(),
-  youtube_url: z.string().url().optional(),
+  assets: z.object({
+    thumbnail: z.string().url().optional(),
+    mobile_cover: z.string().url().optional(),
+    desktop_cover: z.string().url().optional(),
+    youtube_cover: z.string().url().optional(),
+    homepage_thumbnail: z.string().url().optional(),
+  }),
   description: z.string(),
   meal_ingredients: z.array(
     z.object({
@@ -46,7 +51,6 @@ const formSchema = z.object({
   diet_id: z.coerce.number().nullable(),
   calorie_id: z.coerce.number().nullable(),
   description_homepage_1: z.string(),
-  image_homepage: z.string().url(),
   display_order: z.number().min(0),
 })
 
@@ -57,8 +61,8 @@ interface EditMealPlanFormProps {
   onSuccess?: (data: MealPlan) => void
 }
 
-const defaultImageUrl = 'https://placehold.co/400?text=shefit.vn&font=Oswald'
-const defaultYoutubeUrl = 'https://www.youtube.com/'
+const DEFAULT_IMAGE_URL = 'https://placehold.co/400?text=shefit.vn&font=Oswald'
+const DEFAULT_YOUTUBE_URL = 'https://youtu.be/EngW7tLk6R8?si=gesFcAqfOVJB3EMy'
 
 export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
   const isEdit = !!data
@@ -67,54 +71,42 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
     subtitle: '',
     chef_name: '',
     meal_plan_goal_id: null,
-    image_mobile: defaultImageUrl,
-    image_desktop: defaultImageUrl,
-    cover_image: defaultImageUrl,
-    youtube_url: defaultYoutubeUrl,
+    assets: {
+      thumbnail: DEFAULT_IMAGE_URL,
+      mobile_cover: DEFAULT_IMAGE_URL,
+    },
     description: '',
     meal_ingredients: [],
     is_public: true,
     is_free: false,
     free_days: 0,
-    calorie_id: null,
     diet_id: null,
+    calorie_id: null,
     description_homepage_1: '',
-    image_homepage: defaultImageUrl,
     display_order: 1,
   } as FormValue
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: isEdit
-      ? (() => {
-          const isYoutube = typeof data.cover_image === 'string' && data.cover_image.includes('youtube.com')
-          return {
-            title: data.title,
-            subtitle: data.subtitle,
-            chef_name: data.chef_name,
-            meal_plan_goal_id: data.meal_plan_goal?.id || null,
-            image_mobile: data.image_mobile || defaultImageUrl,
-            image_desktop: data.image_desktop || defaultImageUrl,
-            cover_image: isYoutube ? defaultImageUrl : data.cover_image,
-            youtube_url: isYoutube ? data.cover_image : defaultYoutubeUrl,
-            description: data.description,
-            meal_ingredients: data.meal_ingredients,
-            is_public: data.is_public,
-            is_free: data.is_free,
-            free_days: data.free_days,
-            calorie_id: data.calorie?.id || null,
-            diet_id: data.diet?.id || null,
-            description_homepage_1: data.description_homepage_1 || '',
-            image_homepage: data.image_homepage || defaultImageUrl,
-            display_order: data.display_order || 0,
-          }
-        })()
+      ? {
+          title: data.title,
+          subtitle: data.subtitle,
+          chef_name: data.chef_name,
+          meal_plan_goal_id: data.meal_plan_goal?.id || null,
+          assets: data.assets,
+          description: data.description,
+          meal_ingredients: data.meal_ingredients,
+          is_public: data.is_public,
+          is_free: data.is_free,
+          free_days: data.free_days,
+          calorie_id: data.calorie?.id || null,
+          diet_id: data.diet?.id || null,
+          description_homepage_1: data.description_homepage_1 || '',
+          display_order: data.display_order || 0,
+        }
       : defaultValue,
   })
-
-  const [showYoutubeUrlInput, setShowYoutubeUrlInput] = useState(
-    isEdit && data?.cover_image?.includes('youtube.com') ? true : false
-  )
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -135,17 +127,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
   })
 
   const onSubmit = (values: FormValue) => {
-    console.log(values)
-    console.log(showYoutubeUrlInput)
-    if (showYoutubeUrlInput && values.youtube_url) {
-      const { youtube_url, ...submitValues } = values
-      mealPlanMutation.mutate({
-        ...submitValues,
-        cover_image: youtube_url,
-      })
-    } else {
-      mealPlanMutation.mutate(values)
-    }
+    mealPlanMutation.mutate(values)
   }
 
   const [openCaloriesTable, setOpenCaloriesTable] = useState(false)
@@ -172,42 +154,13 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
 
           <FormTextareaField form={form} name="subtitle" label="Tóm tắt" placeholder="Nhập tóm tắt" />
           <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
-          <div className="grid grid-cols-2 gap-4">
-            <ImageUploader
-              form={form}
-              name="image_mobile"
-              label="Hình ảnh đại diện Mobile"
-              accept={{ 'image/*': [] }}
-              maxFileCount={1}
-            />
-            <ImageUploader
-              form={form}
-              name="image_desktop"
-              label="Hình ảnh đại diện Desktop"
-              accept={{ 'image/*': [] }}
-              maxFileCount={1}
-            />
-          </div>
-          <CoverMediaSelector
-            form={form}
-            showYoutubeUrlInput={showYoutubeUrlInput}
-            setShowYoutubeUrlInput={setShowYoutubeUrlInput}
-            coverImageName="cover_image"
-            youtubeUrlName="youtube_url"
-          />
           <FormTextareaField
             form={form}
             name="description_homepage_1"
             label="Mô tả homepage 1"
             placeholder="Nhập mô tả"
           />
-          <ImageUploader
-            form={form}
-            name="image_homepage"
-            label="Hình ảnh homepage"
-            accept={{ 'image/*': [] }}
-            maxFileCount={1}
-          />
+          <EditMealPlanAssets form={form} />
           <div className="grid grid-cols-2 gap-4">
             <FormInputField form={form} name="chef_name" label="Tên đầu bếp" placeholder="Nhập tên đầu bếp" />
             <div className="space-y-2">
@@ -365,6 +318,67 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
           }}
         />
       </EditDialog>
+    </>
+  )
+}
+
+function EditMealPlanAssets({ form }: { form: ReturnType<typeof useForm<FormValue>> }) {
+  const [openEditSheet, setOpenEditSheet] = useState(false)
+  return (
+    <>
+      <MainButton text="Assets của thực đơn" variant="outline" type="button" onClick={() => setOpenEditSheet(true)} />
+      <EditSheet
+        open={openEditSheet}
+        onOpenChange={setOpenEditSheet}
+        title="Chỉnh sửa thực đơn"
+        description="Chỉnh sửa các thông tin liên quan đến thực đơn"
+      >
+        <div className="space-y-4">
+          <ImageUploader
+            form={form}
+            name="assets.thumbnail"
+            label="Hình ảnh đại diện"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
+          />
+          <ImageUploader
+            form={form}
+            name="assets.homepage_thumbnail"
+            label="Hình ảnh đại diện (Homepage)"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
+          />
+          <p className="text-[0.8rem] text-muted-foreground">
+            Nếu không có ảnh đại diện cho homepage, ảnh đại diện mặc định sẽ được sử dụng
+          </p>
+          <Separator />
+          <ImageUploader
+            form={form}
+            name="assets.mobile_cover"
+            label="Hình ảnh bìa (Mobile)"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
+          />
+          <ImageUploader
+            form={form}
+            name="assets.desktop_cover"
+            label="Hình ảnh bìa (Desktop)"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
+          />
+          <p className="text-[0.8rem] text-muted-foreground">
+            Nếu không có ảnh bìa cho desktop, ảnh bìa mặc định sẽ được sử dụng
+          </p>
+          <FormInputField
+            form={form}
+            name="assets.youtube_cover"
+            label="Hình ảnh bìa (YouTube)"
+            placeholder="Nhập URL video YouTube"
+            // defaultValue={DEFAULT_YOUTUBE_URL}
+            description="Nếu không có ảnh bìa YouTube, ảnh bìa mặc định sẽ được sử dụng"
+          />
+        </div>
+      </EditSheet>
     </>
   )
 }

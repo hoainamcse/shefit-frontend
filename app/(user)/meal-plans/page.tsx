@@ -169,7 +169,7 @@ export default function MealPlansPage() {
                   <div key={`menu-${mealPlan.id}`} className="w-full max-w-full overflow-hidden">
                     <div className="relative group">
                       <img
-                        src={mealPlan.cover_image}
+                        src={mealPlan.assets.thumbnail}
                         alt={mealPlan.title}
                         className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                       />
@@ -200,7 +200,7 @@ export default function MealPlansPage() {
                   >
                     <div className="relative group">
                       <img
-                        src={mealPlan.cover_image}
+                        src={mealPlan.assets.thumbnail}
                         alt={mealPlan.title}
                         className="aspect-[5/3] object-cover rounded-xl mb-4 w-full lg:h-[373px] md:h-[300px] sm:h-[280px] h-[261px] brightness-100 group-hover:brightness-110 transition-all duration-300"
                       />

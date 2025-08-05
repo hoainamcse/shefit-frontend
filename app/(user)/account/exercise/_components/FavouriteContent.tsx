@@ -192,7 +192,7 @@ export default function FavouriteContent() {
                   ...response.data,
                   id: mealPlanId,
                   name: response.data.title,
-                  cover_image: response.data.cover_image,
+                  assets: response.data.assets,
                   summary: response.data.subtitle,
                   trainer: response.data.chef_name,
                   duration_weeks: response.data.number_of_days ? Math.ceil(response.data.number_of_days / 7) : 1,
@@ -417,7 +417,7 @@ export default function FavouriteContent() {
                     <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                   </div>
                   <img
-                    src={meal_plan.cover_image || meal_plan.image}
+                    src={meal_plan.assets.thumbnail}
                     alt={meal_plan.title}
                     className="aspect-[5/3] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                   />

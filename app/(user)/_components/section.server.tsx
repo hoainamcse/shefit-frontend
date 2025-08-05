@@ -322,7 +322,7 @@ export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
                   <div className="flex flex-col items-center gap-4">
                     <div className="relative w-full overflow-hidden">
                       <img
-                        src={item.image || '/temp/homepage-4.jpg'}
+                        src={item.assets.homepage_thumbnail || item.assets.thumbnail}
                         alt={item.title}
                         className="rounded-lg w-full object-cover aspect-[4/3]"
                       />

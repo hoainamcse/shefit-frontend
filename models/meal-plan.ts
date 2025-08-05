@@ -14,20 +14,22 @@ type MealPlan = {
   subtitle: string
   chef_name: string
   meal_plan_goal: Goal | null
-  cover_image: string
-  image: string
+  assets: {
+    thumbnail?: string
+    mobile_cover?: string
+    desktop_cover?: string
+    youtube_cover?: string
+    homepage_thumbnail?: string
+  }
   description: string
   meal_ingredients: MealPlanIngredient[]
   number_of_days: number
-  image_mobile: string
-  image_desktop: string
   is_public: boolean
   is_free: boolean
   free_days: number
   diet: Diet | null
   calorie: Calorie | null
   description_homepage_1: string
-  image_homepage: string
   display_order: number
 }
 
