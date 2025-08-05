@@ -54,7 +54,7 @@ export default function PurchasedPackage() {
                         name: detailsResponse.data.name,
                         description_1: detailsResponse.data.description_1,
                         description_2: detailsResponse.data.description_2,
-                        cover_image: detailsResponse.data.cover_image,
+                        thumbnail: detailsResponse.data.assets.thumbnail,
                         isValid,
                       }
                     }

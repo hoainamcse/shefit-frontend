@@ -26,7 +26,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
     <div>
       <div className="relative">
         <img
-          src={subscriptionData?.thumbnail_image_mobile}
+          src={subscriptionData?.assets.mobile_cover || subscriptionData?.assets.thumbnail}
           alt={`${subscriptionData?.name}`}
           className="lg:rounded-xl rounded-none mb-4 w-full object-cover aspect-[400/255] block lg:hidden"
         />
@@ -41,7 +41,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
       <div className="flex mx-auto flex-col gap-10 mt-10 w-full pb-24 px-4 lg:px-14">
         <div className="mb-20 flex flex-col gap-10">
           <img
-            src={subscriptionData?.thumbnail_image_desktop}
+            src={subscriptionData?.assets.desktop_cover || subscriptionData?.assets.mobile_cover || subscriptionData?.assets.thumbnail}
             alt={`${subscriptionData?.name}`}
             className="lg:rounded-xl rounded-none mb-4 w-full object-cover lg:aspect-[1800/681] hidden lg:block"
           />
@@ -69,7 +69,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                       <div key={`course-${course.id}`}>
                         <div className="relative group">
                           <img
-                            src={course.assets.thumbnail || subscriptionData?.cover_image}
+                            src={course.assets.thumbnail}
                             alt={course.course_name || course.id.toString()}
                             className="aspect-[5/3] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                           />

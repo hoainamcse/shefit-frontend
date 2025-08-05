@@ -162,7 +162,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                       <div className="absolute inset-0 flex flex-col">
                                         <div className="relative w-full h-full">
                                           <img
-                                            src={course.assets.homepage_thumbnail}
+                                            src={course.assets.homepage_thumbnail || course.assets.thumbnail}
                                             alt={course.course_name}
                                             className="w-full h-full object-cover rounded-lg"
                                           />
@@ -189,7 +189,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                   <div className="relative">
                                     <div className="relative aspect-[273/381]">
                                       <img
-                                        src={course.assets.homepage_thumbnail}
+                                        src={course.assets.homepage_thumbnail || course.assets.thumbnail}
                                         alt={course.course_name}
                                         className="object-cover rounded-lg w-full h-full"
                                       />
@@ -235,7 +235,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                       <div className="absolute inset-0 flex flex-col">
                                         <div className="relative w-full h-full">
                                           <img
-                                            src={course.assets.homepage_thumbnail}
+                                            src={course.assets.homepage_thumbnail || course.assets.thumbnail}
                                             alt={course.course_name}
                                             className="w-full h-full object-cover rounded-lg"
                                           />
@@ -262,7 +262,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                   <div className="relative">
                                     <div className="relative aspect-[273/381]">
                                       <img
-                                        src={course.assets.homepage_thumbnail}
+                                        src={course.assets.homepage_thumbnail || course.assets.thumbnail}
                                         alt={course.course_name}
                                         className="object-cover rounded-lg w-full h-full"
                                       />
@@ -425,7 +425,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                           <div className="absolute inset-0 flex flex-col">
                             <div className="relative w-full h-full">
                               <img
-                                src={course.assets.homepage_thumbnail}
+                                src={course.assets.homepage_thumbnail || course.assets.thumbnail}
                                 alt={course.course_name}
                                 className="w-full h-full object-cover rounded-lg"
                               />
@@ -453,7 +453,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                       <div className="relative">
                         <div className="relative aspect-[273/381]">
                           <img
-                            src={course.assets.homepage_thumbnail}
+                            src={course.assets.homepage_thumbnail || course.assets.thumbnail}
                             alt={course.course_name}
                             className="object-cover rounded-lg w-full h-full"
                           />

@@ -28,6 +28,8 @@ import { EditDialog } from '../data-table/edit-dialog'
 import { CoursesTable } from '../data-table/courses-table'
 import { MealPlansTable } from '../data-table/meal-plans-table'
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
+import { EditSheet } from '../data-table/edit-sheet'
+import { Separator } from '../ui/separator'
 
 // Define the form schema
 const formSchema = z.object({
@@ -52,9 +54,13 @@ const formSchema = z.object({
   result_checkup: z.string().min(10, {
     message: 'Mô tả phải có ít nhất 10 ký tự.',
   }),
-  cover_image: z.string().optional(),
-  youtube_url: z.string().url().optional(),
-  thumbnail_image: z.string().optional(),
+  assets: z.object({
+    thumbnail: z.string().optional(),
+    mobile_cover: z.string().optional(),
+    desktop_cover: z.string().optional(),
+    youtube_cover: z.string().optional(),
+    homepage_thumbnail: z.string().optional(),
+  }),
   gifts: z
     .array(
       z.discriminatedUnion('type', [
@@ -84,7 +90,7 @@ const formSchema = z.object({
   display_order: z.number(),
 })
 
-type FormValues = z.infer<typeof formSchema>
+type FormValue = z.infer<typeof formSchema>
 
 type MembershipFormProps = {
   isEdit: boolean
@@ -97,8 +103,8 @@ const AVAILABLE_COURSE_FORMATS = [
   { value: 'both', label: 'Video & Zoom' },
 ]
 
-const defaultImageUrl = 'https://placehold.co/400?text=shefit.vn&font=Oswald'
-const defaultYoutubeUrl = 'https://www.youtube.com/'
+const DEFAULT_IMAGE_URL = 'https://placehold.co/400?text=shefit.vn&font=Oswald'
+const DEFAULT_YOUTUBE_URL = 'https://youtu.be/EngW7tLk6R8?si=gesFcAqfOVJB3EMy'
 
 export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
   const [isPending, startTransition] = useTransition()
@@ -111,33 +117,30 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
   const [selectedMealPlans, setSelectedMealPlans] = useState(data?.relationships?.meal_plans || [])
 
   // Initialize the form with default values
-  const form = useForm<FormValues>({
+  const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: data
-      ? (() => {
-          const isYoutube = typeof data.cover_image === 'string' && data.cover_image.includes('youtube.com')
-          return {
-            ...data,
-            meal_plan_ids: data.relationships?.meal_plans?.map((mp) => mp.id.toString()) || [],
-            course_ids: data.relationships?.courses?.map((c) => c.id.toString()) || [],
-            cover_image: isYoutube ? defaultImageUrl : data.cover_image,
-            youtube_url: isYoutube ? data.cover_image : defaultYoutubeUrl,
-            course_format: data.course_format as 'video' | 'live' | 'both',
-            gifts: data.relationships?.gifts || [],
-            description_homepage: data.description_homepage || '',
-            display_order: data.display_order || 0,
-          }
-        })()
+      ? {
+          ...data,
+          meal_plan_ids: data.relationships?.meal_plans?.map((mp) => mp.id.toString()) || [],
+          course_ids: data.relationships?.courses?.map((c) => c.id.toString()) || [],
+          assets: data.assets,
+          course_format: data.course_format as 'video' | 'live' | 'both',
+          gifts: data.relationships?.gifts || [],
+          description_homepage: data.description_homepage || '',
+          display_order: data.display_order || 0,
+        }
       : {
           name: '',
           course_format: 'video',
           course_ids: [],
           prices: [],
           gifts: [],
-          cover_image: defaultImageUrl,
-          youtube_url: defaultYoutubeUrl,
+          assets: {
+            thumbnail: DEFAULT_IMAGE_URL,
+            mobile_cover: DEFAULT_IMAGE_URL,
+          },
           result_checkup: '',
-          thumbnail_image: '',
           description_1: '',
           description_2: '',
           meal_plan_ids: [],
@@ -146,10 +149,6 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
           display_order: 0,
         },
   })
-
-  const [showYoutubeUrlInput, setShowYoutubeUrlInput] = useState(
-    isEdit && data?.cover_image?.includes('youtube.com') ? true : false
-  )
 
   // Setup field arrays for gifts and prices
   const {
@@ -212,18 +211,10 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
 
   const courseFormat = form.watch('course_format')
 
-  async function onSubmit(values: FormValues) {
+  async function onSubmit(values: FormValue) {
     startTransition(async () => {
       try {
-        let submitValues
-
-        if (showYoutubeUrlInput && values.youtube_url) {
-          const { youtube_url, ...valueWithoutYoutubeUrl } = values
-          valueWithoutYoutubeUrl.cover_image = youtube_url
-          submitValues = valueWithoutYoutubeUrl
-        } else {
-          submitValues = values
-        }
+        const submitValues = values
 
         if (isEdit) {
           await handleEditMembership(submitValues, data)
@@ -238,7 +229,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
     })
   }
 
-  const handleCreateMembership = async (values: FormValues) => {
+  const handleCreateMembership = async (values: FormValue) => {
     let giftIds: number[] = []
     if (values.gifts && values.gifts.length > 0) {
       const createdGifts = await Promise.all(values.gifts.map((gift) => createGift(gift as any)))
@@ -254,7 +245,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
     toast.success('Tạo gói thành viên thành công')
   }
 
-  const handleEditMembership = async (values: FormValues, data?: Subscription) => {
+  const handleEditMembership = async (values: FormValue, data?: Subscription) => {
     const giftsWithId = (values.gifts ?? []).filter((gift) => gift.id)
     const giftsWithoutId = (values.gifts ?? []).filter((gift) => !gift.id)
 
@@ -343,6 +334,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                 label="Theo dõi kết quả"
                 placeholder="Nhập thông tin theo dõi kết quả"
               />
+              <EditSubscriptionAssets form={form} />
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Gói tập</Label>
@@ -364,14 +356,6 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
                   />
                 </div>
               </div>
-
-              <CoverMediaSelector
-                form={form}
-                showYoutubeUrlInput={showYoutubeUrlInput}
-                setShowYoutubeUrlInput={setShowYoutubeUrlInput}
-                coverImageName="cover_image"
-                youtubeUrlName="youtube_url"
-              />
 
               {/* Gifts section */}
               <div className="space-y-4">
@@ -725,5 +709,66 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
         />
       </EditDialog>
     </div>
+  )
+}
+
+function EditSubscriptionAssets({ form }: { form: ReturnType<typeof useForm<FormValue>> }) {
+  const [openEditSheet, setOpenEditSheet] = useState(false)
+  return (
+    <>
+      <MainButton text="Assets của gói tập" variant="outline" type="button" onClick={() => setOpenEditSheet(true)} />
+      <EditSheet
+        open={openEditSheet}
+        onOpenChange={setOpenEditSheet}
+        title="Chỉnh sửa gói tập"
+        description="Chỉnh sửa các thông tin liên quan đến gói tập"
+      >
+        <div className="space-y-4">
+          <ImageUploader
+            form={form}
+            name="assets.thumbnail"
+            label="Hình ảnh đại diện"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
+          />
+          <ImageUploader
+            form={form}
+            name="assets.homepage_thumbnail"
+            label="Hình ảnh đại diện (Homepage)"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
+          />
+          <p className="text-[0.8rem] text-muted-foreground">
+            Nếu không có ảnh đại diện cho homepage, ảnh đại diện mặc định sẽ được sử dụng
+          </p>
+          <Separator />
+          <ImageUploader
+            form={form}
+            name="assets.mobile_cover"
+            label="Hình ảnh bìa (Mobile)"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
+          />
+          <ImageUploader
+            form={form}
+            name="assets.desktop_cover"
+            label="Hình ảnh bìa (Desktop)"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
+          />
+          <p className="text-[0.8rem] text-muted-foreground">
+            Nếu không có ảnh bìa cho desktop, ảnh bìa mặc định sẽ được sử dụng
+          </p>
+          <FormInputField
+            form={form}
+            name="assets.youtube_cover"
+            label="Hình ảnh bìa (YouTube)"
+            placeholder="Nhập URL video YouTube"
+            // defaultValue={DEFAULT_YOUTUBE_URL}
+            description="Nếu không có ảnh bìa YouTube, ảnh bìa mặc định sẽ được sử dụng"
+          />
+        </div>
+      </EditSheet>
+    </>
   )
 }

@@ -32,12 +32,15 @@ type Subscription = {
     price: number
   }[]
   gifts: Gift[]
-  cover_image: string
-  thumbnail_image_mobile: string
-  thumbnail_image_desktop: string
+  assets: {
+    thumbnail?: string
+    mobile_cover?: string
+    desktop_cover?: string
+    youtube_cover?: string
+    homepage_thumbnail?: string
+  }
   meal_plan_ids: number[]
   course_ids: number[]
-  thumbnail_image: string
   description_homepage: string
   description_1: string
   description_2: string

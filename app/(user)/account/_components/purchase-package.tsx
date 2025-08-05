@@ -194,7 +194,7 @@ export default function PurchasePackage() {
                       </div>
                       <div className="w-full 2xl:w-1/2 mt-4 2xl:mt-0">
                         <img
-                          src={subscription.cover_image}
+                          src={subscription.assets.thumbnail}
                           alt=""
                           className="aspect-[400/255] object-cover rounded-[20px] w-full h-auto"
                         />

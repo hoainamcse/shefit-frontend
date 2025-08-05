@@ -65,7 +65,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
           </Link>
         </div>
         <img
-          src={mealPlan.assets.mobile_cover}
+          src={mealPlan.assets.mobile_cover || mealPlan.assets.thumbnail}
           alt="Menu detail image"
           className="w-full aspect-[440/281] object-cover block md:hidden"
         />
@@ -74,7 +74,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
         <div className="items-center justify-center mb-20 md:mt-5 mt-0 p-2 xl:p-4">
           <div className="relative w-full">
             <img
-              src={mealPlan.assets.desktop_cover || mealPlan.assets.mobile_cover}
+              src={mealPlan.assets.desktop_cover || mealPlan.assets.mobile_cover || mealPlan.assets.thumbnail}
               alt="Menu detail image"
               className="w-full aspect-[1800/681] object-cover rounded-sm lg:rounded-xl md:rounded-md hidden md:block"
             />
