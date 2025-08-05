@@ -187,6 +187,7 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
             <FormNumberField form={form} name="display_order" label="Thứ tự hiển thị" placeholder="e.g., 10" />
             <FormInputField form={form} name="trainer" label="Tên HLV" placeholder="Nhập tên HLV" />
           </div>
+          <FormTextareaField form={form} name="summary" label="Tóm tắt" placeholder="Nhập tóm tắt" />
           <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
 
           <div className="grid grid-cols-2 gap-4">
