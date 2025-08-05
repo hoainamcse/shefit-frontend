@@ -28,6 +28,7 @@ import { useSession } from '@/hooks/use-session'
 import { signOut } from '@/network/server/auth'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { useState } from 'react'
+import { LanguageSelector } from '@/components/language-selector'
 
 export function Header() {
   const { session } = useSession()
@@ -121,14 +122,16 @@ export function Header() {
               <span className="whitespace-nowrap text-xs md:text-xs lg:text-base xl:text-lg">{item.label}</span>
             </Link>
           ))}
+          <LanguageSelector />
           {authButton}
         </div>
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           {session ? null : (
-            <Link href="/auth/login" className="text-white ml-auto px-5 mt-1 text-base block lg:hidden">
+            <Link href="/auth/login" className="text-white ml-auto px-5 text-base block lg:hidden">
               Đăng nhập
             </Link>
           )}
+          <LanguageSelector className='lg:hidden' />
           <SheetTrigger asChild>
             <button className="lg:hidden">
               <MenuIcon />
