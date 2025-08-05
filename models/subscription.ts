@@ -20,37 +20,39 @@ type SubscriptionPrice = {
 }
 
 type Subscription = {
-    original_subscription_end_at?: string;
-    id: string
-    name: string
-    course_format: string
+  original_subscription_end_at?: string;
+  id: string
+  name: string
+  course_format: string
+  duration: number
+  price: number
+  prices: {
+    id: number
     duration: number
     price: number
-    prices: {
-        id: number
-        duration: number
-        price: number
-    }[]
-    gifts: Gift[]
-    cover_image: string
-    meal_plan_ids: number[]
-    course_ids: number[]
-    thumbnail_image: string
-    description_homepage: string
-    description_1: string
-    description_2: string
-    created_at: string
-    updated_at: string
-    result_checkup: string
-    meal_plan_description?: string
+  }[]
+  gifts: Gift[]
+  cover_image: string
+  thumbnail_image_mobile: string
+  thumbnail_image_desktop: string
+  meal_plan_ids: number[]
+  course_ids: number[]
+  thumbnail_image: string
+  description_homepage: string
+  description_1: string
+  description_2: string
+  created_at: string
+  updated_at: string
+  result_checkup: string
+  meal_plan_description?: string
+  courses: Pick<Course, 'id' | 'course_name'>[]
+  meal_plans: Pick<MealPlan, 'id' | 'title'>[]
+  relationships: {
     courses: Pick<Course, 'id' | 'course_name'>[]
     meal_plans: Pick<MealPlan, 'id' | 'title'>[]
-    relationships: {
-        courses: Pick<Course, 'id' | 'course_name'>[]
-        meal_plans: Pick<MealPlan, 'id' | 'title'>[]
-        gifts: Gift[]
-    }
-    display_order: number
+    gifts: Gift[]
+  }
+  display_order: number
 }
 
 type SubscriptionPayload = Omit<Subscription, 'id' | 'created_at' | 'updated_at' | 'gifts' | 'courses' | 'meal_plans' | 'relationships'> & {

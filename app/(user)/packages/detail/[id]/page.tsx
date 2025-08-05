@@ -2,7 +2,6 @@ import { getSubscription } from '@/network/server/subscriptions'
 import { getCourses } from '@/network/server/courses'
 import { ChevronRight } from 'lucide-react'
 import { courseLevelLabel, courseFormLabel } from '@/lib/label'
-import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { getMealPlans } from '@/network/server/meal-plans'
 import AcctionButton from './_components/AcctionButton'
@@ -27,7 +26,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
     <div>
       <div className="relative">
         <img
-          src={subscriptionData?.cover_image}
+          src={subscriptionData?.thumbnail_image_mobile}
           alt={`${subscriptionData?.name}`}
           className="lg:rounded-xl rounded-none mb-4 w-full object-cover aspect-[400/255] block lg:hidden"
         />
@@ -42,7 +41,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
       <div className="flex mx-auto flex-col gap-10 mt-10 w-full pb-24 px-4 lg:px-14">
         <div className="mb-20 flex flex-col gap-10">
           <img
-            src={subscriptionData?.cover_image}
+            src={subscriptionData?.thumbnail_image_desktop}
             alt={`${subscriptionData?.name}`}
             className="lg:rounded-xl rounded-none mb-4 w-full object-cover lg:aspect-[1800/681] hidden lg:block"
           />
