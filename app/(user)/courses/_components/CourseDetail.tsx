@@ -131,14 +131,14 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
           <BackIcon /> Quay về
         </Button>
         <img
-          src={course?.data?.thumbnail_image_mobile}
+          src={course?.data?.assets?.youtube_cover || course?.data?.assets?.mobile_cover}
           alt={`${courseId}`}
           className="w-full aspect-[400/255] object-cover block md:hidden"
         />
       </div>
       <div className="flex flex-col mx-auto max-w-[1800px] gap-10 lg:mt-5 mt-2 w-full pb-24 p-3 xl:p-4">
         <img
-          src={course?.data?.thumbnail_image_mobile}
+          src={course?.data?.assets?.mobile_cover}
           alt={`${courseId}`}
           className="rounded-xl w-full aspect-[1800/681] object-cover hidden md:block"
         />

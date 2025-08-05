@@ -10,8 +10,6 @@ type CourseLevel = 'beginner' | 'intermediate' | 'advanced'
 
 type Course = {
   id: number
-  thumbnail_image_mobile: string
-  thumbnail_image_desktop: string
   description: string
   course_name: string
   course_format: CourseFormat
@@ -19,7 +17,13 @@ type Course = {
   difficulty_level: CourseLevel
   is_public: boolean
   is_popular: boolean
-  cover_image: string
+  assets: {
+    thumbnail?: string
+    mobile_cover?: string
+    desktop_cover?: string
+    youtube_cover?: string
+    homepage_thumbnail?: string
+  }
   created_at: string
   is_free: boolean
   updated_at: string
@@ -33,7 +37,6 @@ type Course = {
   form_categories: FormCategory[]
   workout_methods: WorkoutMethod[]
   description_homepage_1: string
-  image_homepage: string
   subscriptions: Subscription[]
   relationships?: {
     equipments: Equipment[]

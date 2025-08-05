@@ -210,7 +210,7 @@ export function ListCourses() {
                   </div>
                   <div className="relative">
                     <img
-                      src={course.cover_image}
+                      src={course.assets.thumbnail}
                       alt={course.course_name}
                       className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
                     />

@@ -69,7 +69,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                       <div key={`course-${course.id}`}>
                         <div className="relative group">
                           <img
-                            src={course.cover_image || subscriptionData?.cover_image}
+                            src={course.assets.thumbnail || subscriptionData?.cover_image}
                             alt={course.course_name || course.id.toString()}
                             className="aspect-[5/3] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                           />

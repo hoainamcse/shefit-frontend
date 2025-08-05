@@ -262,7 +262,7 @@ export default function CoursesPage() {
                       <div key={`video-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
                         <div className="relative group">
                           <img
-                            src={course.cover_image}
+                            src={course.assets.thumbnail}
                             alt={course.course_name}
                             className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                           />
@@ -314,7 +314,7 @@ export default function CoursesPage() {
                       <div key={`zoom-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
                         <div className="relative group">
                           <img
-                            src={course.cover_image}
+                            src={course.assets.thumbnail}
                             alt={course.course_name}
                             className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                           />
@@ -366,7 +366,7 @@ export default function CoursesPage() {
                       <div key={`free-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
                         <div className="relative group">
                           <img
-                            src={course.cover_image}
+                            src={course.assets.thumbnail}
                             alt={course.course_name}
                             className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                           />
@@ -422,7 +422,7 @@ export default function CoursesPage() {
                       <div key={`all-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
                         <div className="relative group">
                           <img
-                            src={course.cover_image}
+                            src={course.assets.thumbnail}
                             alt={course.course_name}
                             className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                           />

@@ -367,7 +367,7 @@ export default function FavouriteContent() {
                         <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                       </div>
                       <img
-                        src={course.cover_image}
+                        src={course.assets.thumbnail}
                         alt={course.course_name}
                         className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
                       />

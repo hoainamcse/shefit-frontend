@@ -9,34 +9,26 @@ import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+import { courseLevelOptions } from '@/lib/label'
 import { createCourse, updateCourse } from '@/network/client/courses'
-import { courseFormOptions, courseLevelOptions } from '@/lib/label'
 
-import { MainButton } from '../buttons/main-button'
 import { Form } from '../ui/form'
-import {
-  FormCheckboxField,
-  FormInputField,
-  FormNumberField,
-  FormRadioField,
-  FormSwitchField,
-  FormTextareaField,
-} from './fields'
-import { ImageUploader } from '../image-uploader'
-import { EquipmentsTable } from '../data-table/equipments-table'
-import { EditDialog } from '../data-table/edit-dialog'
-import { MuscleGroupsTable } from '../data-table/muscle-groups-table'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
-import { SubscriptionsTable } from '../data-table/subscriptions-table'
-import { CoverMediaSelector } from './cover-media-selector'
+import { Separator } from '../ui/separator'
+import { ImageUploader } from '../image-uploader'
+import { MainButton } from '../buttons/main-button'
+import { EditSheet } from '../data-table/edit-sheet'
+import { EditDialog } from '../data-table/edit-dialog'
+import { EquipmentsTable } from '../data-table/equipments-table'
 import { FormCategoryTable } from '../data-table/form-category-table'
+import { MuscleGroupsTable } from '../data-table/muscle-groups-table'
+import { SubscriptionsTable } from '../data-table/subscriptions-table'
 import { WorkoutMethodsTable } from '../data-table/workout-methods-table'
+import { FormInputField, FormNumberField, FormRadioField, FormSwitchField, FormTextareaField } from './fields'
 
 // ! Follow CoursePayload model in models/course.ts
 const formSchema = z.object({
-  thumbnail_image_mobile: z.string().url(),
-  thumbnail_image_desktop: z.string().url(),
   description: z.string(),
   course_name: z.string().min(1, 'Tên khoá tập không được để trống'),
   course_format: z.enum(['video', 'live']),
@@ -45,8 +37,13 @@ const formSchema = z.object({
   difficulty_level: z.enum(['beginner', 'intermediate', 'advanced']),
   is_public: z.boolean(),
   is_popular: z.boolean(),
-  cover_image: z.string().url(),
-  youtube_url: z.string().url().optional(),
+  assets: z.object({
+    thumbnail: z.string().optional(),
+    mobile_cover: z.string().optional(),
+    desktop_cover: z.string().optional(),
+    youtube_cover: z.string().optional(),
+    homepage_thumbnail: z.string().optional(),
+  }),
   is_free: z.boolean(),
   summary: z.string(),
   free_amount: z.number().min(0),
@@ -55,7 +52,6 @@ const formSchema = z.object({
   muscle_group_ids: z.array(z.string()),
   subscription_ids: z.array(z.string()),
   description_homepage_1: z.string(),
-  image_homepage: z.string().url(),
   workout_method_ids: z.array(z.string()),
   display_order: z.number(),
 })
@@ -69,74 +65,62 @@ interface EditCourseFormProps {
   isOneOnOne: boolean
 }
 
-const defaultImageUrl = 'https://placehold.co/400?text=shefit.vn&font=Oswald'
-const defaultYoutubeUrl = 'https://www.youtube.com/'
+const DEFAULT_IMAGE_URL = 'https://placehold.co/400?text=shefit.vn&font=Oswald'
+const DEFAULT_YOUTUBE_URL = 'https://youtu.be/EngW7tLk6R8?si=gesFcAqfOVJB3EMy'
 
 export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: EditCourseFormProps) {
   const isEdit = !!data
   const defaultValue = {
-    thumbnail_image_mobile: defaultImageUrl,
-    thumbnail_image_desktop: defaultImageUrl,
     description: '',
     course_name: '',
     course_format: courseFormat,
     trainer: '',
-    form_category_ids: [],
     difficulty_level: 'beginner',
     is_public: true,
     is_popular: false,
-    youtube_url: defaultYoutubeUrl,
-    cover_image: defaultImageUrl,
+    assets: {
+      thumbnail: DEFAULT_IMAGE_URL,
+      mobile_cover: DEFAULT_IMAGE_URL,
+    },
     is_free: false,
     summary: '',
     free_amount: 0,
     is_one_on_one: isOneOnOne,
-    muscle_group_ids: [],
     equipment_ids: [],
-    subscription_ids: [],
-    description_homepage_1: '',
-    image_homepage: defaultImageUrl,
+    muscle_group_ids: [],
+    form_category_ids: [],
     workout_method_ids: [],
+    description_homepage_1: '',
+    subscription_ids: [],
     display_order: 1,
   } as FormValue
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: isEdit
-      ? (() => {
-          const isYoutube = typeof data.cover_image === 'string' && data.cover_image.includes('youtube.com')
-          return {
-            thumbnail_image_mobile: data.thumbnail_image_mobile || defaultImageUrl,
-            thumbnail_image_desktop: data.thumbnail_image_desktop || defaultImageUrl,
-            description: data.description,
-            course_name: data.course_name,
-            course_format: data.course_format,
-            trainer: data.trainer,
-            form_category_ids: data.relationships?.form_categories.map((mg) => mg.id.toString()) || [],
-            difficulty_level: data.difficulty_level,
-            is_public: data.is_public,
-            is_popular: data.is_popular,
-            cover_image: isYoutube ? defaultImageUrl : data.cover_image,
-            youtube_url: isYoutube ? data.cover_image : defaultYoutubeUrl,
-            is_free: data.is_free,
-            summary: data.summary,
-            free_amount: data.free_amount,
-            is_one_on_one: data.is_one_on_one,
-            description_homepage_1: data.description_homepage_1 || '',
-            image_homepage: data.image_homepage || defaultImageUrl,
-            muscle_group_ids: data.relationships?.muscle_groups.map((mg) => mg.id.toString()) || [],
-            equipment_ids: data.relationships?.equipments.map((e) => e.id.toString()) || [],
-            subscription_ids: data.relationships?.subscriptions.map((s) => s.id.toString()) || [],
-            workout_method_ids: data.relationships?.workout_methods.map((wm) => wm.id.toString()) || [],
-            display_order: data.display_order || 0,
-          }
-        })()
+      ? {
+          description: data.description,
+          course_name: data.course_name,
+          course_format: data.course_format,
+          trainer: data.trainer,
+          difficulty_level: data.difficulty_level,
+          is_public: data.is_public,
+          is_popular: data.is_popular,
+          assets: data.assets,
+          is_free: data.is_free,
+          summary: data.summary,
+          free_amount: data.free_amount,
+          is_one_on_one: data.is_one_on_one,
+          equipment_ids: data.relationships?.equipments.map((e) => e.id.toString()) || [],
+          muscle_group_ids: data.relationships?.muscle_groups.map((mg) => mg.id.toString()) || [],
+          form_category_ids: data.relationships?.form_categories.map((mg) => mg.id.toString()) || [],
+          workout_method_ids: data.relationships?.workout_methods.map((wm) => wm.id.toString()) || [],
+          description_homepage_1: data.description_homepage_1 || '',
+          subscription_ids: data.relationships?.subscriptions.map((s) => s.id.toString()) || [],
+          display_order: data.display_order || 0,
+        }
       : defaultValue,
   })
-
-  const [showYoutubeUrlInput, setShowYoutubeUrlInput] = useState(
-    isEdit && data?.cover_image?.includes('youtube.com') ? true : false
-  )
 
   const courseMutation = useMutation({
     mutationFn: (values: FormValue) =>
@@ -152,13 +136,7 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
   })
 
   const onSubmit = (values: FormValue) => {
-    if (showYoutubeUrlInput && values.youtube_url) {
-      const { youtube_url, ...submitValues } = values
-      submitValues.cover_image = youtube_url
-      courseMutation.mutate(submitValues)
-    } else {
-      courseMutation.mutate(values)
-    }
+    courseMutation.mutate(values)
   }
 
   const [openMuscleGroupsTable, setOpenMuscleGroupsTable] = useState(false)
@@ -189,43 +167,14 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
           </div>
           <FormTextareaField form={form} name="summary" label="Tóm tắt" placeholder="Nhập tóm tắt" />
           <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
-
-          <div className="grid grid-cols-2 gap-4">
-            <ImageUploader
-              form={form}
-              name="thumbnail_image_mobile"
-              label="Hình ảnh đại diện Mobile"
-              accept={{ 'image/*': [] }}
-              maxFileCount={1}
-            />
-            <ImageUploader
-              form={form}
-              name="thumbnail_image_desktop"
-              label="Hình ảnh đại diện Desktop"
-              accept={{ 'image/*': [] }}
-              maxFileCount={1}
-            />
-          </div>
-          <CoverMediaSelector
-            form={form}
-            showYoutubeUrlInput={showYoutubeUrlInput}
-            setShowYoutubeUrlInput={setShowYoutubeUrlInput}
-            coverImageName="cover_image"
-            youtubeUrlName="youtube_url"
-          />
           <FormTextareaField
             form={form}
             name="description_homepage_1"
             label="Mô tả homepage 1"
             placeholder="Nhập mô tả"
           />
-          <ImageUploader
-            form={form}
-            name="image_homepage"
-            label="Hình ảnh homepage"
-            accept={{ 'image/*': [] }}
-            maxFileCount={1}
-          />
+
+          <EditCourseAssets form={form} />
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Nhóm cơ</Label>
@@ -403,6 +352,67 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
           }}
         />
       </EditDialog>
+    </>
+  )
+}
+
+function EditCourseAssets({ form }: { form: ReturnType<typeof useForm<FormValue>> }) {
+  const [openEditSheet, setOpenEditSheet] = useState(false)
+  return (
+    <>
+      <MainButton text="Assets của khoá tập" variant="outline" type="button" onClick={() => setOpenEditSheet(true)} />
+      <EditSheet
+        open={openEditSheet}
+        onOpenChange={setOpenEditSheet}
+        title="Chỉnh sửa khoá tập"
+        description="Chỉnh sửa các thông tin liên quan đến khoá tập"
+      >
+        <div className="space-y-4">
+          <ImageUploader
+            form={form}
+            name="assets.thumbnail"
+            label="Hình ảnh đại diện"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
+          />
+          <ImageUploader
+            form={form}
+            name="assets.homepage_thumbnail"
+            label="Hình ảnh đại diện (Homepage)"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
+          />
+          <p className="text-[0.8rem] text-muted-foreground">
+            Nếu không có ảnh đại diện cho homepage, ảnh đại diện mặc định sẽ được sử dụng
+          </p>
+          <Separator />
+          <ImageUploader
+            form={form}
+            name="assets.mobile_cover"
+            label="Hình ảnh bìa (Mobile)"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
+          />
+          <ImageUploader
+            form={form}
+            name="assets.desktop_cover"
+            label="Hình ảnh bìa (Desktop)"
+            accept={{ 'image/*': [] }}
+            maxFileCount={1}
+          />
+          <p className="text-[0.8rem] text-muted-foreground">
+            Nếu không có ảnh bìa cho desktop, ảnh bìa mặc định sẽ được sử dụng
+          </p>
+          <FormInputField
+            form={form}
+            name="assets.youtube_cover"
+            label="Hình ảnh bìa (YouTube)"
+            placeholder="Nhập URL video YouTube"
+            // defaultValue={DEFAULT_YOUTUBE_URL}
+            description="Nếu không có ảnh bìa YouTube, ảnh bìa mặc định sẽ được sử dụng"
+          />
+        </div>
+      </EditSheet>
     </>
   )
 }
