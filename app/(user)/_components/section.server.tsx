@@ -218,13 +218,13 @@ async function SectionThreeData({ data }: { data: DataType['section_3'] }) {
                       </CarouselItem>
                     ))}
                     {item.mealPlans.map((mealPlan: any) => (
-                      <CarouselItem key={`mealplan-${mealPlan.id}`} className="basis-2/3 lg:basis-full">
+                      <CarouselItem key={`mealplan-${mealPlan.id}`} className="basis-3/4 lg:basis-full">
                         <div className="flex flex-col items-center gap-4">
                           <div className="relative w-full overflow-hidden">
                             <img
-                              src={mealPlan.image_homepage || '/temp/homepage-3.jpg'}
+                              src={mealPlan.assets.homepage_thumbnail}
                               alt={mealPlan.title}
-                              className="rounded-md w-full object-cover aspect-[5/7]"
+                              className="rounded-md w-full object-cover aspect-[401/566]"
                             />
                           </div>
                           <p className="text-center text-neutral-500 text-sm lg:text-lg">
