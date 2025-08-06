@@ -32,8 +32,16 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ or
                 <div className="flex-1">
                   <h3 className="font-medium text-indigo-900">{item.name}</h3>
                   <p className="text-sm text-gray-600 gap-2 flex">
-                    <span className="text-indigo-600">Kích cỡ:</span> {item?.size?.size}
-                    <span className="text-indigo-600">Màu sắc:</span> {item?.color?.name}
+                    {item?.size && (
+                      <>
+                        <span className="text-indigo-600">Kích cỡ:</span> {item?.size?.size}
+                      </>
+                    )}
+                    {item?.color && (
+                      <>
+                        <span className="text-indigo-600">Màu sắc:</span> {item?.color?.name}
+                      </>
+                    )}
                   </p>
                   <p className="text-sm text-gray-600 gap-2 flex">
                     <span className="text-indigo-600">Số lượng:</span> {item.quantity}

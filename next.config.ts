@@ -21,6 +21,10 @@ const nextConfig: NextConfig = {
         hostname: '**.amazonaws.com',
       },
       {
+        protocol: 'http',
+        hostname: '**.amazonaws.com',
+      },
+      {
         protocol: 'https',
         hostname: '**.unsplash.com',
       },
