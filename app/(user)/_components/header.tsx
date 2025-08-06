@@ -125,42 +125,44 @@ export function Header() {
           <LanguageSelector />
           {authButton}
         </div>
-        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+        <div className="justify-center items-center gap-2 xl:gap-6 text-background flex lg:hidden">
           {session ? null : (
             <Link href="/auth/login" className="text-white ml-auto px-5 text-base block lg:hidden">
               Đăng nhập
             </Link>
           )}
-          <LanguageSelector className='lg:hidden' />
-          <SheetTrigger asChild>
-            <button className="lg:hidden">
-              <MenuIcon />
-            </button>
-          </SheetTrigger>
-          <SheetContent className="max-w-sm">
-            <SheetHeader>
-              <SheetTitle className="text-ring uppercase text-lg font-bold">Menu</SheetTitle>
-              <SheetDescription />
-            </SheetHeader>
-            <div>
-              {navItems.map((item, index) => (
-                <Link
-                  key={`navItem-${index}`}
-                  href={item.url}
-                  className="flex items-center gap-1 mb-3"
-                  onClick={() => setIsSheetOpen(false)}
-                >
-                  {item.mobileIcon ? <item.mobileIcon /> : <item.icon />}
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-            <div className="flex flex-col items-center gap-8 absolute bottom-10 left-1/2 -translate-x-1/2">
-              <SheetFooter className="mt-6">{authButton}</SheetFooter>
-              <FacebookIcon />
-            </div>
-          </SheetContent>
-        </Sheet>
+          <LanguageSelector />
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+            <SheetTrigger asChild>
+              <button>
+                <MenuIcon />
+              </button>
+            </SheetTrigger>
+            <SheetContent className="max-w-sm">
+              <SheetHeader>
+                <SheetTitle className="text-ring uppercase text-lg font-bold">Menu</SheetTitle>
+                <SheetDescription />
+              </SheetHeader>
+              <div>
+                {navItems.map((item, index) => (
+                  <Link
+                    key={`navItem-${index}`}
+                    href={item.url}
+                    className="flex items-center gap-1 mb-3"
+                    onClick={() => setIsSheetOpen(false)}
+                  >
+                    {item.mobileIcon ? <item.mobileIcon /> : <item.icon />}
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+              <div className="flex flex-col items-center gap-8 absolute bottom-10 left-1/2 -translate-x-1/2">
+                <SheetFooter className="mt-6">{authButton}</SheetFooter>
+                <FacebookIcon />
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </header>
   )
