@@ -222,7 +222,7 @@ async function SectionThreeData({ data }: { data: DataType['section_3'] }) {
                         <div className="flex flex-col items-center gap-4">
                           <div className="relative w-full overflow-hidden">
                             <img
-                              src={mealPlan.assets.homepage_thumbnail}
+                              src={mealPlan.assets.homepage_thumbnail || mealPlan.assets.thumbnail}
                               alt={mealPlan.title}
                               className="rounded-md w-full object-cover aspect-[401/566]"
                             />
