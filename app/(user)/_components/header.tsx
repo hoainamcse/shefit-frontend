@@ -24,7 +24,7 @@ import { useSession } from '@/hooks/use-session'
 import { signOut } from '@/network/server/auth'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { useState } from 'react'
-import { LanguageSelector } from '@/components/language-selector'
+import { LanguageSwitcher } from '@/components/language-switcher'
 import { BusinessIcon } from '@/components/icons/BusinessIcon'
 import dynamic from 'next/dynamic'
 import { StarIcon } from '@/components/icons/StarIcon'
@@ -143,16 +143,16 @@ export function Header() {
               </Link>
             )
           )}
-          <LanguageSelector />
+          <LanguageSwitcher />
           {authButton}
         </div>
-        <div className="justify-center items-center gap-2 xl:gap-6 text-background flex lg:hidden">
+        <div className="justify-center items-center gap-4 text-background flex lg:hidden">
           {session ? null : (
-            <Link href="/auth/login" className="text-white ml-auto px-5 text-base block lg:hidden">
+            <Link href="/auth/login" className="text-white ml-auto text-base block lg:hidden">
               Đăng nhập
             </Link>
           )}
-          <LanguageSelector />
+          <LanguageSwitcher />
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <button>

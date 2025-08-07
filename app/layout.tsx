@@ -1,11 +1,19 @@
-import localFont from 'next/font/local'
 import type { Metadata } from 'next'
-import { Roboto_Flex, Roboto, Roboto_Condensed, Encode_Sans_Semi_Expanded, Black_Ops_One, Montserrat } from 'next/font/google'
+import {
+  Roboto_Flex,
+  Roboto,
+  Roboto_Condensed,
+  Encode_Sans_Semi_Expanded,
+  Black_Ops_One,
+  Montserrat,
+} from 'next/font/google'
+import Script from 'next/script'
+import localFont from 'next/font/local'
 
 import './globals.css'
-// import { ThemeProvider } from '@/components/providers/theme-provider'
-import { QueryProvider } from '@/components/providers/query-provider'
 import { Toaster } from '@/components/ui/sonner'
+import { ThemeProvider } from '@/components/providers/theme-provider'
+import { QueryProvider } from '@/components/providers/query-provider'
 
 const bdLifelessGrotesk = localFont({
   src: [
@@ -111,15 +119,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script src="/assets/lang-config.js" strategy="beforeInteractive" />
+        <Script src="/assets/translation.js" strategy="beforeInteractive" />
+        <Script src="//translate.google.com/translate_a/element.js?cb=TranslateInit" strategy="afterInteractive" />
+      </head>
       <body
-        className={`${bdLifelessGrotesk.className} ${coiny.variable} ${encode.variable} ${blackOpsOne.variable} ${roboto.variable} ${robotoCondensed.variable} ${montserrat.variable} antialiased`}
+        className={`${bdLifelessGrotesk.className} ${coiny.variable} ${encode.variable} ${blackOpsOne.variable} ${roboto.variable} ${robotoCondensed.variable} ${montserrat.variable} antialiased !top-0`}
       >
-        {/* <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange> */}
-        <QueryProvider>
-          {children}
-          <Toaster richColors position="top-center" />
-        </QueryProvider>
-        {/* </ThemeProvider> */}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <QueryProvider>
+            <div id="google_translate_element" />
+            {children}
+            <Toaster richColors position="top-center" />
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
