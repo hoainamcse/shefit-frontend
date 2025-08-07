@@ -14,7 +14,7 @@ export function Footer() {
           backgroundPosition: 'center',
         }}
       >
-        <div className="relative text-white px-28 pt-44">
+        <div className="relative text-white px-4 lg:px-8 xl:px-28 pt-44">
           <div className="w-full pt-10">
             <img src="/logo-mono-vertical.png" alt="logo-mono-vertical" className="size-[237px] ml-auto mb-20" />
             <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-4">
@@ -22,10 +22,24 @@ export function Footer() {
                 <ul className="flex flex-col gap-3">
                   <li className="font-bold text-lg lg:text-2xl font-[family-name:var(--font-roboto)]">Về Shefit</li>
                   <li className="text-[#E8E5E5] text-sm lg:text-lg">
-                    <Link href="/policy">Chính sách</Link>
+                    <Link href="/policy" className="hover:underline">
+                      Chính sách
+                    </Link>
                   </li>
                   <li className="text-[#E8E5E5] text-sm lg:text-lg">
-                    <Link href="/about">Về chúng tôi</Link>
+                    <Link href="/about" className="hover:underline">
+                      Về chúng tôi
+                    </Link>
+                  </li>
+                  <li className="text-[#E8E5E5] text-sm lg:text-lg">
+                    <Link href="/coaches" className="hover:underline">
+                      Team HLV
+                    </Link>
+                  </li>
+                  <li className="text-[#E8E5E5] text-sm lg:text-lg">
+                    <Link href="/blog" className="hover:underline">
+                      Blog Healthy
+                    </Link>
                   </li>
                 </ul>
                 <ul className="flex flex-col gap-3">
@@ -78,12 +92,20 @@ export function Footer() {
                 <div className="grid grid-cols-2 max-sm:grid-cols-1">
                   <ul className="flex flex-col gap-3 mb-2">
                     <li className="font-bold text-lg font-[family-name:var(--font-roboto)]">Về Shefit</li>
-                    <li className="text-[#E8E5E5] text-sm">
-                      <Link href="/policy">Chính sách</Link>
-                    </li>
-                    <li className="text-[#E8E5E5] text-sm">
-                      <Link href="/about">Về chúng tôi</Link>
-                    </li>
+                    <div className="grid grid-cols-2 gap-3">
+                      <li className="text-[#E8E5E5] text-sm">
+                        <Link href="/policy">Chính sách</Link>
+                      </li>
+                      <li className="text-[#E8E5E5] text-sm">
+                        <Link href="/coaches">Team HLV</Link>
+                      </li>
+                      <li className="text-[#E8E5E5] text-sm">
+                        <Link href="/about">Về chúng tôi</Link>
+                      </li>
+                      <li className="text-[#E8E5E5] text-sm">
+                        <Link href="/blog">Blog Healthy</Link>
+                      </li>
+                    </div>
                   </ul>
                   <ul className="flex flex-col gap-3">
                     <li className="font-bold text-lg uppercase font-[family-name:var(--font-roboto)]">

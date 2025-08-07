@@ -210,9 +210,19 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
       }, 0)
 
       try {
+        if (!session?.userId) {
+          throw new Error('User ID is missing');
+        }
+        
         const res = await fetchData('/v1/chatbot/chat', {
           method: 'POST',
-          body: JSON.stringify({ user_id: session.userId, message }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            user_id: session.userId, 
+            message 
+          }),
         })
 
         const reader = res.body?.getReader()
@@ -395,8 +405,8 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
                       <div className='flex justify-end w-full gap-3 mt-2 self-end max-w-[90%]'>
                         <div className='flex flex-col items-end'>
                           <div className='font-medium text-sm text-gray-900 mb-1'>Bạn</div>
-                          <div className='flex flex-col bg-blue-100 rounded-lg px-3 py-2 inline-block w-fit'>
-                            <div className='self-end text-blue-900 text-sm w-fit'>{message.content}</div>
+                          <div className='flex flex-col bg-blue-100 rounded-lg px-3 py-2 w-max max-w-full'>
+                            <div className='text-blue-900 text-sm break-words'>{message.content}</div>
                             <p className='text-xs text-gray-500 mt-1 text-right'>{message.created_at}</p>
                           </div>
                         </div>
@@ -424,9 +434,8 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
                       <Avatar className='w-8 h-8 mt-1'>
                         <AvatarFallback className='bg-primary text-background text-xs font-semibold'>S</AvatarFallback>
                       </Avatar>
-                      <div className='flex-1'>
+                      <div className='flex-1 min-w-0'>
                         <div className='font-medium text-sm text-gray-900 mb-1'>Shefit.vn</div>
-
                         <BotMessage message={message} isNewestMessage={index === 0} sendMessage={sendMessage} />
                       </div>
                     </div>

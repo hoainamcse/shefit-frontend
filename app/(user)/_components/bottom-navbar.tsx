@@ -8,7 +8,12 @@ import { AccountIconGray } from '@/components/icons/AccountIconGray'
 import { GymIcon } from '@/components/icons/GymIcon'
 import { StarIconGray } from '@/components/icons/StarIconGray'
 import { useState } from 'react'
-import { ChatBot } from '@/components/chatbot/chatbot'
+import dynamic from 'next/dynamic';
+
+const ChatBot = dynamic(
+  () => import('@/components/chatbot/chatbot').then((mod) => mod.ChatBot),
+  { ssr: false }
+);
 
 export function BottomNavbar() {
   const [isChatOpen, setIsChatOpen] = useState(false)

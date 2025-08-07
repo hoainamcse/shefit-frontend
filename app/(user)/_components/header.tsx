@@ -6,20 +6,16 @@ import Link from 'next/link'
 import { ExerciseYogaIcon } from '@/components/icons/ExerciseYogaIcon'
 import { FoodGrainsIcon } from '@/components/icons/FoodGrainsIcon'
 import { GymIcon } from '@/components/icons/GymIcon'
-import { FitnessLineIcon } from '@/components/icons/FitnessLineIcon'
-import { BookIcon } from '@/components/icons/BookIcon'
-import { AboutIcon } from '@/components/icons/AboutIcon'
-import { AboutIconBlack } from '@/components/icons/AboutIconBlack'
 import { AccountIcon } from '@/components/icons/AccountIcon'
 import { MenuIcon } from '@/components/icons/MenuIcon'
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetDescription,
 } from '@/components/ui/sheet'
 import { GalleryIcon } from '@/components/icons/GalleryIcon'
 import { MemberShipIcon } from '@/components/icons/MemberShipIcon'
@@ -29,11 +25,21 @@ import { signOut } from '@/network/server/auth'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { useState } from 'react'
 import { LanguageSelector } from '@/components/language-selector'
+import { BusinessIcon } from '@/components/icons/BusinessIcon'
+import dynamic from 'next/dynamic'
+import { StarIcon } from '@/components/icons/StarIcon'
+
+const ChatBot = dynamic(() => import('@/components/chatbot/chatbot').then((mod) => mod.ChatBot), { ssr: false })
 
 export function Header() {
+  const [isChatOpen, setIsChatOpen] = useState(false)
   const { session } = useSession()
   const { redirectToLogin } = useAuthRedirect()
   const [isSheetOpen, setIsSheetOpen] = useState(false)
+
+  const handleChatToggle = () => {
+    setIsChatOpen(!isChatOpen)
+  }
 
   const handleSignOut = () => {
     // The signOut server action will handle the redirection
@@ -43,13 +49,13 @@ export function Header() {
   const authButton = session ? (
     <MainButton
       onClick={handleSignOut}
-      className="rounded-full w-32 lg:w-[132px] lg:h-10"
+      className="rounded-full w-32 lg:w-[132px] xl:w-[152px] lg:h-10"
       text="Đăng xuất"
       variant="secondary"
     />
   ) : (
     <MainButton
-      className="rounded-full w-32 lg:w-[132px] lg:h-10"
+      className="rounded-full w-32 lg:w-[132px] xl:w-[152px] lg:h-10"
       text="Đăng nhập"
       onClick={() => {
         redirectToLogin()
@@ -63,47 +69,49 @@ export function Header() {
       label: 'Gói Member',
       icon: MemberShipIcon,
       url: '/account?tab=buy-package',
+      action: null,
     },
     {
       label: 'Khoá tập',
       icon: ExerciseYogaIcon,
       url: '/courses',
+      action: null,
     },
     {
       label: 'Thực đơn',
       icon: FoodGrainsIcon,
       url: '/meal-plans',
+      action: null,
     },
     {
-      label: 'Sản phẩm',
+      label: 'Dụng cụ',
       icon: GymIcon,
       url: '/products',
-    },
-    {
-      label: 'Team HLV',
-      icon: FitnessLineIcon,
-      url: '/coaches',
-    },
-    {
-      label: 'Về Shefit',
-      icon: AboutIcon,
-      mobileIcon: AboutIconBlack,
-      url: '/about',
-    },
-    {
-      label: 'Blog healthy',
-      icon: BookIcon,
-      url: '/blog',
+      action: null,
     },
     {
       label: 'Thư viện',
       icon: GalleryIcon,
       url: '/gallery',
+      action: null,
+    },
+    {
+      label: 'HLV 24/7',
+      icon: StarIcon,
+      url: '#',
+      action: handleChatToggle,
+    },
+    {
+      label: 'Doanh Nghiệp & VIP',
+      icon: BusinessIcon,
+      url: '#',
+      action: null,
     },
     {
       label: 'Tài khoản',
       icon: AccountIcon,
       url: '/account',
+      action: null,
     },
   ]
 
@@ -113,15 +121,28 @@ export function Header() {
         <Link href="/" className="flex-shrink-0">
           <Image src="/logo-mono-horizontal.png" alt="logo-mono-horizontal" width={136} height={40} />
         </Link>
-        <div className="justify-center items-center gap-2 xl:gap-6 text-background hidden lg:flex">
-          {navItems.map((item, index) => (
-            <Link key={`navItem-${index}`} href={item.url} className="flex flex-col items-center gap-1">
-              <div className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 flex items-center justify-center">
-                <item.icon />
-              </div>
-              <span className="whitespace-nowrap text-xs md:text-xs lg:text-base xl:text-lg">{item.label}</span>
-            </Link>
-          ))}
+        <div className="justify-center items-center gap-2 xl:gap-7 2xl:gap-12 text-background hidden lg:flex">
+          {navItems.map((item, index) =>
+            item.action ? (
+              <button
+                key={`navItem-${index}`}
+                onClick={item.action}
+                className="flex flex-col items-center gap-1 text-background"
+              >
+                <div className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 flex items-center justify-center">
+                  <item.icon />
+                </div>
+                <span className="whitespace-nowrap text-xs md:text-xs lg:text-base xl:text-lg">{item.label}</span>
+              </button>
+            ) : (
+              <Link key={`navItem-${index}`} href={item.url} className="flex flex-col items-center gap-1">
+                <div className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 flex items-center justify-center">
+                  <item.icon />
+                </div>
+                <span className="whitespace-nowrap text-xs md:text-xs lg:text-base xl:text-lg">{item.label}</span>
+              </Link>
+            )
+          )}
           <LanguageSelector />
           {authButton}
         </div>
@@ -144,17 +165,31 @@ export function Header() {
                 <SheetDescription />
               </SheetHeader>
               <div>
-                {navItems.map((item, index) => (
-                  <Link
-                    key={`navItem-${index}`}
-                    href={item.url}
-                    className="flex items-center gap-1 mb-3"
-                    onClick={() => setIsSheetOpen(false)}
-                  >
-                    {item.mobileIcon ? <item.mobileIcon /> : <item.icon />}
-                    {item.label}
-                  </Link>
-                ))}
+                {navItems.map((item, index) =>
+                  item.action ? (
+                    <button
+                      key={`navItem-${index}`}
+                      onClick={() => {
+                        item.action()
+                        setIsSheetOpen(false)
+                      }}
+                      className="flex items-center gap-1 mb-3 text-left w-full"
+                    >
+                      <item.icon />
+                      {item.label}
+                    </button>
+                  ) : (
+                    <Link
+                      key={`navItem-${index}`}
+                      href={item.url}
+                      className="flex items-center gap-1 mb-3"
+                      onClick={() => setIsSheetOpen(false)}
+                    >
+                      <item.icon />
+                      {item.label}
+                    </Link>
+                  )
+                )}
               </div>
               <div className="flex flex-col items-center gap-8 absolute bottom-10 left-1/2 -translate-x-1/2">
                 <SheetFooter className="mt-6">{authButton}</SheetFooter>
@@ -164,6 +199,7 @@ export function Header() {
           </Sheet>
         </div>
       </div>
+      {isChatOpen && <ChatBot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />}
     </header>
   )
 }
