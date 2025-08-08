@@ -1,7 +1,7 @@
 'use client'
-import { ChevronDown } from 'lucide-react'
+
 import { useEffect, useState } from 'react'
-import { parseCookies, setCookie } from 'nookies'
+import { getCookie, setCookie, deleteCookie } from 'cookies-next/client'
 
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -31,9 +31,24 @@ const LanguageSwitcher = () => {
 
   // Initialize translation engine
   useEffect(() => {
-    // 1. Read the cookie
-    const cookies = parseCookies()
-    const existingLanguageCookieValue = cookies[COOKIE_NAME]
+    // 1. Read the cookie - try to get from both possible domains
+    let existingLanguageCookieValue: string | undefined
+
+    // Try reading from current domain first
+    const cookie1 = getCookie(COOKIE_NAME)
+    if (cookie1) {
+      existingLanguageCookieValue = cookie1.toString()
+    }
+
+    // If not found, try reading with domain option
+    if (!existingLanguageCookieValue) {
+      const cookie2 = getCookie(COOKIE_NAME, {
+        domain: '.' + window.location.hostname.replace(/^www\./, ''),
+      })
+      if (cookie2) {
+        existingLanguageCookieValue = cookie2.toString()
+      }
+    }
 
     let languageValue
     if (existingLanguageCookieValue) {
@@ -66,12 +81,41 @@ const LanguageSwitcher = () => {
   const switchLanguage = (lang: string) => () => {
     // We just need to set the related cookie and reload the page
     // "/auto/" prefix is Google's definition as far as a cookie name
-    setCookie(null, COOKIE_NAME, '/auto/' + lang)
+    const cookieValue = '/auto/' + lang
+    const hostname = window.location.hostname.replace(/^www\./, '')
+
+    // Clear cookies using document.cookie for more reliable deletion
+    const domains = [hostname, '.' + hostname, window.location.hostname, '.' + window.location.hostname]
+
+    const paths = ['/', '']
+
+    // Delete all possible combinations
+    domains.forEach((domain) => {
+      paths.forEach((path) => {
+        // Use document.cookie for more direct control
+        document.cookie = `${COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path}; domain=${domain};`
+        document.cookie = `${COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path};`
+
+        // Also try with cookies-next
+        deleteCookie(COOKIE_NAME, { domain, path })
+      })
+    })
+
+    // Also try without domain/path specification
+    deleteCookie(COOKIE_NAME)
+    document.cookie = `${COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC;`
+
+    // Set the new cookie - only use current hostname to avoid subdomain wildcard
+    setCookie(COOKIE_NAME, cookieValue, {
+      path: '/',
+    })
+
     window.location.reload()
   }
 
-  const currentName = languageConfig.languages.find((ld: LanguageDescriptor) =>
-    currentLanguage === ld.name || (currentLanguage === 'auto' && languageConfig.defaultLanguage === ld.name)
+  const currentName = languageConfig.languages.find(
+    (ld: LanguageDescriptor) =>
+      currentLanguage === ld.name || (currentLanguage === 'auto' && languageConfig.defaultLanguage === ld.name)
   )?.name
 
   return (
