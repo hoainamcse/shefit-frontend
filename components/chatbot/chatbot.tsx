@@ -10,7 +10,7 @@ import { getGreetings } from '@/network/client/chatbot'
 import { Message, Greeting } from '@/models/chatbot'
 
 import { Button } from '../ui/button'
-import { Input } from '../ui/input'
+import { Input } from '../ui/custom-input-chatbot'
 import { Avatar, AvatarFallback } from '../ui/avatar'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -211,17 +211,17 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
 
       try {
         if (!session?.userId) {
-          throw new Error('User ID is missing');
+          throw new Error('User ID is missing')
         }
-        
+
         const res = await fetchData('/v1/chatbot/chat', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ 
-            user_id: session.userId, 
-            message 
+          body: JSON.stringify({
+            user_id: session.userId,
+            message,
           }),
         })
 
@@ -367,31 +367,31 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
           : 'hidden'
       )}
     >
-      <div className='w-full h-full max-h-full bg-primary rounded-xl shadow-md flex flex-col p-3'>
+      <div className="w-full h-full max-h-full bg-primary rounded-xl shadow-md flex flex-col p-3">
         {/* Header */}
-        <div className='flex items-center justify-between'>
-          <p className='text-background font-semibold'>HLV 24/7 - Đồng hành cùng vóc dáng đẹp</p>
-          <Button variant='link' size='icon' onClick={onClose} className='text-background'>
-            <X className='size-5' />
+        <div className="flex items-center justify-between">
+          <p className="text-background font-semibold">HLV 24/7 - Đồng hành cùng vóc dáng đẹp</p>
+          <Button variant="link" size="icon" onClick={onClose} className="text-background">
+            <X className="size-5" />
           </Button>
         </div>
 
         {/* Messages */}
-        <div className='flex-1 min-h-0 flex flex-col bg-background rounded-3xl mb-4 relative overflow-hidden'>
+        <div className="flex-1 min-h-0 flex flex-col bg-background rounded-3xl mb-4 relative overflow-hidden">
           <div
             className={`flex-1 overflow-y-auto p-4 flex flex-col-reverse ${styles.messagesContainerScrollbar}`}
             ref={messagesContainerRef}
           >
-            <div className='flex flex-col-reverse'>
+            <div className="flex flex-col-reverse">
               {/* The ... component indicates that is waiting for response from AI */}
               {isLoading && (
-                <div className='flex items-start gap-3 mt-2'>
-                  <Avatar className='w-8 h-8 mt-1'>
-                    <AvatarFallback className='bg-primary text-background text-xs font-semibold'>R</AvatarFallback>
+                <div className="flex items-start gap-3 mt-2">
+                  <Avatar className="w-8 h-8 mt-1">
+                    <AvatarFallback className="bg-primary text-background text-xs font-semibold">R</AvatarFallback>
                   </Avatar>
-                  <div className='flex-1'>
-                    <div className='font-medium text-sm text-gray-900 mb-1'>Shefit.vn</div>
-                    <div className='bg-gray-100 text-gray-800 rounded-lg text-sm inline-block'>
+                  <div className="flex-1">
+                    <div className="font-medium text-sm text-gray-900 mb-1">Shefit.vn</div>
+                    <div className="bg-gray-100 text-gray-800 rounded-lg text-sm inline-block">
                       <TypingIndicator />
                     </div>
                   </div>
@@ -399,28 +399,28 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
               )}
 
               {messages?.map((message, index) => (
-                <div key={index} className='flex items-start gap-3'>
+                <div key={index} className="flex items-start gap-3">
                   {message.role === 'user' ? (
-                    <div className='w-full flex flex-col'>
-                      <div className='flex justify-end w-full gap-3 mt-2 self-end max-w-[90%]'>
-                        <div className='flex flex-col items-end'>
-                          <div className='font-medium text-sm text-gray-900 mb-1'>Bạn</div>
-                          <div className='flex flex-col bg-blue-100 rounded-lg px-3 py-2 w-max max-w-full'>
-                            <div className='text-blue-900 text-sm break-words'>{message.content}</div>
-                            <p className='text-xs text-gray-500 mt-1 text-right'>{message.created_at}</p>
+                    <div className="w-full flex flex-col">
+                      <div className="flex justify-end w-full gap-3 mt-2 self-end max-w-[90%]">
+                        <div className="flex flex-col items-end">
+                          <div className="font-medium text-sm text-gray-900 mb-1">Bạn</div>
+                          <div className="flex flex-col bg-blue-100 rounded-lg px-3 py-2 w-max max-w-full">
+                            <div className="text-blue-900 text-sm break-words">{message.content}</div>
+                            <p className="text-xs text-gray-500 mt-1 text-right">{message.created_at}</p>
                           </div>
                         </div>
-                        <Avatar className='w-8 h-8 mt-1'>
-                          <AvatarFallback className='bg-blue-500 text-background text-xs'>U</AvatarFallback>
+                        <Avatar className="w-8 h-8 mt-1">
+                          <AvatarFallback className="bg-blue-500 text-background text-xs">U</AvatarFallback>
                         </Avatar>
                       </div>
 
                       {idOfMessageGotError === message.id && (
-                        <div className='flex self-end items-center gap-2 mt-2 py-2 px-2 mr-[44px] text-red-500 text-sm bg-red-50 border border-red-200 rounded-lg w-fit'>
+                        <div className="flex self-end items-center gap-2 mt-2 py-2 px-2 mr-[44px] text-red-500 text-sm bg-red-50 border border-red-200 rounded-lg w-fit">
                           Gửi tin nhắn thất bại
                           <Button
-                            variant='secondary'
-                            className='bg-red-100 px-2 h-5 text-red-500 text-xs'
+                            variant="secondary"
+                            className="bg-red-100 px-2 h-5 text-red-500 text-xs"
                             onClick={() => sendMessage(undefined, false, true)}
                           >
                             <RefreshCcw />
@@ -430,12 +430,12 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
                       )}
                     </div>
                   ) : (
-                    <div className='flex justify-start w-full gap-3 mt-2'>
-                      <Avatar className='w-8 h-8 mt-1'>
-                        <AvatarFallback className='bg-primary text-background text-xs font-semibold'>S</AvatarFallback>
+                    <div className="flex justify-start w-full gap-3 mt-2">
+                      <Avatar className="w-8 h-8 mt-1">
+                        <AvatarFallback className="bg-primary text-background text-xs font-semibold">S</AvatarFallback>
                       </Avatar>
-                      <div className='flex-1 min-w-0'>
-                        <div className='font-medium text-sm text-gray-900 mb-1'>Shefit.vn</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-sm text-gray-900 mb-1">Shefit.vn</div>
                         <BotMessage message={message} isNewestMessage={index === 0} sendMessage={sendMessage} />
                       </div>
                     </div>
@@ -445,14 +445,14 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
             </div>
 
             {session ? (
-              <div className='flex-1 flex items-center justify-center'>
-                {isLoadingMessages && <Loader2 className='animate-spin' />}
+              <div className="flex-1 flex items-center justify-center">
+                {isLoadingMessages && <Loader2 className="animate-spin" />}
                 {fetchError && (
-                  <div className='flex items-center gap-2 mt-2 py-2 px-2 text-red-500 text-sm bg-red-50 border border-red-200 rounded-lg inline-block w-fit'>
+                  <div className="flex items-center gap-2 mt-2 py-2 px-2 text-red-500 text-sm bg-red-50 border border-red-200 rounded-lg inline-block w-fit">
                     Tải tin nhắn thất bại
                     <Button
-                      variant='secondary'
-                      className='bg-red-100 px-2 h-5 text-red-500 text-xs'
+                      variant="secondary"
+                      className="bg-red-100 px-2 h-5 text-red-500 text-xs"
                       onClick={() => getMessages()}
                     >
                       <RefreshCcw />
@@ -495,10 +495,10 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
                 )}
               </div>
             ) : (
-              <div className='flex-1 flex items-center justify-center'>
-                <div className='w-full text-center text-foreground'>
+              <div className="flex-1 flex items-center justify-center">
+                <div className="w-full text-center text-foreground">
                   Bạn phải{' '}
-                  <Link href='/auth/login' className='text-primary' onClick={onClose}>
+                  <Link href="/auth/login" className="text-primary" onClick={onClose}>
                     đăng nhập
                   </Link>{' '}
                   để sử dụng tính năng này
@@ -510,7 +510,7 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
 
             {isShowingMoveDownButton && (
               <Button
-                className='absolute bottom-[20px] left-1/2 transform -translate-x-1/2 text-background rounded-full shadow-lg hover:bg-[#FFAEB0]/80'
+                className="absolute bottom-[20px] left-1/2 transform -translate-x-1/2 text-background rounded-full shadow-lg hover:bg-[#FFAEB0]/80"
                 onClick={scrollToBottom}
               >
                 <ArrowDown />
@@ -521,19 +521,19 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
 
         {/* Input Area */}
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
-              name='message'
+              name="message"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <div className='flex items-center gap-2 relative'>
+                    <div className="flex items-center gap-2 relative">
                       <Popover open={isShowingPromptSuggestions} onOpenChange={setIsShowingPromptSuggestions}>
-                        <PopoverTrigger className='absolute left-[6px] top-1/2 -translate-y-1/2 p-0 bg-primary size-9 rounded-full flex justify-center items-center'>
-                          <MenuIcon className='text-background' size={20} />
+                        <PopoverTrigger className="absolute left-[6px] top-1/2 -translate-y-1/2 p-0 bg-primary size-9 rounded-full flex justify-center items-center">
+                          <MenuIcon className="text-background" size={20} />
                         </PopoverTrigger>
-                        <PopoverContent className='p-0 w-[320px]'>
+                        <PopoverContent className="p-0 w-[320px]">
                           <PromptSuggestions
                             greetings={greetings}
                             handleClose={() => setIsShowingPromptSuggestions(false)}
@@ -547,16 +547,23 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
                       </Popover>
 
                       <Input
-                        placeholder='Nhập tin nhắn...'
-                        className='bg-white text-foreground  rounded-full !h-12 px-[52px]'
+                        placeholder="Nhập tin nhắn..."
+                        className="bg-white text-foreground rounded-full !min-h-12 px-[52px]"
                         disabled={!session}
+                        minRows={1}
+                        maxRows={4}
+                        autoResize={true}
+                        onEnterPress={(e) => {
+                          e.preventDefault()
+                          form.handleSubmit(onSubmit)()
+                        }}
                         {...field}
                       />
                       <Button
-                        type='submit'
-                        className='absolute right-[6px] top-1/2 -translate-y-1/2 p-0 bg-primary size-9 rounded-full'
+                        type="submit"
+                        className="absolute right-[6px] top-1/2 -translate-y-1/2 p-0 bg-primary size-9 rounded-full"
                         disabled={!field.value}
-                        size='icon'
+                        size="icon"
                       >
                         <ArrowRight />
                       </Button>
@@ -584,7 +591,7 @@ export function ChatBotButton() {
         }}
         onClick={() => setIsOpen(!isOpen)}
         icon={Star}
-        text='HLV 24/7'
+        text="HLV 24/7"
       />
       <ChatBot isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
@@ -593,11 +600,11 @@ export function ChatBotButton() {
 
 const TypingIndicator = () => {
   return (
-    <div className='flex items-center gap-1 px-3 py-2'>
-      <div className='flex gap-1'>
-        <div className='w-2 h-2 bg-gray-400 rounded-full animate-bounce' style={{ animationDelay: '0ms' }}></div>
-        <div className='w-2 h-2 bg-gray-400 rounded-full animate-bounce' style={{ animationDelay: '150ms' }}></div>
-        <div className='w-2 h-2 bg-gray-400 rounded-full animate-bounce' style={{ animationDelay: '300ms' }}></div>
+    <div className="flex items-center gap-1 px-3 py-2">
+      <div className="flex gap-1">
+        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
       </div>
     </div>
   )

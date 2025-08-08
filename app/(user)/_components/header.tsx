@@ -104,7 +104,7 @@ export function Header() {
     {
       label: 'Doanh Nghiệp & VIP',
       icon: BusinessIcon,
-      url: '#',
+      url: '/business',
       action: null,
     },
     {

@@ -6,7 +6,7 @@ import { HtmlContent } from '@/components/html-content'
 export default async function BlogPage() {
   const blogs = await getBlogs()
   return (
-    <div className="flex flex-col pt-10 lg:pt-16 xl:pt-[93px]">
+    <div className="flex flex-col pt-10 lg:pt-16">
       <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-10 lg:mb-16 xl:mb-[90px]">
         <p className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl">
           Blog healthy
