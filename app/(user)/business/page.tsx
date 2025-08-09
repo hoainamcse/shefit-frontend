@@ -3,7 +3,7 @@ import { HtmlContent } from '@/components/html-content'
 
 export const dynamic = 'force-dynamic'
 
-const configurationID = 3
+const configurationID = 4
 
 export default async function BusinessPage() {
   const response = await getConfiguration(configurationID)

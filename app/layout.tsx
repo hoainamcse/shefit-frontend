@@ -127,7 +127,7 @@ export default function RootLayout({
       <body
         className={`${bdLifelessGrotesk.className} ${coiny.variable} ${encode.variable} ${blackOpsOne.variable} ${roboto.variable} ${robotoCondensed.variable} ${montserrat.variable} antialiased !top-0`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <QueryProvider>
             <div id="google_translate_element" />
             {children}

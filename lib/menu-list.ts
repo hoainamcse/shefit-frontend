@@ -60,6 +60,10 @@ export function getMenuList(pathname: string): Group[] {
               href: '/admin/policy',
               label: 'Chính sách',
             },
+            {
+              href: '/admin/business',
+              label: 'Business & VIP',
+            },
           ],
         },
         {
