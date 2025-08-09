@@ -10,7 +10,7 @@ import { getGreetings } from '@/network/client/chatbot'
 import { Message, Greeting } from '@/models/chatbot'
 
 import { Button } from '../ui/button'
-import { Input } from '../ui/input'
+import { Input } from '../ui/custom-input-chatbot'
 import { Avatar, AvatarFallback } from '../ui/avatar'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -491,8 +491,15 @@ export default function ChatBotPreview({ className }: ChatBotPreviewProps) {
 
                       <Input
                         placeholder="Nhập tin nhắn..."
-                        className="bg-white text-foreground rounded-full !h-10 px-[52px] border-border"
+                        className="bg-white text-foreground rounded-full !min-h-12 px-[52px]"
                         disabled={!session}
+                        minRows={1}
+                        maxRows={4}
+                        autoResize={true}
+                        onEnterPress={(e) => {
+                          e.preventDefault()
+                          form.handleSubmit(onSubmit)()
+                        }}
                         {...field}
                       />
                       <Button
