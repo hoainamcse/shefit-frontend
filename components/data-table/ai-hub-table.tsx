@@ -15,7 +15,8 @@ import { AddButton } from '../buttons/add-button'
 import { EditSheet } from './edit-sheet'
 import { EditAIHubForm } from '../forms/edit-ai-hub-form'
 import { Greeting } from '@/models/chatbot'
-import { deleteBulkGreeting, deleteGreeting, getListGreeting, queryKeyGreetings } from '@/network/client/chatbot'
+import { deleteBulkGreeting, deleteGreeting, getListGreeting, importGreetingExcel, queryKeyGreetings } from '@/network/client/chatbot'
+import { ExcelImportDialog } from '../excel-import-dialog'
 
 interface AIHubTableProps {
   onConfirmRowSelection?: (selectedRows: Greeting[]) => void
@@ -176,6 +177,13 @@ export function AIHubTable({ onConfirmRowSelection }: AIHubTableProps) {
               />
             )}
             <AddButton text="Thêm câu hỏi" onClick={onAddRow} />
+            <ExcelImportDialog
+              title="Messages"
+              handleSubmit={async (file: File) => {
+                await importGreetingExcel(file)
+                refetch()
+              }}
+            />
           </>
         }
       />

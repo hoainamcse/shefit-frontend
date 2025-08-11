@@ -55,6 +55,22 @@ export async function deleteBulkGreeting(ids: Greeting['id'][]): Promise<ApiResp
   return response.json()
 }
 
+export async function importGreetingExcel(file: File): Promise<ApiResponse<Greeting>> {
+  const formData = new FormData()
+  formData.append('file', file, file.name)
+
+  const response = await fetchData(
+    '/v1/greeting/import-excel',
+    {
+      method: 'POST',
+      body: formData,
+    },
+    false
+  )
+
+  return response.json()
+}
+
 export async function getUserTokenUsage(userId: string): Promise<ApiResponse<UserTokenUsage>> {
   const response = await fetchData(`/v1/chatbot/token-usage/users/${userId}`, {
     method: 'GET',
@@ -69,13 +85,13 @@ export async function getUserChatbotSettings(userId: string): Promise<ApiRespons
   return response.json()
 }
 
-export async function updateUserChatbotSettings(userId: string, data: Omit<UserChatbotSettings, 'id'>): Promise<ApiResponse<UserChatbotSettings>> {
+export async function updateUserChatbotSettings(
+  userId: string,
+  data: Omit<UserChatbotSettings, 'id'>
+): Promise<ApiResponse<UserChatbotSettings>> {
   const response = await fetchData(`/v1/users/${userId}/chatbot/setting`, {
     method: 'PUT',
     body: JSON.stringify(data),
   })
   return response.json()
 }
-
-
-
