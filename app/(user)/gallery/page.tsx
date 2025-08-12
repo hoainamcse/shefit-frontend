@@ -20,6 +20,8 @@ export default function Gallery() {
   const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const [dialogOpen, setDialogOpen] = useState<string | false>(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isMuscleGroupsLoading, setIsMuscleGroupsLoading] = useState(true)
+  const [isDietsLoading, setIsDietsLoading] = useState(true)
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false)
   const [isCheckingSubscription, setIsCheckingSubscription] = useState(true)
   const [muscleGroupsData, setMuscleGroupsData] = useState<ListResponse<MuscleGroup>>({
@@ -73,15 +75,34 @@ export default function Gallery() {
   }, [session])
 
   useEffect(() => {
+    setIsLoading(isMuscleGroupsLoading || isDietsLoading)
+  }, [isMuscleGroupsLoading, isDietsLoading])
+
+  useEffect(() => {
+    if (!isLoading && !isCheckingSubscription) {
+      const timer = setTimeout(() => {
+        if (window.location.hash === '#dishes') {
+          const element = document.getElementById('dishes')
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
+        }
+      }, 100)
+
+      return () => clearTimeout(timer)
+    }
+  }, [isLoading, isCheckingSubscription])
+
+  useEffect(() => {
     async function fetchMuscleGroups() {
       try {
-        setIsLoading(true)
+        setIsMuscleGroupsLoading(true)
         const data = await getMuscleGroups()
         setMuscleGroupsData(data)
       } catch (error) {
         console.error('Error fetching muscle groups:', error)
       } finally {
-        setIsLoading(false)
+        setIsMuscleGroupsLoading(false)
       }
     }
 
@@ -91,13 +112,13 @@ export default function Gallery() {
   useEffect(() => {
     async function fetchDiets() {
       try {
-        setIsLoading(true)
+        setIsDietsLoading(true)
         const data = await getDiets()
         setDietsData(data)
       } catch (error) {
         console.error('Error fetching diets:', error)
       } finally {
-        setIsLoading(false)
+        setIsDietsLoading(false)
       }
     }
 
@@ -198,7 +219,10 @@ export default function Gallery() {
         </div>
       </div>
       <div>
-        <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-10 lg:mb-16 xl:mb-[90px]">
+        <div
+          id="dishes"
+          className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-10 lg:mb-16 xl:mb-[90px]"
+        >
           <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl">
             Món theo chế độ ăn
           </div>
@@ -217,7 +241,11 @@ export default function Gallery() {
               <Link href={`/gallery/meal/${diet.id}`} key={diet.id}>
                 <div key={`menu-${diet.id}`} className="text-lg overflow-hidden">
                   <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square">
-                    <img src={diet.image} alt="" className="object-cover rounded-[8px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300" />
+                    <img
+                      src={diet.image}
+                      alt=""
+                      className="object-cover rounded-[8px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300"
+                    />
                   </div>
                   <p className="font-medium lg:font-bold text-sm lg:text-lg">{diet.name}</p>
                 </div>
@@ -237,7 +265,11 @@ export default function Gallery() {
                       onClick={() => setDialogOpen(`diet-${diet.id}`)}
                     >
                       <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square">
-                        <img src={diet.image} alt="" className="object-cover rounded-[8px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300" />
+                        <img
+                          src={diet.image}
+                          alt=""
+                          className="object-cover rounded-[8px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300"
+                        />
                       </div>
                       <p className="font-medium lg:font-bold text-sm lg:text-lg">{diet.name}</p>
                     </div>

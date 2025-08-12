@@ -14,6 +14,8 @@ import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { QueryProvider } from '@/components/providers/query-provider'
+import { ScrollRestoration } from '@/components/scroll-restoration'
+import { GlobalScrollToTop } from '@/components/global-scroll-to-top'
 
 const bdLifelessGrotesk = localFont({
   src: [
@@ -129,6 +131,8 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <QueryProvider>
+            <GlobalScrollToTop />
+            <ScrollRestoration />
             <div id="google_translate_element" />
             {children}
             <Toaster richColors position="top-center" />

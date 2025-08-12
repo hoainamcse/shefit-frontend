@@ -8,12 +8,10 @@ import { getUserSubscriptions } from '@/network/client/users'
 import { getSubscription } from '@/network/client/subscriptions'
 import { useEffect, useState } from 'react'
 import { UserSubscriptionDetail } from '@/models/user-subscriptions'
+import { Subscription } from '@/models/subscription'
 
 type EnhancedSubscription = UserSubscriptionDetail & {
-  name?: string
-  description_1?: string
-  description_2?: string
-  cover_image?: string
+  subscriptionDetails?: Subscription
   isValid?: boolean
 }
 
@@ -30,16 +28,16 @@ export default function PurchasedPackage() {
   }
 
   useEffect(() => {
+    let isMounted = true
+
     async function fetchUserSubscriptions() {
-      if (!session) return
+      if (!session?.userId) return
 
       try {
         setIsLoading(true)
         const response = await getUserSubscriptions(session.userId)
 
-        if (response.data && response.data.length > 0) {
-          setSubscriptions(response.data)
-
+        if (isMounted && response.data && response.data.length > 0) {
           try {
             const enhancedSubscriptions = await Promise.all(
               response.data.map(async (sub) => {
@@ -51,10 +49,7 @@ export default function PurchasedPackage() {
                     if (detailsResponse.data) {
                       return {
                         ...sub,
-                        name: detailsResponse.data.name,
-                        description_1: detailsResponse.data.description_1,
-                        description_2: detailsResponse.data.description_2,
-                        thumbnail: detailsResponse.data.assets.thumbnail,
+                        subscriptionDetails: detailsResponse.data,
                         isValid,
                       }
                     }
@@ -64,7 +59,7 @@ export default function PurchasedPackage() {
                     isValid: sub.subscription_end_at ? isSubscriptionValid(sub.subscription_end_at) : false,
                   }
                 } catch (err) {
-                  console.error(`Error fetching details for subscription ${sub.subscription}:`, err)
+                  console.error(`Error fetching details for subscription ${sub.subscription.id}:`, err)
                   return {
                     ...sub,
                     isValid: sub.subscription_end_at ? isSubscriptionValid(sub.subscription_end_at) : false,
@@ -73,23 +68,41 @@ export default function PurchasedPackage() {
               })
             )
 
-            setSubscriptions(enhancedSubscriptions)
+            if (isMounted) {
+              setSubscriptions(enhancedSubscriptions)
+            }
           } catch (error) {
             console.error('Error enhancing subscriptions:', error)
+            if (isMounted) {
+              setSubscriptions(
+                response.data.map((sub) => ({
+                  ...sub,
+                  isValid: sub.subscription_end_at ? isSubscriptionValid(sub.subscription_end_at) : false,
+                }))
+              )
+            }
           }
-        } else {
+        } else if (isMounted) {
           setSubscriptions([])
         }
       } catch (error) {
         console.error('Error fetching user subscriptions:', error)
-        setSubscriptions([])
+        if (isMounted) {
+          setSubscriptions([])
+        }
       } finally {
-        setIsLoading(false)
+        if (isMounted) {
+          setIsLoading(false)
+        }
       }
     }
 
     fetchUserSubscriptions()
-  }, [session])
+
+    return () => {
+      isMounted = false
+    }
+  }, [session?.userId])
 
   const formatDate = (dateString: string) => {
     try {
@@ -119,7 +132,7 @@ export default function PurchasedPackage() {
                 <div className="flex flex-col gap-5 justify-between h-full w-full 2xl:w-1/2">
                   <div className="flex flex-col items-start justify-between gap-2">
                     <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-[#000000] text-lg lg:text-xl">
-                      {subscription.name || `Gói #${subscription.subscription.id}`}
+                      {subscription.subscriptionDetails?.name || `Gói #${subscription.subscription.id}`}
                     </div>
                     <Button
                       className={`block 2xl:hidden text-white text-xs rounded-none border border-[#000000] md:text-sm lg:text-lg w-[100px] h-[36px] lg:w-[160px] lg:h-[46px] ${
@@ -163,7 +176,7 @@ export default function PurchasedPackage() {
                     {subscription.isValid ? 'Còn hạn' : 'Hết hạn'}
                   </Button>
                   <img
-                    src={subscription.cover_image}
+                    src={subscription.subscriptionDetails?.assets?.thumbnail}
                     alt=""
                     className="aspect-[400/255] object-cover rounded-[20px] w-full h-auto"
                   />

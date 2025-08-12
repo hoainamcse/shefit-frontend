@@ -136,7 +136,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
           className="w-full aspect-[400/255] object-cover block md:hidden"
         />
       </div>
-      <div className="flex flex-col mx-auto max-w-[1800px] gap-10 lg:mt-5 mt-2 w-full pb-24 p-3 xl:p-4">
+      <div className="flex flex-col mx-auto max-w-[1800px] gap-10 lg:mt-5 mt-2 w-full md:pb-24 pb-0 p-3 xl:p-4">
         <img
           src={course?.data?.assets.desktop_cover || course?.data?.assets.mobile_cover || course?.data?.assets.thumbnail}
           alt={`${courseId}`}

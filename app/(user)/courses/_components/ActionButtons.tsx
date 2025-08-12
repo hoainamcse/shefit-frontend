@@ -9,6 +9,7 @@ import { UserCourse } from '@/models/user-courses'
 import { addFavouriteCourse } from '@/network/client/user-favourites'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { getUserSubscriptions } from '@/network/client/users'
+import { useScrollToTop } from '@/hooks/use-scroll-to-top'
 interface UserCourseItem extends UserCourse {
   is_active: boolean
   start_date: string
@@ -28,6 +29,7 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [courseStatus, setCourseStatus] = useState<'checking' | 'exists' | 'not_found'>('checking')
   const { redirectToLogin } = useAuthRedirect()
+  const { scrollToTopInstant } = useScrollToTop()
 
   useEffect(() => {
     const checkUserCourse = async () => {
@@ -72,6 +74,7 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
 
   const handleStartClick = async (e: React.MouseEvent) => {
     handleToggleDetails()
+    scrollToTopInstant()
   }
 
   const handleLoginClick = () => {
@@ -83,11 +86,14 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
 
   return (
     <div>
-      <div className="lg:gap-5 gap-3 w-2/3 mx-auto mb-10 flex justify-center mt-20 max-lg:w-full max-lg:px-3">
+      <div className="lg:gap-5 gap-3 w-2/3 mx-auto mb-10 flex justify-center md:mt-20 mt-12 max-lg:w-full max-lg:px-3">
         <div className={showSaveButton ? 'w-1/2' : 'w-full'}>
           {showDetails ? (
             <Button
-              onClick={handleToggleDetails}
+              onClick={() => {
+                handleToggleDetails()
+                scrollToTopInstant()
+              }}
               className="w-full rounded-full text-lg bg-[#13D8A7] text-white hover:bg-[#11c296] h-14"
             >
               Trở về

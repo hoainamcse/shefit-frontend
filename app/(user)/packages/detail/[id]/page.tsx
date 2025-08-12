@@ -8,6 +8,7 @@ import AcctionButton from './_components/AcctionButton'
 import SubscriptionInfo from './_components/SubscriptionInfo'
 import { BackIcon } from '@/components/icons/BackIcon'
 import { HtmlContent } from '@/components/html-content'
+import { Button } from '@/components/ui/button'
 
 export default async function PackageDetail({ params }: { params: Promise<{ id: string }> }) {
   const subscription = await getSubscription(Number((await params).id))
@@ -34,14 +35,19 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
           href="/account?tab=buy-package"
           className="lg:hidden absolute top-5 left-5 lg:left-20 flex items-center gap-[10px] cursor-pointer"
         >
-          <BackIcon color="#000000" style={{ marginBottom: '4px' }} />
-          <div className="text-lg text-[#000000] font-semibold">Quay về</div>
+          <Button className="p-0 flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.9),0_0_8px_rgba(0,0,0,0.7)] shadow-none font-medium">
+            <BackIcon /> Quay về
+          </Button> 
         </Link>
       </div>
       <div className="flex mx-auto flex-col gap-10 mt-10 w-full pb-24 px-4 lg:px-14">
         <div className="mb-20 flex flex-col gap-10">
           <img
-            src={subscriptionData?.assets.desktop_cover || subscriptionData?.assets.mobile_cover || subscriptionData?.assets.thumbnail}
+            src={
+              subscriptionData?.assets.desktop_cover ||
+              subscriptionData?.assets.mobile_cover ||
+              subscriptionData?.assets.thumbnail
+            }
             alt={`${subscriptionData?.name}`}
             className="lg:rounded-xl rounded-none mb-4 w-full object-cover lg:aspect-[1800/681] hidden lg:block"
           />

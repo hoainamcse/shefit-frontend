@@ -2,6 +2,8 @@ import { getDayCircuits, getCourseWeeks, getWeekDays } from '@/network/client/co
 import { notFound } from 'next/navigation'
 import { VideoClientComponent } from './VideoClientComponent'
 import { Course } from '@/models/course'
+import Link from 'next/link'
+import { BackIconBlack } from '@/components/icons/BackIconBlack'
 
 export default async function Video({ params }: { params: Promise<{ course_id: Course['id']; detail: string[] }> }) {
   const { course_id, detail } = await params
@@ -23,7 +25,18 @@ export default async function Video({ params }: { params: Promise<{ course_id: C
 
     const circuits = await getDayCircuits(course_id, currentWeek.id, currentDay.id)
 
-    return <VideoClientComponent circuits={circuits} />
+    return (
+      <div className="flex flex-col">
+        <Link
+          href={`/courses/${course_id}/video-classes`}
+          className="inline-flex items-center gap-2 text-lg font-semibold transition-colors px-4 mt-4 w-36"
+        >
+          <BackIconBlack className="w-5 h-5" />
+          <span>Quay về</span>
+        </Link>
+        <VideoClientComponent circuits={circuits} />
+      </div>
+    )
   } catch (error) {
     console.error('Error fetching video class data:', error)
     notFound()

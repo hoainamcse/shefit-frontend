@@ -268,7 +268,7 @@ export default function ListDishes() {
         ))}
       </div>
       <div className="mt-6">
-        <Link href="/gallery">
+        <Link href="/gallery#dishes">
           <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg lg:mt-12 mt-6">
             Thêm món ăn
           </Button>

@@ -3,10 +3,10 @@
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { useSession } from '@/hooks/use-session'
-import { addFavouriteExercise } from '@/network/client/user-favourites'
+import { addFavouriteExercise, getFavouriteExercises } from '@/network/client/user-favourites'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 interface ActionButtonsProps {
   exerciseId: string
 }
@@ -15,6 +15,34 @@ export default function ActionButtons({ exerciseId }: ActionButtonsProps) {
   const { session } = useSession()
   const { redirectToLogin } = useAuthRedirect()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
+  const [isFavourite, setIsFavourite] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    const checkFavouriteStatus = async () => {
+      if (!session?.userId) {
+        setIsFavourite(false)
+        return
+      }
+
+      setIsLoading(true)
+      try {
+        const response = await getFavouriteExercises(session.userId)
+        const favouriteExercises = response.data || []
+        const isAlreadyFavourite = favouriteExercises.some(
+          (favourite: any) => favourite.exercise.id.toString() === exerciseId
+        )
+        setIsFavourite(isAlreadyFavourite)
+      } catch (error) {
+        console.error('Error checking favourite status:', error)
+        setIsFavourite(false)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    checkFavouriteStatus()
+  }, [session?.userId, exerciseId])
 
   const handleSaveExercise = async (exerciseId: string) => {
     if (!session) {
@@ -24,6 +52,7 @@ export default function ActionButtons({ exerciseId }: ActionButtonsProps) {
 
     try {
       await addFavouriteExercise(session.userId, exerciseId)
+      setIsFavourite(true)
       toast.success('Đã lưu bài tập thành công!')
     } catch (error) {
       console.error('Error saving exercise:', error)
@@ -37,12 +66,17 @@ export default function ActionButtons({ exerciseId }: ActionButtonsProps) {
   }
 
   return (
-    <div className="gap-5 w-full flex justify-center">
+    <div className="w-2/3 mx-auto mb-10 flex justify-center mt-6 md:mt-10 max-lg:w-full max-lg:px-5">
       <Button
         onClick={() => handleSaveExercise(exerciseId)}
-        className="w-full rounded-full text-sm lg:text-lg bg-[#13D8A7] text-white hover:bg-[#11c296 h-[42px] md:h-14 lg:h-[70px] border-2 border-[#13D8A7]"
+        disabled={isFavourite || isLoading}
+        className={`w-full rounded-full text-sm lg:text-lg h-14 border-2 ${
+          isFavourite
+            ? 'bg-transparent text-[#11c296] border-[#11c296] cursor-not-allowed'
+            : 'bg-[#13D8A7] text-white hover:bg-[#11c296] border-[#13D8A7]'
+        }`}
       >
-        Lưu
+        {isLoading ? 'Đang kiểm tra...' : isFavourite ? 'Đã Lưu' : 'Lưu'}
       </Button>
       <Dialog open={showLoginDialog} onOpenChange={(open) => setShowLoginDialog(open)}>
         <DialogContent>

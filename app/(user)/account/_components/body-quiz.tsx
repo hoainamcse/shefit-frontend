@@ -106,7 +106,7 @@ export default function BodyQuiz() {
                 <Link
                   key={quiz.id}
                   href={`/account/quiz/${quiz.id}/quiz-result`}
-                  className="text-[#000000] text-sm lg:text-lg leading-[30px] font-normal border border-[#E2E2E2] p-4 rounded-[10px]"
+                  className="text-[#000000] text-sm lg:text-lg font-normal border border-[#E2E2E2] p-4 rounded-lg"
                 >
                   Kết quả ngày {formatDate(quiz.quiz_date)} - {quiz.body_quiz.title}
                 </Link>

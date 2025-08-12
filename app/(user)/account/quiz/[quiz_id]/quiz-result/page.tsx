@@ -60,7 +60,7 @@ export default function QuizResultPage() {
   }
 
   return (
-    <div className="flex flex-col gap-10 mt-10 p-10 relative">
+    <div className="flex flex-col gap-10 md:mt-10 mt-0 p-4 md:p-10 relative">
       <Link
         href="/account?tab=body-quiz"
         className="inline-flex items-center gap-2 text-lg font-semibold transition-colors mb-4 absolute top-5 left-13"
@@ -68,12 +68,12 @@ export default function QuizResultPage() {
         <BackIconBlack className="w-5 h-5" />
         <span>Quay về</span>
       </Link>
-      <img src="/body-quiz-image.jpg" alt="body-quiz-image" className="h-[680px]" />
+      <img src="/body-quiz-image.jpg" alt="body-quiz-image" className="md:aspect-[1800/681] aspect-[440/281] object-cover" />
       <div className="xl:text-2xl max-lg:text-lg flex flex-col gap-5">
         <p>
           Kết quả ngày {formatDate(quizData.quiz_date)} - {quizData.body_quiz?.title || 'Đánh giá cơ thể'}
         </p>
-        <div className="space-y-6 text-lg text-gray-600">
+        <div className="md:space-y-6 space-y-2 text-lg text-gray-600">
           {quizData.body_quiz.questions.map((question, index) => (
             <div key={question.id} className="pb-4">
               <h3 className="font-medium text-gray-800 mb-1">

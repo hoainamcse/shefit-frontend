@@ -5,7 +5,6 @@ import { getMealPlan } from '@/network/server/meal-plans'
 import { getMealPlanDishes } from '@/network/server/meal-plans'
 import { getMealPlanDays } from '@/network/server/meal-plans'
 import type { MealPlanDish } from '@/models/meal-plan'
-import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { sortByKey } from '@/lib/helpers'
 import { redirect } from 'next/navigation'
 import { getSession } from '@/lib/session'
@@ -85,12 +84,12 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
             </div>
           </div>
           <Tabs defaultValue="1" className="w-full h-full">
-            <TabsList className="w-full flex-wrap justify-start bg-transparent p-0 h-full">
+            <TabsList className="w-full flex-wrap md:justify-start justify-between bg-transparent p-0 h-full">
               {sortedMealPlanByDay.map((day: any) => (
                 <TabsTrigger
                   key={day.id}
                   value={`${day.day_number}`}
-                  className="rounded-full mx-[10px] my-5 w-[63px] h-[64px] flex flex-col items-center justify-center font-medium text-[#000000] text-lg cursor-pointer data-[state=active]:bg-[#91EBD5] data-[state=active]:text-white bg-transparent hover:bg-[#91EBD5]/10 transition-colors duration-200"
+                  className="rounded-full md:mx-3 mx-0 md:my-5 my-1 w-[63px] h-[64px] flex flex-col items-center justify-center font-medium text-[#000000] text-lg cursor-pointer data-[state=active]:bg-[#91EBD5] data-[state=active]:text-white bg-transparent hover:bg-[#91EBD5]/10 transition-colors duration-200"
                 >
                   <div>
                     Ngày <br /> {day.day_number}
@@ -99,9 +98,9 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
               ))}
             </TabsList>
 
-            {sortedMealPlanByDay.map((day) => (
-              <TabsContent key={`image-${day.id}`} value={`${day.day_number}`} className="mt-0">
-                {day.image && (
+            {sortedMealPlanByDay.map((day: any) =>
+              day.image ? (
+                <TabsContent key={`image-${day.id}`} value={`${day.day_number}`} className="mt-0">
                   <div className="w-full mb-6 px-1 md:px-0">
                     <img
                       src={day.image}
@@ -109,9 +108,9 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
                       className="w-full h-auto object-cover rounded-[20px] md:aspect-[1800/681] aspect-[407/255]"
                     />
                   </div>
-                )}
-              </TabsContent>
-            ))}
+                </TabsContent>
+              ) : null
+            )}
 
             {await Promise.all(
               sortedMealPlanByDay.map(async (day: any) => {

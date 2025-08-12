@@ -296,7 +296,7 @@ export default function CurrentCart() {
         <Button
           onClick={handleBuyNow}
           disabled={processing}
-          className="h-[60px] w-full max-w-[586px] bg-[#13D8A7] text-white px-6 py-2 rounded-full text-lg transition-colors"
+          className="md:h-[60px] h-[50px] w-full max-w-[586px] bg-[#13D8A7] text-white px-6 py-2 rounded-full text-lg transition-colors"
         >
           {processing ? 'Đang xử lý...' : 'Mua ngay'}
         </Button>

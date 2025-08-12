@@ -8,6 +8,8 @@ import { Pause, Play, PlayCircle } from 'lucide-react'
 import { getYouTubeThumbnail } from '@/lib/youtube'
 import VideoPlayer from './VideoPlayer'
 import { DayCircuit, CircuitExercise } from '@/models/course'
+import Link from 'next/link'
+import { BackIconBlack } from '@/components/icons/BackIconBlack'
 
 function mapCircuitExerciseToExercise(exercise: CircuitExercise) {
   return {
@@ -19,7 +21,7 @@ function mapCircuitExerciseToExercise(exercise: CircuitExercise) {
   }
 }
 
-export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: number }) {
+export function CircuitItem({ circuit, cIdx, course_id }: { circuit: DayCircuit; cIdx: number; course_id: number }) {
   const [isPlaying, setIsPlaying] = useState(false)
 
   const handlePlayPauseToggle = () => {
@@ -64,42 +66,42 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
             )}
             {circuit.circuit_exercises.map((exercise: CircuitExercise, eIdx: number) => (
               <Dialog key={exercise.id}>
-                <DialogTrigger asChild>
-                  <div
-                    className="text-lg cursor-pointer"
-                    tabIndex={0}
-                    aria-label={`Open exercise ${exercise.circuit_exercise_title}`}
-                  >
-                    <div className="hidden md:block">
-                      <div className="relative group cursor-pointer">
+                <div className="text-lg">
+                  {/* Desktop Layout */}
+                  <div className="hidden md:block">
+                    <DialogTrigger asChild>
+                      <div className="relative group cursor-pointer mb-4">
                         <img
                           src={
                             getYouTubeThumbnail(exercise.youtube_url) ||
                             'https://placehold.co/400?text=shefit.vn&font=Oswald'
                           }
                           alt={exercise.circuit_exercise_title}
-                          className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
+                          className="aspect-[585/373] object-cover rounded-xl w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                         />
                         <div className="absolute inset-0 flex items-center justify-center">
                           <PlayCircle className="w-16 h-16 text-white opacity-70 group-hover:opacity-100 transition-opacity" />
                         </div>
                       </div>
+                    </DialogTrigger>
 
-                      <div className="flex justify-between">
-                        <div>
-                          <p className="font-bold text-wrap text-lg lg:text-xl">{exercise.circuit_exercise_title}</p>
-                          <p className="text-[#737373] text-sm lg:text-lg text-wrap">
-                            {exercise.circuit_exercise_description}
-                          </p>
-                        </div>
-                        <div>
-                          <Checkbox className="block w-8 h-8" />
-                        </div>
+                    <div className="flex justify-between">
+                      <div>
+                        <p className="font-bold text-wrap text-lg lg:text-xl">{exercise.circuit_exercise_title}</p>
+                        <p className="text-[#737373] text-sm lg:text-lg text-wrap">
+                          {exercise.circuit_exercise_description}
+                        </p>
+                      </div>
+                      <div>
+                        <Checkbox className="block w-8 h-8" />
                       </div>
                     </div>
+                  </div>
 
-                    <div className="block md:hidden">
-                      <div className="flex relative">
+                  {/* Mobile Layout */}
+                  <div className="block md:hidden">
+                    <div className="flex relative">
+                      <DialogTrigger asChild>
                         <div className="relative group cursor-pointer w-1/3 flex-shrink-0">
                           <img
                             src={
@@ -115,19 +117,19 @@ export function CircuitItem({ circuit, cIdx }: { circuit: DayCircuit; cIdx: numb
                             <PlayCircle className="w-12 h-12 text-white opacity-70 group-hover:opacity-100 transition-opacity" />
                           </div>
                         </div>
+                      </DialogTrigger>
 
-                        <div className="flex-1 pl-3 flex flex-col">
-                          <p className="font-bold text-sm lg:text-lg">{exercise.circuit_exercise_title}</p>
-                          <p className="text-[#737373] text-xs lg:text-sm">{exercise.circuit_exercise_description}</p>
-                        </div>
+                      <div className="flex-1 pl-3 flex flex-col">
+                        <p className="font-bold text-sm lg:text-lg">{exercise.circuit_exercise_title}</p>
+                        <p className="text-[#737373] text-xs lg:text-sm">{exercise.circuit_exercise_description}</p>
+                      </div>
 
-                        <div className="absolute top-0 right-0">
-                          <Checkbox className="w-6 h-6" />
-                        </div>
+                      <div className="absolute top-0 right-0">
+                        <Checkbox className="w-6 h-6" />
                       </div>
                     </div>
                   </div>
-                </DialogTrigger>
+                </div>
                 <DialogContent className="max-w-[1399px] max-h-[787px] p-6 max-lg:p-1">
                   <DialogHeader>
                     <DialogTitle>
@@ -155,7 +157,7 @@ export function VideoClientComponent({ circuits }: { circuits: any }) {
       <div className="mb-20">
         <div className="flex flex-col justify-center text-center gap-5"></div>
         {circuits.data.map((circuit: DayCircuit, cIdx: number) => (
-          <CircuitItem key={circuit.id} circuit={circuit} cIdx={cIdx} />
+          <CircuitItem key={circuit.id} circuit={circuit} cIdx={cIdx} course_id={circuits.course_id} />
         ))}
       </div>
     </div>

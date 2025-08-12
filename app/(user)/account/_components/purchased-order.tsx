@@ -67,7 +67,7 @@ export default function PurchasedOrder() {
         <p className="text-lg md:text-xl mb-6 text-center">Bạn chưa có đơn hàng nào, xem sản phẩm của chúng tôi</p>
         <Button
           onClick={handleBuyNow}
-          className="h-[60px] w-full max-w-[586px] bg-[#13D8A7] text-white px-6 py-2 rounded-full text-base transition-colors"
+          className="md:h-[60px] h-[50px] w-full max-w-[586px] bg-[#13D8A7] text-white px-6 py-2 rounded-full text-base transition-colors"
         >
           Mua ngay
         </Button>

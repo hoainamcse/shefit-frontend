@@ -222,14 +222,18 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
         defaultValue={live.data && live.data.length > 0 ? live.data[0].day_of_week : 'Monday'}
         className="[state=active]:bg-[#91EBD5] data-[state=active]:shadow-none"
       >
-        <TabsList className="bg-transparent">
-          {Array.from(new Set(live.data.map((item: LiveDayWithSessions) => item.day_of_week)) as Set<string>).map(
-            (day) => (
+        <TabsList className="bg-transparent flex-wrap h-auto md:justify-start justify-between md:gap-5 gap-0 w-full">
+          {Array.from(new Set(live.data.map((item: LiveDayWithSessions) => item.day_of_week)) as Set<string>)
+            .sort((a, b) => {
+              const dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+              return dayOrder.indexOf(a) - dayOrder.indexOf(b)
+            })
+            .map((day) => (
               <TabsTrigger
                 key={day}
                 value={day}
                 className="
-                    rounded-full mx-[10px] my-5 w-[63px] h-[64px]
+                    rounded-full my-5 w-[63px] h-[64px]
                     flex flex-col items-center justify-center
                     font-medium text-lg cursor-pointer
                     data-[state=active]:bg-[#91EBD5] data-[state=active]:text-white
@@ -251,8 +255,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
                   ? '7'
                   : ''}
               </TabsTrigger>
-            )
-          )}
+            ))}
         </TabsList>
 
         {Array.from(new Set(live.data.map((item: LiveDayWithSessions) => item.day_of_week)) as Set<string>).map(

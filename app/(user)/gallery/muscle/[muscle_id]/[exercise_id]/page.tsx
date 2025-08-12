@@ -125,13 +125,13 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
       )}
 
       <div className="flex flex-col">
-        <div className="flex flex-col gap-2 mb-4 sm:mb-10 lg:mb-16">
+        <div className="flex flex-col gap-2 sm:mb-10 lg:mb-16 text-center mb-6">
           <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl">
             {exercise?.name}
           </div>
         </div>
 
-        <div className="flex flex-col mb-[84px] lg:mb-16">
+        <div className="flex flex-col mb-10 lg:mb-16">
           <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl mb-3.5">
             Thông tin bài tập
           </div>
@@ -144,7 +144,7 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
           <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl mb-5 sm:mb-3.5">
             Dụng cụ
           </p>
-          <ScrollArea className="w-screen-max-xl px-0 md:px-5 lg:px-[52px]">
+          <ScrollArea className="w-screen-max-xl px-0 md:px-5 lg:px-0">
             <div className="flex space-x-5 w-full">
               {exercise.equipments.map((equipment: any, index: number) => (
                 <figure key={`equipment-${equipment.id}-${index}`} className="shrink-0 w-[168px]">
@@ -167,12 +167,12 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
       )}
 
       {exercise?.muscle_groups?.length > 0 && (
-        <div className="flex flex-col mb-[52px]">
+        <div className="flex flex-col lg:mb-12 mb-2">
           <p className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl mb-5">
             Nhóm cơ
           </p>
           <ScrollArea className="w-screen-max-xl">
-            <div className="flex w-full space-x-5 px-0 md:px-5 lg:px-[52px]">
+            <div className="flex w-full space-x-5 px-0 md:px-5 lg:px-0">
               {exercise.muscle_groups.map((muscleGroup: any, index: number) => (
                 <figure key={`muscleGroup-${muscleGroup.id}-${index}`} className="shrink-0 w-[168px]">
                   <div className="overflow-hidden rounded-md">
