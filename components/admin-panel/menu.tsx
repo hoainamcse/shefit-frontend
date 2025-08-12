@@ -32,7 +32,7 @@ export function Menu({ isOpen }: MenuProps) {
   }
 
   // Define restricted menu items for non-admin users
-  const restrictedMenuItems = ['Blog', 'E-commerce', 'Content Input', 'Body quiz', 'Bài viết', 'Huấn luyện viên']
+  const restrictedMenuItems = ['Blog', 'E-commerce', 'Content Input', 'Body quiz', 'Bài viết', 'Huấn luyện viên', 'AI Hub']
 
   const visibleMenuList = menuList.map(({ groupLabel, menus }) => ({
     groupLabel,

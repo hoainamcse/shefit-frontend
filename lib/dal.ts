@@ -1,12 +1,10 @@
 'use server'
 
 import type { SessionPayload } from '@/models/auth'
-
 import { cache } from 'react'
-
 import { createSession, getSession, deleteSession } from './session'
 
-export const verifySession = cache(async () => {
+export const verifySession = cache(async (): Promise<SessionPayload | null> => {
   const session = await getSession()
   return session || null
 })
@@ -24,7 +22,9 @@ export async function clearSession() {
   await deleteSession()
 }
 
-export async function getRefreshedTokens(refreshToken: string): Promise<{ access_token: string; refresh_token: string } | null> {
+export async function getRefreshedTokens(
+  refreshToken: string
+): Promise<{ access_token: string; refresh_token: string } | null> {
   try {
     const { refreshToken: refreshTokenFn } = await import('@/network/server/auth')
     const newTokens = await refreshTokenFn(refreshToken)

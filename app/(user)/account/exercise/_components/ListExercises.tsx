@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { Button } from '@/components/ui/button'
 import { useSubscription } from './SubscriptionContext'
 import { useSession } from '@/hooks/use-session'
@@ -24,6 +25,15 @@ import { FavouriteExercise } from '@/models/favourite'
 import { Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
+
+const ReactPlayer = dynamic(() => import('react-player/lazy'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full aspect-video bg-gray-100 flex items-center justify-center">
+      <p className="text-gray-500">Đang tải video...</p>
+    </div>
+  ),
+})
 
 export default function ListExercises() {
   const { session } = useSession()
@@ -238,11 +248,26 @@ export default function ListExercises() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           {selectedVideoUrl && (
-            <iframe
-              src={selectedVideoUrl.replace('watch?v=', 'embed/')}
-              title="YouTube video player"
-              className="w-full aspect-video"
-              allowFullScreen
+            <ReactPlayer
+              url={selectedVideoUrl}
+              width="100%"
+              height="100%"
+              controls
+              config={{
+                youtube: {
+                  playerVars: {
+                    modestbranding: 1,
+                    rel: 0,
+                    showinfo: 0,
+                    origin: typeof window !== 'undefined' ? window.location.origin : '',
+                  },
+                },
+              }}
+              style={{
+                aspectRatio: '16/9',
+                width: '100%',
+                height: '100%',
+              }}
             />
           )}
         </DialogContent>

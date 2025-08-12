@@ -16,8 +16,12 @@ if (!baseUrl) {
  * @returns A Promise that resolves to the Response object representing the fetched data.
  * @throws Error if the base URL is not set, if fetching data fails, or if an HTTP error occurs.
  */
-export async function fetchDataServer(endpoint: RequestInfo, options: RequestInit = {}, useJson = true): Promise<Response> {
-  const url = `${baseUrl}${endpoint}`
+export async function fetchDataServer(
+  endpoint: RequestInfo,
+  options: RequestInit = {},
+  useJson = true
+): Promise<Response> {
+  const url = `${baseUrl}${String(endpoint)}`
   console.log('Fetching data from server:', url)
 
   const cookieStore = await cookies()
@@ -28,7 +32,6 @@ export async function fetchDataServer(endpoint: RequestInfo, options: RequestIni
     ...(useJson && { 'Content-Type': 'application/json' }),
   }
 
-  // Get session from cookies
   let session = null
   try {
     session = await verifySession()
@@ -36,7 +39,6 @@ export async function fetchDataServer(endpoint: RequestInfo, options: RequestIni
     console.warn('Failed to get session on server:', error)
   }
 
-  // Add authorization header if session exists
   if (session?.accessToken) {
     headers = {
       ...headers,
@@ -47,7 +49,6 @@ export async function fetchDataServer(endpoint: RequestInfo, options: RequestIni
   try {
     let response = await fetch(url, { ...options, headers })
 
-    // Handle token refresh for 401 errors
     if (response.status === 401 && session?.refreshToken) {
       console.log('Access token expired, attempting to refresh...')
 
@@ -55,10 +56,7 @@ export async function fetchDataServer(endpoint: RequestInfo, options: RequestIni
 
       if (refreshedTokens) {
         console.log('Token refreshed successfully, retrying request...')
-        console.log('Note: Server-side token refresh - tokens will be used for this request only')
-        console.log('To persist tokens, use a Server Action or redirect to a route that handles token updates')
 
-        // Retry with new token (but can't persist it in server components)
         const refreshedHeaders = {
           ...headers,
           Authorization: `Bearer ${refreshedTokens.access_token}`,
