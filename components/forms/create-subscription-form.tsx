@@ -92,7 +92,7 @@ const formSchema = z.object({
 
 type FormValue = z.infer<typeof formSchema>
 
-type MembershipFormProps = {
+type CreateSubscriptionFormProps = {
   isEdit: boolean
   data?: Subscription
 }
@@ -106,7 +106,7 @@ const AVAILABLE_COURSE_FORMATS = [
 const DEFAULT_IMAGE_URL = 'https://placehold.co/400?text=shefit.vn&font=Oswald'
 const DEFAULT_YOUTUBE_URL = 'https://youtu.be/EngW7tLk6R8?si=gesFcAqfOVJB3EMy'
 
-export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
+export function CreateSubscriptionForm({ isEdit, data }: CreateSubscriptionFormProps) {
   const [isPending, startTransition] = useTransition()
 
   const router = useRouter()
@@ -217,10 +217,10 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
         const submitValues = values
 
         if (isEdit) {
-          await handleEditMembership(submitValues, data)
+          await handleEditSubscription(submitValues, data)
         } else {
-          await handleCreateMembership(submitValues)
-          router.push('/admin/membership')
+          await handleCreateSubscription(submitValues)
+          router.push('/admin/subscriptions')
         }
       } catch (error) {
         console.error('Error:', error)
@@ -229,7 +229,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
     })
   }
 
-  const handleCreateMembership = async (values: FormValue) => {
+  const handleCreateSubscription = async (values: FormValue) => {
     let giftIds: number[] = []
     if (values.gifts && values.gifts.length > 0) {
       const createdGifts = await Promise.all(values.gifts.map((gift) => createGift(gift as any)))
@@ -245,7 +245,7 @@ export function CreateMembershipForm({ isEdit, data }: MembershipFormProps) {
     toast.success('Tạo gói thành viên thành công')
   }
 
-  const handleEditMembership = async (values: FormValue, data?: Subscription) => {
+  const handleEditSubscription = async (values: FormValue, data?: Subscription) => {
     const giftsWithId = (values.gifts ?? []).filter((gift) => gift.id)
     const giftsWithoutId = (values.gifts ?? []).filter((gift) => !gift.id)
 

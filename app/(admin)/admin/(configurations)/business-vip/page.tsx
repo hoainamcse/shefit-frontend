@@ -17,7 +17,7 @@ import { Form } from '@/components/ui/form'
 
 const configurationID = 4
 
-export default function BusinessPage() {
+export default function BusinessVipPage() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyConfigurations, configurationID],
     queryFn: () => getConfiguration(configurationID),

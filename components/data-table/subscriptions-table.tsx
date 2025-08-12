@@ -222,11 +222,11 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
       },
       {
         header: 'Hình ảnh',
-        accessorKey: 'cover_image',
+        accessorFn: (originalRow) => originalRow.assets.thumbnail,
         cell: ({ row }) => (
           <div>
             <img
-              src={row.getValue('cover_image')}
+              src={row.original.assets.thumbnail}
               alt={`${row.getValue('name')} thumbnail`}
               className="h-16 w-28 rounded-md object-cover"
             />
@@ -251,11 +251,11 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
   const router = useRouter()
 
   const onAddRow = () => {
-    router.push('/admin/membership/create')
+    router.push('/admin/subscriptions/create')
   }
 
   const onEditRow = (row: Subscription) => {
-    router.push(`/admin/membership/${row.id}`)
+    router.push(`/admin/subscriptions/${row.id}`)
   }
 
   const onDuplicateRow = (row: Subscription) => {

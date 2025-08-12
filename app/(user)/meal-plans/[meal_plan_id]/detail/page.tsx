@@ -99,7 +99,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
               ))}
             </TabsList>
 
-            {sortedMealPlanByDay.map((day: any) => (
+            {sortedMealPlanByDay.map((day) => (
               <TabsContent key={`image-${day.id}`} value={`${day.day_number}`} className="mt-0">
                 {day.image && (
                   <div className="w-full mb-6 px-1 md:px-0">

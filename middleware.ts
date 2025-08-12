@@ -9,7 +9,7 @@ const SUB_ADMIN_ALLOWED_ROUTES = [
   '/diets-calories',
   '/dishes',
   '/meal-plans',
-  '/membership',
+  '/subscriptions',
   '/users',
 ]
 

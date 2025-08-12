@@ -14,8 +14,7 @@ export default async function CoachesPage() {
           Các HLV của Shefit
         </p>
         <p className="md:text-center text-gray-500 text-sm md:text-lg md:max-w-2xl lg:max-w-3xl mx-auto">
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis. Molestie
-          nascetur justo sit.
+          Tại Shefit, chúng tôi tự hào có đội ngũ HLV chuyên nghiệp và tận tâm, sẵn sàng đồng hành cùng bạn trên hành trình rèn luyện sức khỏe và thể chất. Mỗi HLV của chúng tôi đều được đào tạo bài bản và có kinh nghiệm phong phú trong việc hướng dẫn và hỗ trợ khách hàng đạt được mục tiêu cá nhân.
         </p>
       </div>
 

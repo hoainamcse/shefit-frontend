@@ -18,7 +18,7 @@ import { ImageUploader } from '../image-uploader'
 // ! Follow MealPlanDayPayload model in models/meal-plan.ts
 export const formSchema = z.object({
   day_number: z.number().min(1),
-  image: z.string().url().or(z.literal('')),
+  image: z.string(), // This should be a URL or base64 string
 })
 
 export type FormValue = z.infer<typeof formSchema>
@@ -31,7 +31,7 @@ type EditMealPlanDayFormProps = {
 
 export function EditMealPlanDayForm({ data, mealPlanID, onSuccess }: EditMealPlanDayFormProps) {
   const isEdit = !!data
-  const defaultValue = { day_number: 1, image: 'https://placehold.co/400?text=shefit.vn&font=Oswald' } as FormValue
+  const defaultValue = { day_number: 1, image: '' } as FormValue
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),

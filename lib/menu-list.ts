@@ -61,8 +61,8 @@ export function getMenuList(pathname: string): Group[] {
               label: 'Chính sách',
             },
             {
-              href: '/admin/business',
-              label: 'Business & VIP',
+              href: '/admin/business-vip',
+              label: 'Doanh nghiệp & VIP',
             },
           ],
         },
@@ -157,8 +157,8 @@ export function getMenuList(pathname: string): Group[] {
           ],
         },
         {
-          href: '/admin/membership',
-          label: 'Membership',
+          href: '/admin/subscriptions',
+          label: 'Gói tập',
           icon: CreditCardIcon,
         },
         {

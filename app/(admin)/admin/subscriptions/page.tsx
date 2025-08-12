@@ -15,7 +15,7 @@ import { DeleteButton } from '@/components/buttons/delete-button'
 import { useClipboard } from '@/hooks/use-clipboard'
 import { SubscriptionsTable } from '@/components/data-table/subscriptions-table'
 
-export default function MembershipPage() {
+export default function SubscriptionsPage() {
   const { copy, copied } = useClipboard()
   const [coupons, setCoupons] = useState<Coupon[]>([])
   const [openCouponModal, setOpenCouponModal] = useState(false)

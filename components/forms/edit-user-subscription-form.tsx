@@ -145,8 +145,8 @@ export function EditUserSubscriptionForm({
 
   const isExistingRecord = Boolean(data?.id) && data?.id! > 0
   const selectedSubscriptionId = form.watch('subscription_id')
-  const membership = subscriptions.find((m) => Number(m.id) === selectedSubscriptionId)
-  const gifts = membership?.gifts ?? []
+  const subs = subscriptions.find((m) => Number(m.id) === selectedSubscriptionId)
+  const gifts = subs?.gifts ?? []
 
   return (
     <>
@@ -158,7 +158,7 @@ export function EditUserSubscriptionForm({
             name="subscription_id"
             render={({ field }) => (
               <FormItem className="space-y-2">
-                <FormLabel>Tên gói membership</FormLabel>
+                <FormLabel>Tên gói tập</FormLabel>
 
                 <Select
                   disabled={isExistingRecord}
@@ -173,7 +173,7 @@ export function EditUserSubscriptionForm({
                 >
                   <FormControl>
                     <SelectTrigger className={isExistingRecord ? 'cursor-not-allowed opacity-70' : ''}>
-                      <SelectValue placeholder="Chọn gói membership" />
+                      <SelectValue placeholder="Chọn gói tập" />
                     </SelectTrigger>
                   </FormControl>
 
@@ -338,7 +338,7 @@ export function EditUserSubscriptionForm({
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="assigned-items">
                   <AccordionTrigger className="font-medium py-2">
-                    Gán khóa học, thực đơn cho gói membership này
+                    Gán khóa học, thực đơn cho gói tập này
                   </AccordionTrigger>
 
                   <AccordionContent>

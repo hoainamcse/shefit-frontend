@@ -29,8 +29,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
             Các bài tập nhóm {selectedMuscleGroup?.name}
           </div>
           <p className="text-[#737373] text-sm lg:text-lg">
-            Lorem ipsum odor amet, consectetuer adipiscing elit. Ac tempor proin scelerisque proin etiam primis.
-            Molestie
+            Tại Shefit, chúng tôi cung cấp một loạt các bài tập chuyên biệt cho từng nhóm cơ, giúp bạn xây dựng sức mạnh và sự linh hoạt. Mỗi bài tập được thiết kế để tối ưu hóa hiệu quả luyện tập, phù hợp với mọi trình độ từ người mới bắt đầu đến chuyên nghiệp.
           </p>
         </div>
         <div>

@@ -13,7 +13,7 @@ import {
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel'
 import Link from 'next/link'
 import { z } from 'zod'
-import { formSchema } from '@/app/(admin)/admin/(content-input)/homepage/schema'
+import { formSchema } from '@/app/(admin)/admin/(configurations)/homepage/schema'
 import { HtmlContent } from '@/components/html-content'
 import { getCourses } from '../../../network/client/courses'
 import { useQuery } from '@tanstack/react-query'

@@ -445,7 +445,7 @@ function ExportDialog({ data, onSuccess }: { data?: UserRow[]; onSuccess?: () =>
         'Ngày tạo',
         'Tỉnh/Thành phố',
         'Địa chỉ chi tiết',
-        'Gói membership',
+        'Gói tập',
         'Ngày bắt đầu',
         'Ngày kết thúc',
         'Code khuyến mãi',
@@ -466,7 +466,7 @@ function ExportDialog({ data, onSuccess }: { data?: UserRow[]; onSuccess?: () =>
           if (userSubscriptionsResponse?.data && userSubscriptionsResponse.data.length > 0) {
             for (const sub of userSubscriptionsResponse.data) {
               const subscriptionDetail = await getSubscription(sub.subscription.id.toString())
-              const membershipName = subscriptionDetail.data.name
+              const subName = subscriptionDetail.data.name
               const startDate = sub.subscription_start_at ? formatDateString(sub.subscription_start_at) : ''
               const endDate = sub.subscription_end_at ? formatDateString(sub.subscription_end_at) : ''
 
@@ -485,7 +485,7 @@ function ExportDialog({ data, onSuccess }: { data?: UserRow[]; onSuccess?: () =>
                 account.created_at,
                 account.province || '',
                 account.address || '',
-                membershipName,
+                subName,
                 startDate,
                 endDate,
                 sub.coupon_code || '',
@@ -508,7 +508,7 @@ function ExportDialog({ data, onSuccess }: { data?: UserRow[]; onSuccess?: () =>
               account.created_at,
               account.province || '',
               account.address || '',
-              '', // Gói membership
+              '', // Gói tập
               '', // Ngày bắt đầu
               '', // Ngày kết thúc
               '', // Code khuyến mãi
@@ -532,7 +532,7 @@ function ExportDialog({ data, onSuccess }: { data?: UserRow[]; onSuccess?: () =>
             account.created_at,
             account.province || '',
             account.address || '',
-            '', // Gói membership
+            '', // Gói tập
             '', // Ngày bắt đầu
             '', // Ngày kết thúc
             '', // Code khuyến mãi

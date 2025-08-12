@@ -110,7 +110,7 @@ export default function CoursesPage() {
     })
   }
 
-  const handleMembershipClick = async (course: Course) => {
+  const handleSubscriptionClick = async (course: Course) => {
     if (!session?.userId) {
       router.push(`/account?tab=buy-package&course_id=${course.id}`)
       return
@@ -275,7 +275,7 @@ export default function CoursesPage() {
                             ) : (
                               <Button
                                 className="bg-[#737373] text-white w-[136px] rounded-full"
-                                onClick={() => handleMembershipClick(course)}
+                                onClick={() => handleSubscriptionClick(course)}
                                 disabled={isCheckingAccess}
                               >
                                 {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
@@ -327,7 +327,7 @@ export default function CoursesPage() {
                             ) : (
                               <Button
                                 className="bg-[#737373] text-white w-[136px] rounded-full"
-                                onClick={() => handleMembershipClick(course)}
+                                onClick={() => handleSubscriptionClick(course)}
                                 disabled={isCheckingAccess}
                               >
                                 {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
@@ -383,7 +383,7 @@ export default function CoursesPage() {
                             ) : (
                               <Button
                                 className="bg-[#737373] text-white w-[136px] rounded-full"
-                                onClick={() => handleMembershipClick(course)}
+                                onClick={() => handleSubscriptionClick(course)}
                                 disabled={isCheckingAccess}
                               >
                                 {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
@@ -439,7 +439,7 @@ export default function CoursesPage() {
                             ) : (
                               <Button
                                 className="bg-[#737373] text-white w-[136px] rounded-full"
-                                onClick={() => handleMembershipClick(course)}
+                                onClick={() => handleSubscriptionClick(course)}
                                 disabled={isCheckingAccess}
                               >
                                 {isCheckingAccess ? 'Đang kiểm tra...' : '+ Gói Member'}
