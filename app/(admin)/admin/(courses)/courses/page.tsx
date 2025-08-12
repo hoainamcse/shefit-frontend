@@ -1,9 +1,7 @@
 import type { CourseFormat } from '@/models/course'
 
-import { Suspense } from 'react'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { CoursesTable } from '@/components/data-table/courses-table'
-import { Spinner } from '@/components/spinner'
 
 export default async function CoursesPage({
   searchParams,
@@ -15,9 +13,7 @@ export default async function CoursesPage({
 
   return (
     <ContentLayout title="Danh sách khoá tập">
-      <Suspense fallback={<div className="flex items-center justify-center"><Spinner className="bg-ring dark:bg-white" /></div>}>
-        <CoursesTable courseFormat={courseFormat} isOneOnOne={isOneOnOne} />
-      </Suspense>
+      <CoursesTable courseFormat={courseFormat} isOneOnOne={isOneOnOne} />
     </ContentLayout>
   )
 }

@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
 import {
   Roboto_Flex,
   Roboto,
@@ -132,9 +131,7 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <QueryProvider>
-            <Suspense fallback={null}>
-              <GlobalScrollToTop />
-            </Suspense>
+            <GlobalScrollToTop />
             <ScrollRestoration />
             <div id="google_translate_element" />
             {children}
