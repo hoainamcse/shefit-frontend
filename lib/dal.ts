@@ -2,25 +2,12 @@
 
 import type { SessionPayload } from '@/models/auth'
 import { cache } from 'react'
-import { createSession, getSession, deleteSession } from './session'
+import { createSession, getSession } from './session'
 
 export const verifySession = cache(async (): Promise<SessionPayload | null> => {
   const session = await getSession()
   return session || null
 })
-
-export async function updateSession(payload: Partial<SessionPayload>) {
-  const session = await getSession()
-  if (!session) {
-    throw new Error('No session found to update')
-  }
-  const updatedSession = { ...session, ...payload }
-  await createSession(updatedSession)
-}
-
-export async function clearSession() {
-  await deleteSession()
-}
 
 export async function getRefreshedTokens(
   refreshToken: string

@@ -2,7 +2,7 @@ import { BoxIcon, HouseIcon } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { getUser } from '@/network/client/users'
+import { getUser } from '@/network/server/users'
 import EditAccountForm from '@/components/forms/edit-account-form'
 import { UserSubscriptionView } from './user-subscription-view'
 
