@@ -19,10 +19,10 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
     return (
       <div>
         <div className="relative block md:hidden">
-          <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto z-10 absolute top-3">
+          <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto">
             <Link href="/meal-plans" className="flex items-center">
-              <Button className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.9),0_0_8px_rgba(0,0,0,0.7)] shadow-none font-medium">
-                <BackIcon /> Quay về
+              <Button className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black shadow-none font-medium">
+                <BackIconBlack className="mb-1"/> Quay về
               </Button>
             </Link>
           </div>

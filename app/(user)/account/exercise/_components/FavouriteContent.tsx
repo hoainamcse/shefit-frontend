@@ -536,7 +536,7 @@ export default function FavouriteContent() {
             <div className="col-span-3 text-center text-gray-500 py-8 text-sm lg:text-lg">Chưa có món ăn yêu thích</div>
           )}
         </div>
-        <Link href="/dishes">
+        <Link href="/gallery#dishes">
           <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-sm lg:text-lg lg:mt-12">
             Thêm món ăn
           </Button>

@@ -10,6 +10,7 @@ import { redirect } from 'next/navigation'
 import { getSession } from '@/lib/session'
 import { getUserSubscriptions } from '@/network/server/users'
 import { BackIcon } from '@/components/icons/BackIcon'
+import { BackIconBlack } from '@/components/icons/BackIconBlack'
 
 export default async function MealPlanDetailPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
   const { meal_plan_id } = await params
@@ -56,10 +57,10 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
   return (
     <div>
       <div className="relative block md:hidden">
-        <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto z-10 absolute top-1">
+        <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto">
           <Link href={`/meal-plans/${meal_plan_id}`} className="flex items-center">
-            <Button className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.9),0_0_8px_rgba(0,0,0,0.7)] shadow-none absolute top-1 font-medium">
-              <BackIcon /> Quay về
+            <Button className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black shadow-none font-medium">
+              <BackIconBlack className="mb-1"/> Quay về
             </Button>
           </Link>
         </div>

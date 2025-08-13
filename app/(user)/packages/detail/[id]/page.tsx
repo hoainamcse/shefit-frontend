@@ -9,6 +9,7 @@ import SubscriptionInfo from './_components/SubscriptionInfo'
 import { BackIcon } from '@/components/icons/BackIcon'
 import { HtmlContent } from '@/components/html-content'
 import { Button } from '@/components/ui/button'
+import { BackIconBlack } from '@/components/icons/BackIconBlack'
 
 export default async function PackageDetail({ params }: { params: Promise<{ id: string }> }) {
   const subscription = await getSubscription(Number((await params).id))
@@ -26,19 +27,16 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
   return (
     <div>
       <div className="relative">
+        <Link href="/account?tab=buy-package" className="lg:hidden items-center gap-2 cursor-pointer">
+          <Button className="px-4 flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black shadow-none font-medium">
+            <BackIconBlack className="mb-1"/> Quay về
+          </Button>
+        </Link>
         <img
           src={subscriptionData?.assets.mobile_cover || subscriptionData?.assets.thumbnail}
           alt={`${subscriptionData?.name}`}
           className="lg:rounded-xl rounded-none mb-4 w-full object-cover aspect-[400/255] block lg:hidden"
         />
-        <Link
-          href="/account?tab=buy-package"
-          className="lg:hidden absolute top-5 left-5 lg:left-20 flex items-center gap-[10px] cursor-pointer"
-        >
-          <Button className="p-0 flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.9),0_0_8px_rgba(0,0,0,0.7)] shadow-none font-medium">
-            <BackIcon /> Quay về
-          </Button> 
-        </Link>
       </div>
       <div className="flex mx-auto flex-col gap-10 mt-10 w-full pb-24 px-4 lg:px-14">
         <div className="mb-20 flex flex-col gap-10">
