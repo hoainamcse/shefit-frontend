@@ -386,7 +386,9 @@ export default function ChatBotPreview({ className }: ChatBotPreviewProps) {
                         <div className="flex flex-col items-end max-w-[90%]">
                           <div className="font-medium text-sm text-gray-900 mb-1">Bạn</div>
                           <div className="flex flex-col bg-blue-100 rounded-lg px-3 py-2 w-full">
-                            <div className="text-blue-900 text-sm break-all whitespace-pre-wrap overflow-hidden">{message.content}</div>
+                            <div className="text-blue-900 text-sm break-words whitespace-pre-wrap overflow-hidden">
+                              {message.content}
+                            </div>
                             <p className="text-xs text-gray-500 mt-1 text-right">{message.created_at}</p>
                           </div>
                         </div>
@@ -429,7 +431,7 @@ export default function ChatBotPreview({ className }: ChatBotPreviewProps) {
               <div className="flex-1 flex items-center justify-center">
                 {isLoadingMessages && <Loader2 className="animate-spin" />}
                 {fetchError && (
-                  <div className="flex items-center gap-2 mt-2 py-2 px-2 text-red-500 text-sm bg-red-50 border border-red-200 rounded-lg inline-block w-fit">
+                  <div className="flex items-center gap-2 mt-2 py-2 px-2 text-red-500 text-sm bg-red-50 border border-red-200 rounded-lg w-fit">
                     Tải tin nhắn thất bại
                     <Button
                       variant="secondary"
