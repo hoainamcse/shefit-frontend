@@ -84,13 +84,13 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
   }
 
   return (
-    <div className="flex flex-col pt-10 xl:pt-[53px]">
+    <div className="flex flex-col md:pt-10 pt-4 xl:pt-[53px]">
       <Link
         href={`/gallery/muscle/${muscleId}`}
-        className="flex cursor-pointer items-center gap-2.5 font-semibold lg:hidden mb-7"
+        className="flex cursor-pointer items-center gap-2 font-semibold lg:hidden md:mb-7 mb-3"
       >
         <div className="w-6 h-6 flex items-center justify-center">
-          <BackIconBlack />
+          <BackIconBlack className="mb-1" />
         </div>
         {exercise?.muscle_groups && Array.isArray(exercise.muscle_groups)
           ? exercise.muscle_groups.find((mg: any) => mg.id?.toString() === muscleId)?.name || 'Quay về'

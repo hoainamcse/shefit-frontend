@@ -382,11 +382,11 @@ export default function ChatBotPreview({ className }: ChatBotPreviewProps) {
                 <div key={index} className="flex items-start gap-3">
                   {message.role === 'user' ? (
                     <div className="w-full flex flex-col">
-                      <div className="flex justify-end w-full gap-3 mt-2 self-end max-w-[90%]">
-                        <div className="flex flex-col items-end">
+                      <div className="flex justify-end w-full gap-3 mt-2">
+                        <div className="flex flex-col items-end max-w-[90%]">
                           <div className="font-medium text-sm text-gray-900 mb-1">Bạn</div>
-                          <div className="flex flex-col bg-blue-100 rounded-lg px-3 py-2 inline-block w-fit">
-                            <div className="self-end text-blue-900 text-sm w-fit">{message.content}</div>
+                          <div className="flex flex-col bg-blue-100 rounded-lg px-3 py-2 w-full">
+                            <div className="text-blue-900 text-sm break-all whitespace-pre-wrap overflow-hidden">{message.content}</div>
                             <p className="text-xs text-gray-500 mt-1 text-right">{message.created_at}</p>
                           </div>
                         </div>

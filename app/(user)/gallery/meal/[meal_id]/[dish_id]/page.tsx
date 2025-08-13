@@ -81,10 +81,10 @@ export default function MealDetail({ params }: { params: Promise<{ dish_id: stri
   }
   console.log(dish)
   return (
-    <div className="flex flex-col pt-10 md:pt-13 lg:pt-[69px]">
+    <div className="flex flex-col pt-4 md:pt-10 lg:pt-[69px]">
       <Link
         href={`/gallery/meal/${mealId}`}
-        className="flex cursor-pointer items-center gap-2.5 font-semibold max-md:mb-7"
+        className="flex cursor-pointer items-center gap-2.5 font-semibold md:mb-7 mb-2"
       >
         <div className="w-6 h-6 pt-1 flex justify-center">
           <BackIconBlack />
