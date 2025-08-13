@@ -1,5 +1,5 @@
 import { statusCodeErrorMap } from '../errors/httpErrors'
-import { TokenManager } from '@/lib/token-manager'
+import { ServerTokenManager } from '@/lib/server-token-manager'
 
 const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL
 
@@ -26,7 +26,7 @@ export async function fetchData(endpoint: RequestInfo, options: RequestInit = {}
     console.warn('Failed to get session:', error)
   }
 
-  const validToken = await TokenManager.getValidToken(session)
+  const validToken = await ServerTokenManager.getValidToken(session)
   if (validToken) {
     headers = {
       ...headers,

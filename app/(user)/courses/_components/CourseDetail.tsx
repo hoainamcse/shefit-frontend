@@ -7,7 +7,6 @@ import { useState, useEffect, useRef } from 'react'
 import { CourseLevel, CourseForm, Course } from '@/models/course'
 import LiveCourseDetail from './LiveCourseDetail'
 import VideoCourseDetail from './VideoCourseDetail'
-import { BackIcon } from '@/components/icons/BackIcon'
 import { useRouter } from 'next/navigation'
 import ActionButtons from './ActionButtons'
 import { Button } from '@/components/ui/button'
@@ -34,6 +33,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
   const [isFooterVisible, setIsFooterVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [userSubscriptions, setUserSubscriptions] = useState<number[]>([])
+  const [isSubscriptionExpired, setIsSubscriptionExpired] = useState(true)
 
   const footerRef = useRef<HTMLDivElement>(null)
 
@@ -71,6 +71,18 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
           const userSubscriptionsData = await getUserSubscriptions(session.userId.toString())
           const subscribedIds = userSubscriptionsData.data?.map((sub) => sub.subscription.id) || []
           setUserSubscriptions(subscribedIds)
+
+          // Check if any subscription is still valid (subscription_end_at is in the future)
+          const subscriptions = userSubscriptionsData.data || []
+          const hasValidSubscription = subscriptions.some((sub) => {
+            if (!sub.subscription_end_at) return false
+            const endDate = new Date(sub.subscription_end_at)
+            return new Date() <= endDate
+          })
+
+          setIsSubscriptionExpired(!hasValidSubscription)
+        } else {
+          setIsSubscriptionExpired(true)
         }
       } catch (error) {
         console.error('Error fetching data:', error)
@@ -126,9 +138,9 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
       <div className="relative block md:hidden">
         <Button
           onClick={() => router.back()}
-          className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.9),0_0_8px_rgba(0,0,0,0.7)] shadow-none absolute top-3 font-medium"
+          className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black dark:text-white shadow-none font-medium"
         >
-          <BackIcon /> Quay về
+          <BackIconBlack /> Quay về
         </Button>
         <img
           src={course?.data?.assets.mobile_cover || course?.data?.assets.thumbnail}
@@ -138,7 +150,9 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
       </div>
       <div className="flex flex-col mx-auto max-w-[1800px] gap-10 lg:mt-5 mt-2 w-full md:pb-24 pb-0 p-3 xl:p-4">
         <img
-          src={course?.data?.assets.desktop_cover || course?.data?.assets.mobile_cover || course?.data?.assets.thumbnail}
+          src={
+            course?.data?.assets.desktop_cover || course?.data?.assets.mobile_cover || course?.data?.assets.thumbnail
+          }
           alt={`${courseId}`}
           className="rounded-xl w-full aspect-[1800/681] object-cover hidden md:block"
         />
@@ -157,7 +171,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
                 : courseFormLabel[course.data.form_categories as CourseForm])}
           </div>
         </div>
-        {!showDetails && course?.data?.relationships?.subscriptions?.length > 0 && (
+        {!showDetails && course?.data?.relationships?.subscriptions?.length > 0 && isSubscriptionExpired && (
           <div className="flex flex-col lg:gap-5 gap-2">
             <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl uppercase">
               Gói Member
