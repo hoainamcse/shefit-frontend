@@ -30,7 +30,7 @@ export function BottomNavbar() {
             <p>Thực đơn</p>
           </div>
         </Link>
-        <Link href="/products">
+        <Link href="/gallery">
           <div className="flex flex-col items-center gap-1 text-neutral-500">
             <GalleryIcon />
             <p>Thư viện</p>
