@@ -8,12 +8,10 @@ import { AccountIconGray } from '@/components/icons/AccountIconGray'
 import { GymIcon } from '@/components/icons/GymIcon'
 import { StarIconGray } from '@/components/icons/StarIconGray'
 import { useState } from 'react'
-import dynamic from 'next/dynamic';
+import dynamic from 'next/dynamic'
+import { GalleryIcon } from '@/components/icons/GalleryIcon'
 
-const ChatBot = dynamic(
-  () => import('@/components/chatbot/chatbot').then((mod) => mod.ChatBot),
-  { ssr: false }
-);
+const ChatBot = dynamic(() => import('@/components/chatbot/chatbot').then((mod) => mod.ChatBot), { ssr: false })
 
 export function BottomNavbar() {
   const [isChatOpen, setIsChatOpen] = useState(false)
@@ -34,8 +32,8 @@ export function BottomNavbar() {
         </Link>
         <Link href="/products">
           <div className="flex flex-col items-center gap-1 text-neutral-500">
-            <GymIcon />
-            <p>Dụng cụ</p>
+            <GalleryIcon />
+            <p>Thư viện</p>
           </div>
         </Link>
         <Link

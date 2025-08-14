@@ -51,7 +51,7 @@ export default function ActionButtons({ dishId }: ActionButtonsProps) {
     try {
       await addFavouriteDish(session.userId, dishId)
       setIsFavourite(true)
-      toast.success('Đã lưu món ăn thành công!')
+      toast.success('Đã thêm món ăn vào danh sách yêu thích!')
     } catch (error) {
       console.error('Error saving dish:', error)
       toast.error('Có lỗi xảy ra khi lưu món ăn!')

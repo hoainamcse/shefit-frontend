@@ -19,10 +19,11 @@ import { MealPlan } from '@/models/meal-plan'
 import { useEffect, useMemo } from 'react'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { getFavouriteMealPlans } from '@/network/client/user-favourites'
+import { getFavouriteMealPlans, deleteFavouriteMealPlan } from '@/network/client/user-favourites'
 import { FavouriteMealPlan } from '@/models/favourite'
 import { Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 export default function ListMealPlans() {
   const { session } = useSession()
@@ -41,6 +42,28 @@ export default function ListMealPlans() {
     const endDate = new Date(selectedSubscription.subscription_end_at)
     return new Date() > endDate
   }, [selectedSubscription])
+
+  const handleDeleteFavouriteMealPlan = async (mealPlanId: number, mealPlanTitle: string) => {
+    if (!session?.userId) return
+
+    try {
+      await deleteFavouriteMealPlan(session.userId, mealPlanId.toString())
+
+      setCombinedMealPlans((prev) =>
+        prev.filter((item) => {
+          const itemId = getMealPlanId(item)
+          return itemId !== mealPlanId
+        })
+      )
+
+      setFavoriteMealPlans((prev) => prev.filter((item) => item.meal_plan.id !== mealPlanId))
+
+      toast.success(`Đã xóa ${mealPlanTitle} khỏi danh sách`)
+    } catch (error) {
+      console.error('Error deleting favourite meal plan:', error)
+      toast.error('Có lỗi xảy ra khi xóa meal plan')
+    }
+  }
 
   useEffect(() => {
     const fetchAndFilterMealPlans = async () => {
@@ -271,7 +294,14 @@ export default function ListMealPlans() {
                         <Lock className="text-white w-12 h-12" />
                       </div>
                     )}
-                    <div className="absolute top-4 right-4 z-10">
+                    <div
+                      className="absolute top-4 right-4 z-10 cursor-pointer"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        handleDeleteFavouriteMealPlan(mealPlanId, mealPlan.title)
+                      }}
+                    >
                       <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                     </div>
                     <img

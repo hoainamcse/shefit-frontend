@@ -18,11 +18,12 @@ import { getDishes, getDish } from '@/network/server/dishes'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import type { Dish } from '@/models/dish'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { getFavouriteDishes } from '@/network/client/user-favourites'
+import { getFavouriteDishes, deleteFavouriteDish } from '@/network/client/user-favourites'
 import { FavouriteDish } from '@/models/favourite'
 import { Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
+import { toast } from 'sonner'
 
 export default function ListDishes() {
   const { session } = useSession()
@@ -49,6 +50,23 @@ export default function ListDishes() {
   const handleBuyPackageClick = () => {
     setDialogOpen(false)
     redirectToAccount('buy-package')
+  }
+
+  const handleDeleteFavouriteDish = async (dishId: number, dishTitle: string) => {
+    if (!session?.userId) return
+
+    try {
+      await deleteFavouriteDish(session.userId, dishId.toString())
+
+      setCombinedDishes((prev) => prev.filter((item) => item.id !== dishId))
+
+      setFavoriteDishes((prev) => prev.filter((item) => item.dish.id !== dishId))
+
+      toast.success(`Đã xóa ${dishTitle} khỏi danh sách`)
+    } catch (error) {
+      console.error('Error deleting favourite dish:', error)
+      toast.error('Có lỗi xảy ra khi xóa món ăn')
+    }
   }
 
   useEffect(() => {
@@ -248,11 +266,31 @@ export default function ListDishes() {
                     </div>
                   )}
                   <div className="absolute lg:top-4 lg:right-4 z-10 top-2 right-2">
-                    <div className="lg:block hidden">
-                      <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
+                    <div
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        handleDeleteFavouriteDish(dish.id, dish.title)
+                      }}
+                      className="lg:block hidden"
+                    >
+                      <DeleteIcon
+                        className="text-white hover:text-red-500 transition-colors duration-300"
+                        onClick={() => handleDeleteFavouriteDish(dish.id, dish.title)}
+                      />
                     </div>
-                    <div className="lg:hidden block">
-                      <DeleteIconMini className="text-white hover:text-red-500 transition-colors duration-300" />
+                    <div
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        handleDeleteFavouriteDish(dish.id, dish.title)
+                      }}
+                      className="lg:hidden block"
+                    >
+                      <DeleteIconMini
+                        className="text-white hover:text-red-500 transition-colors duration-300"
+                        onClick={() => handleDeleteFavouriteDish(dish.id, dish.title)}
+                      />
                     </div>
                   </div>
                   <img

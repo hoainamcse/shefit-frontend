@@ -1,10 +1,9 @@
 import { cn } from '@/lib/utils'
-import React, { Suspense } from 'react'
+import React from 'react'
 import Link from 'next/link'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getMuscleGroupExercises, getMuscleGroups } from '@/network/server/muscle-groups'
 import { getYouTubeThumbnail } from '@/lib/youtube'
-import { Skeleton } from '@/components/ui/skeleton'
 
 export default async function Muscle({ params }: { params: Promise<{ muscle_id: string }> }) {
   const resolvedParams = await params
@@ -29,7 +28,9 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
             Các bài tập nhóm {selectedMuscleGroup?.name}
           </div>
           <p className="text-[#737373] text-sm lg:text-lg">
-            Tại Shefit, chúng tôi cung cấp một loạt các bài tập chuyên biệt cho từng nhóm cơ, giúp bạn xây dựng sức mạnh và sự linh hoạt. Mỗi bài tập được thiết kế để tối ưu hóa hiệu quả luyện tập, phù hợp với mọi trình độ từ người mới bắt đầu đến chuyên nghiệp.
+            Tại Shefit, chúng tôi cung cấp một loạt các bài tập chuyên biệt cho từng nhóm cơ, giúp bạn xây dựng sức mạnh
+            và sự linh hoạt. Mỗi bài tập được thiết kế để tối ưu hóa hiệu quả luyện tập, phù hợp với mọi trình độ từ
+            người mới bắt đầu đến chuyên nghiệp.
           </p>
         </div>
         <div>
@@ -110,7 +111,7 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
             <TabsContent value="no-equipment">
               <div className="grid grid-cols-3 sm:gap-5 gap-4">
                 {muscleGroupExercises.data
-                  ?.filter((exercise) => !exercise.equipments || exercise.equipments.length === 0)
+                  ?.filter((exercise) => exercise.equipments?.some((equipment) => equipment.name === 'Tay Không'))
                   .map((exercise) => (
                     <Link href={`/gallery/muscle/${muscle_id}/${exercise.id}`} key={exercise.id}>
                       <div key={`menu-${exercise.id}`} className="text-lg overflow-hidden">

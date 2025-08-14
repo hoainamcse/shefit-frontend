@@ -88,7 +88,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
 
     try {
       await addFavouriteMealPlan(session.userId, mealPlanId.toString())
-      toast.success('Đã lưu thực đơn thành công!')
+      toast.success('Đã thêm thực đơn vào danh sách yêu thích!')
       setIsInFavorites(true)
     } catch (error) {
       console.error('Error saving meal plan:', error)

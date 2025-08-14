@@ -22,7 +22,7 @@ function ExerciseContent() {
       <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
         <AccordionItem value="item-1" className="border-b-0">
           <AccordionTrigger className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold hover:no-underline">
-            Khóa tập của bạn
+            Khóa tập
           </AccordionTrigger>
           <AccordionContent>
             <ListCourses />
@@ -32,7 +32,7 @@ function ExerciseContent() {
       <Accordion type="single" collapsible className="w-full" defaultValue="item-2">
         <AccordionItem value="item-2" className="border-b-0">
           <AccordionTrigger className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold hover:no-underline">
-            Thực đơn của bạn
+            Thực đơn
           </AccordionTrigger>
           <AccordionContent>
             <ListMealPlans />

@@ -20,11 +20,12 @@ import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import type { Exercise } from '@/models/exercise'
 import { getYouTubeThumbnail } from '@/lib/youtube'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { getFavouriteExercises } from '@/network/client/user-favourites'
+import { getFavouriteExercises, deleteFavouriteExercise } from '@/network/client/user-favourites'
 import { FavouriteExercise } from '@/models/favourite'
 import { Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
+import { toast } from 'sonner'
 
 const ReactPlayer = dynamic(() => import('react-player/lazy'), {
   ssr: false,
@@ -62,6 +63,22 @@ export default function ListExercises() {
   const handleBuyPackageClick = () => {
     setDialogOpen(false)
     redirectToAccount('buy-package')
+  }
+
+  const handleDeleteFavouriteExercise = async (exerciseId: number, exerciseTitle: string) => {
+    if (!session?.userId) return
+
+    try {
+      await deleteFavouriteExercise(session.userId, exerciseId.toString())
+
+      setFavoriteExercises((prev) => prev.filter((item) => item.id !== exerciseId))
+      setCombinedExercises((prev) => prev.filter((item) => item.id !== exerciseId))
+
+      toast.success(`Đã xóa ${exerciseTitle} khỏi danh sách`)
+    } catch (error) {
+      console.error('Error deleting favourite exercise:', error)
+      toast.error('Có lỗi xảy ra khi xóa bài tập')
+    }
   }
 
   useEffect(() => {
@@ -299,10 +316,24 @@ export default function ListExercises() {
                     </div>
                   )}
                   <div className="absolute lg:top-4 lg:right-4 z-10 top-2 right-2">
-                    <div className="lg:block hidden">
+                    <div
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        handleDeleteFavouriteExercise(exercise.id, exercise.name)
+                      }}
+                      className="lg:block hidden"
+                    >
                       <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                     </div>
-                    <div className="lg:hidden block">
+                    <div
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        handleDeleteFavouriteExercise(exercise.id, exercise.name)
+                      }}
+                      className="lg:hidden block"
+                    >
                       <DeleteIconMini className="text-white hover:text-red-500 transition-colors duration-300" />
                     </div>
                   </div>

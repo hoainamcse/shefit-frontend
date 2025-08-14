@@ -4,6 +4,10 @@ import {
   getFavouriteCourses,
   getFavouriteMealPlans,
   getFavouriteDishes,
+  deleteFavouriteDish,
+  deleteFavouriteExercise,
+  deleteFavouriteMealPlan,
+  deleteFavouriteCourse,
 } from '@/network/client/user-favourites'
 import { FavouriteExercise, FavouriteMealPlan, FavouriteDish } from '@/models/favourite'
 import { Exercise } from '@/models/exercise'
@@ -21,6 +25,7 @@ import { getDish } from '@/network/server/dishes'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
+import { toast } from 'sonner'
 
 export default function FavouriteContent() {
   const { session } = useSession()
@@ -43,6 +48,66 @@ export default function FavouriteContent() {
   const handleBuyPackageClick = () => {
     setDialogOpen(false)
     redirectToAccount('buy-package')
+  }
+
+  const handleDeleteFavouriteDish = async (dishId: number, dishTitle: string) => {
+    if (!session?.userId) return
+
+    try {
+      await deleteFavouriteDish(session.userId, dishId.toString())
+
+      setDishes((prev) => prev.filter((item) => item.dish.id !== dishId))
+
+      toast.success(`Đã xóa ${dishTitle} khỏi danh sách yêu thích`)
+    } catch (error) {
+      console.error('Error deleting favourite dish:', error)
+      toast.error('Có lỗi xảy ra khi xóa món ăn')
+    }
+  }
+
+  const handleDeleteFavouriteExercise = async (exerciseId: number, exerciseTitle: string) => {
+    if (!session?.userId) return
+
+    try {
+      await deleteFavouriteExercise(session.userId, exerciseId.toString())
+
+      setExercises((prev) => prev.filter((item) => item.exercise.id !== exerciseId))
+
+      toast.success(`Đã xóa ${exerciseTitle} khỏi danh sách yêu thích`)
+    } catch (error) {
+      console.error('Error deleting favourite exercise:', error)
+      toast.error('Có lỗi xảy ra khi xóa bài tập')
+    }
+  }
+
+  const handleDeleteFavouriteMealPlan = async (mealPlanId: number, mealPlanTitle: string) => {
+    if (!session?.userId) return
+
+    try {
+      await deleteFavouriteMealPlan(session.userId, mealPlanId.toString())
+
+      setMealPlans((prev) => prev.filter((item) => item.meal_plan.id !== mealPlanId))
+
+      toast.success(`Đã xóa ${mealPlanTitle} khỏi danh sách yêu thích`)
+    } catch (error) {
+      console.error('Error deleting favourite meal plan:', error)
+      toast.error('Có lỗi xảy ra khi xóa thực đơn')
+    }
+  }
+
+  const handleDeleteFavouriteCourse = async (courseId: number, courseTitle: string) => {
+    if (!session?.userId) return
+
+    try {
+      await deleteFavouriteCourse(session.userId, courseId.toString())
+
+      setCourses((prev) => prev.filter((course) => course.id !== courseId))
+
+      toast.success(`Đã xóa ${courseTitle} khỏi danh sách yêu thích`)
+    } catch (error) {
+      console.error('Error deleting favourite course:', error)
+      toast.error('Có lỗi xảy ra khi xóa khóa học')
+    }
   }
 
   useEffect(() => {
@@ -363,7 +428,14 @@ export default function FavouriteContent() {
                 <Link href={`/courses/${course.id}/${course.course_format}-classes`}>
                   <div>
                     <div className="relative group lg:max-w-[585px]">
-                      <div className="absolute top-4 right-4 z-10">
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          e.preventDefault()
+                          handleDeleteFavouriteCourse(course.id, course.course_name)
+                        }}
+                        className="absolute top-4 right-4 z-10"
+                      >
                         <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                       </div>
                       <img
@@ -413,7 +485,14 @@ export default function FavouriteContent() {
             mealPlans.map(({ meal_plan }) => (
               <Link href={`/meal-plans/${meal_plan.id}`} key={meal_plan.id}>
                 <div className="relative group lg:max-w-[585px]">
-                  <div className="absolute top-4 right-4 z-10">
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      e.preventDefault()
+                      handleDeleteFavouriteMealPlan(meal_plan.id, meal_plan.title)
+                    }}
+                    className="absolute top-4 right-4 z-10"
+                  >
                     <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                   </div>
                   <img
@@ -460,10 +539,24 @@ export default function FavouriteContent() {
                 <div>
                   <div className="relative group lg:max-w-[585px]">
                     <div className="absolute lg:top-4 lg:right-4 z-10 top-2 right-2">
-                      <div className="lg:block hidden">
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          e.preventDefault()
+                          handleDeleteFavouriteExercise(exercise.id, exercise.exercise?.name || '')
+                        }}
+                        className="lg:block hidden"
+                      >
                         <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                       </div>
-                      <div className="lg:hidden block">
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          e.preventDefault()
+                          handleDeleteFavouriteExercise(exercise.id, exercise.exercise?.name || '')
+                        }}
+                        className="lg:hidden block"
+                      >
                         <DeleteIconMini className="text-white hover:text-red-500 transition-colors duration-300" />
                       </div>
                     </div>
@@ -516,10 +609,24 @@ export default function FavouriteContent() {
               >
                 <div className="relative group lg:max-w-[585px]">
                   <div className="absolute lg:top-4 lg:right-4 z-10 top-2 right-2">
-                    <div className="lg:block hidden">
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        e.preventDefault()
+                        handleDeleteFavouriteDish(dish.id, dish.title)
+                      }}
+                      className="lg:block hidden"
+                    >
                       <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                     </div>
-                    <div className="lg:hidden block">
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        e.preventDefault()
+                        handleDeleteFavouriteDish(dish.id, dish.title)
+                      }}
+                      className="lg:hidden block"
+                    >
                       <DeleteIconMini className="text-white hover:text-red-500 transition-colors duration-300" />
                     </div>
                   </div>

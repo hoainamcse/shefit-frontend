@@ -64,3 +64,31 @@ export async function addFavouriteExercise(
   })
   return response.json()
 }
+
+export async function deleteFavouriteMealPlan(user_id: string, meal_plan_id: string): Promise<ApiResponse<void>> {
+  const response = await fetchData(`/v1/users/${user_id}/favourite/meal-plans/${meal_plan_id}`, {
+    method: 'DELETE',
+  })
+  return response.json()
+}
+
+export async function deleteFavouriteExercise(user_id: string, exercise_id: string): Promise<ApiResponse<void>> {
+  const response = await fetchData(`/v1/users/${user_id}/favourite/exercises/${exercise_id}`, {
+    method: 'DELETE',
+  })
+  return response.json()
+}
+
+export async function deleteFavouriteDish(user_id: string, dish_id: string): Promise<ApiResponse<void>> {
+  const response = await fetchData(`/v1/users/${user_id}/favourite/dishes/${dish_id}`, {
+    method: 'DELETE',
+  })
+  return response.json()
+}
+
+export async function deleteFavouriteCourse(user_id: string, course_id: string): Promise<ApiResponse<void>> {
+  const response = await fetchData(`/v1/users/${user_id}/favourite/courses/${course_id}`, {
+    method: 'DELETE',
+  })
+  return response.json()
+}

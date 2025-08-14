@@ -117,7 +117,7 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
                 }
                 try {
                   await addFavouriteCourse(session.userId.toString(), courseId.toString())
-                  toast.success('Đã thêm vào danh sách yêu thích thành công!')
+                  toast.success('Đã thêm khóa học vào danh sách yêu thích!')
                 } catch (error) {
                   console.error('Error saving to favorites:', error)
                   toast.error('Có lỗi xảy ra khi lưu vào danh sách yêu thích!')
