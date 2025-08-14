@@ -1,14 +1,13 @@
 import React from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
-import { getDishes } from '@/network/server/dishes'
+import { getDishesByDietId } from '@/network/server/dishes'
 import { getDiets } from '@/network/server/diets'
 export default async function Food({ params }: { params: Promise<{ meal_id: string }> }) {
   const { meal_id } = await params
-  const dish = await getDishes()
-  const diet = await getDiets()
+  const dishes = await getDishesByDietId(Number(meal_id))
+  const diets = await getDiets()
 
-  const selectedDiet = diet.data?.find((item) => item.id.toString() === meal_id)
+  const selectedDiet = diets.data?.find((item) => item.id.toString() === meal_id)
 
   return (
     <div className="flex flex-col gap-10 mt-6 md:mt-10 lg:mt-[76px]">
@@ -20,18 +19,20 @@ export default async function Food({ params }: { params: Promise<{ meal_id: stri
           <p className="text-[#737373] text-sm lg:text-lg">{selectedDiet?.description}</p>
         </div>
         <div className="grid grid-cols-3 sm:gap-5 gap-4">
-          {dish.data
-            ?.filter((item) => item.diet && item.diet.id.toString() === meal_id)
-            .map((item, index) => (
-              <Link href={`/gallery/meal/${meal_id}/${item.id}`} key={index}>
-                <div key={`menu-${index}`} className="overflow-hidden">
-                  <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
-                    <img src={item.image} alt="" className="object-cover rounded-[20px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300" />
-                  </div>
-                  <p className="font-medium lg:font-bold text-sm lg:text-lg">{item.name}</p>
+          {dishes.data?.map((item, index) => (
+            <Link href={`/gallery/meal/${meal_id}/${item.id}`} key={index}>
+              <div key={`menu-${index}`} className="overflow-hidden">
+                <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
+                  <img
+                    src={item.image}
+                    alt=""
+                    className="object-cover rounded-[20px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300"
+                  />
                 </div>
-              </Link>
-            ))}
+                <p className="font-medium lg:font-bold text-sm lg:text-lg">{item.name}</p>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </div>
