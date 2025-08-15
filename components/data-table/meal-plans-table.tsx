@@ -1,6 +1,6 @@
 'use client'
 
-import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import type { MealPlan } from '@/models/meal-plan'
 
 import { toast } from 'sonner'
@@ -43,7 +43,7 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
     pageIndex: 0,
     pageSize: 25,
   })
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [rowSelection, setRowSelection] = useState<MealPlan[]>([])
   const [editingState, setEditingState] = useState<EditingState>({})
 
   const { data, isLoading, error, refetch } = useQuery({
@@ -309,7 +309,7 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
     <DataTable
       data={data?.data}
       columns={columns}
-      state={{ pagination, rowSelection }}
+      state={{ pagination }}
       rowCount={data?.paging.total}
       onDelete={onDeleteRows}
       onPaginationChange={setPagination}
@@ -321,12 +321,11 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
               variant="outline"
               text={`Chọn ${Object.keys(rowSelection).length} thực đơn`}
               onClick={() => {
-                const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
-                if (selectedRows.length === 0) {
+                if (rowSelection.length === 0) {
                   toast.error('Vui lòng chọn ít nhất một thực đơn')
                   return
                 }
-                onConfirmRowSelection(selectedRows.filter((row): row is MealPlan => !!row))
+                onConfirmRowSelection(rowSelection)
               }}
             />
           )}

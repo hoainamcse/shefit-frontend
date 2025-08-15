@@ -1,6 +1,6 @@
 'use client'
 
-import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import type { Product } from '@/models/product'
 
 import { toast } from 'sonner'
@@ -26,7 +26,7 @@ export function ProductsTable({ onConfirmRowSelection }: ProductsTableProps) {
     pageIndex: 0,
     pageSize: 25,
   })
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [rowSelection, setRowSelection] = useState<Product[]>([])
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyProducts, pagination],
@@ -158,7 +158,7 @@ export function ProductsTable({ onConfirmRowSelection }: ProductsTableProps) {
     <DataTable
       data={data?.data}
       columns={columns}
-      state={{ pagination, rowSelection }}
+      state={{ pagination }}
       rowCount={data?.paging.total}
       onDelete={onDeleteRows}
       onPaginationChange={setPagination}
@@ -170,12 +170,11 @@ export function ProductsTable({ onConfirmRowSelection }: ProductsTableProps) {
               variant="outline"
               text={`Chọn ${Object.keys(rowSelection).length} sản phẩm`}
               onClick={() => {
-                const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
-                if (selectedRows.length === 0) {
+                if (rowSelection.length === 0) {
                   toast.error('Vui lòng chọn ít nhất một sản phẩm')
                   return
                 }
-                onConfirmRowSelection(selectedRows.filter((row): row is Product => !!row))
+                onConfirmRowSelection(rowSelection)
               }}
             />
           )}

@@ -1,6 +1,6 @@
 'use client'
 
-import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import type { Coach } from '@/models/coach'
 
 import { toast } from 'sonner'
@@ -27,7 +27,7 @@ export function CoachesTable({ onConfirmRowSelection }: CoachesTableProps) {
     pageIndex: 0,
     pageSize: 25,
   })
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [rowSelection, setRowSelection] = useState<Coach[]>([])
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyCoaches, pagination],
@@ -163,7 +163,7 @@ export function CoachesTable({ onConfirmRowSelection }: CoachesTableProps) {
       <DataTable
         data={data?.data}
         columns={columns}
-        state={{ pagination, rowSelection }}
+        state={{ pagination }}
         rowCount={data?.paging.total}
         onDelete={onDeleteRows}
         onPaginationChange={setPagination}
@@ -175,12 +175,11 @@ export function CoachesTable({ onConfirmRowSelection }: CoachesTableProps) {
                 variant="outline"
                 text={`Chọn ${Object.keys(rowSelection).length} HLV`}
                 onClick={() => {
-                  const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
-                  if (selectedRows.length === 0) {
+                  if (rowSelection.length === 0) {
                     toast.error('Vui lòng chọn ít nhất một HLV')
                     return
                   }
-                  onConfirmRowSelection(selectedRows.filter((row): row is Coach => !!row))
+                  onConfirmRowSelection(rowSelection)
                 }}
               />
             )}

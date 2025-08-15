@@ -1,6 +1,6 @@
 'use client'
 
-import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import type { Dish } from '@/models/dish'
 
 import { toast } from 'sonner'
@@ -34,7 +34,7 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
     pageSize: 25,
   })
 
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [rowSelection, setRowSelection] = useState<Dish[]>([])
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyDishes, pagination],
@@ -164,7 +164,7 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
       <DataTable
         data={data?.data}
         columns={columns}
-        state={{ pagination, rowSelection }}
+        state={{ pagination }}
         rowCount={data?.paging.total}
         onDelete={onDeleteRows}
         onPaginationChange={setPagination}
@@ -176,12 +176,11 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
                 variant="outline"
                 text={`Chọn ${Object.keys(rowSelection).length} món ăn`}
                 onClick={() => {
-                  const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
-                  if (selectedRows.length === 0) {
+                  if (rowSelection.length === 0) {
                     toast.error('Vui lòng chọn ít nhất một món ăn')
                     return
                   }
-                  onConfirmRowSelection(selectedRows.filter((row): row is Dish => !!row))
+                  onConfirmRowSelection(rowSelection)
                 }}
               />
             )}

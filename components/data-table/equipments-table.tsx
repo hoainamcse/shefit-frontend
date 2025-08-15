@@ -1,6 +1,6 @@
 'use client'
 
-import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import type { Equipment } from '@/models/equipment'
 
 import { toast } from 'sonner'
@@ -28,7 +28,7 @@ export function EquipmentsTable({ onConfirmRowSelection }: EquipmentsTableProps)
     pageIndex: 0,
     pageSize: 25,
   })
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [rowSelection, setRowSelection] = useState<Equipment[]>([])
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyEquipments, pagination],
@@ -171,7 +171,7 @@ export function EquipmentsTable({ onConfirmRowSelection }: EquipmentsTableProps)
       <DataTable
         data={data?.data}
         columns={columns}
-        state={{ pagination, rowSelection }}
+        state={{ pagination }}
         rowCount={data?.paging.total}
         onDelete={onDeleteRows}
         onPaginationChange={setPagination}
@@ -183,12 +183,11 @@ export function EquipmentsTable({ onConfirmRowSelection }: EquipmentsTableProps)
                 variant="outline"
                 text={`Chọn ${Object.keys(rowSelection).length} dụng cụ`}
                 onClick={() => {
-                  const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
-                  if (selectedRows.length === 0) {
+                  if (rowSelection.length === 0) {
                     toast.error('Vui lòng chọn ít nhất một dụng cụ')
                     return
                   }
-                  onConfirmRowSelection(selectedRows.filter((row): row is Equipment => !!row))
+                  onConfirmRowSelection(rowSelection)
                 }}
               />
             )}

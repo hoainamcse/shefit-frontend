@@ -1,6 +1,6 @@
 'use client'
 
-import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { Download } from 'lucide-react'
 import { useEffect, useMemo, useState, useTransition } from 'react'
@@ -46,7 +46,7 @@ export function UsersTable() {
     pageIndex: 0,
     pageSize: 25,
   })
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  // const [rowSelection, setRowSelection] = useState<User[]>([])
   const { session } = useSession()
 
   const { data, isLoading, error, refetch } = useQuery({
@@ -242,11 +242,11 @@ export function UsersTable() {
     <DataTable
       data={data?.data}
       columns={columns}
-      state={{ pagination, rowSelection }}
+      state={{ pagination }}
       rowCount={data?.paging.total}
       onDelete={onDeleteRows}
       onPaginationChange={setPagination}
-      onRowSelectionChange={setRowSelection}
+      // onRowSelectionChange={setRowSelection}
       rightSection={
         <>
           <CreateAccountDialog updateData={refetch}>

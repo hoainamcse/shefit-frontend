@@ -1,6 +1,6 @@
 'use client'
 
-import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import type { Calorie } from '@/models/calorie'
 
 import { toast } from 'sonner'
@@ -27,7 +27,7 @@ export function CaloriesTable({ onConfirmRowSelection }: CaloriesTableProps) {
     pageIndex: 0,
     pageSize: 25,
   })
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [rowSelection, setRowSelection] = useState<Calorie[]>([])
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyCalories, pagination],
@@ -148,7 +148,7 @@ export function CaloriesTable({ onConfirmRowSelection }: CaloriesTableProps) {
       <DataTable
         data={data?.data}
         columns={columns}
-        state={{ pagination, rowSelection }}
+        state={{ pagination }}
         rowCount={data?.paging.total}
         onDelete={onDeleteRows}
         onPaginationChange={setPagination}
@@ -160,12 +160,11 @@ export function CaloriesTable({ onConfirmRowSelection }: CaloriesTableProps) {
                 variant="outline"
                 text={`Chọn ${Object.keys(rowSelection).length} calorie`}
                 onClick={() => {
-                  const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
-                  if (selectedRows.length === 0) {
+                  if (rowSelection.length === 0) {
                     toast.error('Vui lòng chọn ít nhất một calorie')
                     return
                   }
-                  onConfirmRowSelection(selectedRows.filter((row): row is Calorie => !!row))
+                  onConfirmRowSelection(rowSelection)
                 }}
               />
             )}

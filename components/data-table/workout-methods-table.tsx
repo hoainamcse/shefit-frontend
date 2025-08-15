@@ -1,6 +1,6 @@
 'use client'
 
-import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import type { FormCategory } from '@/models/form-category'
 
 import { toast } from 'sonner'
@@ -40,7 +40,7 @@ export function WorkoutMethodsTable({ onConfirmRowSelection }: WorkoutMethodsTab
     pageIndex: 0,
     pageSize: 25,
   })
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [rowSelection, setRowSelection] = useState<WorkoutMethod[]>([])
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyWorkoutMethods, pagination],
@@ -156,7 +156,7 @@ export function WorkoutMethodsTable({ onConfirmRowSelection }: WorkoutMethodsTab
       <DataTable
         data={data?.data}
         columns={columns}
-        state={{ pagination, rowSelection }}
+        state={{ pagination }}
         rowCount={data?.paging.total}
         onDelete={onDeleteRows}
         onPaginationChange={setPagination}
@@ -168,12 +168,11 @@ export function WorkoutMethodsTable({ onConfirmRowSelection }: WorkoutMethodsTab
                 variant="outline"
                 text={`Chọn ${Object.keys(rowSelection).length} loại hình tập luyện`}
                 onClick={() => {
-                  const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
-                  if (selectedRows.length === 0) {
+                  if (rowSelection.length === 0) {
                     toast.error('Vui lòng chọn ít nhất một loại hình tập luyện')
                     return
                   }
-                  onConfirmRowSelection(selectedRows.filter((row): row is WorkoutMethod => !!row))
+                  onConfirmRowSelection(rowSelection)
                 }}
               />
             )}

@@ -1,6 +1,6 @@
 'use client'
 
-import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import type { Course, CourseForm, CourseFormat, CourseLevel } from '@/models/course'
 
 import { toast } from 'sonner'
@@ -51,7 +51,7 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
     pageIndex: 0,
     pageSize: 25,
   })
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [rowSelection, setRowSelection] = useState<Course[]>([])
   const [editingState, setEditingState] = useState<EditingState>({})
 
   const { data, isLoading, error, refetch } = useQuery({
@@ -335,7 +335,7 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
     <DataTable
       data={data?.data}
       columns={columns}
-      state={{ pagination, rowSelection }}
+      state={{ pagination }}
       rowCount={data?.paging.total}
       onDelete={onDeleteRows}
       onPaginationChange={setPagination}
@@ -347,12 +347,11 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
               variant="outline"
               text={`Chọn ${Object.keys(rowSelection).length} khoá tập`}
               onClick={() => {
-                const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
-                if (selectedRows.length === 0) {
+                if (rowSelection.length === 0) {
                   toast.error('Vui lòng chọn ít nhất một khoá tập')
                   return
                 }
-                onConfirmRowSelection(selectedRows.filter((row): row is Course => !!row))
+                onConfirmRowSelection(rowSelection)
               }}
             />
           )}

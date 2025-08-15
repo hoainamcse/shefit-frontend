@@ -1,6 +1,6 @@
 'use client'
 
-import type { ColumnDef, PaginationState, RowSelectionState } from '@tanstack/react-table'
+import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import type { Goal } from '@/models/goal'
 
 import { toast } from 'sonner'
@@ -27,7 +27,7 @@ export function GoalTable({ onConfirmRowSelection }: GoalTableProps) {
     pageIndex: 0,
     pageSize: 25,
   })
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [rowSelection, setRowSelection] = useState<Goal[]>([])
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyGoals, pagination],
@@ -143,7 +143,7 @@ export function GoalTable({ onConfirmRowSelection }: GoalTableProps) {
       <DataTable
         data={data?.data}
         columns={columns}
-        state={{ pagination, rowSelection }}
+        state={{ pagination }}
         rowCount={data?.paging.total}
         onDelete={onDeleteRows}
         onPaginationChange={setPagination}
@@ -155,12 +155,11 @@ export function GoalTable({ onConfirmRowSelection }: GoalTableProps) {
                 variant="outline"
                 text={`Chọn ${Object.keys(rowSelection).length} mục tiêu`}
                 onClick={() => {
-                  const selectedRows = Object.keys(rowSelection).map((key) => data?.data?.[Number(key)])
-                  if (selectedRows.length === 0) {
+                  if (rowSelection.length === 0) {
                     toast.error('Vui lòng chọn ít nhất một mục tiêu')
                     return
                   }
-                  onConfirmRowSelection(selectedRows.filter((row): row is Goal => !!row))
+                  onConfirmRowSelection(rowSelection)
                 }}
               />
             )}
