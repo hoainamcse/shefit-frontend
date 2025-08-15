@@ -31,9 +31,10 @@ interface ChatBotFormValues {
 interface ChatBotProps {
   isOpen?: boolean
   onClose?: () => void
+  isPreview?: boolean
 }
 
-export function ChatBot({ isOpen, onClose }: ChatBotProps) {
+export function ChatBot({ isOpen, onClose, isPreview = false }: ChatBotProps) {
   const [isShowingMoveDownButton, setIsShowingMoveDownButton] = useState(false)
   const [isShowingPromptSuggestions, setIsShowingPromptSuggestions] = useState(false)
   const [hasFollowUpOptions, setHasFollowUpOptions] = useState(false)
@@ -149,7 +150,9 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
     <div
       className={cn(
         isOpen
-          ? 'fixed z-50 inset-0 lg:top-auto lg:left-auto lg:bottom-16 lg:right-4 lg:w-[400px] lg:h-[80vh]'
+          ? isPreview
+            ? 'h-[620px]'
+            : 'fixed z-50 inset-0 lg:top-auto lg:left-auto lg:bottom-16 lg:right-4 lg:w-[400px] lg:h-[80vh]'
           : 'hidden'
       )}
     >
