@@ -14,7 +14,7 @@ import { getUserBodyQuizzes, queryKeyUserBodyQuizzes, updateUserBodyQuiz } from 
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { EditSheet } from '@/components/data-table/edit-sheet'
-import { FormTextareaField } from '@/components/forms/fields'
+import { FormRichTextField } from '@/components/forms/fields'
 import { MainButton } from '@/components/buttons/main-button'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -212,7 +212,7 @@ function EditUserBodyQuizForm({ data, onSuccess }: EditUserBodyQuizFormProps) {
   return (
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-        <FormTextareaField form={form} name="comment" label="Nhận xét" placeholder="Nhập nhận xét" />
+        <FormRichTextField form={form} name="comment" label="Nhận xét" placeholder="Nhập nhận xét" />
         <div className="flex justify-end">
           {form.formState.isDirty && <MainButton text="Cập nhật" loading={equipmentMutation.isPending} />}
         </div>
