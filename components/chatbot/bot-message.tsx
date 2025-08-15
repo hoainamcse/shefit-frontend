@@ -1,34 +1,38 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import remarkGfm from 'remark-gfm'
 import ReactMarkdown from 'react-markdown'
 import { Message } from '@/models/chatbot'
 
 import { Separator } from '../ui/separator'
 import { Button } from '../ui/button'
 
-const FOLLOW_UP_MESSAGES = [
-  'Chị muốn chọn giữa các thực đơn có sẵn của Shefit hay chị muốn em lên thực đơn mới? \n- Chọn thực đơn có sẵn\n- Tạo thực đơn theo ý chị\n',
-  'Chị muốn chọn khóa tập có sẵn hay tạo khóa tập mới?\n- Chọn khóa tập có sẵn\n- Tạo khóa tập mới\n',
-  'Em xin recommend khóa tập và thực đơn mới phù hợp hơn với thay đổi của chị nha\n- Khóa tập\n- Thực đơn\n',
-]
-
 interface BotMessageProps {
   message: Message
   isNewestMessage: boolean
   sendMessage: (messageValue?: string, isUsingOption?: boolean, isReSend?: boolean) => void
+  onFollowUpOptionsChange?: (hasOptions: boolean) => void
 }
 
-export default function BotMessage({ message, isNewestMessage, sendMessage }: BotMessageProps) {
+export default function BotMessage({
+  message,
+  isNewestMessage,
+  sendMessage,
+  onFollowUpOptionsChange,
+}: BotMessageProps) {
   const [currentMessage, setCurrentMessage] = useState<Message>(message)
 
-  const removeOptionsMessage = (text: string) => {
-    for (const msg of FOLLOW_UP_MESSAGES) {
-      if (text.includes(msg)) {
-        const trimmed = msg.split('\n')[0] // Lấy phần trước \n
-        return text.replace(msg, trimmed) // Thay toàn bộ msg bằng phần đã rút gọn
-      }
+  const removeOptionsFromMessage = (text: string) => {
+    const lines = text.split('\n')
+    const optionLines = lines.filter((line) => line.startsWith('- '))
+
+    if (optionLines.length > 0) {
+      // Find the first option line and remove everything from that line onwards
+      const firstOptionIndex = lines.findIndex((line) => line.startsWith('- '))
+      return lines.slice(0, firstOptionIndex).join('\n').trim()
     }
+
     return text
   }
 
@@ -58,18 +62,54 @@ export default function BotMessage({ message, isNewestMessage, sendMessage }: Bo
     }
   }, [])
 
+  useEffect(() => {
+    if (isNewestMessage && onFollowUpOptionsChange) {
+      const options = message.content.split('\n').filter((line) => line.startsWith('- '))
+      onFollowUpOptionsChange(options.length > 0)
+    }
+  }, [isNewestMessage, message.content, onFollowUpOptionsChange])
+
   return (
     <>
-      <div className='bg-gray-100 text-gray-800 px-3 py-2 rounded-lg text-sm w-fit max-w-[90%]'>
+      <div className="bg-gray-100 text-gray-800 px-3 py-2 rounded-lg text-sm w-fit max-w-[90%]">
         <ReactMarkdown
           components={{
-            ul: (props) => <ul className='list-disc pl-5' {...props} />,
-            ol: (props) => <ol className='list-decimal pl-5' {...props} />,
+            h1: (props) => <h1 className="text-xl font-bold mb-2" {...props} />,
+            h2: (props) => <h2 className="text-lg font-semibold mb-2" {...props} />,
+            h3: (props) => <h3 className="text-base font-medium mb-1" {...props} />,
+            h4: (props) => <h4 className="text-sm font-medium mb-1" {...props} />,
+            h5: (props) => <h5 className="text-xs font-medium mb-1" {...props} />,
+            h6: (props) => <h6 className="text-xs font-medium mb-1" {...props} />,
+            p: (props) => <p className="mb-2 last:mb-0" {...props} />,
+            ul: (props) => <ul className="list-disc pl-5 mb-2" {...props} />,
+            ol: (props) => <ol className="list-decimal pl-5 mb-2" {...props} />,
+            li: (props) => <li className="mb-1" {...props} />,
+            strong: (props) => <strong className="font-semibold" {...props} />,
+            em: (props) => <em className="italic" {...props} />,
+            code: (props) => <code className="bg-gray-200 px-1 py-0.5 rounded text-xs font-mono" {...props} />,
+            pre: (props) => (
+              <pre className="bg-gray-200 p-2 rounded text-xs font-mono overflow-x-auto mb-2" {...props} />
+            ),
+            blockquote: (props) => <blockquote className="border-l-4 border-gray-300 pl-3 italic mb-2" {...props} />,
+            a: (props) => <a className="text-blue-600 hover:text-blue-800 underline" {...props} />,
+            hr: (props) => <hr className="border-gray-300 my-3" {...props} />,
+            table: (props) => <table className="border-collapse border border-gray-300 mb-2 w-full" {...props} />,
+            thead: (props) => <thead className="bg-gray-100" {...props} />,
+            tbody: (props) => <tbody {...props} />,
+            tr: (props) => <tr className="border-b border-gray-200" {...props} />,
+            th: (props) => <th className="border border-gray-300 px-2 py-1 text-left font-semibold" {...props} />,
+            td: (props) => <td className="border border-gray-300 px-2 py-1" {...props} />,
+            del: (props) => <del className="line-through text-gray-500" {...props} />,
+            mark: (props) => <mark className="bg-yellow-200 px-1" {...props} />,
+            sub: (props) => <sub className="text-xs" {...props} />,
+            sup: (props) => <sup className="text-xs" {...props} />,
+            img: (props) => <img className="max-w-full h-auto rounded mb-2" {...props} />,
           }}
+          remarkPlugins={[remarkGfm]}
         >
-          {removeOptionsMessage(currentMessage.content)}
+          {removeOptionsFromMessage(currentMessage.content)}
         </ReactMarkdown>
-        <p className='text-xs mt-1 text-gray-500'>{currentMessage.created_at}</p>
+        <p className="text-xs mt-1 text-gray-500">{currentMessage.created_at}</p>
       </div>
 
       {isNewestMessage && currentMessage.status !== 'is_typing' && (
@@ -90,22 +130,26 @@ const FollowUpOptions = ({
     return text
       .split('\n')
       .filter((line) => line.startsWith('- '))
-      .map((line) => line.slice(2).trim())
+      .map((line) => {
+        const trimmedLine = line.slice(2).trim()
+        // Check if the entire line is wrapped in << and >> markers
+        const regex = /^<<(.+?)>>$/
+        const match = regex.exec(trimmedLine)
+        return match ? match[1] : trimmedLine
+      })
   }
 
-  const followUpMessage = FOLLOW_UP_MESSAGES.find((item) => message.includes(item))
-
-  const options = followUpMessage ? extractOptions(followUpMessage) : []
+  const options = extractOptions(message)
 
   return options.length > 0 ? (
-    <div className='flex flex-col gap-2 mt-3 mb-2'>
+    <div className="flex flex-col gap-2 mt-3 mb-2">
       <Separator />
 
-      {options.map((option, index) => (
+      {options.map((option) => (
         <Button
-          key={`option-${index}`}
-          className='whitespace-normal justify-start h-fit py-1.5 px-3 rounded-lg'
-          variant='outline'
+          key={`option-${option}`}
+          className="whitespace-normal justify-start h-fit py-1.5 px-3 rounded-lg"
+          variant="outline"
           onClick={() => sendMessage(option, true, false)}
         >
           {option}

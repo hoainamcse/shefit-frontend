@@ -1,37 +1,28 @@
 'use client'
 
 import React, { useEffect, useState, useRef } from 'react'
-import { format } from 'date-fns'
-import { ArrowDown, ArrowRight, Loader2, RefreshCcw, Star, X, MenuIcon } from 'lucide-react'
-import { toast } from 'sonner'
-import { fetchData } from '@/network/helpers/fetch-data'
-import { getConversationHistory } from '@/network/client/chatbot'
-import { getGreetings } from '@/network/client/chatbot'
-import { Message, Greeting } from '@/models/chatbot'
-
-import { Button } from '../ui/button'
-import { Input } from '../ui/custom-input-chatbot'
-import { Avatar, AvatarFallback } from '../ui/avatar'
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-
-import styles from './chatbot.module.css'
+import { ArrowDown, Star, X } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+
+import { Button } from '../ui/button'
+import { Avatar, AvatarFallback } from '../ui/avatar'
 import { MainButton } from '../buttons/main-button'
 import { cn } from '@/lib/utils'
-import BotMessage from './bot-message'
 import { useSession } from '@/hooks/use-session'
-import PromptSuggestions from './prompt-suggestions'
-import Link from 'next/link'
+import { useChatbotMessages } from '@/hooks/use-chatbot-messages'
+import { useChatbotGreetings } from '@/hooks/use-chatbot-greetings'
+import { MessageItem } from './message-item'
+import { EmptyState } from './empty-state'
+import { TypingIndicator } from './typing-indicator'
+import { ChatInput } from './chat-input'
+
+import styles from './chatbot.module.css'
 
 const formSchema = z.object({
   message: z.string(),
 })
-
-const LIMIT_MESSAGES_PER_OFFSET = 10
-const LIMIT_GREETINGS_PER_OFFSET = 10
 
 interface ChatBotFormValues {
   message: string
@@ -43,28 +34,31 @@ interface ChatBotProps {
 }
 
 export function ChatBot({ isOpen, onClose }: ChatBotProps) {
-  const [messages, setMessages] = useState<Message[]>([])
-  const [isFirstFetchDone, setIsFirstFetchDone] = useState(false)
-  const [isFirstFetchGreetingsDone, setIsFirstFetchGreetingsDone] = useState(false)
-  const [isTypingBot, setIsTypingBot] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const { session } = useSession()
-  const [idOfMessageGotError, setIdOfMessageGotError] = useState<string>()
-  const [flagMessageId, setFlagMessageId] = useState<string>()
-  const [isLoadingMessages, setIsLoadingMessages] = useState(false)
-  const [fetchError, setFetchError] = useState<boolean>(false)
   const [isShowingMoveDownButton, setIsShowingMoveDownButton] = useState(false)
   const [isShowingPromptSuggestions, setIsShowingPromptSuggestions] = useState(false)
+  const [hasFollowUpOptions, setHasFollowUpOptions] = useState(false)
+  const [showEmptyStateForm, setShowEmptyStateForm] = useState<'workout' | 'meal' | null>(null)
 
-  const [greetings, setGreetings] = useState<Greeting[]>([])
-  const [isLoadingGreetings, setIsLoadingGreetings] = useState(false)
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
-  const [total, setTotal] = useState(0)
-  const [greetingPage, setGreetingPage] = useState(0)
-
+  const { session } = useSession()
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const topSentinelRef = useRef<HTMLDivElement>(null)
-  const isFetchingRef = useRef<boolean>(false)
+
+  const {
+    messages,
+    isFirstFetchDone,
+    isTypingBot,
+    isLoading,
+    idOfMessageGotError,
+    isLoadingMessages,
+    fetchError,
+    isFetchingNextPage,
+    hasNextPage,
+    getMessages: fetchNextPage,
+    sendMessage: originalSendMessage,
+  } = useChatbotMessages(session)
+
+  const { greetings, isFirstFetchGreetingsDone, isLoadingGreetings, isLoadingMore, total, fetchGreetings } =
+    useChatbotGreetings(session)
 
   const form = useForm<ChatBotFormValues>({
     resolver: zodResolver(formSchema),
@@ -73,215 +67,16 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
     },
   })
 
-  const getParams = () => {
-    const params = [`user_id=${session?.userId}`, `limit=${LIMIT_MESSAGES_PER_OFFSET}`, 'order=desc']
-    if (flagMessageId) {
-      params.push(`after_id=${flagMessageId}`)
-    }
-    return `?${params.join('&')}`
-  }
-
-  const getMessages = async () => {
-    if (session && !isFetchingRef.current && !isLoadingMessages && flagMessageId !== 'reached_end') {
-      isFetchingRef.current = true
-      setIsLoadingMessages(true)
-      setFetchError(false)
-
-      try {
-        const res = await getConversationHistory(getParams())
-
-        if (res && res.status === 'success' && Array.isArray(res.data)) {
-          const messArr = res.data
-          const formattedMessages = messArr.map((message) => {
-            return {
-              ...message,
-              created_at: format(new Date(message.created_at), 'dd/MM/yyyy HH:mm'),
-              updated_at: format(new Date(message.created_at), 'dd/MM/yyyy HH:mm'),
-            }
-          })
-
-          setMessages([...messages, ...formattedMessages])
-          if (messArr.length > 0) {
-            setFlagMessageId(messArr[messArr.length - 1].id) // Use this to set value for param after_id when calling API get more messages.
-          } else {
-            setFlagMessageId('reached_end')
-          }
-          setIsFirstFetchDone(true)
-        }
-      } catch (e) {
-        setFetchError(true)
-      } finally {
-        setIsLoadingMessages(false)
-        isFetchingRef.current = false
-      }
-    }
-  }
-
-  const getGreetingParams = (searchQuery: string, isLoadMore?: boolean) => {
-    const params = ['active=true', `query=${searchQuery}`, `per_page=${LIMIT_GREETINGS_PER_OFFSET}`]
-
-    if (isLoadMore) {
-      params.push(`page=${greetingPage + 1}`)
-      setGreetingPage(greetingPage + 1)
-    } else {
-      params.push(`page=0`) // No load more => is searching or fetching first time => get page 0
-      setGreetingPage(0)
-    }
-
-    return `?${params.join('&')}`
-  }
-
-  const fetchGreetings = async (searchQuery?: string, isLoadMore?: boolean) => {
-    if (session && !isLoadingGreetings) {
-      if (isLoadMore) {
-        setIsLoadingMore(true)
-      } else {
-        setIsLoadingGreetings(true)
-      }
-
-      try {
-        const res = await getGreetings(getGreetingParams(searchQuery || '', isLoadMore))
-
-        if (res && res.status === 'success' && Array.isArray(res.data)) {
-          if (isLoadMore) {
-            setGreetings([...greetings, ...res.data])
-          } else {
-            setGreetings(res.data)
-          }
-          setTotal(res.paging?.total || 0)
-        }
-        setIsFirstFetchGreetingsDone(true)
-      } catch (e) {
-        toast.error('Có lỗi khi tải danh sách câu hỏi')
-      } finally {
-        if (isLoadMore) {
-          setIsLoadingMore(false)
-        } else {
-          setIsLoadingGreetings(false)
-        }
-      }
-    }
-  }
-
-  const generateRandomString = () => {
-    let digits = ''
-    digits += Math.floor(Math.random() * 9 + 1)
-
-    for (let i = 1; i < 19; i++) {
-      digits += Math.floor(Math.random() * 10)
-    }
-
-    return digits
-  }
-
   const sendMessage = async (messageValue?: string, isUsingOption?: boolean, isReSend?: boolean) => {
-    let message = messageValue || ''
-    let responseString = ''
+    const result = await originalSendMessage(messageValue, isUsingOption, isReSend)
 
-    if (isReSend) {
-      message = messages[0]?.content // If re-send message, use the newest message to send API
+    if (!result?.isUsingOption && !result?.isReSend) {
+      form.setValue('message', '')
     }
 
-    if (message.trim() && !isTypingBot && session) {
-      const currentUserMessageId = generateRandomString()
-
-      // If re-send message, just use the newest message to call API again, don't add new message
-      if (!isReSend) {
-        const newMessage: Message = {
-          id: currentUserMessageId,
-          role: 'user',
-          content: message,
-          content_type: 'text',
-          created_at: format(new Date(), 'dd/MM/yyyy HH:mm'),
-          updated_at: format(new Date(), 'dd/MM/yyyy HH:mm'),
-        }
-        setMessages([newMessage, ...messages])
-      }
-
-      if (!isUsingOption && !isReSend) form.setValue('message', '') // Just delete input value if send typed message, not default options or re-send
-
-      setIsTypingBot(true) // To prevent user from sending another message while bot is responding
-      setIsLoading(true) // To show ... loading animation when bot is "thinking"
-      setIdOfMessageGotError(undefined) // Hide error message
-      setFetchError(false) // Hide load messages failed error when sending message
-
-      setTimeout(() => {
-        scrollToBottom() // Scroll to bottom when new message is sent
-      }, 0)
-
-      try {
-        if (!session?.userId) {
-          throw new Error('User ID is missing')
-        }
-
-        const res = await fetchData('/v1/chatbot/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            user_id: session.userId,
-            message,
-          }),
-        })
-
-        const reader = res.body?.getReader()
-        const decoder = new TextDecoder('utf-8')
-        let buffer = ''
-
-        while (true && reader) {
-          const { done, value } = await reader.read()
-          if (done) break
-
-          const chunkText = decoder.decode(value, { stream: true })
-          buffer += chunkText
-
-          const lines = buffer.split('\n')
-          buffer = lines.pop()!
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const jsonStr = line.replace('data: ', '').trim()
-              if (jsonStr === '[DONE]') continue
-
-              try {
-                const parsed = JSON.parse(jsonStr)
-                const content = parsed.content
-
-                if (content !== undefined) {
-                  responseString += content
-                }
-              } catch (err) {
-                console.error('JSON parse error:', err, 'on line:', line)
-              }
-            }
-          }
-        }
-
-        const botMessageId = generateRandomString()
-        const botResponse: Message = {
-          id: botMessageId,
-          role: 'assistant',
-          content: responseString,
-          content_type: 'text',
-          created_at: format(new Date(), 'dd/MM/yyyy HH:mm'),
-          updated_at: format(new Date(), 'dd/MM/yyyy HH:mm'),
-          status: 'is_new',
-        }
-
-        setMessages((prev) => [botResponse, ...prev])
-      } catch (err) {
-        if (isReSend) {
-          setIdOfMessageGotError(messages[0]?.id) // If re-send message failed again, show error message of the newest message
-        } else {
-          setIdOfMessageGotError(currentUserMessageId)
-        }
-        toast.error('Xảy ra lỗi khi gửi tin nhắn')
-      } finally {
-        setIsLoading(false)
-        setIsTypingBot(false)
-      }
-    }
+    setTimeout(() => {
+      scrollToBottom()
+    }, 0)
   }
 
   const onSubmit = (formData: ChatBotFormValues) => {
@@ -305,12 +100,8 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
       if (!isFirstFetchGreetingsDone) {
         fetchGreetings()
       }
-
-      if (!isFirstFetchDone) {
-        getMessages()
-      }
     }
-  }, [session, isOpen, isFirstFetchDone, isFirstFetchGreetingsDone])
+  }, [session, isOpen, isFirstFetchGreetingsDone])
 
   useEffect(() => {
     // Listen for scroll events
@@ -332,13 +123,8 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries
-        if (
-          entry.isIntersecting &&
-          !isFetchingRef.current &&
-          !isLoadingMessages &&
-          !fetchError // need fetchError here to prevent spam API when error
-        ) {
-          getMessages()
+        if (entry.isIntersecting && !isFetchingNextPage && !isLoadingMessages && !fetchError && hasNextPage) {
+          fetchNextPage()
         }
       },
       {
@@ -357,7 +143,7 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
         observer.unobserve(topSentinelRef.current)
       }
     }
-  }, [getMessages])
+  }, [fetchNextPage, isFetchingNextPage, isLoadingMessages, fetchError, hasNextPage])
 
   return (
     <div
@@ -399,114 +185,29 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
               )}
 
               {messages?.map((message, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  {message.role === 'user' ? (
-                    <div className="w-full flex flex-col">
-                      <div className="flex justify-end w-full gap-3 mt-2">
-                        <div className="flex flex-col items-end max-w-[90%]">
-                          <div className="font-medium text-sm text-gray-900 mb-1">Bạn</div>
-                          <div className="flex flex-col bg-blue-100 rounded-lg px-3 py-2 w-full">
-                            <div className="text-blue-900 text-sm break-words whitespace-pre-wrap overflow-hidden">
-                              {message.content}
-                            </div>
-                            <p className="text-xs text-gray-500 mt-1 text-right">{message.created_at}</p>
-                          </div>
-                        </div>
-                        <Avatar className="w-8 h-8 mt-1">
-                          <AvatarFallback className="bg-blue-500 text-background text-xs">U</AvatarFallback>
-                        </Avatar>
-                      </div>
-
-                      {idOfMessageGotError === message.id && (
-                        <div className="flex self-end items-center gap-2 mt-2 py-2 px-2 mr-[44px] text-red-500 text-sm bg-red-50 border border-red-200 rounded-lg w-fit">
-                          Gửi tin nhắn thất bại
-                          <Button
-                            variant="secondary"
-                            className="bg-red-100 px-2 h-5 text-red-500 text-xs"
-                            onClick={() => sendMessage(undefined, false, true)}
-                          >
-                            <RefreshCcw />
-                            Thử lại
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="flex justify-start w-full gap-3 mt-2">
-                      <Avatar className="w-8 h-8 mt-1">
-                        <AvatarFallback className="bg-primary text-background text-xs font-semibold">S</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium text-sm text-gray-900 mb-1">Shefit.vn</div>
-                        <BotMessage message={message} isNewestMessage={index === 0} sendMessage={sendMessage} />
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <MessageItem
+                  key={message.id}
+                  message={message}
+                  index={index}
+                  idOfMessageGotError={idOfMessageGotError}
+                  sendMessage={sendMessage}
+                  onFollowUpOptionsChange={index === 0 ? setHasFollowUpOptions : undefined}
+                />
               ))}
             </div>
 
-            {session ? (
-              <div className="flex-1 flex items-center justify-center">
-                {isLoadingMessages && <Loader2 className="animate-spin" />}
-                {fetchError && (
-                  <div className="flex items-center gap-2 mt-2 py-2 px-2 text-red-500 text-sm bg-red-50 border border-red-200 rounded-lg w-fit">
-                    Tải tin nhắn thất bại
-                    <Button
-                      variant="secondary"
-                      className="bg-red-100 px-2 h-5 text-red-500 text-xs"
-                      onClick={() => getMessages()}
-                    >
-                      <RefreshCcw />
-                      Thử lại
-                    </Button>
-                  </div>
-                )}
-                {messages?.length === 0 && !isLoadingMessages && isFirstFetchDone && !fetchError && (
-                  <div className="w-full text-center">
-                    <div className="bg-pink-50 p-4 rounded-xl flex flex-col gap-6">
-                      <h2 className="text-xl font-bold text-center">Chị muốn được tư vấn gì</h2>
-                      <div className="grid grid-cols-2 gap-3">
-                        <button
-                          onClick={() => sendMessage('Tư vấn phom dáng', true)}
-                          className="bg-pink-100 hover:bg-pink-200 transition-colors text-pink-900 rounded-xl p-3 text-sm font-medium"
-                        >
-                          Tư vấn phom dáng
-                        </button>
-                        <button
-                          onClick={() => sendMessage('Lên Thực Đơn', true)}
-                          className="bg-pink-100 hover:bg-pink-200 transition-colors text-pink-900 rounded-xl p-3 text-sm font-medium"
-                        >
-                          Lên Thực Đơn
-                        </button>
-                        <button
-                          onClick={() => sendMessage('Lên Khóa Tập', true)}
-                          className="bg-pink-100 hover:bg-pink-200 transition-colors text-pink-900 rounded-xl p-3 text-sm font-medium"
-                        >
-                          Lên Khóa Tập
-                        </button>
-                        <button
-                          onClick={() => sendMessage('Hỏi Đáp', true)}
-                          className="bg-pink-100 hover:bg-pink-200 transition-colors text-pink-900 rounded-xl p-3 text-sm font-medium"
-                        >
-                          Hỏi Đáp
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="flex-1 flex items-center justify-center">
-                <div className="w-full text-center text-foreground">
-                  Bạn phải{' '}
-                  <Link href="/auth/login" className="text-primary" onClick={onClose}>
-                    đăng nhập
-                  </Link>{' '}
-                  để sử dụng tính năng này
-                </div>
-              </div>
-            )}
+            <EmptyState
+              session={session}
+              isLoadingMessages={isLoadingMessages}
+              fetchError={fetchError}
+              isFirstFetchDone={isFirstFetchDone}
+              messages={messages}
+              onClose={onClose}
+              getMessages={fetchNextPage}
+              sendMessage={sendMessage}
+              showForm={showEmptyStateForm}
+              setShowForm={setShowEmptyStateForm}
+            />
 
             <div ref={topSentinelRef} style={{ height: '1px' }} />
 
@@ -522,61 +223,20 @@ export function ChatBot({ isOpen, onClose }: ChatBotProps) {
         </div>
 
         {/* Input Area */}
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <div className="flex items-center gap-2 relative">
-                      <Popover open={isShowingPromptSuggestions} onOpenChange={setIsShowingPromptSuggestions}>
-                        <PopoverTrigger className="absolute left-[6px] top-1/2 -translate-y-1/2 p-0 bg-primary size-9 rounded-full flex justify-center items-center">
-                          <MenuIcon className="text-background" size={20} />
-                        </PopoverTrigger>
-                        <PopoverContent className="p-0 w-[320px]">
-                          <PromptSuggestions
-                            greetings={greetings}
-                            handleClose={() => setIsShowingPromptSuggestions(false)}
-                            onClickPrompt={sendMessage}
-                            fetchGreetings={fetchGreetings}
-                            total={total}
-                            isSearching={isLoadingGreetings}
-                            isLoadingMore={isLoadingMore}
-                          />
-                        </PopoverContent>
-                      </Popover>
-
-                      <Input
-                        placeholder="Nhập tin nhắn..."
-                        className="bg-white text-foreground rounded-full !min-h-12 px-[52px]"
-                        disabled={!session}
-                        minRows={1}
-                        maxRows={4}
-                        autoResize={true}
-                        onEnterPress={(e) => {
-                          e.preventDefault()
-                          form.handleSubmit(onSubmit)()
-                        }}
-                        {...field}
-                      />
-                      <Button
-                        type="submit"
-                        className="absolute right-[6px] top-1/2 -translate-y-1/2 p-0 bg-primary size-9 rounded-full"
-                        disabled={!field.value}
-                        size="icon"
-                      >
-                        <ArrowRight />
-                      </Button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
+        <ChatInput
+          form={form}
+          session={session}
+          isShowingPromptSuggestions={isShowingPromptSuggestions}
+          setIsShowingPromptSuggestions={setIsShowingPromptSuggestions}
+          greetings={greetings}
+          total={total}
+          isLoadingGreetings={isLoadingGreetings}
+          isLoadingMore={isLoadingMore}
+          onSubmit={onSubmit}
+          sendMessage={sendMessage}
+          fetchGreetings={fetchGreetings}
+          disabled={hasFollowUpOptions || isLoading}
+        />
       </div>
     </div>
   )
@@ -597,17 +257,5 @@ export function ChatBotButton() {
       />
       <ChatBot isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
-  )
-}
-
-const TypingIndicator = () => {
-  return (
-    <div className="flex items-center gap-1 px-3 py-2">
-      <div className="flex gap-1">
-        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-      </div>
-    </div>
   )
 }
