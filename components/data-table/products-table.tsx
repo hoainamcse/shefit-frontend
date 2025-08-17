@@ -168,7 +168,7 @@ export function ProductsTable({ onConfirmRowSelection }: ProductsTableProps) {
           {onConfirmRowSelection && (
             <MainButton
               variant="outline"
-              text={`Chọn ${Object.keys(rowSelection).length} sản phẩm`}
+              text={`Chọn ${rowSelection.length} sản phẩm`}
               onClick={() => {
                 if (rowSelection.length === 0) {
                   toast.error('Vui lòng chọn ít nhất một sản phẩm')

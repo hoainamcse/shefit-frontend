@@ -122,7 +122,6 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
   }
 
   const onDeleteRows = async (selectedRows: Dish[]) => {
-    console.log(selectedRows)
     const deletePromise = () => deleteDish(selectedRows.map((row) => row.id))
 
     toast.promise(deletePromise, {
@@ -174,7 +173,7 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
             {onConfirmRowSelection && (
               <MainButton
                 variant="outline"
-                text={`Chọn ${Object.keys(rowSelection).length} món ăn`}
+                text={`Chọn ${rowSelection.length} món ăn`}
                 onClick={() => {
                   if (rowSelection.length === 0) {
                     toast.error('Vui lòng chọn ít nhất một món ăn')

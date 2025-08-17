@@ -158,7 +158,7 @@ export function FormCategoryTable({ onConfirmRowSelection }: FormCategoryTablePr
             {onConfirmRowSelection && (
               <MainButton
                 variant="outline"
-                text={`Chọn ${Object.keys(rowSelection).length} loại phom dáng`}
+                text={`Chọn ${rowSelection.length} loại phom dáng`}
                 onClick={() => {
                   if (rowSelection.length === 0) {
                     toast.error('Vui lòng chọn ít nhất một loại phom dáng')

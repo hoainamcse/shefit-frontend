@@ -158,7 +158,7 @@ export function CaloriesTable({ onConfirmRowSelection }: CaloriesTableProps) {
             {onConfirmRowSelection && (
               <MainButton
                 variant="outline"
-                text={`Chọn ${Object.keys(rowSelection).length} calorie`}
+                text={`Chọn ${rowSelection.length} calorie`}
                 onClick={() => {
                   if (rowSelection.length === 0) {
                     toast.error('Vui lòng chọn ít nhất một calorie')

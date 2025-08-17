@@ -211,7 +211,7 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
             {onConfirmRowSelection && (
               <MainButton
                 variant="outline"
-                text={`Chọn ${Object.keys(rowSelection).length} bài tập`}
+                text={`Chọn ${rowSelection.length} bài tập`}
                 onClick={() => {
                   if (rowSelection.length === 0) {
                     toast.error('Vui lòng chọn ít nhất một bài tập')

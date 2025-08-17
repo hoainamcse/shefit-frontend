@@ -153,7 +153,7 @@ export function GoalTable({ onConfirmRowSelection }: GoalTableProps) {
             {onConfirmRowSelection && (
               <MainButton
                 variant="outline"
-                text={`Chọn ${Object.keys(rowSelection).length} mục tiêu`}
+                text={`Chọn ${rowSelection.length} mục tiêu`}
                 onClick={() => {
                   if (rowSelection.length === 0) {
                     toast.error('Vui lòng chọn ít nhất một mục tiêu')

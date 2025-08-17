@@ -166,7 +166,7 @@ export function WorkoutMethodsTable({ onConfirmRowSelection }: WorkoutMethodsTab
             {onConfirmRowSelection && (
               <MainButton
                 variant="outline"
-                text={`Chọn ${Object.keys(rowSelection).length} loại hình tập luyện`}
+                text={`Chọn ${rowSelection.length} loại hình tập luyện`}
                 onClick={() => {
                   if (rowSelection.length === 0) {
                     toast.error('Vui lòng chọn ít nhất một loại hình tập luyện')

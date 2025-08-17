@@ -186,7 +186,7 @@ export function MuscleGroupsTable({ onConfirmRowSelection }: MuscleGroupsTablePr
             {onConfirmRowSelection && (
               <MainButton
                 variant="outline"
-                text={`Chọn ${Object.keys(rowSelection).length} nhóm cơ`}
+                text={`Chọn ${rowSelection.length} nhóm cơ`}
                 onClick={() => {
                   if (rowSelection.length === 0) {
                     toast.error('Vui lòng chọn ít nhất một nhóm cơ')

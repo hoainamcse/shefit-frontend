@@ -4,8 +4,9 @@ import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import type { MealPlan } from '@/models/meal-plan'
 
 import { toast } from 'sonner'
-import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Check, Edit, X } from 'lucide-react'
+import { useMemo, useState, useCallback } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
 import {
@@ -21,15 +22,15 @@ import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
 
+import { Button } from '../ui/button'
+import { Input } from '../ui/input'
 import { AddButton } from '../buttons/add-button'
 import { MainButton } from '../buttons/main-button'
-import { Input } from '../ui/input'
-import { Button } from '../ui/button'
-import { Check, Edit, X } from 'lucide-react'
 
 interface MealPlansTableProps {
   onConfirmRowSelection?: (selectedRows: MealPlan[]) => void
 }
+
 interface EditingState {
   [key: string]: {
     isEditing: boolean
@@ -58,7 +59,7 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
     placeholderData: keepPreviousData,
   })
 
-  const handleEditDisplayOrder = (mealPlanId: string, currentValue: number) => {
+  const handleEditDisplayOrder = useCallback((mealPlanId: string, currentValue: number) => {
     setEditingState((prev) => ({
       ...prev,
       [mealPlanId]: {
@@ -67,43 +68,46 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
         originalValue: currentValue,
       },
     }))
-  }
+  }, [])
 
-  const handleCancelEdit = (mealPlanId: string) => {
+  const handleCancelEdit = useCallback((mealPlanId: string) => {
     setEditingState((prev) => {
       const newState = { ...prev }
       delete newState[mealPlanId]
       return newState
     })
-  }
+  }, [])
 
-  const handleSaveDisplayOrder = async (mealPlanId: string) => {
-    const editState = editingState[mealPlanId]
-    if (!editState) return
+  const handleSaveDisplayOrder = useCallback(
+    async (mealPlanId: string) => {
+      const editState = editingState[mealPlanId]
+      if (!editState) return
 
-    const newValue = editState.value
-    if (isNaN(newValue) || newValue < 0) {
-      toast.error('Vui lòng nhập số hợp lệ (≥ 0)')
-      return
-    }
+      const newValue = editState.value
+      if (isNaN(newValue) || newValue < 0) {
+        toast.error('Vui lòng nhập số hợp lệ (≥ 0)')
+        return
+      }
 
-    try {
-      await updateMealPlanDisplayOrder(Number(mealPlanId), newValue)
+      try {
+        await updateMealPlanDisplayOrder(Number(mealPlanId), newValue)
 
-      setEditingState((prev) => {
-        const newState = { ...prev }
-        delete newState[mealPlanId]
-        return newState
-      })
+        setEditingState((prev) => {
+          const newState = { ...prev }
+          delete newState[mealPlanId]
+          return newState
+        })
 
-      refetch()
-      toast.success('Cập nhật STT thành công')
-    } catch (error) {
-      toast.error('Đã có lỗi xảy ra khi cập nhật')
-    }
-  }
+        refetch()
+        toast.success('Cập nhật STT thành công')
+      } catch (error) {
+        toast.error('Đã có lỗi xảy ra khi cập nhật')
+      }
+    },
+    [editingState, refetch]
+  )
 
-  const handleInputChange = (mealPlanId: string, value: number) => {
+  const handleInputChange = useCallback((mealPlanId: string, value: number) => {
     setEditingState((prev) => ({
       ...prev,
       [mealPlanId]: {
@@ -111,7 +115,7 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
         value,
       },
     }))
-  }
+  }, [])
 
   const columns = useMemo<ColumnDef<MealPlan>[]>(
     () => [
@@ -237,7 +241,7 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
         enableHiding: false,
       },
     ],
-    [editingState]
+    [handleEditDisplayOrder, handleCancelEdit, handleSaveDisplayOrder, handleInputChange, editingState]
   )
 
   const router = useRouter()
@@ -319,7 +323,7 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
           {onConfirmRowSelection && (
             <MainButton
               variant="outline"
-              text={`Chọn ${Object.keys(rowSelection).length} thực đơn`}
+              text={`Chọn ${rowSelection.length} thực đơn`}
               onClick={() => {
                 if (rowSelection.length === 0) {
                   toast.error('Vui lòng chọn ít nhất một thực đơn')

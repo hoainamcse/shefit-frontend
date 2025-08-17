@@ -4,8 +4,9 @@ import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import type { Subscription } from '@/models/subscription'
 
 import { toast } from 'sonner'
-import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Check, Edit, X } from 'lucide-react'
+import { useMemo, useState, useCallback } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
 import {
@@ -20,14 +21,13 @@ import {
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
+import { useSession } from '@/hooks/use-session'
 import { Spinner } from '@/components/spinner'
 
-import { AddButton } from '../buttons/add-button'
-import { useSession } from '@/hooks/use-session'
-import { MainButton } from '../buttons/main-button'
-import { Button } from '../ui/button'
-import { Check, Edit, X } from 'lucide-react'
 import { Input } from '../ui/input'
+import { Button } from '../ui/button'
+import { AddButton } from '../buttons/add-button'
+import { MainButton } from '../buttons/main-button'
 
 interface SubscriptionsTableProps {
   onConfirmRowSelection?: (selectedRows: Subscription[]) => void
@@ -42,7 +42,7 @@ interface EditingState {
 }
 
 export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTableProps) {
-  const { session } = useSession()
+  const { session, isLoading: isPending } = useSession()
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -53,29 +53,32 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeySubscriptions, pagination],
+    // queryFn: () =>
+    //   getSubscriptions({
+    //     page: pagination.pageIndex,
+    //     per_page: pagination.pageSize,
+    //     sort_by: 'display_order',
+    //     sort_order: 'asc',
+    //   }),
     queryFn: () =>
-      session
-        ? session.role === 'sub_admin'
-          ? getSubAdminSubscriptions({
-              page: pagination.pageIndex,
-              per_page: pagination.pageSize,
-              sort_by: 'display_order',
-              sort_order: 'asc',
-            })
-          : getSubscriptions({
-              page: pagination.pageIndex,
-              per_page: pagination.pageSize,
-              sort_by: 'display_order',
-              sort_order: 'asc',
-            })
-        : Promise.resolve(null),
+      session?.role === 'sub_admin'
+        ? getSubAdminSubscriptions({
+            page: pagination.pageIndex,
+            per_page: pagination.pageSize,
+            sort_by: 'display_order',
+            sort_order: 'asc',
+          })
+        : getSubscriptions({
+            page: pagination.pageIndex,
+            per_page: pagination.pageSize,
+            sort_by: 'display_order',
+            sort_order: 'asc',
+          }),
     placeholderData: keepPreviousData,
     enabled: !!session,
   })
 
-  const handleEditDisplayOrder = (subscriptionId: string, currentValue: number) => {
-    console.log('subscriptionId', subscriptionId)
-
+  const handleEditDisplayOrder = useCallback((subscriptionId: string, currentValue: number) => {
     setEditingState((prev) => ({
       ...prev,
       [subscriptionId]: {
@@ -84,43 +87,46 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
         originalValue: currentValue,
       },
     }))
-  }
+  }, [])
 
-  const handleCancelEdit = (subscriptionId: string) => {
+  const handleCancelEdit = useCallback((subscriptionId: string) => {
     setEditingState((prev) => {
       const newState = { ...prev }
       delete newState[subscriptionId]
       return newState
     })
-  }
+  }, [])
 
-  const handleSaveDisplayOrder = async (subscriptionId: string) => {
-    const editState = editingState[subscriptionId]
-    if (!editState) return
+  const handleSaveDisplayOrder = useCallback(
+    async (subscriptionId: string) => {
+      const editState = editingState[subscriptionId]
+      if (!editState) return
 
-    const newValue = editState.value
-    if (isNaN(newValue) || newValue < 0) {
-      toast.error('Vui lòng nhập số hợp lệ (≥ 0)')
-      return
-    }
+      const newValue = editState.value
+      if (isNaN(newValue) || newValue < 0) {
+        toast.error('Vui lòng nhập số hợp lệ (≥ 0)')
+        return
+      }
 
-    try {
-      await updateSubscriptionDisplayOrder(subscriptionId, newValue)
+      try {
+        await updateSubscriptionDisplayOrder(subscriptionId, newValue)
 
-      setEditingState((prev) => {
-        const newState = { ...prev }
-        delete newState[subscriptionId]
-        return newState
-      })
+        setEditingState((prev) => {
+          const newState = { ...prev }
+          delete newState[subscriptionId]
+          return newState
+        })
 
-      refetch()
-      toast.success('Cập nhật STT thành công')
-    } catch (error) {
-      toast.error('Đã có lỗi xảy ra khi cập nhật')
-    }
-  }
+        refetch()
+        toast.success('Cập nhật STT thành công')
+      } catch (error) {
+        toast.error('Đã có lỗi xảy ra khi cập nhật')
+      }
+    },
+    [editingState, refetch]
+  )
 
-  const handleInputChange = (subscriptionId: string, value: number) => {
+  const handleInputChange = useCallback((subscriptionId: string, value: number) => {
     setEditingState((prev) => ({
       ...prev,
       [subscriptionId]: {
@@ -128,7 +134,7 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
         value,
       },
     }))
-  }
+  }, [])
 
   const columns = useMemo<ColumnDef<Subscription>[]>(
     () => [
@@ -245,7 +251,7 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
         enableHiding: false,
       },
     ],
-    [editingState]
+    [handleEditDisplayOrder, handleCancelEdit, handleSaveDisplayOrder, handleInputChange, editingState]
   )
 
   const router = useRouter()
@@ -297,7 +303,7 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
     })
   }
 
-  if (isLoading) {
+  if (isLoading || isPending) {
     return (
       <div className="flex items-center justify-center">
         <Spinner className="bg-ring dark:bg-white" />
@@ -305,44 +311,42 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
     )
   }
 
-  if (error) {
+  if (error || !session) {
     return (
       <div className="flex items-center justify-center">
-        <p className="text-destructive">{error.message}</p>
+        <p className="text-destructive">{error?.message}</p>
       </div>
     )
   }
 
   return (
-    <>
-      <DataTable
-        data={data?.data}
-        columns={columns}
-        state={{ pagination }}
-        rowCount={data?.paging.total}
-        onDelete={onDeleteRows}
-        onPaginationChange={setPagination}
-        onRowSelectionChange={setRowSelection}
-        rightSection={
-          <>
-            {onConfirmRowSelection && (
-              <MainButton
-                variant="outline"
-                text={`Chọn ${Object.keys(rowSelection).length} gói tập`}
-                onClick={() => {
-                  if (rowSelection.length === 0) {
-                    toast.error('Vui lòng chọn ít nhất một gói tập`}')
-                    return
-                  }
-                  onConfirmRowSelection(rowSelection)
-                }}
-              />
-            )}
-            <AddButton text="Thêm gói tập" onClick={onAddRow} />
-          </>
-        }
-      />
-    </>
+    <DataTable
+      data={data?.data}
+      columns={columns}
+      state={{ pagination }}
+      rowCount={data?.paging.total}
+      onDelete={onDeleteRows}
+      onPaginationChange={setPagination}
+      onRowSelectionChange={setRowSelection}
+      rightSection={
+        <>
+          {onConfirmRowSelection && (
+            <MainButton
+              variant="outline"
+              text={`Chọn ${rowSelection.length} gói tập`}
+              onClick={() => {
+                if (rowSelection.length === 0) {
+                  toast.error('Vui lòng chọn ít nhất một gói tập`}')
+                  return
+                }
+                onConfirmRowSelection(rowSelection)
+              }}
+            />
+          )}
+          <AddButton text="Thêm gói tập" onClick={onAddRow} />
+        </>
+      }
+    />
   )
 }
 

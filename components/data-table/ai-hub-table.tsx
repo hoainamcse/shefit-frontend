@@ -165,7 +165,7 @@ export function AIHubTable({ onConfirmRowSelection }: AIHubTableProps) {
             {onConfirmRowSelection && (
               <MainButton
                 variant="outline"
-                text={`Chọn ${Object.keys(rowSelection).length} HLV`}
+                text={`Chọn ${rowSelection.length} HLV`}
                 onClick={() => {
                   if (rowSelection.length === 0) {
                     toast.error('Vui lòng chọn ít nhất một HLV')

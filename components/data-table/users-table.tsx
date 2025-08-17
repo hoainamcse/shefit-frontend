@@ -3,7 +3,7 @@
 import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { Download } from 'lucide-react'
-import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { RowActions } from '@/components/data-table/row-actions'
@@ -54,9 +54,7 @@ export function UsersTable() {
     queryKey: [queryKeyUsers, pagination],
     queryFn: async () => {
       let userRes
-      console.log('session role', session?.role, typeof session?.role, session?.role === 'sub_admin')
       if (session?.role === 'sub_admin') {
-        console.log('sub admin')
         userRes = await getSubAdminUsers({ page: pagination.pageIndex, per_page: pagination.pageSize })
       } else {
         userRes = await getUsers({ page: pagination.pageIndex, per_page: pagination.pageSize })
@@ -78,6 +76,21 @@ export function UsersTable() {
     },
     placeholderData: keepPreviousData,
   })
+
+  const handleChatbotToggle = useCallback(
+    async (userId: string, checked: boolean) => {
+      try {
+        await updateUserChatbotSettings(userId, { is_enable_chatbot: checked })
+        toast.success('Đã cập nhật trạng thái chatbot')
+        refetch()
+      } catch (error: any) {
+        console.error(error)
+        toast.error('Lỗi khi cập nhật trạng thái chatbot')
+        throw error // Re-throw to handle in component
+      }
+    },
+    [refetch]
+  )
 
   const columns = useMemo<ColumnDef<UserRow>[]>(
     () => [
@@ -149,12 +162,8 @@ export function UsersTable() {
             setLocalChecked(checked)
 
             try {
-              await updateUserChatbotSettings(row.getValue('id') as string, { is_enable_chatbot: checked })
-              toast.success('Đã cập nhật trạng thái chatbot')
-              refetch()
+              await handleChatbotToggle(row.getValue('id'), checked)
             } catch (error: any) {
-              console.error(error)
-              toast.error('Lỗi khi cập nhật trạng thái chatbot')
               setLocalChecked(!checked)
             }
           }
@@ -187,7 +196,7 @@ export function UsersTable() {
         enableHiding: false,
       },
     ],
-    []
+    [handleChatbotToggle]
   )
 
   const router = useRouter()

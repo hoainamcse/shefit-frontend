@@ -131,7 +131,6 @@ export function EditUserSubscriptionForm({
   })
 
   const onSubmit = (values: FormValue) => {
-    console.log('values', values)
     userSubscriptionMutation.mutate(values)
   }
 

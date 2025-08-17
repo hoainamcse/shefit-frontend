@@ -4,7 +4,7 @@ import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import type { Course, CourseForm, CourseFormat, CourseLevel } from '@/models/course'
 
 import { toast } from 'sonner'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
@@ -68,7 +68,7 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
     placeholderData: keepPreviousData,
   })
 
-  const handleEditDisplayOrder = (courseId: string, currentValue: number) => {
+  const handleEditDisplayOrder = useCallback((courseId: string, currentValue: number) => {
     setEditingState((prev) => ({
       ...prev,
       [courseId]: {
@@ -77,43 +77,46 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
         originalValue: currentValue,
       },
     }))
-  }
+  }, [])
 
-  const handleCancelEdit = (courseId: string) => {
+  const handleCancelEdit = useCallback((courseId: string) => {
     setEditingState((prev) => {
       const newState = { ...prev }
       delete newState[courseId]
       return newState
     })
-  }
+  }, [])
 
-  const handleSaveDisplayOrder = async (courseId: string) => {
-    const editState = editingState[courseId]
-    if (!editState) return
+  const handleSaveDisplayOrder = useCallback(
+    async (courseId: string) => {
+      const editState = editingState[courseId]
+      if (!editState) return
 
-    const newValue = editState.value
-    if (isNaN(newValue) || newValue < 0) {
-      toast.error('Vui lòng nhập số hợp lệ (≥ 0)')
-      return
-    }
+      const newValue = editState.value
+      if (isNaN(newValue) || newValue < 0) {
+        toast.error('Vui lòng nhập số hợp lệ (≥ 0)')
+        return
+      }
 
-    try {
-      await updateCourseDisplayOrder(Number(courseId), newValue)
+      try {
+        await updateCourseDisplayOrder(Number(courseId), newValue)
 
-      setEditingState((prev) => {
-        const newState = { ...prev }
-        delete newState[courseId]
-        return newState
-      })
+        setEditingState((prev) => {
+          const newState = { ...prev }
+          delete newState[courseId]
+          return newState
+        })
 
-      refetch()
-      toast.success('Cập nhật STT thành công')
-    } catch (error) {
-      toast.error('Đã có lỗi xảy ra khi cập nhật')
-    }
-  }
+        refetch()
+        toast.success('Cập nhật STT thành công')
+      } catch (error) {
+        toast.error('Đã có lỗi xảy ra khi cập nhật')
+      }
+    },
+    [editingState, refetch]
+  )
 
-  const handleInputChange = (mealPlanId: string, value: number) => {
+  const handleInputChange = useCallback((mealPlanId: string, value: number) => {
     setEditingState((prev) => ({
       ...prev,
       [mealPlanId]: {
@@ -121,7 +124,7 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
         value,
       },
     }))
-  }
+  }, [])
 
   const columns = useMemo<ColumnDef<Course>[]>(
     () => [
@@ -263,7 +266,7 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
         enableHiding: false,
       },
     ],
-    [editingState]
+    [handleEditDisplayOrder, handleCancelEdit, handleSaveDisplayOrder, handleInputChange, editingState]
   )
 
   const router = useRouter()
@@ -345,7 +348,7 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
           {onConfirmRowSelection && (
             <MainButton
               variant="outline"
-              text={`Chọn ${Object.keys(rowSelection).length} khoá tập`}
+              text={`Chọn ${rowSelection.length} khoá tập`}
               onClick={() => {
                 if (rowSelection.length === 0) {
                   toast.error('Vui lòng chọn ít nhất một khoá tập')

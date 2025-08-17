@@ -181,7 +181,7 @@ export function EquipmentsTable({ onConfirmRowSelection }: EquipmentsTableProps)
             {onConfirmRowSelection && (
               <MainButton
                 variant="outline"
-                text={`Chọn ${Object.keys(rowSelection).length} dụng cụ`}
+                text={`Chọn ${rowSelection.length} dụng cụ`}
                 onClick={() => {
                   if (rowSelection.length === 0) {
                     toast.error('Vui lòng chọn ít nhất một dụng cụ')

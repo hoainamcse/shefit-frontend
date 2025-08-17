@@ -160,7 +160,7 @@ export function DietsTable({ onConfirmRowSelection }: DietsTableProps) {
             {onConfirmRowSelection && (
               <MainButton
                 variant="outline"
-                text={`Chọn ${Object.keys(rowSelection).length} chế độ ăn`}
+                text={`Chọn ${rowSelection.length} chế độ ăn`}
                 onClick={() => {
                   if (rowSelection.length === 0) {
                     toast.error('Vui lòng chọn ít nhất một chế độ ăn')

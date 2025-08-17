@@ -86,7 +86,6 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
   })
 
   const onSubmit = (values: FormValue) => {
-    console.log('values', values)
     if (showYoutubeUrlInput && values.youtube_url) {
       const { youtube_url, ...submitValues } = values
       dishMutation.mutate({ ...submitValues, image: youtube_url })
