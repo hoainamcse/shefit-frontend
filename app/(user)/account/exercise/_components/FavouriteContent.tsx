@@ -120,7 +120,6 @@ export default function FavouriteContent() {
       try {
         setIsLoadingExercises(true)
         const response = await getFavouriteExercises(session.userId)
-        console.log('Favorites exercises response:', response)
 
         if (!response.data || response.data.length === 0) {
           setExercises([])
@@ -159,7 +158,6 @@ export default function FavouriteContent() {
                 name: exercise.name || 'Unnamed Exercise',
               } as FavouriteExercise)
           )
-        console.log('Processed exercises:', validExercises)
         setExercises(validExercises)
       } catch (error) {
         console.error('Error in fetchFavouriteExercises:', error)
@@ -350,7 +348,7 @@ export default function FavouriteContent() {
                   Khóa tập yêu thích
                 </div>
                 <p className="text-base text-muted-foreground">
-                  Các khóa tập thuộc Gói Member mà bạn đã mua [Yêu Thích: Các khóa tập bạn đã thêm vào mục Yêu Thích]
+                  Các khóa tập bạn đã thêm vào mục Yêu Thích
                 </p>
                 <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có khóa tập yêu thích nào</div>
                 <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-sm lg:text-lg">
@@ -431,7 +429,7 @@ export default function FavouriteContent() {
           Khóa tập yêu thích
         </div>
         <p className="text-base text-muted-foreground">
-          Các khóa tập thuộc Gói Member mà bạn đã mua [Yêu Thích: Các khóa tập bạn đã thêm vào mục Yêu Thích]
+          Các khóa tập bạn đã thêm vào mục Yêu Thích
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
           {isLoadingCourses ? (

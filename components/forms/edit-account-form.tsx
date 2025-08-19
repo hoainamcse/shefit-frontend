@@ -103,7 +103,7 @@ export default function EditAccountForm({ data }: EditAccountFormProps) {
         province: values.province,
         address: values.address,
       }
-      return updateUser(data.id.toString(), userUpdateData)
+      return updateUser(data.id, userUpdateData)
     },
     onSettled(data, error) {
       if (data?.status === 'success') {

@@ -23,7 +23,7 @@ export async function getUser(user_id: string): Promise<ApiResponse<User>> {
   return response.json()
 }
 
-export async function updateUser(user_id: string, data: any): Promise<ApiResponse<User>> {
+export async function updateUser(user_id: number, data: any): Promise<ApiResponse<User>> {
   const response = await fetchData(`/v1/users/${user_id}`, {
     method: 'PUT',
     body: JSON.stringify(data),

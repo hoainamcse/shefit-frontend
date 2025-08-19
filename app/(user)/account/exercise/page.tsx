@@ -26,7 +26,7 @@ function ExerciseContent() {
           </AccordionTrigger>
           <AccordionContent>
             <p className="text-base text-muted-foreground">
-              Các khóa tập thuộc Gói Member mà bạn đã mua [Yêu Thích: Các khóa tập bạn đã thêm vào mục Yêu Thích]
+              Các khóa tập thuộc Gói Member mà bạn đã mua
             </p>
             <ListCourses />
           </AccordionContent>
