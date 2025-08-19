@@ -33,7 +33,7 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
         setMuscleId(resolvedParams.muscle_id)
       } catch (err) {
         console.error('Error unwrapping params:', err)
-        setError('Lỗi khi tải thông tin bài tập')
+        setError('Lỗi khi tải thông tin động tác')
         setIsLoading(false)
       }
     }
@@ -50,7 +50,7 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
         setExercise(response.data)
       } catch (err) {
         console.error('Error fetching exercise:', err)
-        setError('Không thể tải thông tin bài tập')
+        setError('Không thể tải thông tin động tác')
       } finally {
         setIsLoading(false)
       }
@@ -78,7 +78,7 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
   if (!exercise) {
     return (
       <div className="text-center py-10">
-        <p>Không tìm thấy thông tin bài tập</p>
+        <p>Không tìm thấy thông tin động tác</p>
       </div>
     )
   }
@@ -133,7 +133,7 @@ export default function MuscleDetail({ params }: { params: Promise<{ muscle_id: 
 
         <div className="flex flex-col mb-10 lg:mb-16">
           <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl mb-3.5">
-            Thông tin bài tập
+            Thông tin động tác
           </div>
           <div className="text-[#737373] text-sm lg:text-lg whitespace-pre-line">{exercise?.description}</div>
         </div>

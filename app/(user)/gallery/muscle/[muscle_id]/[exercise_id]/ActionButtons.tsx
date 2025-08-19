@@ -53,10 +53,10 @@ export default function ActionButtons({ exerciseId }: ActionButtonsProps) {
     try {
       await addFavouriteExercise(session.userId, exerciseId)
       setIsFavourite(true)
-      toast.success(`Đã thêm bài tập vào danh sách yêu thích!`)
+      toast.success(`Đã thêm động tác vào danh sách yêu thích!`)
     } catch (error) {
       console.error('Error saving exercise:', error)
-      toast.error('Có lỗi xảy ra khi lưu bài tập!')
+      toast.error('Có lỗi xảy ra khi lưu động tác!')
     }
   }
 

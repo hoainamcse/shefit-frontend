@@ -25,6 +25,9 @@ function ExerciseContent() {
             Khóa tập
           </AccordionTrigger>
           <AccordionContent>
+            <p className="text-base text-muted-foreground">
+              Các khóa tập thuộc Gói Member mà bạn đã mua [Yêu Thích: Các khóa tập bạn đã thêm vào mục Yêu Thích]
+            </p>
             <ListCourses />
           </AccordionContent>
         </AccordionItem>
@@ -35,6 +38,10 @@ function ExerciseContent() {
             Thực đơn
           </AccordionTrigger>
           <AccordionContent>
+            <p className="text-base text-muted-foreground">
+              Bạn có thể chọn trong nhiều loại thực đơn đa dạng. Để biết bạn phù hợp thực đơn nào hãy làm Body Quiz Bảng
+              Câu Hỏi số đo body.
+            </p>
             <ListMealPlans />
           </AccordionContent>
         </AccordionItem>
@@ -45,6 +52,9 @@ function ExerciseContent() {
             Động tác
           </AccordionTrigger>
           <AccordionContent>
+            <p className="text-base text-muted-foreground">
+              Truy cập thư viện hơn 1000 động tác chia theo các nhóm cơ và lưu lại những động tác bạn muốn
+            </p>
             <ListExercises />
           </AccordionContent>
         </AccordionItem>
@@ -55,6 +65,9 @@ function ExerciseContent() {
             Món ăn
           </AccordionTrigger>
           <AccordionContent>
+            <p className="text-base text-muted-foreground">
+              Truy cập thư viện hơn 200 món ăn chia theo các loại chế độ ăn và lưu lại những món ăn phù hợp
+            </p>
             <ListDishes />
           </AccordionContent>
         </AccordionItem>

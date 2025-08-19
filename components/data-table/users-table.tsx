@@ -460,7 +460,7 @@ function ExportDialog({ data, onSuccess }: { data?: UserRow[]; onSuccess?: () =>
         'Code khuyến mãi',
         'Khoá tập',
         'Thực đơn',
-        'Bài tập',
+        'Động tác',
         'Món ăn',
       ]
       const csvRows = []
@@ -523,7 +523,7 @@ function ExportDialog({ data, onSuccess }: { data?: UserRow[]; onSuccess?: () =>
               '', // Code khuyến mãi
               '', // Khoá tập
               '', // Thực đơn
-              '', // Bài tập
+              '', // Động tác
               '', // Món ăn
             ]
             csvRows.push(row.map((field) => `"${field}"`).join(','))
@@ -547,7 +547,7 @@ function ExportDialog({ data, onSuccess }: { data?: UserRow[]; onSuccess?: () =>
             '', // Code khuyến mãi
             '', // Khoá tập
             '', // Thực đơn
-            '', // Bài tập
+            '', // Động tác
             '', // Món ăn
           ]
           csvRows.push(row.map((field) => `"${field}"`).join(','))

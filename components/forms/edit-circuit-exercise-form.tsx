@@ -17,7 +17,7 @@ import { Form } from '../ui/form'
 // ! Follow CircuitExercisePayload model in models/course.ts
 const formSchema = z.object({
   id: z.number().optional(),
-  circuit_exercise_title: z.string().min(1, 'Tiêu đề bài tập không được để trống'),
+  circuit_exercise_title: z.string().min(1, 'Tiêu đề động tác không được để trống'),
   circuit_exercise_description: z.string(),
   youtube_url: z.string().url('Link Youtube không hợp lệ'),
   no: z.number().min(0),
@@ -74,7 +74,7 @@ export function EditCircuitExerciseForm({
     },
     onSettled(data, error) {
       if (data?.status === 'success') {
-        toast.success(isEdit ? 'Cập nhật bài tập thành công' : 'Tạo bài tập thành công')
+        toast.success(isEdit ? 'Cập nhật động tác thành công' : 'Tạo động tác thành công')
         onSuccess?.()
       } else {
         toast.error(error?.message || 'Đã có lỗi xảy ra')
@@ -92,8 +92,8 @@ export function EditCircuitExerciseForm({
         <FormInputField
           form={form}
           name="circuit_exercise_title"
-          label="Tiêu đề bài tập"
-          placeholder="Nhập tiêu đề bài tập"
+          label="Tiêu đề động tác"
+          placeholder="Nhập tiêu đề động tác"
           withAsterisk
         />
         <FormTextareaField form={form} name="circuit_exercise_description" label="Mô tả" placeholder="Nhập mô tả" />

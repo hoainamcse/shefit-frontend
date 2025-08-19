@@ -22,7 +22,7 @@ import { Form } from '../ui/form'
 
 // ! Follow ExercisePayload model in models/exercise.ts
 const formSchema = z.object({
-  name: z.string().min(1, 'Tên bài tập không được để trống'),
+  name: z.string().min(1, 'Tên động tác không được để trống'),
   description: z.string(),
   youtube_url: z.string().url('Link Youtube không hợp lệ'),
   muscle_group_ids: z.array(z.string()),
@@ -63,7 +63,7 @@ export function EditExerciseForm({ data, onSuccess }: EditExerciseFormProps) {
     mutationFn: (values: FormValue) => (isEdit ? updateExercise(data.id, values) : createExercise(values)),
     onSettled(data, error) {
       if (data?.status === 'success') {
-        toast.success(isEdit ? 'Cập nhật bài tập thành công' : 'Tạo bài tập thành công')
+        toast.success(isEdit ? 'Cập nhật động tác thành công' : 'Tạo động tác thành công')
         onSuccess?.()
       } else {
         toast.error(error?.message || 'Đã có lỗi xảy ra')
@@ -84,7 +84,7 @@ export function EditExerciseForm({ data, onSuccess }: EditExerciseFormProps) {
     <>
       <Form {...form}>
         <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-          <FormInputField form={form} name="name" label="Tên bài tập" withAsterisk placeholder="Nhập tên bài tập" />
+          <FormInputField form={form} name="name" label="Tên động tác" withAsterisk placeholder="Nhập tên động tác" />
           <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
           <div className="space-y-2">
             <Label>Nhóm cơ</Label>
@@ -114,7 +114,7 @@ export function EditExerciseForm({ data, onSuccess }: EditExerciseFormProps) {
       </Form>
       <EditDialog
         title="Chọn Nhóm Cơ"
-        description="Chọn một hoặc nhiều nhóm cơ đã có hoặc tạo mới để liên kết với bài tập này."
+        description="Chọn một hoặc nhiều nhóm cơ đã có hoặc tạo mới để liên kết với động tác này."
         open={openMuscleGroupsTable}
         onOpenChange={setOpenMuscleGroupsTable}
       >
@@ -133,7 +133,7 @@ export function EditExerciseForm({ data, onSuccess }: EditExerciseFormProps) {
       </EditDialog>
       <EditDialog
         title="Chọn Dụng Cụ"
-        description="Chọn một hoặc nhiều dụng cụ đã có hoặc tạo mới để liên kết với bài tập này."
+        description="Chọn một hoặc nhiều dụng cụ đã có hoặc tạo mới để liên kết với động tác này."
         open={openEquipmentsTable}
         onOpenChange={setOpenEquipmentsTable}
       >

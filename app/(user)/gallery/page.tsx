@@ -130,7 +130,7 @@ export default function Gallery() {
       <div>
         <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-10 lg:mb-16 xl:mb-[90px]">
           <div className="font-[family-name:var(--font-roboto-condensed)] text-ring text-2xl lg:text-4xl font-semibold">
-            Bài tập theo nhóm cơ
+            Động tác theo nhóm cơ
           </div>
           <p className="text-[#737373] text-sm lg:text-lg">
             Xem video hướng dẫn chi tiết 1000+ bài đốt mỡ và cắt nét cơ theo từng vùng hình thể nữ giới

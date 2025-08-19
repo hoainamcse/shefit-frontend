@@ -77,7 +77,7 @@ export default function ListExercises() {
       toast.success(`Đã xóa ${exerciseTitle} khỏi danh sách`)
     } catch (error) {
       console.error('Error deleting favourite exercise:', error)
-      toast.error('Có lỗi xảy ra khi xóa bài tập')
+      toast.error('Có lỗi xảy ra khi xóa động tác')
     }
   }
 
@@ -252,7 +252,7 @@ export default function ListExercises() {
               onClick={() => {
                 setRenewDialogOpen(false)
                 if (selectedSubscription?.subscription?.id) {
-                  router.push(`/packages/detail/${selectedSubscription.subscription.id}`)
+                  router.push(`/packages/${selectedSubscription.subscription.id}`)
                 }
               }}
             >

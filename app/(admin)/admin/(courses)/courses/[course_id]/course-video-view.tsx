@@ -212,7 +212,7 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
         loading: 'Đang xoá...',
         success: (_) => {
           circuitsRefetch()
-          return 'Xoá bài tập thành công'
+          return 'Xoá động tác thành công'
         },
         error: 'Đã có lỗi xảy ra',
       })
@@ -482,19 +482,19 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
                           {expandedCircuits.has(circuit.id) && (
                             <CardContent>
                               <div className="flex items-center justify-between mb-4">
-                                <h4 className="font-medium">Bài tập</h4>
+                                <h4 className="font-medium">Động tác</h4>
                                 <AddButton
                                   onClick={() => {
                                     setSelectedExercise(null)
                                     setEditingItem(circuit)
                                     setShowExerciseForm(true)
                                   }}
-                                  text="Thêm bài tập"
+                                  text="Thêm động tác"
                                 />
                               </div>
                               <div className="space-y-2">
                                 {circuit.circuit_exercises.length === 0 ? (
-                                  <p className="text-muted-foreground text-sm">Chưa có bài tập nào cho circuit này</p>
+                                  <p className="text-muted-foreground text-sm">Chưa có động tác nào cho circuit này</p>
                                 ) : (
                                   circuit.circuit_exercises.map((exercise) => (
                                     <div
@@ -623,7 +623,7 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
       </EditSheet>
 
       <EditSheet
-        title={selectedExercise ? 'Chỉnh sửa bài tập' : 'Thêm bài tập'}
+        title={selectedExercise ? 'Chỉnh sửa động tác' : 'Thêm động tác'}
         description="Make changes to your profile here. Click save when you're done."
         open={showExerciseForm}
         onOpenChange={setShowExerciseForm}

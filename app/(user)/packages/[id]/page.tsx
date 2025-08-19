@@ -10,9 +10,11 @@ import { BackIcon } from '@/components/icons/BackIcon'
 import { HtmlContent } from '@/components/html-content'
 import { Button } from '@/components/ui/button'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
+import { Subscription } from '@/models/subscription'
 
-export default async function PackageDetail({ params }: { params: Promise<{ id: string }> }) {
-  const subscription = await getSubscription(Number((await params).id))
+export default async function PackageDetail({ params }: { params: Promise<{ id: Subscription['id'] }> }) {
+  const { id: subscriptionId } = await params
+  const subscription = await getSubscription(subscriptionId)
   const courses = await getCourses()
   const mealPlans = await getMealPlans()
   const NextButton = ({ className, href }: { className?: string; href?: string }) => {
@@ -29,7 +31,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
       <div className="relative">
         <Link href="/account?tab=buy-package" className="lg:hidden items-center gap-2 cursor-pointer">
           <Button className="px-4 flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black shadow-none font-medium">
-            <BackIconBlack className="mb-1"/> Quay về
+            <BackIconBlack className="mb-1" /> Quay về
           </Button>
         </Link>
         <img
@@ -139,7 +141,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                 </div>
                 <HtmlContent className="whitespace-pre-line" content={subscriptionData?.result_checkup || ''} />
               </div>
-              <AcctionButton />
+              <AcctionButton subscription={subscription.data} />
             </div>
           </div>
         </div>

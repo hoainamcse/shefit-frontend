@@ -353,11 +353,11 @@ export function EditUserSubscriptionForm({
                       </div>
 
                       <div className="space-y-2">
-                        <Label>Bài tập</Label>
+                        <Label>Động tác</Label>
                         <Input
                           value={selectedExercises.map((mp) => mp.name).join(', ')}
                           onFocus={() => setOpenExercisesTable(true)}
-                          placeholder="Chọn bài tập"
+                          placeholder="Chọn động tác"
                           readOnly
                         />
                       </div>
@@ -405,8 +405,8 @@ export function EditUserSubscriptionForm({
         />
       </EditDialog>
       <EditDialog
-        title="Chọn Bài tập"
-        description="Chọn một hoặc nhiều bài tập đã có hoặc tạo mới để liên kết với gói thành viên này."
+        title="Chọn Động tác"
+        description="Chọn một hoặc nhiều động tác đã có hoặc tạo mới để liên kết với gói thành viên này."
         open={openExercisesTable}
         onOpenChange={setOpenExercisesTable}
       >

@@ -17,7 +17,7 @@ export const StatsSection = ({ data }: StatsSectionProps) => {
         icon={<Users className="h-6 w-6" />}
       />
       <DashboardCard
-        title="Bài tập"
+        title="Động tác"
         value={data?.exercise_count.toLocaleString()}
         icon={<Dumbbell className="h-6 w-6" />}
       />

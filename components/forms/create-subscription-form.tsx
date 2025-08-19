@@ -30,6 +30,7 @@ import { MealPlansTable } from '../data-table/meal-plans-table'
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
 import { EditSheet } from '../data-table/edit-sheet'
 import { Separator } from '../ui/separator'
+import { Switch } from '../ui/switch'
 
 // Define the form schema
 const formSchema = z.object({
@@ -55,11 +56,11 @@ const formSchema = z.object({
     message: 'Mô tả phải có ít nhất 10 ký tự.',
   }),
   assets: z.object({
-    thumbnail: z.string().optional(),
-    mobile_cover: z.string().optional(),
-    desktop_cover: z.string().optional(),
-    youtube_cover: z.string().optional(),
-    homepage_thumbnail: z.string().optional(),
+    thumbnail: z.string().nullable(),
+    mobile_cover: z.string().nullable(),
+    desktop_cover: z.string().nullable(),
+    youtube_cover: z.string().nullable(),
+    homepage_thumbnail: z.string().nullable(),
   }),
   gifts: z
     .array(
@@ -103,9 +104,6 @@ const AVAILABLE_COURSE_FORMATS = [
   { value: 'both', label: 'Video & Zoom' },
 ]
 
-const DEFAULT_IMAGE_URL = 'https://placehold.co/400?text=shefit.vn&font=Oswald'
-const DEFAULT_YOUTUBE_URL = 'https://youtu.be/EngW7tLk6R8?si=gesFcAqfOVJB3EMy'
-
 export function CreateSubscriptionForm({ isEdit, data }: CreateSubscriptionFormProps) {
   const [isPending, startTransition] = useTransition()
 
@@ -115,6 +113,9 @@ export function CreateSubscriptionForm({ isEdit, data }: CreateSubscriptionFormP
   const [openMealPlansTable, setOpenMealPlansTable] = useState(false)
   const [selectedCourses, setSelectedCourses] = useState(data?.relationships?.courses || [])
   const [selectedMealPlans, setSelectedMealPlans] = useState(data?.relationships?.meal_plans || [])
+  const [isFreeSubscription, setIsFreeSubscription] = useState(
+    data ? data.prices.length > 0 && data.prices.every((price) => price.price === 0) : false
+  )
 
   // Initialize the form with default values
   const form = useForm<FormValue>({
@@ -137,8 +138,11 @@ export function CreateSubscriptionForm({ isEdit, data }: CreateSubscriptionFormP
           prices: [],
           gifts: [],
           assets: {
-            thumbnail: DEFAULT_IMAGE_URL,
-            mobile_cover: DEFAULT_IMAGE_URL,
+            thumbnail: null,
+            mobile_cover: null,
+            desktop_cover: null,
+            youtube_cover: null,
+            homepage_thumbnail: null,
           },
           result_checkup: '',
           description_1: '',
@@ -337,11 +341,11 @@ export function CreateSubscriptionForm({ isEdit, data }: CreateSubscriptionFormP
               <EditSubscriptionAssets form={form} />
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Gói tập</Label>
+                  <Label>Khoá tập</Label>
                   <Input
                     value={selectedCourses.map((c) => c.course_name).join(', ')}
                     onFocus={() => setOpenCoursesTable(true)}
-                    placeholder="Chọn gói tập"
+                    placeholder="Chọn khoá tập"
                     readOnly
                   />
                 </div>
@@ -522,9 +526,34 @@ export function CreateSubscriptionForm({ isEdit, data }: CreateSubscriptionFormP
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-medium">Bảng giá</h3>
-                  <Button type="button" onClick={addPrice}>
-                    <Plus className="h-4 w-4 mr-2" /> Tạo giá tiền gói
-                  </Button>
+                  <div className="flex items-center space-x-2">
+                    <div className="flex items-center">
+                      <Label className="text-sm">Miễn phí</Label>
+                      <Switch
+                        checked={isFreeSubscription}
+                        onCheckedChange={(checked) => {
+                          setIsFreeSubscription(checked)
+                          if (checked) {
+                            form.setValue('prices', [
+                              {
+                                price: 0,
+                                duration: 7, // Default to 7 days for free subscription
+                              },
+                            ])
+                          } else {
+                            removePrice(0) // Remove the free price if switching to paid
+                            form.setValue('prices', [])
+                          }
+                        }}
+                        className="ml-2"
+                      />
+                    </div>
+                    {!isFreeSubscription && (
+                      <Button type="button" onClick={addPrice}>
+                        <Plus className="h-4 w-4 mr-2" /> Thêm giá tiền
+                      </Button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Price list */}
@@ -541,12 +570,15 @@ export function CreateSubscriptionForm({ isEdit, data }: CreateSubscriptionFormP
                           render={({ field }) => (
                             <FormItem className="p-4 border rounded-md">
                               <div className="flex justify-between items-start mb-4">
-                                <h4 className="font-medium">Giá tiền {index + 1}</h4>
+                                <h4 className="font-medium">
+                                  {isFreeSubscription ? 'Gói miễn phí' : `Giá tiền ${index + 1}`}
+                                </h4>
                                 <Button
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => removePrice(index)}
                                   className="text-destructive hover:text-destructive"
+                                  disabled={isFreeSubscription}
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -620,36 +652,38 @@ export function CreateSubscriptionForm({ isEdit, data }: CreateSubscriptionFormP
                                   }}
                                 />
 
-                                <FormField
-                                  control={form.control}
-                                  name={`prices.${index}.price`}
-                                  render={({ field: amountField }) => (
-                                    <FormItem>
-                                      <FormLabel>Giá tiền (VNĐ)</FormLabel>
-                                      <FormControl>
-                                        <Input
-                                          type="text"
-                                          value={
-                                            amountField.value
-                                              ? new Intl.NumberFormat('vi-VN').format(amountField.value)
-                                              : ''
-                                          }
-                                          onChange={(e) => {
-                                            const value = e.target.value.replace(/[^\d]/g, '')
-                                            const formattedValue = value
-                                              ? new Intl.NumberFormat('vi-VN').format(parseInt(value))
-                                              : ''
-                                            e.target.value = formattedValue
-                                            amountField.onChange(parseInt(value) || 0)
-                                          }}
-                                          placeholder="Nhập giá tiền"
-                                          className="mt-1"
-                                        />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
+                                {!isFreeSubscription && (
+                                  <FormField
+                                    control={form.control}
+                                    name={`prices.${index}.price`}
+                                    render={({ field: amountField }) => (
+                                      <FormItem>
+                                        <FormLabel>Giá tiền (VNĐ)</FormLabel>
+                                        <FormControl>
+                                          <Input
+                                            type="text"
+                                            value={
+                                              amountField.value
+                                                ? new Intl.NumberFormat('vi-VN').format(amountField.value)
+                                                : ''
+                                            }
+                                            onChange={(e) => {
+                                              const value = e.target.value.replace(/[^\d]/g, '')
+                                              const formattedValue = value
+                                                ? new Intl.NumberFormat('vi-VN').format(parseInt(value))
+                                                : ''
+                                              e.target.value = formattedValue
+                                              amountField.onChange(parseInt(value) || 0)
+                                            }}
+                                            placeholder="Nhập giá tiền"
+                                            className="mt-1"
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                )}
                               </div>
                             </FormItem>
                           )}
@@ -670,8 +704,8 @@ export function CreateSubscriptionForm({ isEdit, data }: CreateSubscriptionFormP
         </CardContent>
       </Card>
       <EditDialog
-        title="Chọn Gói tập"
-        description="Chọn một hoặc nhiều gói tập đã có hoặc tạo mới để liên kết với khoá tập này."
+        title="Chọn Khoá tập"
+        description="Chọn một hoặc nhiều khoá tập đã có hoặc tạo mới để liên kết với gói tập này."
         open={openCoursesTable}
         onOpenChange={setOpenCoursesTable}
       >

@@ -165,7 +165,7 @@ export default function PurchasePackage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16 lg:px-12">
-              {filteredSubscriptions.map((subscription) => {
+              {filteredSubscriptions.sort((a, b) => a.display_order - b.display_order).map((subscription) => {
                 const parsedDescription = parseDescription(subscription.description_1)
 
                 return (
@@ -183,7 +183,7 @@ export default function PurchasePackage() {
                           ))}
                         </ul>
                         <Link
-                          href={`/packages/detail/${subscription.id}${
+                          href={`/packages/${subscription.id}${
                             courseId ? `?course_id=${courseId}` : mealPlansId ? `?meal_plans_id=${mealPlansId}` : ''
                           }`}
                         >

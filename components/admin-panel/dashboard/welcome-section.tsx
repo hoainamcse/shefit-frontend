@@ -13,7 +13,7 @@ export const WelcomeSection = () => {
         </h1>
 
         <p className="text-base md:text-lg text-muted-foreground max-w-2xl mb-8">
-          Hệ thống quản lý toàn diện cho fitness, bodybuilding và dinh dưỡng. Quản lý thành viên, bài tập, thực đơn và
+          Hệ thống quản lý toàn diện cho fitness, bodybuilding và dinh dưỡng. Quản lý thành viên, động tác, thực đơn và
           theo dõi tiến độ một cách dễ dàng.
         </p>
       </div>

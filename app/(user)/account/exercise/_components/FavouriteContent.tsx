@@ -76,7 +76,7 @@ export default function FavouriteContent() {
       toast.success(`Đã xóa ${exerciseTitle} khỏi danh sách yêu thích`)
     } catch (error) {
       console.error('Error deleting favourite exercise:', error)
-      toast.error('Có lỗi xảy ra khi xóa bài tập')
+      toast.error('Có lỗi xảy ra khi xóa động tác')
     }
   }
 
@@ -349,6 +349,9 @@ export default function FavouriteContent() {
                 <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
                   Khóa tập yêu thích
                 </div>
+                <p className="text-base text-muted-foreground">
+                  Các khóa tập thuộc Gói Member mà bạn đã mua [Yêu Thích: Các khóa tập bạn đã thêm vào mục Yêu Thích]
+                </p>
                 <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có khóa tập yêu thích nào</div>
                 <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-sm lg:text-lg">
                   Thêm khóa tập
@@ -359,6 +362,9 @@ export default function FavouriteContent() {
                   Động tác yêu thích
                 </div>
                 <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có động tác yêu thích nào</div>
+                <p className="text-base text-muted-foreground">
+                  Truy cập thư viện hơn 1000 động tác chia theo các nhóm cơ và lưu lại những động tác bạn muốn
+                </p>
                 <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-sm lg:text-lg">
                   Thêm động tác
                 </Button>
@@ -367,6 +373,10 @@ export default function FavouriteContent() {
                 <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
                   Thực đơn yêu thích
                 </div>
+                <p className="text-base text-muted-foreground">
+                  Bạn có thể chọn trong nhiều loại thực đơn đa dạng. Để biết bạn phù hợp thực đơn nào hãy làm Body Quiz
+                  Bảng Câu Hỏi số đo body.
+                </p>
                 <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có thực đơn yêu thích nào</div>
                 <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-sm lg:text-lg">
                   Thêm thực đơn
@@ -376,6 +386,9 @@ export default function FavouriteContent() {
                 <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
                   Món ăn yêu thích
                 </div>
+                <p className="text-base text-muted-foreground">
+                  Truy cập thư viện hơn 200 món ăn chia theo các loại chế độ ăn và lưu lại những món ăn phù hợp
+                </p>
                 <div className="text-gray-500 text-base lg:text-lg">Bạn chưa có món ăn yêu thích nào</div>
                 <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-sm lg:text-lg">
                   Thêm món ăn
@@ -417,6 +430,9 @@ export default function FavouriteContent() {
         <div className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
           Khóa tập yêu thích
         </div>
+        <p className="text-base text-muted-foreground">
+          Các khóa tập thuộc Gói Member mà bạn đã mua [Yêu Thích: Các khóa tập bạn đã thêm vào mục Yêu Thích]
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
           {isLoadingCourses ? (
             <div className="flex justify-center items-center h-40 col-span-3">
@@ -476,6 +492,10 @@ export default function FavouriteContent() {
         <h2 className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
           Thực đơn yêu thích
         </h2>
+        <p className="text-base text-muted-foreground">
+          Bạn có thể chọn trong nhiều loại thực đơn đa dạng. Để biết bạn phù hợp thực đơn nào hãy làm Body Quiz Bảng Câu
+          Hỏi số đo body.
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
           {isLoadingMealPlans ? (
             <div className="flex justify-center items-center h-40 col-span-3">
@@ -525,6 +545,9 @@ export default function FavouriteContent() {
         <h2 className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
           Động tác yêu thích
         </h2>
+        <p className="text-base text-muted-foreground">
+          Truy cập thư viện hơn 1000 động tác chia theo các nhóm cơ và lưu lại những động tác bạn muốn
+        </p>
         <div className="grid grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
           {isLoadingExercises ? (
             <div className="flex justify-center items-center h-40 col-span-3">
@@ -590,6 +613,9 @@ export default function FavouriteContent() {
         <h2 className="text-2xl lg:text-4xl text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold">
           Món ăn yêu thích
         </h2>
+        <p className="text-base text-muted-foreground">
+          Truy cập thư viện hơn 200 món ăn chia theo các loại chế độ ăn và lưu lại những món ăn phù hợp
+        </p>
         <div className="grid grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
           {isLoadingDishes ? (
             <div className="flex justify-center items-center h-40 col-span-3">

@@ -5,20 +5,20 @@ import Image from 'next/image'
 import { BackIcon } from '@/components/icons/BackIcon'
 import { Checkbox } from '@/components/ui/checkbox'
 
-import { PackagePayment } from './package-payment'
+import { PackagePayment } from '../_components/package-payment'
 import Link from 'next/link'
 import ShefitLogo from '@/public/logo-vertical-dark.png'
 import { formatDuration } from '@/lib/helpers'
 import { getSubscription } from '@/network/client/subscriptions'
 import { HtmlContent } from '@/components/html-content'
 
-export default function PackageDetail({ params }: { params: Promise<{ slug: string }> }) {
+export default function PackageDetail({ params }: { params: Promise<{ id: string }> }) {
   const [selectedGiftId, setSelectedGiftId] = useState<number | null>(null)
   const [subscription, setSubscription] = useState<any>(null)
 
   useEffect(() => {
     const fetchData = async () => {
-      const slug = (await params).slug
+      const slug = (await params).id
       const data = await getSubscription(slug)
       setSubscription(data)
     }

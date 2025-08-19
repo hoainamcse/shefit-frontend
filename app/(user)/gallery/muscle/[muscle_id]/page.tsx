@@ -25,11 +25,11 @@ export default async function Muscle({ params }: { params: Promise<{ muscle_id: 
       <div>
         <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-3 sm:mb-6 md:mb-10 lg:mb-[60px]">
           <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl">
-            Các bài tập nhóm {selectedMuscleGroup?.name}
+            Các động tác nhóm {selectedMuscleGroup?.name}
           </div>
           <p className="text-[#737373] text-sm lg:text-lg">
-            Tại Shefit, chúng tôi cung cấp một loạt các bài tập chuyên biệt cho từng nhóm cơ, giúp bạn xây dựng sức mạnh
-            và sự linh hoạt. Mỗi bài tập được thiết kế để tối ưu hóa hiệu quả luyện tập, phù hợp với mọi trình độ từ
+            Tại Shefit, chúng tôi cung cấp một loạt các động tác chuyên biệt cho từng nhóm cơ, giúp bạn xây dựng sức mạnh
+            và sự linh hoạt. Mỗi động tác được thiết kế để tối ưu hóa hiệu quả luyện tập, phù hợp với mọi trình độ từ
             người mới bắt đầu đến chuyên nghiệp.
           </p>
         </div>

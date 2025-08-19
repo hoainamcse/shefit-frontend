@@ -186,7 +186,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
                 return (
                   <Link
                     key={subscription.id}
-                    href={`/packages/detail/${subscription.id}`}
+                    href={`/packages/${subscription.id}`}
                     className={`text-sm rounded-full hover:opacity-90 ${
                       hasPurchased ? 'bg-[#319F43]' : 'bg-[#DA1515]'
                     }`}

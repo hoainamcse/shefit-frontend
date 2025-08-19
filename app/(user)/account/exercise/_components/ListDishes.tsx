@@ -234,7 +234,7 @@ export default function ListDishes() {
               onClick={() => {
                 setRenewDialogOpen(false)
                 if (selectedSubscription?.subscription?.id) {
-                  router.push(`/packages/detail/${selectedSubscription.subscription.id}`)
+                  router.push(`/packages/${selectedSubscription.subscription.id}`)
                 }
               }}
             >

@@ -159,7 +159,7 @@ export default function PurchasedPackage() {
                     </div>
                   </div>
                   <Link
-                    href={`/packages/detail/${subscription.subscription.id}`}
+                    href={`/packages/${subscription.subscription.id}`}
                     className="h-fit text-sm lg:text-lg text-[#13D8A7] mt-4"
                   >
                     <Button className="bg-[#13D8A7] rounded-full w-[160px] h-[36px] text-sm lg:text-lg">

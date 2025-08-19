@@ -67,7 +67,7 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
         enableHiding: false,
       },
       {
-        header: 'Tên bài tập',
+        header: 'Tên động tác',
         accessorKey: 'name',
         cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
         size: 180,
@@ -153,7 +153,7 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
       loading: 'Đang xoá...',
       success: (_) => {
         refetch()
-        return 'Xoá bài tập thành công'
+        return 'Xoá động tác thành công'
       },
       error: 'Đã có lỗi xảy ra',
     })
@@ -166,7 +166,7 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
       loading: 'Đang xoá...',
       success: (_) => {
         refetch()
-        return 'Xoá bài tập thành công'
+        return 'Xoá động tác thành công'
       },
       error: 'Đã có lỗi xảy ra',
     })
@@ -211,19 +211,19 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
             {onConfirmRowSelection && (
               <MainButton
                 variant="outline"
-                text={`Chọn ${rowSelection.length} bài tập`}
+                text={`Chọn ${rowSelection.length} động tác`}
                 onClick={() => {
                   if (rowSelection.length === 0) {
-                    toast.error('Vui lòng chọn ít nhất một bài tập')
+                    toast.error('Vui lòng chọn ít nhất một động tác')
                     return
                   }
                   onConfirmRowSelection(rowSelection)
                 }}
               />
             )}
-            <AddButton text="Thêm bài tập" onClick={onAddRow} />
+            <AddButton text="Thêm động tác" onClick={onAddRow} />
             <ExcelImportDialog
-              title="Bài tập"
+              title="Động tác"
               handleSubmit={async (file: File) => {
                 await importExerciseExcel(file)
                 refetch()
@@ -233,7 +233,7 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
         }
       />
       <EditSheet
-        title={isEdit ? 'Chỉnh sửa bài tập' : 'Thêm bài tập'}
+        title={isEdit ? 'Chỉnh sửa động tác' : 'Thêm động tác'}
         description="Make changes to your profile here. Click save when you're done."
         open={isEditSheetOpen}
         onOpenChange={setIsEditSheetOpen}

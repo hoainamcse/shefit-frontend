@@ -177,7 +177,7 @@ async function SectionThreeData({ data }: { data: DataType['section_3'] }) {
           >
             {subscriptionsWithData.map((item, mIndex) => (
               <div key={mIndex} className="flex flex-col h-full w-full space-y-4 px-4">
-                <Link href={`/packages/detail/${item.subscription.id}`}>
+                <Link href={`/packages/${item.subscription.id}`}>
                   <div
                     className={cn(
                       'group flex items-center gap-2 text-sm lg:text-base text-background font-medium rounded-md p-3',
