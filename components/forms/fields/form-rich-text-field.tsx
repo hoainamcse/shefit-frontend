@@ -41,6 +41,16 @@ function FormRichTextField<
         const quillRef = React.useRef<HTMLDivElement | null>(null)
         const editorRef = React.useRef<any>(null)
 
+        // Custom image handler function
+        const imageHandler = React.useCallback(() => {
+          const url = prompt('Enter image URL:')
+          if (url && editorRef.current) {
+            const range = editorRef.current.getSelection(true)
+            editorRef.current.insertEmbed(range.index, 'image', url, 'user')
+            editorRef.current.setSelection(range.index + 1)
+          }
+        }, [])
+
         React.useEffect(() => {
           let isMounted = true
           import('quill').then((QuillModule) => {
@@ -51,19 +61,26 @@ function FormRichTextField<
                 theme: 'snow',
                 placeholder,
                 modules: {
-                  toolbar: [
-                    [{ header: [1, 2, 3, 4, 5, 6, false] }],
-                    ['bold', 'italic', 'underline', 'strike'],
-                    [{ color: [] }, { background: [] }],
-                    [{ align: [] }],
-                    [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
-                    [{ indent: '-1' }, { indent: '+1' }],
-                    ['blockquote', 'code-block'],
-                    ['link', 'image', 'video'],
-                    ['clean'],
-                  ],
+                  toolbar: {
+                    container: [
+                      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+                      ['bold', 'italic', 'underline', 'strike'],
+                      [{ color: [] }, { background: [] }],
+                      [{ align: [] }],
+                      [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
+                      [{ indent: '-1' }, { indent: '+1' }],
+                      ['blockquote', 'code-block'],
+                      ['link', 'image', 'video'],
+                      ['clean'],
+                    ],
+                    // Custom handlers
+                    handlers: {
+                      image: imageHandler,
+                    },
+                  },
                 },
               })
+
               editorRef.current.on('text-change', () => {
                 field.onChange(editorRef.current.root.innerHTML)
               })
@@ -76,7 +93,7 @@ function FormRichTextField<
           return () => {
             isMounted = false
           }
-        }, [field.value, field.onChange, placeholder])
+        }, [field.value, field.onChange, placeholder, imageHandler])
 
         return (
           <FormItem className={className}>

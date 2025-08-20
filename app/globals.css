@@ -70,3 +70,15 @@
 .skiptranslate {
   display: none !important;
 }
+
+.ql-container {
+  font-family: var(--font-roboto) !important;
+}
+
+.ql-toolbar.ql-snow {
+  border-radius: var(--radius) !important;
+}
+
+.ql-toolbar.ql-snow + .ql-container.ql-snow {
+  border-top: 1px solid #ccc !important;
+}

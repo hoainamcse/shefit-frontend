@@ -37,7 +37,7 @@ export function Footer() {
                     </Link>
                   </li>
                   <li className="text-[#E8E5E5] text-sm lg:text-lg">
-                    <Link href="/blog" className="hover:underline">
+                    <Link href="/blogs" className="hover:underline">
                       Blog Healthy
                     </Link>
                   </li>
@@ -103,7 +103,7 @@ export function Footer() {
                         <Link href="/about">Về chúng tôi</Link>
                       </li>
                       <li className="text-[#E8E5E5] text-sm">
-                        <Link href="/blog">Blog Healthy</Link>
+                        <Link href="/blogs">Blog Healthy</Link>
                       </li>
                     </div>
                   </ul>

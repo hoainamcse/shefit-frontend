@@ -10,7 +10,7 @@ export async function getBlogs(): Promise<ListResponse<Blog>> {
   return response.json()
 }
 
-export async function getBlog(id: number): Promise<ApiResponse<Blog>> {
+export async function getBlog(id: Blog['id']): Promise<ApiResponse<Blog>> {
   const response = await fetchDataServer(`/v1/blogs/${id}`)
   return response.json()
 }
