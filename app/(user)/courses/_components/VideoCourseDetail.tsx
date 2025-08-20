@@ -268,7 +268,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
     if (typeof window !== 'undefined') {
       saveCurrentUrl()
       const currentUrl = window.location.pathname + window.location.search
-      const accountUrl = `/account?tab=buy-package&course_id=${courseId}&redirect=${encodeURIComponent(currentUrl)}`
+      const accountUrl = `/account/packages?course_id=${courseId}&redirect=${encodeURIComponent(currentUrl)}`
       window.location.href = accountUrl
     }
   }

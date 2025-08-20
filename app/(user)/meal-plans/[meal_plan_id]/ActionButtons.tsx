@@ -41,7 +41,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
     if (typeof window !== 'undefined') {
       saveCurrentUrl()
       const currentUrl = window.location.pathname + window.location.search
-      const accountUrl = `/account?tab=buy-package&redirect=${encodeURIComponent(currentUrl)}`
+      const accountUrl = `/account/packages?redirect=${encodeURIComponent(currentUrl)}`
       window.location.href = accountUrl
     }
   }

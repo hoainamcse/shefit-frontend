@@ -68,7 +68,7 @@ export function Header() {
     {
       label: 'Gói Member',
       icon: MemberShipIcon,
-      url: '/account?tab=buy-package',
+      url: '/account/packages',
       action: null,
     },
     {

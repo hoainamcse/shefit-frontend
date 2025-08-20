@@ -15,9 +15,3 @@ export async function getDish(dish_id: string): Promise<ApiResponse<Dish>> {
   const response = await fetchDataServer(`/v1/dishes/${dish_id}`)
   return response.json()
 }
-
-export async function getDishesByDietId(diet_id: Diet['id']): Promise<ListResponse<Dish>> {
-  const response = await fetchDataServer(`/v1/diets/${diet_id}/dishes`)
-  return response.json()
-}
-  

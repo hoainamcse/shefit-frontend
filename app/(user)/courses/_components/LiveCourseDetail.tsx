@@ -201,7 +201,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
   const handleBuyPackageClick = () => {
     if (typeof window !== 'undefined') {
       const currentUrl = window.location.pathname + window.location.search
-      const accountUrl = `/account?tab=buy-package&course_id=${courseId}&redirect=${encodeURIComponent(currentUrl)}`
+      const accountUrl = `/account/packages?course_id=${courseId}&redirect=${encodeURIComponent(currentUrl)}`
       window.location.href = accountUrl
     }
     setShowLoginDialog(false)
