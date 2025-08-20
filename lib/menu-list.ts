@@ -154,6 +154,10 @@ export function getMenuList(pathname: string): Group[] {
               href: '/admin/users/quizzes',
               label: 'Kết quả quiz',
             },
+            {
+              href: '/admin/auto-meal',
+              label: 'Tự động thực đơn',
+            },
           ],
         },
         {
