@@ -25,7 +25,7 @@ import {
   deleteColor,
 } from '@/network/client/products'
 import { Coupon } from '@/models/coupon'
-import { getListCoupons, deleteCoupon } from '@/network/server/coupons'
+import { getCoupons, deleteCoupon } from '@/network/client/coupons'
 import { DeleteButton } from '@/components/buttons/delete-button'
 
 export default function CategoriesPage() {
@@ -65,7 +65,7 @@ export default function CategoriesPage() {
   }
 
   const fetchCoupons = async () => {
-    const response = await getListCoupons()
+    const response = await getCoupons()
     const subscriptionCoupons = (response.data || []).filter((coupon) => coupon.coupon_type === 'ecommerce')
     setCoupons(subscriptionCoupons)
   }

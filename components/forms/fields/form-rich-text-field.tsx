@@ -51,6 +51,35 @@ function FormRichTextField<
           }
         }, [])
 
+        // Custom video handler function
+        const videoHandler = React.useCallback(() => {
+          const url = prompt('Enter video URL (YouTube, Vimeo, or direct video link):')
+          if (url && editorRef.current) {
+            const range = editorRef.current.getSelection(true)
+
+            // Check if it's a YouTube or Vimeo URL and convert to embed format
+            let embedUrl = url
+
+            // YouTube URL handling
+            const youtubeRegex =
+              /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
+            const youtubeMatch = url.match(youtubeRegex)
+            if (youtubeMatch) {
+              embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`
+            }
+
+            // Vimeo URL handling
+            const vimeoRegex = /(?:vimeo\.com\/)(\d+)/
+            const vimeoMatch = url.match(vimeoRegex)
+            if (vimeoMatch) {
+              embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`
+            }
+
+            editorRef.current.insertEmbed(range.index, 'video', embedUrl, 'user')
+            editorRef.current.setSelection(range.index + 1)
+          }
+        }, [])
+
         React.useEffect(() => {
           let isMounted = true
           import('quill').then((QuillModule) => {
@@ -73,9 +102,9 @@ function FormRichTextField<
                       ['link', 'image', 'video'],
                       ['clean'],
                     ],
-                    // Custom handlers
                     handlers: {
                       image: imageHandler,
+                      video: videoHandler,
                     },
                   },
                 },
@@ -93,7 +122,7 @@ function FormRichTextField<
           return () => {
             isMounted = false
           }
-        }, [field.value, field.onChange, placeholder, imageHandler])
+        }, [field.value, field.onChange, placeholder, imageHandler, videoHandler])
 
         return (
           <FormItem className={className}>

@@ -20,7 +20,7 @@ import { PROVINCES } from '@/lib/label'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Product, Variant } from '@/models/product'
-import { getListCoupons } from '@/network/server/coupons'
+import { getCoupons } from '@/network/server/coupons'
 
 export default function BuyNowPage({ params }: { params: Promise<{ product_id: string }> }) {
   const { product_id } = use(params)
@@ -276,7 +276,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
     try {
       setIsApplyingCoupon(true)
       if (!coupons.length) {
-        const couponsResponse = await getListCoupons()
+        const couponsResponse = await getCoupons()
         if (couponsResponse?.data) {
           setCoupons(couponsResponse.data)
         }
@@ -338,7 +338,7 @@ export default function BuyNowPage({ params }: { params: Promise<{ product_id: s
   useEffect(() => {
     async function fetchCoupons() {
       try {
-        const couponsResponse = await getListCoupons()
+        const couponsResponse = await getCoupons()
         if (couponsResponse?.data) {
           setCoupons(couponsResponse.data)
         }

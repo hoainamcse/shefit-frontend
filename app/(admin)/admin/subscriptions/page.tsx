@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { CreateCouponForm } from '@/components/forms/create-coupon-form'
 import { Coupon } from '@/models/coupon'
 import { useEffect, useState } from 'react'
-import { deleteCoupon, getListCoupons } from '@/network/server/coupons'
+import { deleteCoupon, getCoupons } from '@/network/client/coupons'
 import { toast } from 'sonner'
 import { DeleteButton } from '@/components/buttons/delete-button'
 import { useClipboard } from '@/hooks/use-clipboard'
@@ -22,7 +22,7 @@ export default function SubscriptionsPage() {
   const [editingCoupon, setEditingCoupon] = useState<Coupon>()
 
   const fetchCoupons = async () => {
-    const response = await getListCoupons()
+    const response = await getCoupons()
     const subscriptionCoupons = (response.data || []).filter((coupon) => coupon.coupon_type === 'subscription')
     setCoupons(subscriptionCoupons)
   }

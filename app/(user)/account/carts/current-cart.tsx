@@ -10,7 +10,7 @@ import { toast } from 'sonner'
 import { useSession } from '@/hooks/use-session'
 import { useEffect, useState } from 'react'
 import { UserCart } from '@/models/user-cart'
-import { getListCoupons } from '@/network/server/coupons'
+import { getCoupons } from '@/network/server/coupons'
 import {
   Dialog,
   DialogTrigger,
@@ -77,7 +77,7 @@ export default function CurrentCart() {
   useEffect(() => {
     async function fetchCoupons() {
       try {
-        const couponsResponse = await getListCoupons()
+        const couponsResponse = await getCoupons()
         if (couponsResponse?.data) {
           setCoupons(couponsResponse.data)
         }
@@ -175,7 +175,7 @@ export default function CurrentCart() {
       setIsApplyingCoupon(true)
 
       if (!coupons.length) {
-        const couponsResponse = await getListCoupons()
+        const couponsResponse = await getCoupons()
         if (couponsResponse?.data) {
           setCoupons(couponsResponse.data)
         }
