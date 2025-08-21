@@ -17,6 +17,7 @@ import { MessageItem } from './message-item'
 import { EmptyState } from './empty-state'
 import { TypingIndicator } from './typing-indicator'
 import { ChatInput } from './chat-input'
+import { getUser } from '@/network/client/users'
 
 import styles from './chatbot.module.css'
 
@@ -39,6 +40,11 @@ export function ChatBot({ isOpen, onClose, isPreview = false }: ChatBotProps) {
   const [isShowingPromptSuggestions, setIsShowingPromptSuggestions] = useState(false)
   const [hasFollowUpOptions, setHasFollowUpOptions] = useState(false)
   const [showEmptyStateForm, setShowEmptyStateForm] = useState<'workout' | 'meal' | null>(null)
+  const [userPermissions, setUserPermissions] = useState<{
+    enable_chatbot: boolean
+    enable_chatbot_actions: boolean
+  } | null>(null)
+  const [isLoadingPermissions, setIsLoadingPermissions] = useState(false)
 
   const { session } = useSession()
   const messagesContainerRef = useRef<HTMLDivElement>(null)
@@ -104,6 +110,35 @@ export function ChatBot({ isOpen, onClose, isPreview = false }: ChatBotProps) {
     }
   }, [session, isOpen, isFirstFetchGreetingsDone])
 
+  // Fetch user permissions
+  useEffect(() => {
+    const fetchUserPermissions = async () => {
+      if (session && isOpen) {
+        setIsLoadingPermissions(true)
+        try {
+          const response = await getUser(session.userId)
+          console.log('User permissions response:', response)
+          if (response.data) {
+            setUserPermissions({
+              enable_chatbot: response.data.enable_chatbot || false,
+              enable_chatbot_actions: response.data.enable_chatbot_actions || false,
+            })
+          }
+        } catch (error) {
+          console.error('Failed to fetch user permissions:', error)
+          setUserPermissions({
+            enable_chatbot: false,
+            enable_chatbot_actions: false,
+          })
+        } finally {
+          setIsLoadingPermissions(false)
+        }
+      }
+    }
+
+    fetchUserPermissions()
+  }, [session, isOpen])
+
   useEffect(() => {
     // Listen for scroll events
     const container = messagesContainerRef.current
@@ -167,79 +202,97 @@ export function ChatBot({ isOpen, onClose, isPreview = false }: ChatBotProps) {
 
         {/* Messages */}
         <div className="flex-1 min-h-0 flex flex-col bg-background rounded-3xl mb-4 relative overflow-hidden">
-          <div
-            className={`flex-1 overflow-y-auto p-4 flex flex-col-reverse ${styles.messagesContainerScrollbar}`}
-            ref={messagesContainerRef}
-          >
-            <div className="flex flex-col-reverse">
-              {/* The ... component indicates that is waiting for response from AI */}
-              {isLoading && (
-                <div className="flex items-start gap-3 mt-2">
-                  <Avatar className="w-8 h-8 mt-1">
-                    <AvatarFallback className="bg-primary text-background text-xs font-semibold">R</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="font-medium text-sm text-gray-900 mb-1">Shefit.vn</div>
-                    <div className="bg-gray-100 text-gray-800 rounded-lg text-sm inline-block">
-                      <TypingIndicator />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {messages?.map((message, index) => (
-                <MessageItem
-                  key={message.id}
-                  message={message}
-                  index={index}
-                  idOfMessageGotError={idOfMessageGotError}
-                  sendMessage={sendMessage}
-                  onFollowUpOptionsChange={index === 0 ? setHasFollowUpOptions : undefined}
-                />
-              ))}
+          {isLoadingPermissions ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-pink-500"></div>
             </div>
-
-            <EmptyState
-              session={session}
-              isLoadingMessages={isLoadingMessages}
-              fetchError={fetchError}
-              isFirstFetchDone={isFirstFetchDone}
-              messages={messages}
-              onClose={onClose}
-              getMessages={fetchNextPage}
-              sendMessage={sendMessage}
-              showForm={showEmptyStateForm}
-              setShowForm={setShowEmptyStateForm}
-            />
-
-            <div ref={topSentinelRef} style={{ height: '1px' }} />
-
-            {isShowingMoveDownButton && (
-              <Button
-                className="absolute bottom-[20px] left-1/2 transform -translate-x-1/2 text-background rounded-full shadow-lg hover:bg-[#FFAEB0]/80"
-                onClick={scrollToBottom}
+          ) : userPermissions && !userPermissions.enable_chatbot ? (
+            <div className="flex-1 flex items-center justify-center p-4 text-center">
+              <div className="bg-red-50 p-6 rounded-xl border border-red-200">
+                <p className="text-red-600 font-medium mb-2">Bạn không có quyền truy cập, liên hệ để được hỗ trợ</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div
+                className={`flex-1 overflow-y-auto p-4 flex flex-col-reverse ${styles.messagesContainerScrollbar}`}
+                ref={messagesContainerRef}
               >
-                <ArrowDown />
-              </Button>
-            )}
-          </div>
+                <div className="flex flex-col-reverse">
+                  {/* The ... component indicates that is waiting for response from AI */}
+                  {isLoading && (
+                    <div className="flex items-start gap-3 mt-2">
+                      <Avatar className="w-8 h-8 mt-1">
+                        <AvatarFallback className="bg-primary text-background text-xs font-semibold">R</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="font-medium text-sm text-gray-900 mb-1">Shefit.vn</div>
+                        <div className="bg-gray-100 text-gray-800 rounded-lg text-sm inline-block">
+                          <TypingIndicator />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {messages?.map((message, index) => (
+                    <MessageItem
+                      key={message.id}
+                      message={message}
+                      index={index}
+                      idOfMessageGotError={idOfMessageGotError}
+                      sendMessage={sendMessage}
+                      onFollowUpOptionsChange={index === 0 ? setHasFollowUpOptions : undefined}
+                    />
+                  ))}
+                </div>
+
+                <EmptyState
+                  session={session}
+                  isLoadingMessages={isLoadingMessages}
+                  fetchError={fetchError}
+                  isFirstFetchDone={isFirstFetchDone}
+                  messages={messages}
+                  onClose={onClose}
+                  getMessages={fetchNextPage}
+                  sendMessage={sendMessage}
+                  showForm={showEmptyStateForm}
+                  setShowForm={setShowEmptyStateForm}
+                  enableChatbotActions={userPermissions?.enable_chatbot_actions || false}
+                />
+
+                <div ref={topSentinelRef} style={{ height: '1px' }} />
+
+                {isShowingMoveDownButton && (
+                  <Button
+                    className="absolute bottom-[20px] left-1/2 transform -translate-x-1/2 text-background rounded-full shadow-lg hover:bg-[#FFAEB0]/80"
+                    onClick={scrollToBottom}
+                  >
+                    <ArrowDown />
+                  </Button>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Input Area */}
-        <ChatInput
-          form={form}
-          session={session}
-          isShowingPromptSuggestions={isShowingPromptSuggestions}
-          setIsShowingPromptSuggestions={setIsShowingPromptSuggestions}
-          greetings={greetings}
-          total={total}
-          isLoadingGreetings={isLoadingGreetings}
-          isLoadingMore={isLoadingMore}
-          onSubmit={onSubmit}
-          sendMessage={sendMessage}
-          fetchGreetings={fetchGreetings}
-          disabled={hasFollowUpOptions || isLoading}
-        />
+        {/* Input Area - only show if chatbot is enabled */}
+        {userPermissions?.enable_chatbot && !isLoadingPermissions && (
+          <ChatInput
+            form={form}
+            session={session}
+            isShowingPromptSuggestions={isShowingPromptSuggestions}
+            setIsShowingPromptSuggestions={setIsShowingPromptSuggestions}
+            greetings={greetings}
+            total={total}
+            isLoadingGreetings={isLoadingGreetings}
+            isLoadingMore={isLoadingMore}
+            onSubmit={onSubmit}
+            sendMessage={sendMessage}
+            fetchGreetings={fetchGreetings}
+            disabled={hasFollowUpOptions || isLoading}
+            enableChatbotActions={userPermissions.enable_chatbot_actions}
+          />
+        )}
       </div>
     </div>
   )

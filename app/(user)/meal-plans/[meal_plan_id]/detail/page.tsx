@@ -22,7 +22,7 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
   }
 
   try {
-    const subscriptions = await getUserSubscriptions(session.userId.toString())
+    const subscriptions = await getUserSubscriptions(session.userId)
 
     const isSubscriptionValid = (subscription: any): boolean => {
       if (!subscription?.subscription_end_at) return false

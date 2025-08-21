@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import styles from './chatbot.module.css'
 
 const workoutFormSchema = z.object({
   age: z.number().min(1, 'Tuổi phải lớn hơn 0'),
@@ -48,7 +49,7 @@ export function WorkoutForm({ onSubmit, onCancel }: WorkoutFormProps) {
   }
 
   return (
-    <div className="w-full max-h-full overflow-y-auto">
+    <div className={`w-full max-h-full overflow-y-auto ${styles.promptsContainerScrollbar}`}>
       <div className="mb-4">
         <h3 className="font-semibold text-lg mb-2">Thông tin lập kế hoạch tập luyện</h3>
         <p className="text-sm text-gray-600">Vui lòng điền đầy đủ thông tin để được tư vấn tốt nhất</p>

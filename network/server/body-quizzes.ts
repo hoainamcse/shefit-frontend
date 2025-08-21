@@ -1,5 +1,6 @@
 'use server'
 
+import type { User } from '@/models/user'
 import type { BodyQuiz, UserBodyQuiz } from '@/models/body-quiz'
 import type { ApiResponse, ListResponse } from '@/models/response'
 
@@ -21,8 +22,8 @@ export async function getBodyQuiz(quizId: BodyQuiz['id']): Promise<ApiResponse<B
 }
 
 // User Body Quiz
-export const getBodyQuizzesByUser = async (id: string): Promise<ListResponse<UserBodyQuiz>> => {
-  const response = await fetchDataServer(`/v1/users/${id}/body-quizzes`)
+export const getBodyQuizzesByUser = async (user_id: User['id']): Promise<ListResponse<UserBodyQuiz>> => {
+  const response = await fetchDataServer(`/v1/users/${user_id}/body-quizzes`)
   return response.json()
 }
 

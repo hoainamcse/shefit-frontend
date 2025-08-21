@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import styles from './chatbot.module.css'
 
 const mealFormSchema = z.object({
   age: z.number().min(1, 'Tuổi phải lớn hơn 0'),
@@ -42,7 +43,7 @@ export function MealForm({ onSubmit, onCancel }: MealFormProps) {
   }
 
   return (
-    <div className="w-full max-h-full overflow-y-auto">
+    <div className={`w-full max-h-full overflow-y-auto ${styles.promptsContainerScrollbar}`}>
       <div className="mb-4">
         <h3 className="font-semibold text-lg mb-2">Thông tin lập thực đơn</h3>
         <p className="text-sm text-gray-600">Vui lòng điền đầy đủ thông tin để được tư vấn thực đơn phù hợp</p>

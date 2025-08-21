@@ -48,7 +48,7 @@ export function ListCourses() {
 
   const handleBuyPackageClick = () => {
     setDialogOpen(false)
-    redirectToAccount('buy-package')
+    redirectToAccount('packages')
   }
 
   const subscriptionCourses = useMemo(() => {

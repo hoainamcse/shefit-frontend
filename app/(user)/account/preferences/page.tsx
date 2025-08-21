@@ -61,7 +61,7 @@ function UserInfoUpdateForm({ user: user }: { user: User }) {
       phone_number: user.phone_number || '',
       province: user.province || '',
       address: user.address || '',
-      role: user.role || 'user',
+      role: user.role || 'normal_user',
       provider: user.provider || 'default',
     },
   })
@@ -172,8 +172,8 @@ export default function AccountInformation() {
   // Fetch user data
   const { data: userData, isLoading } = useQuery({
     queryKey: ['user', session?.userId],
-    queryFn: () => getUser(session!.userId as string),
-    enabled: !!session?.userId,
+    queryFn: () => (session ? getUser(session.userId) : Promise.resolve(null)),
+    enabled: !!session,
   })
 
   if (isLoading) {

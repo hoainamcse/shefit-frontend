@@ -6,12 +6,12 @@ import type { UserSubscriptionDetail } from '@/models/user-subscriptions'
 
 import { fetchDataServer } from '../helpers/fetch-data-server'
 
-export async function getUser(user_id: string): Promise<ApiResponse<User>> {
-  const response = await fetchDataServer(`/v1/users/${user_id}`)
+export async function getUser(id: User['id']): Promise<ApiResponse<User>> {
+  const response = await fetchDataServer(`/v1/users/${id}`)
   return response.json()
 }
 
-export async function getUserSubscriptions(user_id: string): Promise<ListResponse<UserSubscriptionDetail>> {
-  const response = await fetchDataServer(`/v1/users/${user_id}/subscriptions`)
+export async function getUserSubscriptions(id: User['id']): Promise<ListResponse<UserSubscriptionDetail>> {
+  const response = await fetchDataServer(`/v1/users/${id}/subscriptions`)
   return response.json()
 }

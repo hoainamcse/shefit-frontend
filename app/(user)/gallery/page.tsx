@@ -42,7 +42,7 @@ export default function Gallery() {
 
   const handleBuyPackageClick = () => {
     setDialogOpen(false)
-    redirectToAccount('buy-package')
+    redirectToAccount('packages')
   }
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export default function Gallery() {
       }
 
       try {
-        const subscriptions = await getUserSubscriptions(session.userId.toString())
+        const subscriptions = await getUserSubscriptions(session.userId)
         const currentDate = new Date()
         const hasValidSubscription = subscriptions.data?.some((subscription) => {
           if (!subscription.subscription_end_at) return false

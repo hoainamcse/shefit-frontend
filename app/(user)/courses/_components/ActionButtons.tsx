@@ -39,7 +39,7 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
       }
 
       try {
-        const subscriptionsResponse = await getUserSubscriptions(session.userId.toString())
+        const subscriptionsResponse = await getUserSubscriptions(session.userId)
         const currentCourseId = Number(courseId)
 
         const courseInSubscription = subscriptionsResponse.data?.some((subscription) =>
@@ -51,7 +51,7 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
           return
         }
 
-        const coursesResponse = await getUserCourses(session.userId.toString())
+        const coursesResponse = await getUserCourses(session.userId)
         const userCourse = (coursesResponse.data as UserCourseItem[])?.find((course) => {
           const userCourseId = Number(course.course_id)
           return userCourseId === currentCourseId && course.is_active === true
@@ -116,7 +116,7 @@ export default function ActionButtons({ courseId, showDetails, handleToggleDetai
                   return
                 }
                 try {
-                  await addFavouriteCourse(session.userId.toString(), courseId.toString())
+                  await addFavouriteCourse(session.userId, courseId.toString())
                   toast.success('Đã thêm khóa học vào danh sách yêu thích!')
                 } catch (error) {
                   console.error('Error saving to favorites:', error)

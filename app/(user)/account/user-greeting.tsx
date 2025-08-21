@@ -41,7 +41,7 @@ export default function UserGreeting() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['user', session?.userId],
-    queryFn: () => getUser(session?.userId || ''),
+    queryFn: () => (session ? getUser(session.userId) : Promise.resolve(null)),
     enabled: !!session,
   })
 

@@ -16,6 +16,7 @@ interface EmptyStateProps {
   sendMessage: (messageValue?: string, isUsingOption?: boolean, isReSend?: boolean) => Promise<any>
   showForm: 'workout' | 'meal' | null
   setShowForm: (form: 'workout' | 'meal' | null) => void
+  enableChatbotActions: boolean
 }
 
 export function EmptyState({
@@ -29,6 +30,7 @@ export function EmptyState({
   sendMessage,
   showForm,
   setShowForm,
+  enableChatbotActions,
 }: EmptyStateProps) {
   const handleActionClick = (actionType: string) => {
     if (actionType === 'workout' || actionType === 'meal') {
@@ -119,25 +121,29 @@ Sở thích ăn uống: ${data.foodPreferences}`
           {!showForm && (
             <div className="bg-pink-50 p-4 rounded-xl flex flex-col gap-6">
               <h2 className="text-xl font-bold text-center">Chị muốn được tư vấn gì</h2>
-              <div className="grid grid-cols-2 gap-3">
+              <div className={`grid ${enableChatbotActions ? 'grid-cols-2' : 'grid-cols-1'} gap-3`}>
                 <button
                   onClick={() => sendMessage('Tư vấn phom dáng', true)}
                   className="bg-pink-100 hover:bg-pink-200 transition-colors text-pink-900 rounded-xl p-3 text-sm font-medium"
                 >
                   Tư vấn phom dáng
                 </button>
-                <button
-                  onClick={() => handleActionClick('meal')}
-                  className="bg-pink-100 hover:bg-pink-200 transition-colors text-pink-900 rounded-xl p-3 text-sm font-medium"
-                >
-                  Lên Thực Đơn
-                </button>
-                <button
-                  onClick={() => handleActionClick('workout')}
-                  className="bg-pink-100 hover:bg-pink-200 transition-colors text-pink-900 rounded-xl p-3 text-sm font-medium"
-                >
-                  Lên Khóa Tập
-                </button>
+                {enableChatbotActions && (
+                  <button
+                    onClick={() => handleActionClick('meal')}
+                    className="bg-pink-100 hover:bg-pink-200 transition-colors text-pink-900 rounded-xl p-3 text-sm font-medium"
+                  >
+                    Lên Thực Đơn
+                  </button>
+                )}
+                {enableChatbotActions && (
+                  <button
+                    onClick={() => handleActionClick('workout')}
+                    className="bg-pink-100 hover:bg-pink-200 transition-colors text-pink-900 rounded-xl p-3 text-sm font-medium"
+                  >
+                    Lên Khóa Tập
+                  </button>
+                )}
                 <button
                   onClick={() => sendMessage('Hỏi Đáp', true)}
                   className="bg-pink-100 hover:bg-pink-200 transition-colors text-pink-900 rounded-xl p-3 text-sm font-medium"

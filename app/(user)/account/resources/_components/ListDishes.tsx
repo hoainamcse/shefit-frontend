@@ -49,7 +49,7 @@ export default function ListDishes() {
 
   const handleBuyPackageClick = () => {
     setDialogOpen(false)
-    redirectToAccount('buy-package')
+    redirectToAccount('packages')
   }
 
   const handleDeleteFavouriteDish = async (dishId: number, dishTitle: string) => {
@@ -124,7 +124,7 @@ export default function ListDishes() {
             if (response && response.status === 'success' && response.data) {
               return {
                 id: dishId,
-                user_id: Number(session.userId),
+                user_id: session.userId,
                 dish: response.data,
                 name: response.data.name,
                 title: response.data.name,

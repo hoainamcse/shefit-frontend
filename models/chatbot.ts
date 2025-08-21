@@ -24,16 +24,4 @@ export type TotalTokenUsage = {
   available_tokens: number
 }
 
-export type UserTokenUsage = {
-  user_id: number
-  total_tokens: number
-}
-
-export type UserChatbotSettings = {
-  id: number
-  is_enable_chatbot: boolean
-}
-
 export type GreetingPayload = Omit<Greeting, 'id' | 'created_at' | 'updated_at'>
-
-

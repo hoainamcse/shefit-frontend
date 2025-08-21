@@ -21,7 +21,6 @@ import {
   queryKeyUsers,
   updateUser,
 } from '@/network/client/users'
-import { getUserTokenUsage, getUserChatbotSettings, updateUserChatbotSettings } from '@/network/client/chatbot'
 import { User } from '@/models/user'
 import { Switch } from '../ui/switch'
 import { Badge } from '../ui/badge'
@@ -39,60 +38,51 @@ import { Form } from '../ui/form'
 import { Button } from '../ui/button'
 import { useSession } from '@/hooks/use-session'
 
-type UserRow = User & { token_usage: number; is_enable_chatbot: boolean }
-
 export function UsersTable() {
+  const { session, isLoading: isPending } = useSession()
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 25,
   })
   // const [rowSelection, setRowSelection] = useState<User[]>([])
-  const { session } = useSession()
 
   const { data, isLoading, error, refetch } = useQuery({
-    enabled: !!session,
     queryKey: [queryKeyUsers, pagination],
-    queryFn: async () => {
-      let userRes
-      if (session?.role === 'sub_admin') {
-        userRes = await getSubAdminUsers({ page: pagination.pageIndex, per_page: pagination.pageSize })
-      } else {
-        userRes = await getUsers({ page: pagination.pageIndex, per_page: pagination.pageSize })
-      }
-      const enrichedData = await Promise.all(
-        userRes.data.map(async (user) => {
-          const [tokenUsageRes, chatbotSettingsRes] = await Promise.all([
-            getUserTokenUsage(user.id.toString()),
-            getUserChatbotSettings(user.id.toString()),
-          ])
-          return {
-            ...user,
-            token_usage: tokenUsageRes.data.total_tokens,
-            is_enable_chatbot: chatbotSettingsRes.data.is_enable_chatbot,
-          }
-        })
-      )
-      return { ...userRes, data: enrichedData }
-    },
+    queryFn: async () =>
+      session?.role === 'sub_admin'
+        ? getSubAdminUsers({
+            page: pagination.pageIndex,
+            per_page: pagination.pageSize,
+            sort_by: 'created_at',
+            sort_order: 'desc',
+          })
+        : getUsers({
+            page: pagination.pageIndex,
+            per_page: pagination.pageSize,
+            sort_by: 'created_at',
+            sort_order: 'desc',
+          }),
     placeholderData: keepPreviousData,
+    enabled: !!session,
   })
 
   const handleChatbotToggle = useCallback(
-    async (userId: string, checked: boolean) => {
+    async (bot_config: any, user: User) => {
       try {
-        await updateUserChatbotSettings(userId, { is_enable_chatbot: checked })
+        const { email, ...rest } = user
+        await updateUser(user.id, { ...rest, ...bot_config })
         toast.success('Đã cập nhật trạng thái chatbot')
         refetch()
       } catch (error: any) {
         console.error(error)
         toast.error('Lỗi khi cập nhật trạng thái chatbot')
-        throw error // Re-throw to handle in component
       }
     },
-    [refetch]
+    [refetch, session]
   )
 
-  const columns = useMemo<ColumnDef<UserRow>[]>(
+  const columns = useMemo<ColumnDef<User>[]>(
     () => [
       {
         id: 'select',
@@ -114,12 +104,12 @@ export function UsersTable() {
         enableSorting: false,
         enableHiding: false,
       },
-      {
-        accessorKey: 'id',
-        header: 'STT',
-        size: 70,
-        enableHiding: false,
-      },
+      // {
+      //   accessorKey: 'id',
+      //   header: 'STT',
+      //   size: 70,
+      //   enableHiding: false,
+      // },
       {
         header: 'Tên',
         accessorKey: 'fullname',
@@ -130,48 +120,18 @@ export function UsersTable() {
       {
         header: 'Username',
         accessorKey: 'username',
-        size: 180,
+        size: 120,
       },
       {
         header: 'SDT',
         accessorKey: 'phone_number',
-        size: 180,
+        size: 150,
       },
-      {
-        header: 'Email',
-        accessorKey: 'email',
-        size: 250,
-      },
-      {
-        header: 'Token Usage',
-        accessorKey: 'token_usage',
-        size: 120,
-      },
-      {
-        header: 'Enable Chatbot',
-        accessorKey: 'is_enable_chatbot',
-        cell: ({ row }) => {
-          const [localChecked, setLocalChecked] = useState<boolean>(row.getValue('is_enable_chatbot'))
-
-          // Sync local state with row value when row changes
-          useEffect(() => {
-            setLocalChecked(row.getValue('is_enable_chatbot'))
-          }, [row])
-
-          const handleCheckedChange = async (checked: boolean) => {
-            setLocalChecked(checked)
-
-            try {
-              await handleChatbotToggle(row.getValue('id'), checked)
-            } catch (error: any) {
-              setLocalChecked(!checked)
-            }
-          }
-
-          return <Switch className="transform scale-75" checked={localChecked} onCheckedChange={handleCheckedChange} />
-        },
-        size: 120,
-      },
+      // {
+      //   header: 'Email',
+      //   accessorKey: 'email',
+      //   size: 250,
+      // },
       {
         header: 'Role',
         accessorKey: 'role',
@@ -183,11 +143,40 @@ export function UsersTable() {
         size: 120,
       },
       {
-        accessorKey: 'created_at',
-        header: 'Ngày tạo',
-        cell: ({ row }) => <div className="font-medium">{formatDateString(row.getValue('created_at'))}</div>,
+        header: 'Token Usage',
+        accessorKey: 'token_usage',
         size: 120,
       },
+      {
+        header: 'Bật bot',
+        accessorKey: 'enable_chatbot',
+        cell: ({ row }) => (
+          <Switch
+            className="transform scale-75"
+            checked={row.getValue('enable_chatbot')}
+            onCheckedChange={(checked) => handleChatbotToggle({ enable_chatbot: checked }, row.original)}
+          />
+        ),
+        size: 80,
+      },
+      {
+        header: 'Bật thao tác',
+        accessorKey: 'enable_chatbot_actions',
+        cell: ({ row }) => (
+          <Switch
+            className="transform scale-75"
+            checked={row.getValue('enable_chatbot_actions')}
+            onCheckedChange={(checked) => handleChatbotToggle({ enable_chatbot_actions: checked }, row.original)}
+          />
+        ),
+        size: 80,
+      },
+      // {
+      //   accessorKey: 'created_at',
+      //   header: 'Ngày tạo',
+      //   cell: ({ row }) => <div className="font-medium">{formatDateString(row.getValue('created_at'))}</div>,
+      //   size: 120,
+      // },
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
@@ -201,12 +190,12 @@ export function UsersTable() {
 
   const router = useRouter()
 
-  const onEditRow = (row: UserRow) => {
+  const onEditRow = (row: User) => {
     router.push(`/admin/users/${row.id}`)
   }
 
-  const onDeleteRow = async (row: UserRow) => {
-    const deletePromise = () => deleteUser(row.id.toString())
+  const onDeleteRow = async (row: User) => {
+    const deletePromise = () => deleteUser(row.id)
 
     toast.promise(deletePromise, {
       loading: 'Đang xoá...',
@@ -218,8 +207,8 @@ export function UsersTable() {
     })
   }
 
-  const onDeleteRows = async (selectedRows: UserRow[]) => {
-    const deletePromise = () => deleteBulkUser(selectedRows.map((row) => row.id.toString()))
+  const onDeleteRows = async (selectedRows: User[]) => {
+    const deletePromise = () => deleteBulkUser(selectedRows.map((row) => row.id))
 
     toast.promise(deletePromise, {
       loading: 'Đang xoá...',
@@ -231,7 +220,7 @@ export function UsersTable() {
     })
   }
 
-  if (isLoading) {
+  if (isLoading || isPending) {
     return (
       <div className="flex items-center justify-center">
         <Spinner className="bg-ring dark:bg-white" />
@@ -239,10 +228,10 @@ export function UsersTable() {
     )
   }
 
-  if (error) {
+  if (error || !session) {
     return (
       <div className="flex items-center justify-center">
-        <p className="text-destructive">{error.message}</p>
+        <p className="text-destructive">{error?.message}</p>
       </div>
     )
   }
@@ -436,7 +425,7 @@ function CreateAccountForm({ onSuccess }: { onSuccess?: () => void }) {
   )
 }
 
-function ExportDialog({ data, onSuccess }: { data?: UserRow[]; onSuccess?: () => void }) {
+function ExportDialog({ data, onSuccess }: { data?: User[]; onSuccess?: () => void }) {
   if (!data) return null
 
   const [isPending, setIsPending] = useState(false)
@@ -467,7 +456,7 @@ function ExportDialog({ data, onSuccess }: { data?: UserRow[]; onSuccess?: () =>
       csvRows.push(headers.join(','))
 
       for (const account of data) {
-        const userId = account.id.toString()
+        const userId = account.id
 
         try {
           const userSubscriptionsResponse = await getUserSubscriptions(userId)

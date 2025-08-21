@@ -43,7 +43,7 @@ const formatToVNTime = (time: string) => {
 
 export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] }) {
   const { session } = useSession()
-  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
+  const { redirectToLogin } = useAuthRedirect()
   const isLoggedIn = !!session?.userId
   const [course, setCourse] = useState<any>(null)
   const [live, setLive] = useState<any>(null)
@@ -79,7 +79,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
       }
 
       try {
-        const response = await getUserCourses(session.userId.toString())
+        const response = await getUserCourses(session.userId)
         const userCourse = (response.data as UserCourseItem[])?.find((course) => {
           const userCourseId = Number(course.course_id)
           const currentCourseId = Number(courseId)
@@ -135,7 +135,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
     try {
       await handleStartClick(e)
 
-      const subscriptions = await getUserSubscriptions(session?.userId!.toString())
+      const subscriptions = await getUserSubscriptions(session.userId)
 
       const subscriptionsWithCourse =
         subscriptions.data?.filter((subscription) => {

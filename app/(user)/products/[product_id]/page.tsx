@@ -8,7 +8,7 @@ import { AddIcon } from '@/components/icons/AddIcon'
 import { MinusIcon } from '@/components/icons/MinusIcon'
 import { getProduct, getColors, getSizes } from '@/network/client/products'
 import { addCart, getCarts, createCart } from '@/network/client/carts'
-import { getUserCart, createUserCart } from '@/network/client/users'
+import { getUserCarts, createUserCart } from '@/network/client/users'
 import { toast } from 'sonner'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import { useSession } from '@/hooks/use-session'
@@ -128,7 +128,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
       if (session) {
         try {
           await new Promise((resolve) => setTimeout(resolve, 500))
-          const userCartResponse = await createUserCart(Number(session.userId), newCartId)
+          const userCartResponse = await createUserCart(session.userId, newCartId)
           if (userCartResponse?.cart?.id) {
           }
         } catch (linkError) {}
@@ -164,7 +164,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
     const currentQuantity = Math.max(1, Number(quantity))
     setIsAdding(true)
     try {
-      const cartsRes = await getUserCart(Number(session.userId))
+      const cartsRes = await getUserCarts(session.userId)
       let currentCartId = cartId
       let pendingCart = Array.isArray(cartsRes?.data)
         ? cartsRes.data.find((item) => item?.cart?.status === 'pending' || item?.cart?.status === 'not_decided')
@@ -179,7 +179,7 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
         const newCartId = emptyCartResponse.data.id
         await new Promise((resolve) => setTimeout(resolve, 500))
 
-        const userCartResponse = await createUserCart(Number(session.userId), newCartId)
+        const userCartResponse = await createUserCart(session.userId, newCartId)
         console.log('userCartResponse:', userCartResponse)
 
         const response = userCartResponse as any

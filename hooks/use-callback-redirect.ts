@@ -23,17 +23,16 @@ export const useAuthRedirect = () => {
   }, [saveCurrentUrl])
 
   // Redirect đến account page với current URL
-  const redirectToAccount = useCallback((tab?: string) => {
+  const redirectToAccount = useCallback((path: string) => {
     if (typeof window !== 'undefined') {
       saveCurrentUrl()
       const currentUrl = window.location.pathname + window.location.search
       let accountUrl = `/account`
-      
+
       const params = new URLSearchParams()
-      if (tab) params.set('tab', tab)
       params.set('redirect', currentUrl)
-      
-      accountUrl += `?${params.toString()}`
+
+      accountUrl += `/${path}`
       window.location.href = accountUrl
     }
   }, [saveCurrentUrl])
@@ -56,6 +55,6 @@ export const useAuthRedirect = () => {
 
 // Sử dụng trong component:
 // const { redirectToLogin, redirectToAccount } = useAuthRedirect()
-// 
+//
 // onClick={() => redirectToLogin()}
 // onClick={() => redirectToAccount('buy-package')}

@@ -62,7 +62,7 @@ export default function ListExercises() {
 
   const handleBuyPackageClick = () => {
     setDialogOpen(false)
-    redirectToAccount('buy-package')
+    redirectToAccount('packages')
   }
 
   const handleDeleteFavouriteExercise = async (exerciseId: number, exerciseTitle: string) => {
@@ -142,7 +142,7 @@ export default function ListExercises() {
                 id: exerciseId,
                 name: response.data.name,
                 youtube_url: response.data.youtube_url,
-                user_id: Number(session.userId),
+                user_id: session.userId,
                 exercise: response.data,
                 muscle_groups: response.data.muscle_groups,
               }

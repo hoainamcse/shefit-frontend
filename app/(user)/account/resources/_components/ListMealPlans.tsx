@@ -120,7 +120,7 @@ export default function ListMealPlans() {
             const response = await getMealPlan(mealPlanId.toString())
             if (response && response.status === 'success' && response.data) {
               return {
-                user_id: Number(session.userId),
+                user_id: session.userId,
                 meal_plan: response.data,
                 title: response.data.title,
                 subtitle: response.data.subtitle,
@@ -190,7 +190,7 @@ export default function ListMealPlans() {
 
   const handleBuyPackageClick = () => {
     setDialogOpen(false)
-    redirectToAccount('buy-package')
+    redirectToAccount('packages')
   }
   if (!session) {
     return (

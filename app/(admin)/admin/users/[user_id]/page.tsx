@@ -1,3 +1,4 @@
+import type { User } from '@/models/user'
 import { BoxIcon, HouseIcon } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
@@ -6,7 +7,7 @@ import { getUser } from '@/network/server/users'
 import EditAccountForm from '@/components/forms/edit-account-form'
 import { UserSubscriptionView } from './user-subscription-view'
 
-export default async function EditUserPage({ params }: { params: Promise<{ user_id: string }> }) {
+export default async function EditUserPage({ params }: { params: Promise<{ user_id: User['id'] }> }) {
   const { user_id } = await params
   const data = await getUser(user_id)
 

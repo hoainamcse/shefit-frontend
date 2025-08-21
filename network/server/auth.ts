@@ -53,7 +53,7 @@ export const changePassword = async (data: any): Promise<any> => {
 
 export async function signIn(data: any) {
   const jwt = decodeJwt(data.access_token)
-  const userId = jwt.sub as string
+  const userId = jwt.sub ? Number(jwt.sub) : 0
   const role = Array.isArray(jwt.scopes) && jwt.scopes.length > 0 ? jwt.scopes[0] : 'user'
   await createSession({
     userId,

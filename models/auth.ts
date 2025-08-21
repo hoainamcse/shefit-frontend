@@ -1,5 +1,7 @@
+import type { User } from "./user"
+
 type SessionPayload = {
-  userId: string
+  userId: User['id']
   role: 'admin' | 'sub_admin' | 'normal_user'
   accessToken: string
   refreshToken: string

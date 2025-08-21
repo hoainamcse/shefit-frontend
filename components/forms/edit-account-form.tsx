@@ -122,7 +122,7 @@ export default function EditAccountForm({ data }: EditAccountFormProps) {
   const onPasswordSubmit = async (values: PasswordFormData) => {
     setIsApplyingPassword(true)
     try {
-      const newestUserData = await getUser(data.id.toString())
+      const newestUserData = await getUser(data.id)
       const updateData = {
         role: 'admin',
         username: newestUserData.data.username,

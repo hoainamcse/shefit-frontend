@@ -1,15 +1,16 @@
+import type { User } from '@/models/user'
 import type { ApiResponse, ListResponse } from '@/models/response'
 import type { FavouriteCourse, FavouriteDish, FavouriteExercise, FavouriteMealPlan } from '@/models/favourite'
 
 import { fetchData } from '../helpers/fetch-data'
 
 // Favourite Course
-export async function getFavouriteCourses(user_id: string): Promise<ListResponse<FavouriteCourse>> {
+export async function getFavouriteCourses(user_id: User['id']): Promise<ListResponse<FavouriteCourse>> {
   const response = await fetchData(`/v1/users/${user_id}/favourite/courses`)
   return response.json()
 }
 
-export async function addFavouriteCourse(user_id: string, course_id: string): Promise<ApiResponse<FavouriteCourse>> {
+export async function addFavouriteCourse(user_id: User['id'], course_id: string): Promise<ApiResponse<FavouriteCourse>> {
   const response = await fetchData(`/v1/users/${user_id}/favourite/courses`, {
     method: 'POST',
     body: JSON.stringify({ course_id }),
@@ -18,12 +19,12 @@ export async function addFavouriteCourse(user_id: string, course_id: string): Pr
 }
 
 // Favourite Dish
-export async function getFavouriteDishes(user_id: string): Promise<ListResponse<FavouriteDish>> {
+export async function getFavouriteDishes(user_id: User['id']): Promise<ListResponse<FavouriteDish>> {
   const response = await fetchData(`/v1/users/${user_id}/favourite/dishes`)
   return response.json()
 }
 
-export async function addFavouriteDish(user_id: string, dish_id: string): Promise<ApiResponse<FavouriteDish>> {
+export async function addFavouriteDish(user_id: User['id'], dish_id: string): Promise<ApiResponse<FavouriteDish>> {
   const response = await fetchData(`/v1/users/${user_id}/favourite/dishes`, {
     method: 'POST',
     body: JSON.stringify({ dish_id }),
@@ -32,13 +33,13 @@ export async function addFavouriteDish(user_id: string, dish_id: string): Promis
 }
 
 // Favourite Meal Plan
-export async function getFavouriteMealPlans(user_id: string): Promise<ListResponse<FavouriteMealPlan>> {
+export async function getFavouriteMealPlans(user_id: User['id']): Promise<ListResponse<FavouriteMealPlan>> {
   const response = await fetchData(`/v1/users/${user_id}/favourite/meal-plans`)
   return response.json()
 }
 
 export async function addFavouriteMealPlan(
-  user_id: string,
+  user_id: User['id'],
   meal_plan_id: string
 ): Promise<ApiResponse<FavouriteMealPlan>> {
   const response = await fetchData(`/v1/users/${user_id}/favourite/meal-plans`, {
@@ -49,13 +50,13 @@ export async function addFavouriteMealPlan(
 }
 
 // Favourite Exercise
-export async function getFavouriteExercises(user_id: string): Promise<ListResponse<FavouriteExercise>> {
+export async function getFavouriteExercises(user_id: User['id']): Promise<ListResponse<FavouriteExercise>> {
   const response = await fetchData(`/v1/users/${user_id}/favourite/exercises`)
   return response.json()
 }
 
 export async function addFavouriteExercise(
-  user_id: string,
+  user_id: User['id'],
   exercise_id: string
 ): Promise<ApiResponse<FavouriteExercise>> {
   const response = await fetchData(`/v1/users/${user_id}/favourite/exercises`, {
@@ -65,28 +66,28 @@ export async function addFavouriteExercise(
   return response.json()
 }
 
-export async function deleteFavouriteMealPlan(user_id: string, meal_plan_id: string): Promise<ApiResponse<void>> {
+export async function deleteFavouriteMealPlan(user_id: User['id'], meal_plan_id: string): Promise<ApiResponse<void>> {
   const response = await fetchData(`/v1/users/${user_id}/favourite/meal-plans/${meal_plan_id}`, {
     method: 'DELETE',
   })
   return response.json()
 }
 
-export async function deleteFavouriteExercise(user_id: string, exercise_id: string): Promise<ApiResponse<void>> {
+export async function deleteFavouriteExercise(user_id: User['id'], exercise_id: string): Promise<ApiResponse<void>> {
   const response = await fetchData(`/v1/users/${user_id}/favourite/exercises/${exercise_id}`, {
     method: 'DELETE',
   })
   return response.json()
 }
 
-export async function deleteFavouriteDish(user_id: string, dish_id: string): Promise<ApiResponse<void>> {
+export async function deleteFavouriteDish(user_id: User['id'], dish_id: string): Promise<ApiResponse<void>> {
   const response = await fetchData(`/v1/users/${user_id}/favourite/dishes/${dish_id}`, {
     method: 'DELETE',
   })
   return response.json()
 }
 
-export async function deleteFavouriteCourse(user_id: string, course_id: string): Promise<ApiResponse<void>> {
+export async function deleteFavouriteCourse(user_id: User['id'], course_id: string): Promise<ApiResponse<void>> {
   const response = await fetchData(`/v1/users/${user_id}/favourite/courses/${course_id}`, {
     method: 'DELETE',
   })

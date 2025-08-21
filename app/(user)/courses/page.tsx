@@ -119,7 +119,7 @@ export default function CoursesPage() {
     setIsCheckingAccess(true)
 
     try {
-      const userSubscriptions = await getUserSubscriptions(session.userId.toString())
+      const userSubscriptions = await getUserSubscriptions(session.userId)
       const hasAccess = checkCourseAccess(course.id, userSubscriptions.data)
 
       if (hasAccess) {

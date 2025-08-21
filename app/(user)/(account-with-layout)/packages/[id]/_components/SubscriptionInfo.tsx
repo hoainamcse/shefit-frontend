@@ -45,7 +45,7 @@ export default function SubscriptionInfo() {
       try {
         setIsLoading(true)
         const subscriptionId = Number(params?.id)
-        const response = await getUserSubscriptions(session.userId.toString())
+        const response = await getUserSubscriptions(session.userId)
 
         const userSubscription = response.data?.find((subscription) => subscription.subscription.id === subscriptionId)
 

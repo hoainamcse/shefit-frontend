@@ -77,7 +77,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
     }
 
     try {
-      const response = await getUserCourses(session.userId.toString())
+      const response = await getUserCourses(session.userId)
       const userCourse = (response.data as UserCourseItem[])?.find((course) => {
         const userCourseId = Number(course.course_id)
         const currentCourseId = Number(courseId)

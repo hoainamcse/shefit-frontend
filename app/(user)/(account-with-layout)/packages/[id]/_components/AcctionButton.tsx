@@ -15,9 +15,9 @@ export default function AcctionButton({ subscription }: { subscription: Subscrip
   const isFreeSubscription = subscription.prices.length > 0 && subscription.prices.every((price) => price.price === 0)
 
   const { data, isLoading, refetch } = useQuery({
-    queryFn: () => getUserSubscriptions(session?.userId.toString() || ''),
+    queryFn: () => (session ? getUserSubscriptions(session.userId) : Promise.resolve(null)),
     queryKey: ['user-subscriptions', session?.userId],
-    enabled: !!session?.userId,
+    enabled: !!session,
   })
 
   const isSubscribed = data?.data?.find((userSub) => userSub.subscription.id === Number(subscription.id)) || false

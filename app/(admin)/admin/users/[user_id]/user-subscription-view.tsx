@@ -37,7 +37,7 @@ export function UserSubscriptionView({ userID, userRole }: { userID: User['id'];
     refetch: userSubscriptionsRefetch,
   } = useQuery({
     queryKey: [queryKeyUserSubscriptions, userID],
-    queryFn: () => getUserSubscriptions(userID.toString()),
+    queryFn: () => getUserSubscriptions(userID),
   })
 
   const { data: subscriptionsData, isLoading: subscriptionsLoading } = useQuery({
@@ -58,7 +58,7 @@ export function UserSubscriptionView({ userID, userRole }: { userID: User['id'];
 
   const handleDeleteUserSubscription = (userSubscription: UserSubscriptionDetail) => {
     // setDeleteItem({ type: 'day', item: day })
-    const deletePromise = () => deleteUserSubscription(userID.toString(), userSubscription.subscription.id.toString())
+    const deletePromise = () => deleteUserSubscription(userID, userSubscription.subscription.id.toString())
 
     toast.promise(deletePromise, {
       loading: 'Đang xoá...',

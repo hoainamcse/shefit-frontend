@@ -53,13 +53,6 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeySubscriptions, pagination],
-    // queryFn: () =>
-    //   getSubscriptions({
-    //     page: pagination.pageIndex,
-    //     per_page: pagination.pageSize,
-    //     sort_by: 'display_order',
-    //     sort_order: 'asc',
-    //   }),
     queryFn: () =>
       session?.role === 'sub_admin'
         ? getSubAdminSubscriptions({

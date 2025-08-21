@@ -118,8 +118,8 @@ export function EditUserSubscriptionForm({
   const userSubscriptionMutation = useMutation({
     mutationFn: (values: FormValue) =>
       isEdit && data?.id
-        ? updateUserSubscription(userID.toString(), data?.subscription.id.toString(), values)
-        : createUserSubscription(values, userID.toString()),
+        ? updateUserSubscription(userID, data?.subscription.id.toString(), values)
+        : createUserSubscription(values, userID),
     onSettled(data, error) {
       if (data?.status === 'success') {
         toast.success(isEdit ? 'Cập nhật ngày thành công' : 'Tạo ngày thành công')

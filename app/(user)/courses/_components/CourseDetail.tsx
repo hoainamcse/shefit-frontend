@@ -68,7 +68,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
         }
 
         if (session?.userId) {
-          const userSubscriptionsData = await getUserSubscriptions(session.userId.toString())
+          const userSubscriptionsData = await getUserSubscriptions(session.userId)
           const subscribedIds = userSubscriptionsData.data?.map((sub) => sub.subscription.id) || []
           setUserSubscriptions(subscribedIds)
 

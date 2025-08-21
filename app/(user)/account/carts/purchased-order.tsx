@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { getUserCart } from '@/network/client/users'
+import { getUserCarts } from '@/network/client/users'
 import { Button } from '@/components/ui/button'
 import { useEffect, useState } from 'react'
 import { useSession } from '@/hooks/use-session'
@@ -23,7 +23,7 @@ export default function PurchasedOrder() {
       }
 
       try {
-        const cartsResponse = await getUserCart(Number(session?.userId))
+        const cartsResponse = await getUserCarts(session.userId)
         console.log('Delivered carts response:', cartsResponse)
 
         const filtered = Array.isArray(cartsResponse?.data)

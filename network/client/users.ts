@@ -16,32 +16,32 @@ export async function getUsers(query?: any): Promise<ListResponse<User>> {
   return response.json()
 }
 
-export async function getUser(user_id: string): Promise<ApiResponse<User>> {
-  const response = await fetchData(`/v1/users/${user_id}`, {
+export async function getUser(id: User['id']): Promise<ApiResponse<User>> {
+  const response = await fetchData(`/v1/users/${id}`, {
     method: 'GET',
   })
   return response.json()
 }
 
-export async function updateUser(user_id: number, data: any): Promise<ApiResponse<User>> {
-  const response = await fetchData(`/v1/users/${user_id}`, {
+export async function updateUser(id: User['id'], data: any): Promise<ApiResponse<User>> {
+  const response = await fetchData(`/v1/users/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   })
   return response.json()
 }
 
-export async function deleteUser(user_id: string): Promise<ApiResponse<any>> {
-  const response = await fetchData(`/v1/users/${user_id}`, {
+export async function deleteUser(id: User['id']): Promise<ApiResponse<any>> {
+  const response = await fetchData(`/v1/users/${id}`, {
     method: 'DELETE',
   })
   return response.json()
 }
 
-export async function deleteBulkUser(user_ids: string[]): Promise<ApiResponse<string>> {
+export async function deleteBulkUser(ids: User['id'][]): Promise<ApiResponse<string>> {
   const response = await fetchData(`/v1/users/bulk`, {
     method: 'DELETE',
-    body: JSON.stringify(user_ids),
+    body: JSON.stringify(ids),
   })
   return response.json()
 }
@@ -55,30 +55,30 @@ export async function updatePassword(data: any): Promise<ApiResponse<any>> {
 }
 
 // User Cart
-export async function getUserCart(userId: number): Promise<ListResponse<UserCart>> {
-  const response = await fetchData(`/v1/users/${userId}/carts`)
+export async function getUserCarts(id: User['id']): Promise<ListResponse<UserCart>> {
+  const response = await fetchData(`/v1/users/${id}/carts`)
   return response.json()
 }
 
-export async function createUserCart(userId: number, cartId: number): Promise<UserCart> {
-  const response = await fetchData(`/v1/users/${userId}/carts`, {
+export async function createUserCart(userID: User['id'], cartID: number): Promise<UserCart> {
+  const response = await fetchData(`/v1/users/${userID}/carts`, {
     method: 'POST',
     body: JSON.stringify({
-      user_id: userId,
-      cart_id: cartId,
+      user_id: userID,
+      cart_id: cartID,
     }),
   })
   return response.json()
 }
 
 // User Course
-export async function getUserCourses(userId: string): Promise<ListResponse<UserCourse>> {
-  const response = await fetchData(`/v1/users/${userId}/courses`)
+export async function getUserCourses(id: User['id']): Promise<ListResponse<UserCourse>> {
+  const response = await fetchData(`/v1/users/${id}/courses`)
   return response.json()
 }
 
-export async function createUserCourse(data: any, user_id: string): Promise<ApiResponse<any>> {
-  const response = await fetchData(`/v1/users/${user_id}/courses`, {
+export async function createUserCourse(data: any, id: User['id']): Promise<ApiResponse<any>> {
+  const response = await fetchData(`/v1/users/${id}/courses`, {
     method: 'POST',
     body: JSON.stringify(data),
   })
@@ -86,13 +86,13 @@ export async function createUserCourse(data: any, user_id: string): Promise<ApiR
 }
 
 // User Subscription
-export async function getUserSubscriptions(user_id: string): Promise<ListResponse<UserSubscriptionDetail>> {
-  const response = await fetchData(`/v1/users/${user_id}/subscriptions`)
+export async function getUserSubscriptions(id: User['id']): Promise<ListResponse<UserSubscriptionDetail>> {
+  const response = await fetchData(`/v1/users/${id}/subscriptions`)
   return response.json()
 }
 
-export async function createUserSubscription(data: any, user_id: string): Promise<ApiResponse<UserSubscriptionDetail>> {
-  const response = await fetchData(`/v1/users/${user_id}/subscriptions`, {
+export async function createUserSubscription(data: any, id: User['id']): Promise<ApiResponse<UserSubscriptionDetail>> {
+  const response = await fetchData(`/v1/users/${id}/subscriptions`, {
     method: 'POST',
     body: JSON.stringify(data),
   })
@@ -100,19 +100,19 @@ export async function createUserSubscription(data: any, user_id: string): Promis
 }
 
 export async function updateUserSubscription(
-  user_id: string,
-  subscription_id: string,
+  userID: User['id'],
+  subscriptionID: string,
   data: any
 ): Promise<ApiResponse<UserSubscriptionDetail>> {
-  const response = await fetchData(`/v1/users/${user_id}/subscriptions/${subscription_id}`, {
+  const response = await fetchData(`/v1/users/${userID}/subscriptions/${subscriptionID}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   })
   return response.json()
 }
 
-export async function deleteUserSubscription(user_id: string, subscription_id: string): Promise<ApiResponse<any>> {
-  const response = await fetchData(`/v1/users/${user_id}/subscriptions/${subscription_id}`, {
+export async function deleteUserSubscription(userID: User['id'], subscriptionID: string): Promise<ApiResponse<any>> {
+  const response = await fetchData(`/v1/users/${userID}/subscriptions/${subscriptionID}`, {
     method: 'DELETE',
   })
   return response.json()

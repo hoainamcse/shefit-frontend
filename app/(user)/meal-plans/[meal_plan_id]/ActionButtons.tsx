@@ -15,7 +15,7 @@ interface ActionButtonsProps {
 
 export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
   const { session } = useSession()
-  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
+  const { redirectToLogin } = useAuthRedirect()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [showSubscribeDialog, setShowSubscribeDialog] = useState(false)
   const [showLoginDialogSave, setShowLoginDialogSave] = useState(false)
@@ -64,7 +64,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
       }
 
       try {
-        const favorites = await getFavouriteMealPlans(session.userId.toString())
+        const favorites = await getFavouriteMealPlans(session.userId)
         const inFavorites = favorites.data?.some((favorite) => {
           return Number(favorite.meal_plan?.id) === Number(mealPlanId)
         })
@@ -105,7 +105,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
     }
 
     try {
-      const response = await getUserSubscriptions(session.userId.toString())
+      const response = await getUserSubscriptions(session.userId)
 
       const hasValidSubscription = response.data?.some((subscription: any) => {
         return isSubscriptionValid(subscription)

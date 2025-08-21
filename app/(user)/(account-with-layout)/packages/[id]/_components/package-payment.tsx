@@ -226,7 +226,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
                       total_price: totalPrice,
                     }
                     if (session?.userId) {
-                      await createUserSubscription(subscriptionData, session.userId.toString())
+                      await createUserSubscription(subscriptionData, session.userId)
                       setPurchaseSuccess(true)
                     } else {
                       throw new Error('User ID is not available')

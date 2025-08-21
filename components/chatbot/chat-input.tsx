@@ -21,7 +21,7 @@ interface ChatInputProps {
   sendMessage: (messageValue?: string, isUsingOption?: boolean, isReSend?: boolean) => Promise<any>
   fetchGreetings: (searchQuery?: string, isLoadMore?: boolean) => Promise<void>
   disabled?: boolean
-  isFormActive?: boolean
+  enableChatbotActions?: boolean
 }
 
 export function ChatInput({
@@ -37,6 +37,7 @@ export function ChatInput({
   sendMessage,
   fetchGreetings,
   disabled = false,
+  enableChatbotActions = false,
 }: ChatInputProps) {
   return (
     <Form {...form}>
@@ -61,6 +62,7 @@ export function ChatInput({
                         total={total}
                         isSearching={isLoadingGreetings}
                         isLoadingMore={isLoadingMore}
+                        enableChatbotActions={enableChatbotActions}
                       />
                     </PopoverContent>
                   </Popover>
