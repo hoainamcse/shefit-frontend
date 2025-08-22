@@ -1,5 +1,6 @@
 'use client'
 
+import type { MealPlan } from '@/models/meal-plan'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { addFavouriteMealPlan, getFavouriteMealPlans } from '@/network/client/user-favourites'
@@ -10,7 +11,7 @@ import { getUserSubscriptions } from '@/network/client/users'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 interface ActionButtonsProps {
-  mealPlanId: number
+  mealPlanId: MealPlan['id']
 }
 
 export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
@@ -65,9 +66,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
 
       try {
         const favorites = await getFavouriteMealPlans(session.userId)
-        const inFavorites = favorites.data?.some((favorite) => {
-          return Number(favorite.meal_plan?.id) === Number(mealPlanId)
-        })
+        const inFavorites = favorites.data?.some((ml) => ml.id === mealPlanId)
         setIsInFavorites(inFavorites || false)
       } catch (error) {
         console.error('Error checking meal plan data:', error)
@@ -87,7 +86,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
     }
 
     try {
-      await addFavouriteMealPlan(session.userId, mealPlanId.toString())
+      await addFavouriteMealPlan(session.userId, mealPlanId)
       toast.success('Đã thêm thực đơn vào danh sách yêu thích!')
       setIsInFavorites(true)
     } catch (error) {

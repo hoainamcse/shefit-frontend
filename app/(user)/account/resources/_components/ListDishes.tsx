@@ -18,7 +18,7 @@ import { getDishes, getDish } from '@/network/server/dishes'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import type { Dish } from '@/models/dish'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { getFavouriteDishes, deleteFavouriteDish } from '@/network/client/user-favourites'
+import { getFavouriteDishes, removeFavouriteDish } from '@/network/client/user-favourites'
 import { FavouriteDish } from '@/models/favourite'
 import { Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -56,7 +56,7 @@ export default function ListDishes() {
     if (!session?.userId) return
 
     try {
-      await deleteFavouriteDish(session.userId, dishId.toString())
+      await removeFavouriteDish(session.userId, dishId)
 
       setCombinedDishes((prev) => prev.filter((item) => item.id !== dishId))
 

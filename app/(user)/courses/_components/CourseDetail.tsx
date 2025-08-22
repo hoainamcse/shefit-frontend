@@ -137,10 +137,12 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
     <div>
       <div className="relative block md:hidden">
         <Button
-          onClick={() => router.back()}
-          className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black dark:text-white shadow-none font-medium"
+          className="items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black dark:text-white shadow-none font-medium"
+          asChild
         >
-          <BackIconBlack /> Quay về
+          <Link href={`/courses`}>
+            <BackIconBlack /> Quay về
+          </Link>
         </Button>
         <img
           src={course?.data?.assets.mobile_cover || course?.data?.assets.thumbnail}

@@ -1,5 +1,6 @@
 'use client'
 
+import type { Dish } from '@/models/dish'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { useSession } from '@/hooks/use-session'
@@ -8,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { useState, useEffect } from 'react'
 interface ActionButtonsProps {
-  dishId: string
+  dishId: Dish['id']
 }
 
 export default function ActionButtons({ dishId }: ActionButtonsProps) {

@@ -19,7 +19,7 @@ import { MealPlan } from '@/models/meal-plan'
 import { useEffect, useMemo } from 'react'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { getFavouriteMealPlans, deleteFavouriteMealPlan } from '@/network/client/user-favourites'
+import { getFavouriteMealPlans, removeFavouriteMealPlan } from '@/network/client/user-favourites'
 import { FavouriteMealPlan } from '@/models/favourite'
 import { Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -47,7 +47,7 @@ export default function ListMealPlans() {
     if (!session?.userId) return
 
     try {
-      await deleteFavouriteMealPlan(session.userId, mealPlanId.toString())
+      await removeFavouriteMealPlan(session.userId, mealPlanId)
 
       setCombinedMealPlans((prev) =>
         prev.filter((item) => {

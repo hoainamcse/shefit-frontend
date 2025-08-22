@@ -20,7 +20,7 @@ import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import type { Exercise } from '@/models/exercise'
 import { getYouTubeThumbnail } from '@/lib/youtube'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { getFavouriteExercises, deleteFavouriteExercise } from '@/network/client/user-favourites'
+import { getFavouriteExercises, removeFavouriteExercise } from '@/network/client/user-favourites'
 import { FavouriteExercise } from '@/models/favourite'
 import { Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -69,7 +69,7 @@ export default function ListExercises() {
     if (!session?.userId) return
 
     try {
-      await deleteFavouriteExercise(session.userId, exerciseId.toString())
+      await removeFavouriteExercise(session.userId, exerciseId)
 
       setFavoriteExercises((prev) => prev.filter((item) => item.id !== exerciseId))
       setCombinedExercises((prev) => prev.filter((item) => item.id !== exerciseId))

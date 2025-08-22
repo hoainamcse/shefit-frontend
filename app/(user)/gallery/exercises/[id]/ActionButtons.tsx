@@ -1,5 +1,6 @@
 'use client'
 
+import type { Exercise } from '@/models/exercise'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { useSession } from '@/hooks/use-session'
@@ -8,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { useState, useEffect } from 'react'
 interface ActionButtonsProps {
-  exerciseId: string
+  exerciseId: Exercise['id']
 }
 
 export default function ActionButtons({ exerciseId }: ActionButtonsProps) {
@@ -44,7 +45,7 @@ export default function ActionButtons({ exerciseId }: ActionButtonsProps) {
     checkFavouriteStatus()
   }, [session?.userId, exerciseId])
 
-  const handleSaveExercise = async (exerciseId: string) => {
+  const handleSaveExercise = async (exerciseId: Exercise['id']) => {
     if (!session) {
       setShowLoginDialog(true)
       return
