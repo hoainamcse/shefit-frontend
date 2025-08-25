@@ -35,7 +35,7 @@ export default async function Video({
     return (
       <div className="flex flex-col">
         <Link
-          href={`/courses/${course_id}/video-classes${back ? `?back=${encodeURIComponent(back)}` : ''}`}
+          href={`/courses/${course_id}/detail${back ? `?back=${encodeURIComponent(back)}` : ''}`}
           className="inline-flex items-center gap-2 text-lg font-semibold transition-colors px-4 mt-4 w-36"
         >
           <BackIconBlack className="w-5 h-5" />

@@ -11,13 +11,13 @@ export default async function MealPlanPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ meal_plan_id: string }>
+  params: Promise<{ id: string }>
   searchParams: Promise<{ back?: string }>
 }) {
   const { back = '' } = await searchParams
   try {
-    const { meal_plan_id } = await params
-    const { data: mealPlan } = await getMealPlan(meal_plan_id)
+    const { id: mealPlanID } = await params
+    const { data: mealPlan } = await getMealPlan(mealPlanID)
 
     if (!mealPlan) {
       throw new Error('Không tìm thấy thông tin thực đơn')

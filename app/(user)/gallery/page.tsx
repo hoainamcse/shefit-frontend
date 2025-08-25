@@ -144,7 +144,7 @@ export default function Gallery() {
         <div className="grid grid-cols-3 lg:grid-cols-4 sm:gap-5 gap-4">
           {muscleGroupsData.data.map((muscleGroup) =>
             session && hasActiveSubscription && !isCheckingSubscription ? (
-              <Link href={`/gallery/exercises?muscle_group_id=${muscleGroup.id}`} key={muscleGroup.id}>
+              <Link href={`/exercises?muscle_group_id=${muscleGroup.id}`} key={muscleGroup.id}>
                 <div key={`menu-${muscleGroup.id}`} className="overflow-hidden">
                   <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square">
                     <img
@@ -238,7 +238,7 @@ export default function Gallery() {
         <div className="grid grid-cols-3 lg:grid-cols-4 sm:gap-5 gap-4">
           {dietsData.data?.map((diet) =>
             session && hasActiveSubscription && !isCheckingSubscription ? (
-              <Link href={`/gallery/dishes?diet_id=${diet.id}`} key={diet.id}>
+              <Link href={`/dishes?diet_id=${diet.id}`} key={diet.id}>
                 <div key={`menu-${diet.id}`} className="text-lg overflow-hidden">
                   <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square">
                     <img

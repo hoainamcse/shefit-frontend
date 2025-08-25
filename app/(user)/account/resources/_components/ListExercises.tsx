@@ -229,7 +229,7 @@ export default function ListExercises() {
               href={
                 isSubscriptionExpired
                   ? '#'
-                  : `/gallery/exercises/${exercise.id}?muscle_group_id=${
+                  : `/exercises/${exercise.id}?muscle_group_id=${
                       exercise.muscle_groups?.[0]?.id || ''
                     }&back=%2Faccount%2Fresources`
               }

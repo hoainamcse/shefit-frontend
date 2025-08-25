@@ -193,7 +193,7 @@ export function ListCourses() {
         {courses.map((course) => (
           <div key={course.id} className="group">
             <Link
-              href={isSubscriptionExpired ? '#' : `/courses/${course.id}/${course.course_format}-classes?back=%2Faccount%2Fresources`}
+              href={isSubscriptionExpired ? '#' : `/courses/${course.id}?back=%2Faccount%2Fresources`}
               onClick={
                 isSubscriptionExpired
                   ? (e) => {

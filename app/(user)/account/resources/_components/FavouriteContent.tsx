@@ -274,7 +274,7 @@ export default function FavouriteContent() {
           ) : courses.length > 0 ? (
             courses.map((course) => (
               <div key={course.id} className="group">
-                <Link href={`/courses/${course.id}/${course.course_format}-classes?back=%2Faccount%2Fresources`}>
+                <Link href={`/courses/${course.id}?back=%2Faccount%2Fresources`}>
                   <div>
                     <div className="relative group lg:max-w-[585px]">
                       <div
@@ -389,7 +389,7 @@ export default function FavouriteContent() {
           ) : exercises.length > 0 ? (
             exercises.map((exercise) => (
               <Link
-                href={`/gallery/exercises/${exercise.id}?muscle_group_id=${exercise.muscle_groups?.[0]?.id || ''}&back=%2Faccount%2Fresources`}
+                href={`/exercises/${exercise.id}?muscle_group_id=${exercise.muscle_groups?.[0]?.id || ''}&back=%2Faccount%2Fresources`}
                 key={exercise.id}
               >
                 <div>
@@ -457,7 +457,7 @@ export default function FavouriteContent() {
           ) : dishes.length > 0 ? (
             dishes.map((dish) => (
               <Link
-                href={`/gallery/dishes/${dish.id}?diet_id=${dish.diet?.id || ''}&back=%2Faccount%2Fresources`}
+                href={`/dishes/${dish.id}?diet_id=${dish.diet?.id || ''}&back=%2Faccount%2Fresources`}
                 key={dish.id}
                 onClick={(e) => {
                   if (!dish.diet?.id) {

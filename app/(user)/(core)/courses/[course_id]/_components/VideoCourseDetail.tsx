@@ -231,7 +231,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
           setDialogOpen(`day-${dayId}`)
           return
         }
-        const targetUrl = `/courses/${courseId}/video-classes/${weekId}/${dayId}${back ? `?back=${encodeURIComponent(back)}` : ''}`
+        const targetUrl = `/courses/${courseId}/detail/${weekId}/${dayId}${back ? `?back=${encodeURIComponent(back)}` : ''}`
         console.log('Free course, navigating to:', targetUrl)
         window.location.href = targetUrl
         return
@@ -248,7 +248,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
       console.log('Course access result:', hasAccess)
 
       if (hasAccess) {
-        const targetUrl = `/courses/${courseId}/video-classes/${weekId}/${dayId}${back ? `?back=${encodeURIComponent(back)}` : ''}`
+        const targetUrl = `/courses/${courseId}/detail/${weekId}/${dayId}${back ? `?back=${encodeURIComponent(back)}` : ''}`
         console.log('User has access, navigating to:', targetUrl)
         window.location.href = targetUrl
       } else {
@@ -293,7 +293,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
 
   return (
     <div className="flex flex-col gap-10 lg:mt-10 mt-2">
-      <Accordion type="multiple" className="mt-3">
+      <Accordion type="multiple" defaultValue={courseData.map(c => `week-${c.week}`)} className="mt-3">
         {courseData.map((week, weekIndex) => (
           <AccordionItem key={week.week} value={`week-${week.week}`}>
             <AccordionTrigger className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] text-ring text-2xl cursor-pointer font-semibold lg:font-bold">

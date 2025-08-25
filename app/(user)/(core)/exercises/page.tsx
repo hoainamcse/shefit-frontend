@@ -24,11 +24,11 @@ export default async function MuscleGroupExercises({
   }
 
   return (
-    <div className="flex flex-col gap-10 pt-10 lg:pt-16 xl:pt-[93px] animate-fade-in">
+    <div className="flex flex-col gap-10 p-4 mt-6 md:mt-10 lg:mt-[76px]">
       <div>
         <Link
           href={back || `/gallery`}
-          className="flex cursor-pointer items-center gap-2.5 font-semibold md:mb-7 mb-2"
+          className="flex cursor-pointer items-center gap-2.5 font-semibold lg:hidden md:mb-7 mb-2"
         >
           <div className="w-6 h-6 pt-1 flex justify-center">
             <BackIconBlack />
@@ -78,7 +78,7 @@ export default async function MuscleGroupExercises({
             <TabsContent value="all">
               <div className="grid grid-cols-3 sm:gap-5 gap-4">
                 {muscleGroupExercises.data?.map((exercise) => (
-                  <Link href={`/gallery/exercises/${exercise.id}?muscle_group_id=${muscle_group_id}`} key={exercise.id}>
+                  <Link href={`/exercises/${exercise.id}?muscle_group_id=${muscle_group_id}`} key={exercise.id}>
                     <div key={`menu-${exercise.id}`} className="text-lg overflow-hidden">
                       <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                         <img
@@ -103,7 +103,7 @@ export default async function MuscleGroupExercises({
                   ?.filter((exercise) => exercise.equipments && exercise.equipments.length > 0)
                   .map((exercise) => (
                     <Link
-                      href={`/gallery/exercises/${exercise.id}?muscle_group_id=${muscle_group_id}`}
+                      href={`/exercises/${exercise.id}?muscle_group_id=${muscle_group_id}`}
                       key={exercise.id}
                     >
                       <div key={`menu-${exercise.id}`} className="text-lg overflow-hidden">
@@ -129,7 +129,7 @@ export default async function MuscleGroupExercises({
                   ?.filter((exercise) => exercise.equipments?.some((equipment) => equipment.name === 'Tay Không'))
                   .map((exercise) => (
                     <Link
-                      href={`/gallery/exercises/${exercise.id}?muscle_group_id=${muscle_group_id}`}
+                      href={`/exercises/${exercise.id}?muscle_group_id=${muscle_group_id}`}
                       key={exercise.id}
                     >
                       <div key={`menu-${exercise.id}`} className="text-lg overflow-hidden">

@@ -21,11 +21,11 @@ export default async function DietDishesPage({
   }
 
   return (
-    <div className="flex flex-col gap-10 mt-6 md:mt-10 lg:mt-[76px]">
+    <div className="flex flex-col gap-10 p-4 mt-6 md:mt-10 lg:mt-[76px]">
       <div>
         <Link
           href={back || `/gallery#dishes`}
-          className="flex cursor-pointer items-center gap-2.5 font-semibold md:mb-7 mb-2"
+          className="flex cursor-pointer items-center gap-2.5 font-semibold lg:hidden md:mb-7 mb-2"
         >
           <div className="w-6 h-6 pt-1 flex justify-center">
             <BackIconBlack />
@@ -40,7 +40,7 @@ export default async function DietDishesPage({
         </div>
         <div className="grid grid-cols-3 sm:gap-5 gap-4">
           {dietDishes.data?.map((item, index) => (
-            <Link href={`/gallery/dishes/${item.id}?diet_id=${diet_id}`} key={index}>
+            <Link href={`/dishes/${item.id}?diet_id=${diet_id}`} key={index}>
               <div key={`menu-${index}`} className="overflow-hidden">
                 <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                   <img

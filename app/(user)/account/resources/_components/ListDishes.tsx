@@ -190,7 +190,7 @@ export default function ListDishes() {
               href={
                 isSubscriptionExpired
                   ? '#'
-                  : `/gallery/dishes/${dish.id}?diet_id=${dish.diet?.id || ''}&back=%2Faccount%2Fresources`
+                  : `/dishes/${dish.id}?diet_id=${dish.diet?.id || ''}&back=%2Faccount%2Fresources`
               }
               onClick={
                 isSubscriptionExpired

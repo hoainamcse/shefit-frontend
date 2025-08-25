@@ -16,16 +16,16 @@ export default async function MealPlanDetailPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ meal_plan_id: string }>
+  params: Promise<{ id: string }>
   searchParams: Promise<{ back?: string }>
 }) {
-  const { meal_plan_id } = await params
+  const { id: mealPlanID } = await params
   const { back = '' } = await searchParams
 
   const session = await getSession()
 
   if (!session) {
-    redirect(`/meal-plans/${meal_plan_id}${back ? `?back=${encodeURIComponent(back)}` : ''}`)
+    redirect(`/meal-plans/${mealPlanID}${back ? `?back=${encodeURIComponent(back)}` : ''}`)
   }
 
   try {
@@ -46,15 +46,15 @@ export default async function MealPlanDetailPage({
     })
 
     if (!hasAccess) {
-      redirect(`/meal-plans/${meal_plan_id}${back ? `?back=${encodeURIComponent(back)}` : ''}`)
+      redirect(`/meal-plans/${mealPlanID}${back ? `?back=${encodeURIComponent(back)}` : ''}`)
     }
   } catch (error) {
     console.error('Error checking meal plan access:', error)
-    redirect(`/meal-plans/${meal_plan_id}${back ? `?back=${encodeURIComponent(back)}` : ''}`)
+    redirect(`/meal-plans/${mealPlanID}${back ? `?back=${encodeURIComponent(back)}` : ''}`)
   }
 
-  const { data: mealPlanByDay } = await getMealPlanDays(meal_plan_id)
-  const { data: mealPlan } = await getMealPlan(meal_plan_id)
+  const { data: mealPlanByDay } = await getMealPlanDays(mealPlanID)
+  const { data: mealPlan } = await getMealPlan(mealPlanID)
   console.log(mealPlanByDay)
 
   const sortedMealPlanByDay = Array.isArray(mealPlanByDay)
@@ -65,7 +65,10 @@ export default async function MealPlanDetailPage({
     <div>
       <div className="relative block md:hidden">
         <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto">
-          <Link href={`/meal-plans/${meal_plan_id}${back ? `?back=${encodeURIComponent(back)}` : ''}`} className="flex items-center">
+          <Link
+            href={`/meal-plans/${mealPlanID}${back ? `?back=${encodeURIComponent(back)}` : ''}`}
+            className="flex items-center"
+          >
             <Button className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black shadow-none font-medium">
               <BackIconBlack className="mb-1" /> Quay về
             </Button>
@@ -123,7 +126,7 @@ export default async function MealPlanDetailPage({
             {await Promise.all(
               sortedMealPlanByDay.map(async (day: any) => {
                 const dayId = day.id
-                const { data: dayDishes } = await getMealPlanDishes(meal_plan_id, dayId)
+                const { data: dayDishes } = await getMealPlanDishes(mealPlanID, dayId)
                 const dishesData = sortByKey(dayDishes, 'created_at', { transform: (val) => new Date(val).getTime() })
                 return (
                   <TabsContent key={day.id} value={`${day.day_number}`}>

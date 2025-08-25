@@ -94,9 +94,9 @@ export default function MuscleDetail({
   }
 
   return (
-    <div className="flex flex-col md:pt-10 pt-4 xl:pt-[53px]">
+    <div className="flex flex-col md:pt-10 p-4 xl:pt-[53px]">
       <Link
-        href={back || `/gallery/exercises?muscle_group_id=${muscleGroupId}`}
+        href={back || `/exercises?muscle_group_id=${muscleGroupId}`}
         className="flex cursor-pointer items-center gap-2 font-semibold lg:hidden md:mb-7 mb-3"
       >
         <div className="w-6 h-6 flex items-center justify-center">

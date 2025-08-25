@@ -91,10 +91,10 @@ export default function MealDetail({
   }
   console.log(dish)
   return (
-    <div className="flex flex-col pt-4 md:pt-10 lg:pt-[69px]">
+    <div className="flex flex-col p-4 md:pt-10 lg:pt-[69px]">
       <Link
-        href={back || `/gallery/dishes?diet_id=${dietId}`}
-        className="flex cursor-pointer items-center gap-2.5 font-semibold md:mb-7 mb-2"
+        href={back || `/dishes?diet_id=${dietId}`}
+        className="flex cursor-pointer items-center gap-2.5 font-semibold lg:hidden md:mb-7 mb-2"
       >
         <div className="w-6 h-6 pt-1 flex justify-center">
           <BackIconBlack />

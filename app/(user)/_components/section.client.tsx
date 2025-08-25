@@ -158,7 +158,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                       width: isSelected ? '400px' : '250px',
                                     }}
                                   >
-                                    <Link href={`/courses/${course.id}/${course.course_format}-classes?back=%2F`}>
+                                    <Link href={`/courses/${course.id}?back=%2F`}>
                                       <div className="absolute inset-0 flex flex-col">
                                         <div className="relative w-full h-full">
                                           <img
@@ -185,7 +185,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                           {videoCoursesData?.data?.map((course: any, index: number) => (
                             <CarouselItem key={course.id || index} className="basis-3/4 md:basis-1/3  lg:basis-full">
                               <div className="relative overflow-hidden rounded-lg">
-                                <Link href={`/courses/${course.id}/${course.course_format}-classes?back=%2F`}>
+                                <Link href={`/courses/${course.id}?back=%2F`}>
                                   <div className="relative">
                                     <div className="relative aspect-[273/381]">
                                       <img
@@ -231,7 +231,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                                       width: isSelected ? '400px' : '250px',
                                     }}
                                   >
-                                    <Link href={`/courses/${course.id}/${course.course_format}-classes?back=%2F`}>
+                                    <Link href={`/courses/${course.id}?back=%2F`}>
                                       <div className="absolute inset-0 flex flex-col">
                                         <div className="relative w-full h-full">
                                           <img
@@ -258,7 +258,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                           {zoomCoursesData?.data?.map((course: any, index: number) => (
                             <CarouselItem key={course.id || index} className="basis-3/4 md:basis-1/3  lg:basis-full">
                               <div className="relative overflow-hidden rounded-lg">
-                                <Link href={`/courses/${course.id}/${course.course_format}-classes?back=%2F`}>
+                                <Link href={`/courses/${course.id}?back=%2F`}>
                                   <div className="relative">
                                     <div className="relative aspect-[273/381]">
                                       <img
@@ -421,7 +421,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                           width: isSelected ? '400px' : '250px',
                         }}
                       >
-                        <Link href={`/courses/${course.id}/${course.course_format}-classes?back=%2F`}>
+                        <Link href={`/courses/${course.id}?back=%2F`}>
                           <div className="absolute inset-0 flex flex-col">
                             <div className="relative w-full h-full">
                               <img
@@ -449,7 +449,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
               {feature.courses.map((course: any, index: number) => (
                 <CarouselItem key={course.id || index} className="basis-3/4 md:basis-1/3 lg:basis-full">
                   <div className="relative overflow-hidden rounded-lg">
-                    <Link href={`/courses/${course.id}/${course.course_format}-classes?back=%2F`}>
+                    <Link href={`/courses/${course.id}?back=%2F`}>
                       <div className="relative">
                         <div className="relative aspect-[273/381]">
                           <img

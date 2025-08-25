@@ -12,7 +12,7 @@ import type { Course } from '@/models/course'
 import { getSubscriptions } from '@/network/client/subscriptions'
 import { getUserSubscriptions } from '@/network/client/users'
 import type { Subscription } from '@/models/subscription'
-import PopularCoursesCarousel from './_components/PopularCoursesCarousel'
+import PopularCoursesCarousel from './PopularCoursesCarousel'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useRouter } from 'next/navigation'
@@ -138,8 +138,7 @@ export default function CoursesPage() {
 
   const handleStartCourse = () => {
     if (selectedCourse) {
-      const courseType = activeTab === 'video' ? 'video-classes' : 'live-classes'
-      router.push(`/courses/${selectedCourse.id}/${courseType}`)
+      router.push(`/courses/${selectedCourse.id}`)
       setShowAccessDialog(false)
       setSelectedCourse(null)
     }
@@ -173,9 +172,9 @@ export default function CoursesPage() {
   const filteredAllCourses = [...filteredCourses, ...filteredCoursesZoom]
 
   return (
-    <>
+    <div className='p-4'>
       <PopularCoursesCarousel />
-      <div className="mx-auto px-4 mt-8">
+      <div className="mx-auto mt-8">
         <div className="mx-auto lg:my-12 my-0 flex flex-col gap-4">
           <p className="md:text-center font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl uppercase lg:my-8">
             Tất cả khoá tập
@@ -266,7 +265,7 @@ export default function CoursesPage() {
                             alt={course.course_name}
                             className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                           />
-                          <Link href={`/courses/${course.id}/video-classes`}>
+                          <Link href={`/courses/${course.id}`}>
                             <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
                           </Link>
                           <div className="absolute top-2 right-2 flex justify-end">
@@ -318,7 +317,7 @@ export default function CoursesPage() {
                             alt={course.course_name}
                             className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                           />
-                          <Link href={`/courses/${course.id}/live-classes`}>
+                          <Link href={`/courses/${course.id}`}>
                             <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
                           </Link>
                           <div className="absolute top-2 right-2 flex justify-end">
@@ -370,11 +369,7 @@ export default function CoursesPage() {
                             alt={course.course_name}
                             className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                           />
-                          <Link
-                            href={`/courses/${course.id}/${
-                              course.course_format === 'video' ? 'video' : 'live'
-                            }-classes`}
-                          >
+                          <Link href={`/courses/${course.id}`}>
                             <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
                           </Link>
                           <div className="absolute top-2 right-2 flex justify-end">
@@ -426,11 +421,7 @@ export default function CoursesPage() {
                             alt={course.course_name}
                             className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                           />
-                          <Link
-                            href={`/courses/${course.id}/${
-                              course.course_format === 'video' ? 'video' : 'live'
-                            }-classes`}
-                          >
+                          <Link href={`/courses/${course.id}`}>
                             <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
                           </Link>
                           <div className="absolute top-2 right-2 flex justify-end">
@@ -490,6 +481,6 @@ export default function CoursesPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   )
 }
