@@ -62,7 +62,7 @@ export default function ListSubscriptions() {
           }
           const namesPromises = sortedSubscriptions.map(async (sub) => {
             try {
-              const subResponse = await getSubscription(sub.subscription.id.toString())
+              const subResponse = await getSubscription(sub.subscription.id)
               return { id: sub.subscription.id, name: subResponse.data?.name || `Gói tập ${sub.subscription.id}` }
             } catch (error) {
               console.error('Error fetching subscription:', error)

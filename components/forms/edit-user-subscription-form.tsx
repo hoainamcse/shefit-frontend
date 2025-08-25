@@ -144,7 +144,7 @@ export function EditUserSubscriptionForm({
 
   const isExistingRecord = Boolean(data?.id) && data?.id! > 0
   const selectedSubscriptionId = form.watch('subscription_id')
-  const subs = subscriptions.find((m) => Number(m.id) === selectedSubscriptionId)
+  const subs = subscriptions.find((m) => m.id === selectedSubscriptionId)
   const gifts = subs?.gifts ?? []
 
   return (
@@ -164,7 +164,7 @@ export function EditUserSubscriptionForm({
                   value={field.value ? String(field.value) : ''}
                   onValueChange={(value) => {
                     field.onChange(Number(value))
-                    const courseFormat = subscriptions.find((m) => m.id == value)?.course_format ?? ''
+                    const courseFormat = subscriptions.find((m) => m.id == Number(value))?.course_format ?? ''
                     form.setValue('course_format', courseFormat)
                     form.setValue('subscription_end_at', '')
                     form.setValue('gift_id', undefined)

@@ -50,7 +50,7 @@ const formSchema = z.object({
   is_one_on_one: z.boolean(),
   equipment_ids: z.array(z.string()),
   muscle_group_ids: z.array(z.string()),
-  subscription_ids: z.array(z.string()),
+  subscription_ids: z.array(z.number()),
   description_homepage_1: z.string(),
   workout_method_ids: z.array(z.string()),
   display_order: z.number(),
@@ -116,7 +116,7 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
           form_category_ids: data.relationships?.form_categories.map((mg) => mg.id.toString()) || [],
           workout_method_ids: data.relationships?.workout_methods.map((wm) => wm.id.toString()) || [],
           description_homepage_1: data.description_homepage_1 || '',
-          subscription_ids: data.relationships?.subscriptions.map((s) => s.id.toString()) || [],
+          subscription_ids: data.relationships?.subscriptions.map((s) => s.id) || [],
           display_order: data.display_order || 0,
         }
       : defaultValue,
@@ -306,7 +306,7 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
             setSelectedSubscriptions(row)
             form.setValue(
               'subscription_ids',
-              row.map((r) => r.id.toString()),
+              row.map((r) => r.id),
               { shouldDirty: true }
             )
             form.trigger('subscription_ids')

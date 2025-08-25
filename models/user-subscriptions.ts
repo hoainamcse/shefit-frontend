@@ -1,4 +1,4 @@
-import type { Gift } from '@/models/subscription'
+import type { Gift, Subscription } from '@/models/subscription'
 import { MealPlan } from './meal-plan'
 import { Dish } from './dish'
 import { Exercise } from './exercise'
@@ -26,7 +26,7 @@ type UserSubscriptionDetail = Omit<UserSubscription,
     id: number
     gifts: Gift
     subscription: {
-      id: number
+      id: Subscription['id']
       subscription_start_at: string
       subscription_end_at: string
       courses: { id: number; course_name: string }[]

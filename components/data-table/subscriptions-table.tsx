@@ -91,7 +91,7 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
   }, [])
 
   const handleSaveDisplayOrder = useCallback(
-    async (subscriptionId: string) => {
+    async (subscriptionId: Subscription['id']) => {
       const editState = editingState[subscriptionId]
       if (!editState) return
 
@@ -174,7 +174,7 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
                   size="sm"
                   variant="ghost"
                   className="h-8 w-8 p-0 text-green-600 hover:text-green-700"
-                  onClick={() => handleSaveDisplayOrder(subscription.id.toString())}
+                  onClick={() => handleSaveDisplayOrder(subscription.id)}
                 >
                   <Check className="h-4 w-4" />
                 </Button>

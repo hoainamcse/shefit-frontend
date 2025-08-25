@@ -43,7 +43,7 @@ export default function PurchasedPackage() {
               response.data.map(async (sub) => {
                 try {
                   if (sub.subscription.id) {
-                    const detailsResponse = await getSubscription(sub.subscription.id.toString())
+                    const detailsResponse = await getSubscription(sub.subscription.id)
                     const isValid = sub.subscription_end_at ? isSubscriptionValid(sub.subscription_end_at) : false
 
                     if (detailsResponse.data) {

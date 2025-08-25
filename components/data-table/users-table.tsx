@@ -463,7 +463,7 @@ function ExportDialog({ data, onSuccess }: { data?: User[]; onSuccess?: () => vo
 
           if (userSubscriptionsResponse?.data && userSubscriptionsResponse.data.length > 0) {
             for (const sub of userSubscriptionsResponse.data) {
-              const subscriptionDetail = await getSubscription(sub.subscription.id.toString())
+              const subscriptionDetail = await getSubscription(sub.subscription.id)
               const subName = subscriptionDetail.data.name
               const startDate = sub.subscription_start_at ? formatDateString(sub.subscription_start_at) : ''
               const endDate = sub.subscription_end_at ? formatDateString(sub.subscription_end_at) : ''

@@ -82,3 +82,61 @@
 .ql-toolbar.ql-snow + .ql-container.ql-snow {
   border-top: 1px solid #ccc !important;
 }
+
+/* HTML Content Styles */
+
+/* Table styles */
+.html-content table {
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  border-collapse: collapse;
+  table-layout: fixed;
+  overflow-x: auto;
+  display: block;
+}
+
+.html-content table thead {
+  background-color: #f9fafb;
+}
+
+.html-content table th {
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+}
+
+.html-content table td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+.html-content table tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.html-content table tr:hover {
+  background-color: #f3f4f6;
+}
+
+/* Make tables responsive */
+@media (max-width: 640px) {
+  .html-content table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+/* Style nested tables */
+.html-content table table {
+  margin: 0;
+  width: 100%;
+}
+
+/* Ensure tables don't break layout on smaller screens */
+.html-content {
+  overflow-x: auto;
+}

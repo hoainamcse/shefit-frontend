@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { Button } from '@/components/ui/button'
@@ -15,17 +15,15 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { getExercises, getExerciseById } from '@/network/server/exercises'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
-import type { Exercise } from '@/models/exercise'
 import { getYouTubeThumbnail } from '@/lib/youtube'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { getFavouriteExercises, removeFavouriteExercise } from '@/network/client/user-favourites'
-import { FavouriteExercise } from '@/models/favourite'
+import { getUserSubscriptionExercises, removeUserSubscriptionExercise } from '@/network/client/user-subscriptions'
 import { Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
 import { toast } from 'sonner'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 const ReactPlayer = dynamic(() => import('react-player/lazy'), {
   ssr: false,
@@ -38,16 +36,13 @@ const ReactPlayer = dynamic(() => import('react-player/lazy'), {
 
 export default function ListExercises() {
   const { session } = useSession()
-  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [renewDialogOpen, setRenewDialogOpen] = useState(false)
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null)
-  const [exercises, setExercises] = useState<Exercise[]>([])
-  const [favoriteExercises, setFavoriteExercises] = useState<FavouriteExercise[]>([])
-  const [combinedExercises, setCombinedExercises] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const isSubscriptionExpired = useMemo(() => {
     if (!selectedSubscription?.subscription_end_at) return true
@@ -65,124 +60,61 @@ export default function ListExercises() {
     redirectToAccount('packages')
   }
 
-  const handleDeleteFavouriteExercise = async (exerciseId: number, exerciseTitle: string) => {
-    if (!session?.userId) return
+  // Fetch subscription exercises with infinite query
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useInfiniteQuery({
+    queryKey: ['subscriptionExercises', session?.userId, selectedSubscription?.subscription.id],
+    queryFn: async ({ pageParam = 0 }) =>
+      getUserSubscriptionExercises(session!.userId, selectedSubscription!.subscription.id, {
+        page: pageParam,
+        per_page: 6,
+      }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, pages, lastPageParam) => {
+      if ((lastPage.paging.page + 1) * lastPage.paging.per_page >= lastPage.paging.total) {
+        return undefined
+      }
+      return lastPageParam + 1
+    },
+    enabled: !!session?.userId && !!selectedSubscription?.subscription?.id,
+  })
 
-    try {
-      await removeFavouriteExercise(session.userId, exerciseId)
+  const isLoading = status === 'pending'
 
-      setFavoriteExercises((prev) => prev.filter((item) => item.id !== exerciseId))
-      setCombinedExercises((prev) => prev.filter((item) => item.id !== exerciseId))
+  // Delete exercise mutation
+  const { mutate: handleDeleteFavouriteExercise } = useMutation({
+    mutationFn: async ({ exerciseId, exerciseTitle }: { exerciseId: number; exerciseTitle: string }) => {
+      if (!session?.userId) throw new Error('User not authenticated')
+      return await removeUserSubscriptionExercise(session.userId, selectedSubscription?.subscription.id!, exerciseId)
+    },
+    onSuccess: (_, { exerciseId, exerciseTitle }) => {
+      queryClient.setQueryData(
+        ['subscriptionExercises', session?.userId, selectedSubscription?.subscription.id],
+        (oldData: any) => {
+          if (!oldData) return oldData
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page: any) => ({
+              ...page,
+              data: page.data.filter((exercise: any) => exercise.id !== exerciseId),
+            })),
+          }
+        }
+      )
 
       toast.success(`Đã xóa ${exerciseTitle} khỏi danh sách`)
-    } catch (error) {
-      console.error('Error deleting favourite exercise:', error)
+    },
+    onError: (error) => {
+      console.error('Error deleting exercise:', error)
       toast.error('Có lỗi xảy ra khi xóa động tác')
-    }
-  }
+    },
+  })
 
-  useEffect(() => {
-    if (!selectedSubscription?.exercises?.length) {
-      setExercises([])
-    } else {
-      const fetchExercises = async () => {
-        try {
-          setIsLoading(true)
-          const subscriptionExerciseIds = selectedSubscription.exercises.map((ex: any) =>
-            typeof ex === 'object' ? ex.id : ex
-          )
-
-          const exercisePromises = subscriptionExerciseIds.map(async (exerciseId: number | string) => {
-            const response = await getExerciseById(exerciseId.toString())
-            return response?.status === 'success' ? response.data : null
-          })
-
-          const exerciseDetails = await Promise.all(exercisePromises)
-          const filteredExercises = exerciseDetails.filter(Boolean) as Exercise[]
-          setExercises(filteredExercises)
-        } catch (error) {
-          console.error('Error fetching exercises:', error)
-        } finally {
-          setIsLoading(false)
-        }
-      }
-
-      fetchExercises()
-    }
-  }, [selectedSubscription?.exercises])
-
-  useEffect(() => {
-    const fetchFavoriteExercises = async () => {
-      if (!session?.userId) {
-        return
-      }
-
-      try {
-        const response = await getFavouriteExercises(session.userId)
-
-        if (!response.data || response.data.length === 0) {
-          setFavoriteExercises([])
-          return
-        }
-
-        const favoriteExercises = response.data
-          .map((fav: any) => ({
-            id: fav.exercise?.id || fav.exercise_id,
-            exercise_id: fav.exercise_id || fav.exercise?.id,
-          }))
-          .filter((fav: any) => fav.exercise_id)
-
-        const exercisePromises = favoriteExercises.map(async (fav: any) => {
-          try {
-            const exerciseId = typeof fav.exercise_id === 'string' ? parseInt(fav.exercise_id, 10) : fav.exercise_id
-
-            const response = await getExerciseById(exerciseId.toString())
-            if (response && response.status === 'success' && response.data) {
-              return {
-                id: exerciseId,
-                name: response.data.name,
-                youtube_url: response.data.youtube_url,
-                user_id: session.userId,
-                exercise: response.data,
-                muscle_groups: response.data.muscle_groups,
-              }
-            }
-            return null
-          } catch (error) {
-            console.error(`Error fetching exercise ${fav.exercise_id}:`, error)
-            return null
-          }
-        })
-
-        const exercises = (await Promise.all(exercisePromises)).filter(Boolean)
-        setFavoriteExercises(exercises as FavouriteExercise[])
-      } catch (error) {
-        console.error('Error in fetchFavoriteExercises:', error)
-      }
-    }
-
-    fetchFavoriteExercises()
-  }, [session?.userId])
-
-  useEffect(() => {
-    setIsLoading(true)
-
-    const exercisesMap = new Map()
-
-    exercises.forEach((exercise) => {
-      exercisesMap.set(exercise.id, exercise)
-    })
-
-    favoriteExercises.forEach((exercise) => {
-      if (!exercisesMap.has(exercise.id)) {
-        exercisesMap.set(exercise.id, exercise)
-      }
-    })
-
-    const combined = Array.from(exercisesMap.values())
-    setCombinedExercises(combined)
-    setIsLoading(false)
-  }, [exercises, favoriteExercises])
+  // Combine all exercises from all pages
+  const combinedExercises = useMemo(() => {
+    if (!data?.pages) return []
+    return data.pages.flatMap((page) => page.data).filter(Boolean)
+  }, [data?.pages])
 
   if (!session) {
     return (
@@ -226,9 +158,9 @@ export default function ListExercises() {
     )
   }
 
-  if (combinedExercises.length === 0) {
+  if (combinedExercises.length === 0 && !isLoading) {
     return (
-      <Link href="/gallery">
+      <Link href="/gallery#exercises">
         <Button className="bg-[#13D8A7] text-white lg:text-lg text-sm w-full rounded-full h-14">Thêm động tác</Button>
       </Link>
     )
@@ -298,7 +230,7 @@ export default function ListExercises() {
                 isSubscriptionExpired
                   ? '#'
                   : `/gallery/exercises/${exercise.id}?muscle_group_id=${
-                      exercise.muscle_groups?.[0]?.id || exercise.muscle?.id || ''
+                      exercise.muscle_groups?.[0]?.id || ''
                     }&back=%2Faccount%2Fresources`
               }
               onClick={
@@ -322,7 +254,7 @@ export default function ListExercises() {
                       onClick={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
-                        handleDeleteFavouriteExercise(exercise.id, exercise.name)
+                        handleDeleteFavouriteExercise({ exerciseId: exercise.id, exerciseTitle: exercise.name })
                       }}
                       className="lg:block hidden"
                     >
@@ -332,7 +264,7 @@ export default function ListExercises() {
                       onClick={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
-                        handleDeleteFavouriteExercise(exercise.id, exercise.name)
+                        handleDeleteFavouriteExercise({ exerciseId: exercise.id, exerciseTitle: exercise.name })
                       }}
                       className="lg:hidden block"
                     >
@@ -346,7 +278,7 @@ export default function ListExercises() {
                     alt={exercise.name}
                     className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                   />
-                  {selectedSubscription?.status !== 'expired' && (
+                  {!isSubscriptionExpired && (
                     <button
                       className="absolute inset-0 m-auto w-16 h-16 flex items-center justify-center"
                       onClick={(e) => {
@@ -364,9 +296,25 @@ export default function ListExercises() {
           </div>
         ))}
       </div>
-      <div className="mt-6">
-        <Link href="/gallery">
-          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg lg:mt-12 mt-6">
+      <div className="mt-6 flex flex-col gap-4">
+        {hasNextPage && (
+          <Button
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+            className="bg-white text-[#13D8A7] border border-[#13D8A7] hover:bg-[#f0fffc] w-full rounded-full h-14 text-sm lg:text-lg"
+          >
+            {isFetchingNextPage ? (
+              <div className="flex items-center gap-2">
+                <div className="animate-spin h-5 w-5 border-t-2 border-b-2 border-[#13D8A7] rounded-full"></div>
+                Đang tải...
+              </div>
+            ) : (
+              'Tải thêm động tác'
+            )}
+          </Button>
+        )}
+        <Link href="/gallery#exercises">
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg lg:mt-2 mt-2">
             Thêm động tác
           </Button>
         </Link>

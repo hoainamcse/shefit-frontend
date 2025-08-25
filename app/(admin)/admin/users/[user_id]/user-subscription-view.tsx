@@ -94,8 +94,8 @@ export function UserSubscriptionView({ userID, userRole }: { userID: User['id'];
                     </div>
                     <div>
                       <CardTitle className="text-xl font-bold">
-                        {subscriptionsData?.data?.find((s) => Number(s.id) === userSubscription.subscription.id)
-                          ?.name || 'No name available'}
+                        {subscriptionsData?.data?.find((s) => s.id === userSubscription.subscription.id)?.name ||
+                          'No name available'}
                       </CardTitle>
                       <CardDescription>{getCourseFormatLabel(userSubscription.course_format)}</CardDescription>
                     </div>

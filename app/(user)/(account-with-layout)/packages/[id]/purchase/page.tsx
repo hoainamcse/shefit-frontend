@@ -11,8 +11,9 @@ import ShefitLogo from '@/public/logo-vertical-dark.png'
 import { formatDuration } from '@/lib/helpers'
 import { getSubscription } from '@/network/client/subscriptions'
 import { HtmlContent } from '@/components/html-content'
+import { Subscription } from '@/models/subscription'
 
-export default function PackageDetail({ params }: { params: Promise<{ id: string }> }) {
+export default function PackageDetail({ params }: { params: Promise<{ id: Subscription['id'] }> }) {
   const [selectedGiftId, setSelectedGiftId] = useState<number | null>(null)
   const [subscription, setSubscription] = useState<any>(null)
 

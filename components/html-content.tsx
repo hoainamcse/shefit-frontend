@@ -13,9 +13,9 @@ interface HtmlContentProps extends React.HTMLAttributes<HTMLDivElement> {
  */
 const HtmlContent = ({ content, className, ...props }: HtmlContentProps) => {
   return (
-    <div 
-      className={cn('prose max-w-none', className)} 
-      dangerouslySetInnerHTML={{ __html: content }} 
+    <div
+      className={cn('prose max-w-none html-content', className)}
+      dangerouslySetInnerHTML={{ __html: content }}
       {...props}
     />
   )

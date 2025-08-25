@@ -85,6 +85,7 @@ function FormRichTextField<
           import('quill').then((QuillModule) => {
             if (!isMounted) return
             const Quill = QuillModule.default
+
             if (quillRef.current && !editorRef.current) {
               editorRef.current = new Quill(quillRef.current, {
                 theme: 'snow',
@@ -100,11 +101,33 @@ function FormRichTextField<
                       [{ indent: '-1' }, { indent: '+1' }],
                       ['blockquote', 'code-block'],
                       ['link', 'image', 'video'],
+                      ['table'],
                       ['clean'],
                     ],
                     handlers: {
                       image: imageHandler,
                       video: videoHandler,
+                      table: function () {
+                        const quill = (this as any).quill
+                        if (quill) {
+                          const tableRows = parseInt(prompt('Số lượng hàng', '3') || '3', 10)
+                          const tableCols = parseInt(prompt('Số lượng cột', '3') || '3', 10)
+                          const table = []
+                          for (let r = 0; r < tableRows; r++) {
+                            const row = []
+                            for (let c = 0; c < tableCols; c++) {
+                              row.push('')
+                            }
+                            table.push(row)
+                          }
+                          const range = quill.getSelection(true)
+                          quill.insertText(range.index, '\n')
+                          const tableHTML = `<table><tbody>${table
+                            .map((row) => `<tr>${row.map(() => '<td><p><br></p></td>').join('')}</tr>`)
+                            .join('')}</tbody></table>`
+                          quill.clipboard.dangerouslyPasteHTML(range.index, tableHTML)
+                        }
+                      },
                     },
                   },
                 },

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useSubscription } from './SubscriptionContext'
@@ -14,16 +14,15 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { getMealPlans, getMealPlan } from '@/network/server/meal-plans'
 import { MealPlan } from '@/models/meal-plan'
-import { useEffect, useMemo } from 'react'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { getFavouriteMealPlans, removeFavouriteMealPlan } from '@/network/client/user-favourites'
-import { FavouriteMealPlan } from '@/models/favourite'
+import { getUserSubscriptionMealPlans, removeUserSubscriptionMealPlan } from '@/network/client/user-subscriptions'
 import { Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
 
 export default function ListMealPlans() {
   const { session } = useSession()
@@ -31,11 +30,8 @@ export default function ListMealPlans() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [renewDialogOpen, setRenewDialogOpen] = useState(false)
   const { redirectToLogin, redirectToAccount } = useAuthRedirect()
-  const [filteredMealPlans, setFilteredMealPlans] = useState<MealPlan[]>([])
-  const [favoriteMealPlans, setFavoriteMealPlans] = useState<FavouriteMealPlan[]>([])
-  const [combinedMealPlans, setCombinedMealPlans] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const isSubscriptionExpired = useMemo(() => {
     if (!selectedSubscription?.subscription_end_at) return true
@@ -43,146 +39,6 @@ export default function ListMealPlans() {
     return new Date() > endDate
   }, [selectedSubscription])
 
-  const handleDeleteFavouriteMealPlan = async (mealPlanId: number, mealPlanTitle: string) => {
-    if (!session?.userId) return
-
-    try {
-      await removeFavouriteMealPlan(session.userId, mealPlanId)
-
-      setCombinedMealPlans((prev) =>
-        prev.filter((item) => {
-          const itemId = getMealPlanId(item)
-          return itemId !== mealPlanId
-        })
-      )
-
-      setFavoriteMealPlans((prev) => prev.filter((item) => item.meal_plan.id !== mealPlanId))
-
-      toast.success(`Đã xóa ${mealPlanTitle} khỏi danh sách`)
-    } catch (error) {
-      console.error('Error deleting favourite meal plan:', error)
-      toast.error('Có lỗi xảy ra khi xóa meal plan')
-    }
-  }
-
-  useEffect(() => {
-    const fetchAndFilterMealPlans = async () => {
-      if (!selectedSubscription?.meal_plans?.length) {
-        setFilteredMealPlans([])
-      } else {
-        try {
-          setIsLoading(true)
-          const response = await getMealPlans()
-
-          if (response?.data) {
-            const subscriptionMealPlanIds = selectedSubscription.meal_plans.map((mp: any) =>
-              typeof mp === 'object' ? mp.id : mp
-            )
-
-            const filtered = response.data.filter((mealPlan: MealPlan) => subscriptionMealPlanIds.includes(mealPlan.id))
-
-            setFilteredMealPlans(filtered)
-          }
-        } catch (error) {
-          console.error('Error fetching meal plans:', error)
-        }
-      }
-    }
-
-    fetchAndFilterMealPlans()
-  }, [selectedSubscription?.meal_plans])
-
-  useEffect(() => {
-    const fetchFavoriteMealPlans = async () => {
-      if (!session?.userId) {
-        return
-      }
-
-      try {
-        const response = await getFavouriteMealPlans(session.userId)
-
-        if (!response.data || response.data.length === 0) {
-          setFavoriteMealPlans([])
-          return
-        }
-
-        const favoriteMealPlans = response.data
-          .map((fav: any) => ({
-            id: fav.meal_plan?.id || fav.meal_plan_id,
-            meal_plan_id: fav.meal_plan_id || fav.meal_plan?.id,
-          }))
-          .filter((fav: any) => fav.meal_plan_id)
-
-        const mealPlanPromises = favoriteMealPlans.map(async (fav: any) => {
-          try {
-            const mealPlanId = typeof fav.meal_plan_id === 'string' ? parseInt(fav.meal_plan_id, 10) : fav.meal_plan_id
-
-            const response = await getMealPlan(mealPlanId.toString())
-            if (response && response.status === 'success' && response.data) {
-              return {
-                user_id: session.userId,
-                meal_plan: response.data,
-                title: response.data.title,
-                subtitle: response.data.subtitle,
-                chef_name: response.data.chef_name,
-                assets: response.data.assets,
-                number_of_days: response.data.number_of_days,
-              }
-            }
-            return null
-          } catch (error) {
-            console.error(`Error fetching meal plan ${fav.meal_plan_id}:`, error)
-            return null
-          }
-        })
-
-        const mealPlans = (await Promise.all(mealPlanPromises)).filter(Boolean)
-        setFavoriteMealPlans(mealPlans as FavouriteMealPlan[])
-      } catch (error) {
-        console.error('Error in fetchFavoriteMealPlans:', error)
-      }
-    }
-
-    fetchFavoriteMealPlans()
-  }, [session?.userId])
-
-  const isFavouriteMealPlan = (obj: any): obj is FavouriteMealPlan => {
-    return obj && 'meal_plan' in obj && obj.meal_plan !== null && typeof obj.meal_plan === 'object'
-  }
-
-  const isMealPlan = (obj: any): obj is MealPlan => {
-    return obj && 'id' in obj && !('meal_plan' in obj)
-  }
-
-  const getMealPlanId = (mealPlan: FavouriteMealPlan | MealPlan): number | undefined => {
-    if (isFavouriteMealPlan(mealPlan)) {
-      return mealPlan.meal_plan?.id
-    } else if (isMealPlan(mealPlan)) {
-      return mealPlan.id
-    }
-    return undefined
-  }
-
-  useEffect(() => {
-    setIsLoading(true)
-
-    const mealPlansMap = new Map()
-
-    filteredMealPlans.forEach((mealPlan) => {
-      mealPlansMap.set(mealPlan.id, mealPlan)
-    })
-
-    favoriteMealPlans.forEach((mealPlan) => {
-      const mealPlanId = getMealPlanId(mealPlan)
-      if (mealPlanId !== undefined && !mealPlansMap.has(mealPlanId)) {
-        mealPlansMap.set(mealPlanId, mealPlan)
-      }
-    })
-
-    const combined = Array.from(mealPlansMap.values())
-    setCombinedMealPlans(combined)
-    setIsLoading(false)
-  }, [filteredMealPlans, favoriteMealPlans])
   const handleLoginClick = () => {
     setDialogOpen(false)
     redirectToLogin()
@@ -192,6 +48,62 @@ export default function ListMealPlans() {
     setDialogOpen(false)
     redirectToAccount('packages')
   }
+
+  // Fetch subscription meal plans with infinite query
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useInfiniteQuery({
+    queryKey: ['subscriptionMealPlans', session?.userId, selectedSubscription?.subscription.id],
+    queryFn: async ({ pageParam = 0 }) =>
+      getUserSubscriptionMealPlans(session!.userId, selectedSubscription!.subscription.id, {
+        page: pageParam,
+        per_page: 6,
+      }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, pages, lastPageParam) => {
+      if ((lastPage.paging.page + 1) * lastPage.paging.per_page >= lastPage.paging.total) {
+        return undefined
+      }
+      return lastPageParam + 1
+    },
+    enabled: !!session?.userId && !!selectedSubscription?.subscription?.id,
+  })
+
+  const isLoading = status === 'pending'
+
+  // Delete meal plan mutation
+  const { mutate: handleDeleteMealPlan } = useMutation({
+    mutationFn: async ({ mealPlanId, mealPlanTitle }: { mealPlanId: number; mealPlanTitle: string }) => {
+      if (!session?.userId) throw new Error('User not authenticated')
+      return await removeUserSubscriptionMealPlan(session.userId, selectedSubscription?.subscription.id!, mealPlanId)
+    },
+    onSuccess: (_, { mealPlanId, mealPlanTitle }) => {
+      queryClient.setQueryData(
+        ['subscriptionMealPlans', session?.userId, selectedSubscription?.subscription.id],
+        (oldData: any) => {
+          if (!oldData) return oldData
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page: any) => ({
+              ...page,
+              data: page.data.filter((mealPlan: any) => mealPlan.id !== mealPlanId),
+            })),
+          }
+        }
+      )
+
+      toast.success(`Đã xóa ${mealPlanTitle} khỏi danh sách`)
+    },
+    onError: (error) => {
+      console.error('Error deleting meal plan:', error)
+      toast.error('Có lỗi xảy ra khi xóa thực đơn')
+    },
+  })
+
+  // Combine all meal plans from all pages
+  const combinedMealPlans = useMemo(() => {
+    if (!data?.pages) return []
+    return data.pages.flatMap((page) => page.data).filter(Boolean)
+  }, [data?.pages])
   if (!session) {
     return (
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -234,7 +146,7 @@ export default function ListMealPlans() {
     )
   }
 
-  if (combinedMealPlans.length === 0) {
+  if (combinedMealPlans.length === 0 && !isLoading) {
     return (
       <Link href="/meal-plans">
         <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg">Thêm thực đơn</Button>
@@ -271,61 +183,87 @@ export default function ListMealPlans() {
       </Dialog>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
-        {combinedMealPlans.map((mealPlan) => {
-          const mealPlanId = getMealPlanId(mealPlan as FavouriteMealPlan | MealPlan)
-
-          return mealPlanId ? (
-            <div key={mealPlanId} className="group">
-              <Link
-                href={isSubscriptionExpired ? '#' : `/meal-plans/${mealPlanId}?back=%2Faccount%2Fresources`}
-                onClick={
-                  isSubscriptionExpired
-                    ? (e) => {
-                        e.preventDefault()
-                        setRenewDialogOpen(true)
-                      }
-                    : undefined
-                }
-              >
-                <div>
-                  <div className="relative group lg:max-w-[585px]">
-                    {isSubscriptionExpired && (
-                      <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50 rounded-xl">
-                        <Lock className="text-white w-12 h-12" />
-                      </div>
-                    )}
+        {combinedMealPlans.map((mealPlan) => (
+          <div key={mealPlan.id} className="group">
+            <Link
+              href={isSubscriptionExpired ? '#' : `/meal-plans/${mealPlan.id}?back=%2Faccount%2Fresources`}
+              onClick={
+                isSubscriptionExpired
+                  ? (e) => {
+                      e.preventDefault()
+                      setRenewDialogOpen(true)
+                    }
+                  : undefined
+              }
+            >
+              <div>
+                <div className="relative group lg:max-w-[585px]">
+                  {isSubscriptionExpired && (
+                    <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50 rounded-xl">
+                      <Lock className="text-white w-12 h-12" />
+                    </div>
+                  )}
+                  <div className="absolute lg:top-4 lg:right-4 z-10 top-2 right-2">
                     <div
-                      className="absolute top-4 right-4 z-10 cursor-pointer"
                       onClick={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
-                        handleDeleteFavouriteMealPlan(mealPlanId, mealPlan.title)
+                        handleDeleteMealPlan({ mealPlanId: mealPlan.id, mealPlanTitle: mealPlan.title })
                       }}
+                      className="lg:block hidden cursor-pointer"
                     >
                       <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                     </div>
-                    <img
-                      src={mealPlan.assets.thumbnail}
-                      alt={mealPlan.title}
-                      className="aspect-[5/3] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                    />
+                    <div
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        handleDeleteMealPlan({ mealPlanId: mealPlan.id, mealPlanTitle: mealPlan.title })
+                      }}
+                      className="lg:hidden block cursor-pointer"
+                    >
+                      <DeleteIconMini className="text-white hover:text-red-500 transition-colors duration-300" />
+                    </div>
                   </div>
-                  <p className="font-medium text-sm lg:text-base">{mealPlan.title}</p>
-                  <p className="text-[#737373] text-sm lg:text-base">{mealPlan.subtitle}</p>
-                  <p className="text-[#737373] text-sm lg:text-base">
-                    Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
-                  </p>
+                  <img
+                    src={mealPlan.assets.thumbnail}
+                    alt={mealPlan.title}
+                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
+                  />
                 </div>
-              </Link>
-            </div>
-          ) : null
-        })}
+                <p className="font-medium text-sm lg:text-base">{mealPlan.title}</p>
+                <p className="text-[#737373] text-sm lg:text-base">{mealPlan.subtitle}</p>
+                <p className="text-[#737373] text-sm lg:text-base">
+                  Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
+                </p>
+              </div>
+            </Link>
+          </div>
+        ))}
       </div>
-      <Link href="/meal-plans" className="mt-6">
-        <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg mt-6 lg:mt-12">
-          Thêm thực đơn
-        </Button>
-      </Link>
+      <div className="mt-6 flex flex-col gap-4">
+        {hasNextPage && (
+          <Button
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+            className="bg-white text-[#13D8A7] border border-[#13D8A7] hover:bg-[#f0fffc] w-full rounded-full h-14 text-sm lg:text-lg"
+          >
+            {isFetchingNextPage ? (
+              <div className="flex items-center gap-2">
+                <div className="animate-spin h-5 w-5 border-t-2 border-b-2 border-[#13D8A7] rounded-full"></div>
+                Đang tải...
+              </div>
+            ) : (
+              'Tải thêm thực đơn'
+            )}
+          </Button>
+        )}
+        <Link href="/meal-plans">
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg lg:mt-2 mt-2">
+            Thêm thực đơn
+          </Button>
+        </Link>
+      </div>
     </div>
   )
 }

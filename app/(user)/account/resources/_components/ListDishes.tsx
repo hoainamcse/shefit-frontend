@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useSubscription } from './SubscriptionContext'
@@ -14,12 +14,11 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { getDishes, getDish } from '@/network/server/dishes'
+
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
-import type { Dish } from '@/models/dish'
+import { getUserSubscriptionDishes, removeUserSubscriptionDish } from '@/network/client/user-subscriptions'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { getFavouriteDishes, removeFavouriteDish } from '@/network/client/user-favourites'
-import { FavouriteDish } from '@/models/favourite'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
@@ -31,11 +30,9 @@ export default function ListDishes() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [renewDialogOpen, setRenewDialogOpen] = useState(false)
   const { redirectToLogin, redirectToAccount } = useAuthRedirect()
-  const [filteredDishes, setFilteredDishes] = useState<Dish[]>([])
-  const [favoriteDishes, setFavoriteDishes] = useState<FavouriteDish[]>([])
-  const [combinedDishes, setCombinedDishes] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
+  const queryClient = useQueryClient()
+
   const isSubscriptionExpired = useMemo(() => {
     if (!selectedSubscription?.subscription_end_at) return true
     const endDate = new Date(selectedSubscription.subscription_end_at)
@@ -52,119 +49,61 @@ export default function ListDishes() {
     redirectToAccount('packages')
   }
 
-  const handleDeleteFavouriteDish = async (dishId: number, dishTitle: string) => {
-    if (!session?.userId) return
+  // Fetch subscription dishes with infinite query
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useInfiniteQuery({
+    queryKey: ['subscriptionDishes', session?.userId, selectedSubscription?.subscription.id],
+    queryFn: async ({ pageParam = 0 }) =>
+      getUserSubscriptionDishes(session!.userId, selectedSubscription!.subscription.id, {
+        page: pageParam,
+        per_page: 6,
+      }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, pages, lastPageParam) => {
+      if ((lastPage.paging.page + 1) * lastPage.paging.per_page >= lastPage.paging.total) {
+        return undefined
+      }
+      return lastPageParam + 1
+    },
+    enabled: !!session?.userId && !!selectedSubscription?.subscription?.id,
+  })
 
-    try {
-      await removeFavouriteDish(session.userId, dishId)
+  const isLoading = status === 'pending'
 
-      setCombinedDishes((prev) => prev.filter((item) => item.id !== dishId))
+  // Delete dish mutation
+  const { mutate: handleDeleteFavouriteDish } = useMutation({
+    mutationFn: async ({ dishId, dishTitle }: { dishId: number; dishTitle: string }) => {
+      if (!session?.userId) throw new Error('User not authenticated')
+      return await removeUserSubscriptionDish(session.userId, selectedSubscription?.subscription.id!, dishId)
+    },
+    onSuccess: (_, { dishId, dishTitle }) => {
+      queryClient.setQueryData(
+        ['subscriptionDishes', session?.userId, selectedSubscription?.subscription.id],
+        (oldData: any) => {
+          if (!oldData) return oldData
 
-      setFavoriteDishes((prev) => prev.filter((item) => item.dish.id !== dishId))
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page: any) => ({
+              ...page,
+              data: page.data.filter((dish: any) => dish.id !== dishId),
+            })),
+          }
+        }
+      )
 
       toast.success(`Đã xóa ${dishTitle} khỏi danh sách`)
-    } catch (error) {
-      console.error('Error deleting favourite dish:', error)
+    },
+    onError: (error) => {
+      console.error('Error deleting dish:', error)
       toast.error('Có lỗi xảy ra khi xóa món ăn')
-    }
-  }
+    },
+  })
 
-  useEffect(() => {
-    const fetchAndFilterDishes = async () => {
-      if (!selectedSubscription?.dishes?.length) {
-        setFilteredDishes([])
-      } else {
-        try {
-          setIsLoading(true)
-          const response = await getDishes()
-
-          if (response?.data) {
-            const subscriptionDishIds = selectedSubscription.dishes.map((mp: any) =>
-              typeof mp === 'object' ? mp.id : mp
-            )
-
-            const filtered = response.data.filter((dish: any) => subscriptionDishIds.includes(dish.id))
-            setFilteredDishes(filtered)
-          }
-        } catch (error) {
-          console.error('Error fetching dishes:', error)
-        }
-      }
-    }
-
-    fetchAndFilterDishes()
-  }, [selectedSubscription?.dishes])
-
-  useEffect(() => {
-    const fetchFavouriteDishes = async () => {
-      if (!session?.userId) {
-        return
-      }
-
-      try {
-        const response = await getFavouriteDishes(session.userId)
-
-        if (!response.data || response.data.length === 0) {
-          setFavoriteDishes([])
-          return
-        }
-
-        const favoriteDishes = response.data
-          .map((fav: any) => ({
-            id: fav.dish?.id || fav.dish_id,
-            dish_id: fav.dish_id || fav.dish?.id,
-          }))
-          .filter((fav: any) => fav.dish_id)
-
-        const dishPromises = favoriteDishes.map(async (fav: any) => {
-          try {
-            const dishId = typeof fav.dish_id === 'string' ? parseInt(fav.dish_id, 10) : fav.dish_id
-
-            const response = await getDish(dishId.toString())
-            if (response && response.status === 'success' && response.data) {
-              return {
-                id: dishId,
-                user_id: session.userId,
-                dish: response.data,
-                name: response.data.name,
-                title: response.data.name,
-                image: response.data.image,
-                diet: response.data.diet,
-              }
-            }
-            return null
-          } catch (error) {
-            console.error(`Error fetching dish ${fav.dish_id}:`, error)
-            return null
-          }
-        })
-
-        const dishes = (await Promise.all(dishPromises)).filter(Boolean)
-        setFavoriteDishes(dishes as FavouriteDish[])
-      } catch (error) {
-        console.error('Error in fetchFavouriteDishes:', error)
-      }
-    }
-
-    fetchFavouriteDishes()
-  }, [session?.userId])
-
-  useEffect(() => {
-    setIsLoading(true)
-    const dishesMap = new Map()
-    filteredDishes.forEach((dish) => {
-      dishesMap.set(dish.id, dish)
-    })
-    favoriteDishes.forEach((dish) => {
-      if (!dishesMap.has(dish.id)) {
-        dishesMap.set(dish.id, dish)
-      }
-    })
-
-    const combined = Array.from(dishesMap.values())
-    setCombinedDishes(combined)
-    setIsLoading(false)
-  }, [filteredDishes, favoriteDishes])
+  // Combine all dishes from all pages
+  const combinedDishes = useMemo(() => {
+    if (!data?.pages) return []
+    return data.pages.flatMap((page) => page.data).filter(Boolean)
+  }, [data?.pages])
 
   if (!session) {
     return (
@@ -208,7 +147,7 @@ export default function ListDishes() {
     )
   }
 
-  if (combinedDishes.length === 0) {
+  if (combinedDishes.length === 0 && !isLoading) {
     return (
       <Link href="/gallery#dishes">
         <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg">Thêm món ăn</Button>
@@ -248,7 +187,11 @@ export default function ListDishes() {
         {combinedDishes.map((dish) => (
           <div key={dish.id} className="group">
             <Link
-              href={isSubscriptionExpired ? '#' : `/gallery/dishes/${dish.id}?diet_id=${dish.diet?.id || dish.diet_id}&back=%2Faccount%2Fresources`}
+              href={
+                isSubscriptionExpired
+                  ? '#'
+                  : `/gallery/dishes/${dish.id}?diet_id=${dish.diet?.id || ''}&back=%2Faccount%2Fresources`
+              }
               onClick={
                 isSubscriptionExpired
                   ? (e) => {
@@ -270,44 +213,54 @@ export default function ListDishes() {
                       onClick={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
-                        handleDeleteFavouriteDish(dish.id, dish.title)
+                        handleDeleteFavouriteDish({ dishId: dish.id, dishTitle: dish.name })
                       }}
                       className="lg:block hidden"
                     >
-                      <DeleteIcon
-                        className="text-white hover:text-red-500 transition-colors duration-300"
-                        onClick={() => handleDeleteFavouriteDish(dish.id, dish.title)}
-                      />
+                      <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                     </div>
                     <div
                       onClick={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
-                        handleDeleteFavouriteDish(dish.id, dish.title)
+                        handleDeleteFavouriteDish({ dishId: dish.id, dishTitle: dish.name })
                       }}
                       className="lg:hidden block"
                     >
-                      <DeleteIconMini
-                        className="text-white hover:text-red-500 transition-colors duration-300"
-                        onClick={() => handleDeleteFavouriteDish(dish.id, dish.title)}
-                      />
+                      <DeleteIconMini className="text-white hover:text-red-500 transition-colors duration-300" />
                     </div>
                   </div>
                   <img
                     src={dish.image}
-                    alt={dish.title}
+                    alt={dish.name}
                     className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                   />
                 </div>
-                <p className="font-medium text-sm lg:text-lg">{dish.title}</p>
+                <p className="font-medium text-sm lg:text-lg">{dish.name}</p>
               </div>
             </Link>
           </div>
         ))}
       </div>
-      <div className="mt-6">
+      <div className="mt-6 flex flex-col gap-4">
+        {hasNextPage && (
+          <Button
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+            className="bg-white text-[#13D8A7] border border-[#13D8A7] hover:bg-[#f0fffc] w-full rounded-full h-14 text-sm lg:text-lg"
+          >
+            {isFetchingNextPage ? (
+              <div className="flex items-center gap-2">
+                <div className="animate-spin h-5 w-5 border-t-2 border-b-2 border-[#13D8A7] rounded-full"></div>
+                Đang tải...
+              </div>
+            ) : (
+              'Tải thêm món ăn'
+            )}
+          </Button>
+        )}
         <Link href="/gallery#dishes">
-          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg lg:mt-12 mt-6">
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg lg:mt-2 mt-2">
             Thêm món ăn
           </Button>
         </Link>

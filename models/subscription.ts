@@ -21,7 +21,7 @@ type SubscriptionPrice = {
 
 type Subscription = {
   original_subscription_end_at?: string;
-  id: string
+  id: number
   name: string
   course_format: string
   duration: number

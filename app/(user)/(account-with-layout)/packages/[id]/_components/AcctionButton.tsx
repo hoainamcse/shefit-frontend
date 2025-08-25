@@ -20,7 +20,7 @@ export default function AcctionButton({ subscription }: { subscription: Subscrip
     enabled: !!session,
   })
 
-  const isSubscribed = data?.data?.find((userSub) => userSub.subscription.id === Number(subscription.id)) || false
+  const isSubscribed = data?.data?.find((userSub) => userSub.subscription.id === subscription.id) || false
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: any) => createUserSubscription(data, data.user_id),
