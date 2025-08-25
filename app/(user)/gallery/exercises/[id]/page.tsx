@@ -7,6 +7,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import ActionButtons from './ActionButtons'
 import Link from 'next/link'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
+import { useSearchParams } from 'next/navigation'
 
 // Dynamically import ReactPlayer with no SSR to avoid window is not defined errors
 const ReactPlayer = dynamic(() => import('react-player/lazy'), {
@@ -30,6 +31,8 @@ export default function MuscleDetail({
   const [exerciseId, setExerciseId] = useState<string>('')
   const [muscleGroupId, setMuscleGroupId] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
+  const _searchParams = useSearchParams()
+  const back = _searchParams.get('back') || ''
 
   useEffect(() => {
     const unwrapParams = async () => {
@@ -93,7 +96,7 @@ export default function MuscleDetail({
   return (
     <div className="flex flex-col md:pt-10 pt-4 xl:pt-[53px]">
       <Link
-        href={`/gallery/exercises?muscle_group_id=${muscleGroupId}`}
+        href={back || `/gallery/exercises?muscle_group_id=${muscleGroupId}`}
         className="flex cursor-pointer items-center gap-2 font-semibold lg:hidden md:mb-7 mb-3"
       >
         <div className="w-6 h-6 flex items-center justify-center">

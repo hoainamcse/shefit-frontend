@@ -1,9 +1,14 @@
 import React from 'react'
 import Link from 'next/link'
 import { getDiet, getDietDishes } from '@/network/server/diets'
+import { BackIconBlack } from '@/components/icons/BackIconBlack'
 
-export default async function DietDishesPage({ searchParams }: { searchParams: Promise<{ diet_id: string }> }) {
-  const { diet_id } = await searchParams
+export default async function DietDishesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ diet_id: string; back?: string }>
+}) {
+  const { diet_id, back = '' } = await searchParams
   const diet = await getDiet(Number(diet_id))
   const dietDishes = await getDietDishes(Number(diet_id))
 
@@ -18,6 +23,15 @@ export default async function DietDishesPage({ searchParams }: { searchParams: P
   return (
     <div className="flex flex-col gap-10 mt-6 md:mt-10 lg:mt-[76px]">
       <div>
+        <Link
+          href={back || `/gallery#dishes`}
+          className="flex cursor-pointer items-center gap-2.5 font-semibold md:mb-7 mb-2"
+        >
+          <div className="w-6 h-6 pt-1 flex justify-center">
+            <BackIconBlack />
+          </div>
+          Quay về
+        </Link>
         <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-6 md:mb-10 lg:mb-[60px] xl:mb-[90px]">
           <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl">
             Các món theo chế độ {diet?.data.name}

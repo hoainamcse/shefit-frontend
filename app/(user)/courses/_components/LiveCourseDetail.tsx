@@ -3,7 +3,7 @@
 import { getCourse, getLiveDays } from '@/network/client/courses'
 import { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Course, LiveDay } from '@/models/course'
+import { Course, DayOfWeek, LiveDay } from '@/models/course'
 import { cn } from '@/lib/utils'
 import { useSession } from '@/hooks/use-session'
 import { getUserSubscriptions } from '@/network/client/users'
@@ -52,23 +52,41 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
   const [isCheckingAccess, setIsCheckingAccess] = useState(false)
   const [courseStatus, setCourseStatus] = useState<'checking' | 'exists' | 'not_found'>('checking')
 
-  const isClassAvailable = (startTime: string) => {
-    if (!isLoggedIn || courseStatus !== 'exists') {
-      return true
-    }
+  const isClassAvailable = (startTime: string, endTime: string, dayOfWeek: DayOfWeek) => {
     const now = new Date()
+    const currentDay = now.getDay() // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
     const currentHour = now.getHours()
     const currentMinute = now.getMinutes()
+    const currentSecond = now.getSeconds()
 
-    const [startHour, startMinute] = startTime.split(':').map(Number)
-    const vnStartHour = (startHour + 7) % 24
-
-    if (currentHour > vnStartHour) {
-      return true
-    } else if (currentHour === vnStartHour) {
-      return currentMinute >= startMinute
+    // Map day names to numbers
+    const dayMap: { [key: string]: number } = {
+      Sunday: 0,
+      Monday: 1,
+      Tuesday: 2,
+      Wednesday: 3,
+      Thursday: 4,
+      Friday: 5,
+      Saturday: 6,
     }
-    return false
+
+    const classDayNumber = dayMap[dayOfWeek]
+
+    // Check if today matches the class day
+    if (currentDay !== classDayNumber) {
+      return false
+    }
+
+    const [startHour, startMinute, startSecond] = startTime.split(':').map(Number)
+    const [endHour, endMinute, endSecond] = endTime.split(':').map(Number)
+
+    // Convert current time to seconds for easier comparison
+    const currentTimeInSeconds = currentHour * 3600 + currentMinute * 60 + currentSecond
+    const startTimeInSeconds = startHour * 3600 + startMinute * 60 + startSecond
+    const endTimeInSeconds = endHour * 3600 + endMinute * 60 + endSecond
+
+    // Class is available if current time is within the class period
+    return currentTimeInSeconds >= startTimeInSeconds && currentTimeInSeconds <= endTimeInSeconds
   }
 
   useEffect(() => {
@@ -274,11 +292,12 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
                               {session_.name}
                             </p>
                             <p className="text-[#737373] text-sm lg:text-lg">
-                              {session_.description} / {formatToVNTime(session_.start_time)} -{' '}
-                              {formatToVNTime(session_.end_time)}
+                              {formatTime(session_.start_time)} - {formatTime(session_.end_time)} (
+                              {formatTime(session_.start_time).includes('AM') ? 'sáng' : 'chiều/tối'})
                             </p>
+                            <p className="text-[#737373] text-sm lg:text-lg">{session_.description}</p>
                           </div>
-                          {isClassAvailable(session_.start_time) ? (
+                          {isClassAvailable(session_.start_time, session_.end_time, dayItem.day_of_week) ? (
                             <div className="cursor-pointer" onClick={(e) => handleJoinClass(e, session_)}>
                               <div className="text-primary text-sm lg:text-lg">
                                 {isCheckingAccess ? 'Đang kiểm tra...' : 'Vào lớp'}
@@ -351,4 +370,15 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
       )}
     </div>
   )
+}
+
+function formatTime(time: string): string {
+  try {
+    const [hours, minutes] = time.split(':').map(Number)
+    const period = hours >= 12 ? 'PM' : 'AM'
+    const formattedHours = hours % 12 || 12
+    return `${formattedHours}:${minutes.toString().padStart(2, '0')} ${period}`
+  } catch (error) {
+    return time
+  }
 }

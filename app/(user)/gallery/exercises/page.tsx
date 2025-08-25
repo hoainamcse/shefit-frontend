@@ -4,13 +4,14 @@ import Link from 'next/link'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getMuscleGroup, getMuscleGroupExercises } from '@/network/server/muscle-groups'
 import { getYouTubeThumbnail } from '@/lib/youtube'
+import { BackIconBlack } from '@/components/icons/BackIconBlack'
 
 export default async function MuscleGroupExercises({
   searchParams,
 }: {
-  searchParams: Promise<{ muscle_group_id: string }>
+  searchParams: Promise<{ muscle_group_id: string; back?: string }>
 }) {
-  const { muscle_group_id } = await searchParams
+  const { muscle_group_id, back = '' } = await searchParams
   const muscleGroup = await getMuscleGroup(muscle_group_id)
   const muscleGroupExercises = await getMuscleGroupExercises(muscle_group_id)
 
@@ -25,6 +26,15 @@ export default async function MuscleGroupExercises({
   return (
     <div className="flex flex-col gap-10 pt-10 lg:pt-16 xl:pt-[93px] animate-fade-in">
       <div>
+        <Link
+          href={back || `/gallery`}
+          className="flex cursor-pointer items-center gap-2.5 font-semibold md:mb-7 mb-2"
+        >
+          <div className="w-6 h-6 pt-1 flex justify-center">
+            <BackIconBlack />
+          </div>
+          Quay về
+        </Link>
         <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-3 sm:mb-6 md:mb-10 lg:mb-[60px]">
           <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl">
             Các động tác nhóm {muscleGroup?.data.name}

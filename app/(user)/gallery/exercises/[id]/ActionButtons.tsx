@@ -30,9 +30,7 @@ export default function ActionButtons({ exerciseId }: ActionButtonsProps) {
       try {
         const response = await getFavouriteExercises(session.userId)
         const favouriteExercises = response.data || []
-        const isAlreadyFavourite = favouriteExercises.some(
-          (favourite: any) => favourite.exercise.id.toString() === exerciseId
-        )
+        const isAlreadyFavourite = favouriteExercises.some((exercise) => exercise.id === exerciseId)
         setIsFavourite(isAlreadyFavourite)
       } catch (error) {
         console.error('Error checking favourite status:', error)

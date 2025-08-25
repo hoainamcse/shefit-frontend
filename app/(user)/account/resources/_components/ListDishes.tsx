@@ -210,7 +210,7 @@ export default function ListDishes() {
 
   if (combinedDishes.length === 0) {
     return (
-      <Link href="/gallery">
+      <Link href="/gallery#dishes">
         <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg">Thêm món ăn</Button>
       </Link>
     )
@@ -248,7 +248,7 @@ export default function ListDishes() {
         {combinedDishes.map((dish) => (
           <div key={dish.id} className="group">
             <Link
-              href={isSubscriptionExpired ? '#' : `/gallery/dishes/${dish.id}?diet_id=${dish.diet?.id || dish.diet_id}`}
+              href={isSubscriptionExpired ? '#' : `/gallery/dishes/${dish.id}?diet_id=${dish.diet?.id || dish.diet_id}&back=%2Faccount%2Fresources`}
               onClick={
                 isSubscriptionExpired
                   ? (e) => {

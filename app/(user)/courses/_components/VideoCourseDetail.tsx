@@ -11,7 +11,7 @@ import { Course } from '@/models/course'
 import { getUserSubscriptions } from '@/network/client/users'
 import { UserCourse } from '@/models/user-courses'
 import { createUserCourse, getUserCourses } from '@/network/client/users'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 interface UserCourseItem extends UserCourse {
   is_active: boolean
@@ -57,6 +57,8 @@ const redirectToLogin = () => {
 }
 
 export default function VideoCourseDetail({ courseId }: { courseId: Course['id'] }) {
+  const searchParams = useSearchParams()
+  const back = searchParams.get('back') || ''
   const [weeks, setWeeks] = useState<any>(null)
   const [days, setDays] = useState<any>(null)
   const [courseData, setCourseData] = useState<CourseWeek[]>([])
@@ -229,7 +231,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
           setDialogOpen(`day-${dayId}`)
           return
         }
-        const targetUrl = `/courses/${courseId}/video-classes/${weekId}/${dayId}`
+        const targetUrl = `/courses/${courseId}/video-classes/${weekId}/${dayId}${back ? `?back=${encodeURIComponent(back)}` : ''}`
         console.log('Free course, navigating to:', targetUrl)
         window.location.href = targetUrl
         return
@@ -246,7 +248,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
       console.log('Course access result:', hasAccess)
 
       if (hasAccess) {
-        const targetUrl = `/courses/${courseId}/video-classes/${weekId}/${dayId}`
+        const targetUrl = `/courses/${courseId}/video-classes/${weekId}/${dayId}${back ? `?back=${encodeURIComponent(back)}` : ''}`
         console.log('User has access, navigating to:', targetUrl)
         window.location.href = targetUrl
       } else {

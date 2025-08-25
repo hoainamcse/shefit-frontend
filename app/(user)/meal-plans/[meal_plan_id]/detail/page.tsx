@@ -12,13 +12,20 @@ import { getUserSubscriptions } from '@/network/server/users'
 import { BackIcon } from '@/components/icons/BackIcon'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 
-export default async function MealPlanDetailPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
+export default async function MealPlanDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ meal_plan_id: string }>
+  searchParams: Promise<{ back?: string }>
+}) {
   const { meal_plan_id } = await params
+  const { back = '' } = await searchParams
 
   const session = await getSession()
 
   if (!session) {
-    redirect(`/meal-plans/${meal_plan_id}`)
+    redirect(`/meal-plans/${meal_plan_id}${back ? `?back=${encodeURIComponent(back)}` : ''}`)
   }
 
   try {
@@ -39,11 +46,11 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
     })
 
     if (!hasAccess) {
-      redirect(`/meal-plans/${meal_plan_id}`)
+      redirect(`/meal-plans/${meal_plan_id}${back ? `?back=${encodeURIComponent(back)}` : ''}`)
     }
   } catch (error) {
     console.error('Error checking meal plan access:', error)
-    redirect(`/meal-plans/${meal_plan_id}`)
+    redirect(`/meal-plans/${meal_plan_id}${back ? `?back=${encodeURIComponent(back)}` : ''}`)
   }
 
   const { data: mealPlanByDay } = await getMealPlanDays(meal_plan_id)
@@ -58,9 +65,9 @@ export default async function MealPlanDetailPage({ params }: { params: Promise<{
     <div>
       <div className="relative block md:hidden">
         <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto">
-          <Link href={`/meal-plans/${meal_plan_id}`} className="flex items-center">
+          <Link href={`/meal-plans/${meal_plan_id}${back ? `?back=${encodeURIComponent(back)}` : ''}`} className="flex items-center">
             <Button className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black shadow-none font-medium">
-              <BackIconBlack className="mb-1"/> Quay về
+              <BackIconBlack className="mb-1" /> Quay về
             </Button>
           </Link>
         </div>

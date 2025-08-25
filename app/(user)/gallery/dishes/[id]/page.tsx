@@ -6,6 +6,7 @@ import { getDish } from '@/network/server/dishes'
 import ActionButtons from './ActionButtons'
 import Link from 'next/link'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
+import { useSearchParams } from 'next/navigation'
 const ReactPlayer = dynamic(() => import('react-player/lazy'), {
   ssr: false,
   loading: () => (
@@ -15,12 +16,20 @@ const ReactPlayer = dynamic(() => import('react-player/lazy'), {
   ),
 })
 
-export default function MealDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ diet_id: string }> }) {
+export default function MealDetail({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ diet_id: string }>
+}) {
   const [dish, setDish] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [dishId, setDishId] = useState<string>('')
   const [dietId, setDietId] = useState<string>('')
+  const _searchParams = useSearchParams()
+  const back = _searchParams.get('back') || ''
 
   useEffect(() => {
     const unwrapParams = async () => {
@@ -84,7 +93,7 @@ export default function MealDetail({ params, searchParams }: { params: Promise<{
   return (
     <div className="flex flex-col pt-4 md:pt-10 lg:pt-[69px]">
       <Link
-        href={`/gallery/dishes?diet_id=${dietId}`}
+        href={back || `/gallery/dishes?diet_id=${dietId}`}
         className="flex cursor-pointer items-center gap-2.5 font-semibold md:mb-7 mb-2"
       >
         <div className="w-6 h-6 pt-1 flex justify-center">

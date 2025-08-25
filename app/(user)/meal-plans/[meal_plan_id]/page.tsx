@@ -7,7 +7,14 @@ import ActionButtons from './ActionButtons'
 import { HtmlContent } from '@/components/html-content'
 import { BackIcon } from '@/components/icons/BackIcon'
 
-export default async function MealPlanPage({ params }: { params: Promise<{ meal_plan_id: string }> }) {
+export default async function MealPlanPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ meal_plan_id: string }>
+  searchParams: Promise<{ back?: string }>
+}) {
+  const { back = '' } = await searchParams
   try {
     const { meal_plan_id } = await params
     const { data: mealPlan } = await getMealPlan(meal_plan_id)
@@ -20,9 +27,9 @@ export default async function MealPlanPage({ params }: { params: Promise<{ meal_
       <div>
         <div className="relative block md:hidden">
           <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto">
-            <Link href="/meal-plans" className="flex items-center">
+            <Link href={back || "/meal-plans"} className="flex items-center">
               <Button className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black shadow-none font-medium">
-                <BackIconBlack className="mb-1"/> Quay về
+                <BackIconBlack className="mb-1" /> Quay về
               </Button>
             </Link>
           </div>

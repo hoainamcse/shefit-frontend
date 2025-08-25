@@ -9,12 +9,15 @@ import { useSession } from '@/hooks/use-session'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { getUserSubscriptions } from '@/network/client/users'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { useSearchParams } from 'next/navigation'
 
 interface ActionButtonsProps {
   mealPlanId: MealPlan['id']
 }
 
 export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
+  const searchParams = useSearchParams()
+  const back = searchParams.get('back') || ''
   const { session } = useSession()
   const { redirectToLogin } = useAuthRedirect()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
@@ -111,7 +114,7 @@ export default function ActionButtons({ mealPlanId }: ActionButtonsProps) {
       })
 
       if (hasValidSubscription) {
-        window.location.href = `/meal-plans/${mealPlanId}/detail`
+        window.location.href = `/meal-plans/${mealPlanId}/detail${back ? `?back=${encodeURIComponent(back)}` : ''}`
       } else {
         setShowSubscribeDialog(true)
       }

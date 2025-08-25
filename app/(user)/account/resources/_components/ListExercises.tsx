@@ -299,7 +299,7 @@ export default function ListExercises() {
                   ? '#'
                   : `/gallery/exercises/${exercise.id}?muscle_group_id=${
                       exercise.muscle_groups?.[0]?.id || exercise.muscle?.id || ''
-                    }`
+                    }&back=%2Faccount%2Fresources`
               }
               onClick={
                 isSubscriptionExpired

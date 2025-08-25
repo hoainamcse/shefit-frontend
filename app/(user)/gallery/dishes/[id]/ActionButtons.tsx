@@ -30,7 +30,7 @@ export default function ActionButtons({ dishId }: ActionButtonsProps) {
       try {
         const response = await getFavouriteDishes(session.userId)
         const favouriteDishes = response.data || []
-        const isAlreadyFavourite = favouriteDishes.some((favourite: any) => favourite.dish.id.toString() === dishId)
+        const isAlreadyFavourite = favouriteDishes.some((dish) => dish.id === dishId)
         setIsFavourite(isAlreadyFavourite)
       } catch (error) {
         console.error('Error checking favourite status:', error)

@@ -277,7 +277,7 @@ export default function ListMealPlans() {
           return mealPlanId ? (
             <div key={mealPlanId} className="group">
               <Link
-                href={isSubscriptionExpired ? '#' : `/meal-plans/${mealPlanId}`}
+                href={isSubscriptionExpired ? '#' : `/meal-plans/${mealPlanId}?back=%2Faccount%2Fresources`}
                 onClick={
                   isSubscriptionExpired
                     ? (e) => {

@@ -5,8 +5,15 @@ import { Course } from '@/models/course'
 import Link from 'next/link'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 
-export default async function Video({ params }: { params: Promise<{ course_id: Course['id']; detail: string[] }> }) {
+export default async function Video({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ course_id: Course['id']; detail: string[] }>
+  searchParams: Promise<{ back?: string }>
+}) {
   const { course_id, detail } = await params
+  const { back = '' } = await searchParams
 
   try {
     const weeks = await getCourseWeeks(course_id)
@@ -28,7 +35,7 @@ export default async function Video({ params }: { params: Promise<{ course_id: C
     return (
       <div className="flex flex-col">
         <Link
-          href={`/courses/${course_id}/video-classes`}
+          href={`/courses/${course_id}/video-classes${back ? `?back=${encodeURIComponent(back)}` : ''}`}
           className="inline-flex items-center gap-2 text-lg font-semibold transition-colors px-4 mt-4 w-36"
         >
           <BackIconBlack className="w-5 h-5" />

@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from 'react'
 import { CourseLevel, CourseForm, Course } from '@/models/course'
 import LiveCourseDetail from './LiveCourseDetail'
 import VideoCourseDetail from './VideoCourseDetail'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import ActionButtons from './ActionButtons'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -24,7 +24,8 @@ interface CourseDetailProps {
 }
 
 export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps) {
-  const router = useRouter()
+  const searchParams = useSearchParams()
+  const back = searchParams.get('back') || ''
   const { session } = useSession()
   const [showDetails, setShowDetails] = useState(false)
   const [course, setCourse] = useState<any>(null)
@@ -140,7 +141,7 @@ export default function CourseDetail({ courseId, typeCourse }: CourseDetailProps
           className="items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black dark:text-white shadow-none font-medium"
           asChild
         >
-          <Link href={`/courses`}>
+          <Link href={back || '/courses'}>
             <BackIconBlack /> Quay về
           </Link>
         </Button>
