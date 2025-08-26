@@ -145,3 +145,18 @@ export async function checkUserAccessedResource(
   )
   return response.json()
 }
+
+export async function addUserSavedResource(
+  userID: User['id'],
+  resourceType: string,
+  resourceID: number
+): Promise<ApiResponse<any>> {
+  const response = await fetchData(`/v1/users/${userID}/resources/saved`, {
+    method: 'POST',
+    body: JSON.stringify({
+      resource_type: resourceType,
+      resource_id: resourceID,
+    }),
+  })
+  return response.json()
+}

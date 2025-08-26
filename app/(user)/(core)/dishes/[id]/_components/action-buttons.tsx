@@ -1,15 +1,17 @@
 'use client'
 
 import type { Dish } from '@/models/dish'
-import { Button } from '@/components/ui/button'
+
 import { toast } from 'sonner'
-import { useSession } from '@/hooks/use-session'
-import { addFavouriteDish } from '@/network/client/user-favourites'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { checkUserSavedResource } from '@/network/client/users'
+
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { useSession } from '@/hooks/use-session'
+import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { addUserSavedResource, checkUserSavedResource } from '@/network/client/users'
+
 interface ActionButtonsProps {
   dishID: Dish['id']
 }
@@ -27,10 +29,10 @@ export default function ActionButtons({ dishID }: ActionButtonsProps) {
   const isSaved = saveQuery.data?.data || false
 
   const saveMutation = useMutation({
-    mutationFn: () => addFavouriteDish(session!.userId, dishID),
+    mutationFn: () => addUserSavedResource(session!.userId, 'dish', dishID),
     onSuccess: () => {
       saveQuery.refetch()
-      toast.success('Đã thêm món ăn vào danh sách yêu thích!')
+      toast.success('Đã thêm món ăn vào danh sách!')
     },
     onError: (error) => {
       toast.error(error.message || 'Có lỗi xảy ra khi lưu món ăn!')
@@ -55,14 +57,14 @@ export default function ActionButtons({ dishID }: ActionButtonsProps) {
     <div className="gap-5 w-2/3 mx-auto mb-10 flex justify-center mt-6 md:mt-16 max-lg:w-full max-lg:px-5">
       <Button
         onClick={() => handleSaveDish()}
-        disabled={isSaved || saveQuery.isLoading}
+        disabled={isSaved || saveQuery.isLoading || saveMutation.isPending}
         className={`w-full rounded-full text-sm lg:text-lg h-14 border-2 ${
           isSaved
             ? 'bg-transparent text-[#11c296] border-[#11c296] cursor-not-allowed'
             : 'bg-[#13D8A7] text-white hover:bg-[#11c296] border-[#13D8A7]'
         }`}
       >
-        {saveQuery.isLoading ? 'Đang kiểm tra...' : isSaved ? 'Đã Lưu' : 'Lưu'}
+        {saveMutation.isPending ? 'Đang lưu' : saveQuery.isLoading ? 'Đang kiểm tra...' : isSaved ? 'Đã Lưu' : 'Lưu'}
       </Button>
       <Dialog open={showLoginDialog} onOpenChange={(open) => setShowLoginDialog(open)}>
         <DialogContent>

@@ -11,8 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { addFavouriteCourse } from '@/network/client/user-favourites'
-import { checkUserAccessedResource, checkUserSavedResource } from '@/network/client/users'
+import { addUserSavedResource, checkUserAccessedResource, checkUserSavedResource } from '@/network/client/users'
 
 interface ActionButtonsProps {
   courseID: Course['id']
@@ -42,10 +41,10 @@ export function ActionButtons({ courseID }: ActionButtonsProps) {
   const isAccessed = accessQuery.data?.data || false
 
   const saveMutation = useMutation({
-    mutationFn: () => addFavouriteCourse(session!.userId, courseID),
+    mutationFn: () => addUserSavedResource(session!.userId, 'course', courseID),
     onSuccess: () => {
       saveQuery.refetch()
-      toast.success('Đã thêm khoá học vào danh sách yêu thích!')
+      toast.success('Đã thêm khoá học vào danh sách!')
     },
     onError: (error) => {
       toast.error(error.message || 'Có lỗi xảy ra khi lưu khoá học!')
@@ -99,14 +98,20 @@ export function ActionButtons({ courseID }: ActionButtonsProps) {
         <div className="w-1/2">
           <Button
             onClick={() => handleSaveCourse()}
-            disabled={isSaved || saveQuery.isLoading}
+            disabled={isSaved || saveQuery.isLoading || saveMutation.isPending}
             className={`w-full rounded-full text-sm lg:text-lg h-14 border-2 ${
               isSaved
                 ? 'bg-transparent text-[#11c296] border-[#11c296] cursor-not-allowed'
                 : 'bg-[#13D8A7] text-white hover:bg-[#11c296] border-[#13D8A7]'
             }`}
           >
-            {saveQuery.isLoading ? 'Đang kiểm tra...' : isSaved ? 'Đã Lưu' : 'Lưu'}
+            {saveMutation.isPending
+              ? 'Đang lưu'
+              : saveQuery.isLoading
+              ? 'Đang kiểm tra...'
+              : isSaved
+              ? 'Đã Lưu'
+              : 'Lưu'}
           </Button>
         </div>
       </div>

@@ -22,12 +22,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { createBodyQuizByUser } from '@/network/server/body-quizzes'
-import { getUser } from '@/network/client/users'
+import { addUserSavedResource, getUser } from '@/network/client/users'
 import { toast } from 'sonner'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { getConfiguration } from '@/network/client/configurations'
 import { calculateGoal, calculateCaloriePlan } from '@/lib/formula'
-import { addFavouriteMealPlan } from '@/network/client/user-favourites'
 import Link from 'next/link'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { Badge } from '@/components/ui/badge'
@@ -551,7 +550,7 @@ const useQuizSubmission = (session: any, bodyQuiz: BodyQuiz | null, userInfo: an
       // Add meal plan to favorites if available
       if (recommendedMealPlan?.meal_plan?.id && session?.userId) {
         try {
-          await addFavouriteMealPlan(session.userId, recommendedMealPlan.meal_plan.id.toString())
+          await addUserSavedResource(session.userId, 'meal_plan', recommendedMealPlan.meal_plan.id)
           toast.success('Thực đơn đã được thêm vào yêu thích!')
         } catch (favoriteError: any) {
           console.warn('Failed to add meal plan to favorites:', favoriteError)
