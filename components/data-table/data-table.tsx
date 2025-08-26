@@ -41,13 +41,6 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { Label } from '@/components/ui/label'
 import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -61,6 +54,7 @@ interface DataTableProps<T extends { id: string | number }> {
   onDelete?: (selectedRows: T[]) => void
   onPaginationChange?: OnChangeFn<PaginationState>
   onRowSelectionChange?: (selectedRows: T[]) => void
+  leftSection?: React.ReactNode
   rightSection?: React.ReactNode
 }
 
@@ -71,6 +65,7 @@ export function DataTable<T extends { id: string | number }>({
   rowCount = data.length,
   onDelete,
   onPaginationChange,
+  leftSection,
   rightSection,
   onRowSelectionChange,
 }: DataTableProps<T>) {
@@ -155,36 +150,7 @@ export function DataTable<T extends { id: string | number }>({
     <div className="space-y-4">
       {/* Filters */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          {/* Toggle columns visibility */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                <Columns3Icon className="-ms-1 opacity-60" size={16} aria-hidden="true" />
-                Hiển thị cột
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Bật/tắt cột</DropdownMenuLabel>
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                      onSelect={(event) => event.preventDefault()}
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  )
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <div className="flex items-center gap-3">{leftSection}</div>
         <div className="flex items-center gap-3">
           {/* Delete button */}
           {table.getSelectedRowModel().rows.length > 0 && (

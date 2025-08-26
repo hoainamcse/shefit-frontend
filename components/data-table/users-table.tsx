@@ -2,6 +2,7 @@
 
 import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import { toast } from 'sonner'
+import { format } from 'date-fns'
 import { Download } from 'lucide-react'
 import { useEffect, useMemo, useState, useTransition, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -26,7 +27,7 @@ import { Switch } from '../ui/switch'
 import { Badge } from '../ui/badge'
 import { PROVINCES, roleLabel } from '@/lib/label'
 import { getSubAdminUsers, getSubscription } from '@/network/client/subscriptions'
-import { formatDateString, generatePassword, generateUsername } from '@/lib/helpers'
+import { formatDateString, generatePassword, generateUsername, sortByKey } from '@/lib/helpers'
 import { AddButton } from '../buttons/add-button'
 import z from 'zod'
 import { useForm } from 'react-hook-form'
@@ -171,12 +172,56 @@ export function UsersTable() {
         ),
         size: 80,
       },
-      // {
-      //   accessorKey: 'created_at',
-      //   header: 'Ngày tạo',
-      //   cell: ({ row }) => <div className="font-medium">{formatDateString(row.getValue('created_at'))}</div>,
-      //   size: 120,
-      // },
+      {
+        accessorKey: 'created_at',
+        header: 'Ngày tạo',
+        cell: ({ row }) => <div className="font-medium">{format(row.getValue('created_at'), 'dd/MM/yyyy')}</div>,
+        size: 100,
+      },
+      {
+        header: 'Gói tập',
+        accessorFn: (row) => {
+          if (row.subscriptions.length === 0) return '-'
+          return row.subscriptions.flatMap((s) => s.subscription.name).join('; ')
+        },
+        size: 150,
+      },
+      {
+        header: 'Ngày bắt đầu (latest)',
+        accessorFn: (row) => {
+          const sortedSubs = sortByKey(row.subscriptions, 'subscription_start_at', {
+            transform: (val) => new Date(val).getTime(),
+            direction: 'desc',
+          })
+          return sortedSubs.length > 0 ? format(sortedSubs[0].subscription_start_at, 'dd/MM/yyyy') : '-'
+        },
+        size: 120,
+      },
+      {
+        header: 'Ngày kết thúc (latest)',
+        accessorFn: (row) => {
+          const sortedSubs = sortByKey(row.subscriptions, 'subscription_start_at', {
+            transform: (val) => new Date(val).getTime(),
+            direction: 'desc',
+          })
+          return sortedSubs.length > 0 ? format(sortedSubs[0].subscription_end_at, 'dd/MM/yyyy') : '-'
+        },
+        size: 120,
+      },
+      {
+        accessorFn: (row) => {
+          const couponCodes = sortByKey(row.subscriptions, 'subscription_start_at', {
+            transform: (val) => new Date(val).getTime(),
+            direction: 'desc',
+          })
+            .flatMap((s) => s.coupon_code)
+            .filter(Boolean)
+          if (couponCodes.length === 0) return '-'
+          return couponCodes.join('; ')
+        },
+        header: 'Coupon dùng',
+        size: 120,
+      },
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
