@@ -117,3 +117,31 @@ export async function deleteUserSubscription(userID: User['id'], subscriptionID:
   })
   return response.json()
 }
+
+export async function checkUserSavedResource(
+  userID: User['id'],
+  resourceType: string,
+  resourceID: number
+): Promise<ApiResponse<boolean>> {
+  const response = await fetchData(
+    `/v1/users/${userID}/resources/saved?resource_type=${resourceType}&resource_id=${resourceID}`,
+    {
+      method: 'GET',
+    }
+  )
+  return response.json()
+}
+
+export async function checkUserAccessedResource(
+  userID: User['id'],
+  resourceType: string,
+  resourceID: number
+): Promise<ApiResponse<boolean>> {
+  const response = await fetchData(
+    `/v1/users/${userID}/resources/accessed?resource_type=${resourceType}&resource_id=${resourceID}`,
+    {
+      method: 'GET',
+    }
+  )
+  return response.json()
+}

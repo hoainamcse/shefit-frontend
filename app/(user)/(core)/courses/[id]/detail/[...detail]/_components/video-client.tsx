@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { MainButton } from '@/components/buttons/main-button'
 import { Pause, Play, PlayCircle } from 'lucide-react'
 import { getYouTubeThumbnail } from '@/lib/youtube'
-import VideoPlayer from './VideoPlayer'
+import VideoPlayer from './video-player'
 import { DayCircuit, CircuitExercise } from '@/models/course'
 import Link from 'next/link'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
@@ -151,7 +151,7 @@ export function CircuitItem({ circuit, cIdx, course_id }: { circuit: DayCircuit;
   )
 }
 
-export function VideoClientComponent({ circuits }: { circuits: any }) {
+export function VideoClient({ circuits }: { circuits: any }) {
   return (
     <div className="flex flex-col gap-10 lg:mt-10 mt-2 px-4">
       <div className="mb-20">

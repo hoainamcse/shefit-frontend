@@ -41,7 +41,7 @@ const formatToVNTime = (time: string) => {
   return `${vnHour} giờ`
 }
 
-export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] }) {
+export function LiveCourseDetail({ courseID }: { courseID: Course['id'] }) {
   const { session } = useSession()
   const { redirectToLogin } = useAuthRedirect()
   const isLoggedIn = !!session?.userId
@@ -100,7 +100,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
         const response = await getUserCourses(session.userId)
         const userCourse = (response.data as UserCourseItem[])?.find((course) => {
           const userCourseId = Number(course.course_id)
-          const currentCourseId = Number(courseId)
+          const currentCourseId = Number(courseID)
           return userCourseId === currentCourseId && course.is_active === true
         })
 
@@ -117,7 +117,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
     }
 
     checkUserCourse()
-  }, [session, courseId])
+  }, [session, courseID])
 
   const handleStartClick = async (e: React.MouseEvent) => {
     if (!session) {
@@ -131,7 +131,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
 
     if (courseStatus === 'not_found') {
       try {
-        await createUserCourse({ course_id: courseId }, session.userId)
+        await createUserCourse({ course_id: courseID }, session.userId)
         toast.success('Bắt đầu khóa tập thành công!')
         setCourseStatus('exists')
       } catch (error) {
@@ -160,7 +160,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
           const hasCourses = subscription.subscription && subscription.subscription.courses
           if (!hasCourses) return false
 
-          return subscription.subscription.courses.some((course) => Number(course.id) === Number(courseId))
+          return subscription.subscription.courses.some((course) => Number(course.id) === Number(courseID))
         }) || []
 
       let hasAccess = false
@@ -198,10 +198,10 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const courseData = await getCourse(courseId)
+        const courseData = await getCourse(courseID)
         setCourse(courseData)
 
-        const liveData = await getLiveDays(courseId)
+        const liveData = await getLiveDays(courseID)
         setLive(liveData)
       } catch (error) {
         console.error('Error fetching live detail data:', error)
@@ -209,7 +209,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
     }
 
     fetchData()
-  }, [courseId])
+  }, [courseID])
 
   const handleLoginClick = () => {
     setShowLoginDialog(false)
@@ -219,7 +219,7 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
   const handleBuyPackageClick = () => {
     if (typeof window !== 'undefined') {
       const currentUrl = window.location.pathname + window.location.search
-      const accountUrl = `/account/packages?course_id=${courseId}&redirect=${encodeURIComponent(currentUrl)}`
+      const accountUrl = `/account/packages?course_id=${courseID}&redirect=${encodeURIComponent(currentUrl)}`
       window.location.href = accountUrl
     }
     setShowLoginDialog(false)
@@ -371,6 +371,8 @@ export default function LiveCourseDetail({ courseId }: { courseId: Course['id'] 
     </div>
   )
 }
+
+export default LiveCourseDetail
 
 function formatTime(time: string): string {
   try {

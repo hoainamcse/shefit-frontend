@@ -1,6 +1,6 @@
 import { getDayCircuits, getCourseWeeks, getWeekDays } from '@/network/server/courses'
 import { notFound } from 'next/navigation'
-import { VideoClientComponent } from './VideoClientComponent'
+import { VideoClient } from './_components/video-client'
 import { Course } from '@/models/course'
 import Link from 'next/link'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
@@ -9,39 +9,39 @@ export default async function Video({
   params,
   searchParams,
 }: {
-  params: Promise<{ course_id: Course['id']; detail: string[] }>
+  params: Promise<{ id: Course['id']; detail: string[] }>
   searchParams: Promise<{ back?: string }>
 }) {
-  const { course_id, detail } = await params
+  const { id: courseID, detail } = await params
   const { back = '' } = await searchParams
 
   try {
-    const weeks = await getCourseWeeks(course_id)
+    const weeks = await getCourseWeeks(courseID)
     const currentWeek = weeks.data.find((week) => week.id.toString() === detail[0])
 
     if (!currentWeek) {
       notFound()
     }
 
-    const days = await getWeekDays(course_id, currentWeek.id)
+    const days = await getWeekDays(courseID, currentWeek.id)
     const currentDay = days.data.find((day) => day.id.toString() === detail[1]) || days.data[0]
 
     if (!currentDay) {
       notFound()
     }
 
-    const circuits = await getDayCircuits(course_id, currentWeek.id, currentDay.id)
+    const circuits = await getDayCircuits(courseID, currentWeek.id, currentDay.id)
 
     return (
       <div className="flex flex-col">
         <Link
-          href={`/courses/${course_id}/detail${back ? `?back=${encodeURIComponent(back)}` : ''}`}
+          href={`/courses/${courseID}/detail${back ? `?back=${encodeURIComponent(back)}` : ''}`}
           className="inline-flex items-center gap-2 text-lg font-semibold transition-colors px-4 mt-4 w-36"
         >
           <BackIconBlack className="w-5 h-5" />
           <span>Quay về</span>
         </Link>
-        <VideoClientComponent circuits={circuits} />
+        <VideoClient circuits={circuits} />
       </div>
     )
   } catch (error) {

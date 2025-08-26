@@ -2,31 +2,25 @@
 
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { getCourse } from '@/network/client/courses'
-import { courseFormLabel, courseLevelLabel } from '@/lib/label'
+import { courseLevelLabel } from '@/lib/label'
 import { useState, useEffect } from 'react'
-import { CourseLevel, CourseForm, Course } from '@/models/course'
-import { useSearchParams } from 'next/navigation'
-import ActionButtons from './_components/ActionButtons'
+import { CourseLevel, Course } from '@/models/course'
+import { useParams, useSearchParams } from 'next/navigation'
+import { ActionButtons } from './_components/action-buttons'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useSession } from '@/hooks/use-session'
 import { getUserSubscriptions } from '@/network/client/users'
 import { HtmlContent } from '@/components/html-content'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
-import { getEquipments } from '@/network/client/equipments'
-import { getMuscleGroups } from '@/network/client/muscle-groups'
 
-interface CourseDetailProps {
-  courseID: Course['id']
-}
-
-export default function CoursePageClient({ courseID }: CourseDetailProps) {
+export default function CoursePage() {
+  const params = useParams()
+  const courseID = params.id as unknown as Course['id']
   const searchParams = useSearchParams()
   const back = searchParams.get('back') || ''
   const { session } = useSession()
-  const [course, setCourse] = useState<any>(null)
-  const [equipments, setEquipments] = useState<any[]>([])
-  const [muscleGroups, setMuscleGroups] = useState<any[]>([])
+  const [course, setCourse] = useState<Course | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [userSubscriptions, setUserSubscriptions] = useState<number[]>([])
   const [isSubscriptionExpired, setIsSubscriptionExpired] = useState(true)
@@ -35,27 +29,7 @@ export default function CoursePageClient({ courseID }: CourseDetailProps) {
     const fetchData = async () => {
       try {
         const courseData = await getCourse(courseID)
-        setCourse(courseData)
-
-        if (courseData?.data?.equipment_ids?.length > 0) {
-          try {
-            const equipmentsData = await getEquipments({ ids: courseData.data.equipment_ids })
-            setEquipments(equipmentsData?.data || [])
-          } catch (error) {
-            console.error('Error fetching equipments:', error)
-            setEquipments([])
-          }
-        }
-
-        if (courseData?.data?.muscle_group_ids?.length > 0) {
-          try {
-            const muscleGroupsData = await getMuscleGroups({ ids: courseData.data.muscle_group_ids })
-            setMuscleGroups(muscleGroupsData?.data || [])
-          } catch (error) {
-            console.error('Error fetching muscle groups:', error)
-            setMuscleGroups([])
-          }
-        }
+        setCourse(courseData.data)
 
         if (session?.userId) {
           const userSubscriptionsData = await getUserSubscriptions(session.userId)
@@ -92,6 +66,14 @@ export default function CoursePageClient({ courseID }: CourseDetailProps) {
     )
   }
 
+  if (!course) {
+    return (
+      <div className="flex justify-center items-center h-40">
+        <p className="text-gray-500">Khóa học không tồn tại hoặc đã bị xóa.</p>
+      </div>
+    )
+  }
+
   return (
     <div>
       <div className="relative block md:hidden">
@@ -104,35 +86,30 @@ export default function CoursePageClient({ courseID }: CourseDetailProps) {
           </Link>
         </Button>
         <img
-          src={course?.data?.assets.mobile_cover || course?.data?.assets.thumbnail}
+          src={course.assets.mobile_cover || course.assets.thumbnail}
           alt={`${courseID}`}
           className="w-full aspect-[400/255] object-cover block md:hidden"
         />
       </div>
       <div className="flex flex-col mx-auto max-w-[1800px] gap-10 lg:mt-5 mt-2 w-full md:pb-24 pb-0 p-3 xl:p-4">
         <img
-          src={
-            course?.data?.assets.desktop_cover || course?.data?.assets.mobile_cover || course?.data?.assets.thumbnail
-          }
+          src={course.assets.desktop_cover || course.assets.mobile_cover || course.assets.thumbnail}
           alt={`${courseID}`}
           className="rounded-xl w-full aspect-[1800/681] object-cover hidden md:block"
         />
         <div className="flex justify-between text-base">
           <div>
-            <p className="font-medium text-sm lg:text-xl">{course?.data?.course_name}</p>
+            <p className="font-medium text-sm lg:text-xl">{course?.course_name}</p>
             <p className="text-[#737373] text-sm lg:text-xl">
-              {course?.data && courseLevelLabel[course.data.difficulty_level as CourseLevel]}
+              {courseLevelLabel[course.difficulty_level as CourseLevel]}
             </p>
-            <p className="text-[#737373] text-sm lg:text-xl">{course?.data?.trainer}</p>
+            <p className="text-[#737373] text-sm lg:text-xl">{course?.trainer}</p>
           </div>
           <div className="text-gray-500 text-sm lg:text-xl">
-            {course?.data?.form_categories &&
-              (Array.isArray(course.data.form_categories)
-                ? course.data.form_categories.map((cat: CourseForm) => courseFormLabel[cat]).join(', ')
-                : courseFormLabel[course.data.form_categories as CourseForm])}
+            {course.relationships?.form_categories.map((fg) => fg.name).join(', ')}
           </div>
         </div>
-        {course?.data?.relationships?.subscriptions?.length > 0 && isSubscriptionExpired && (
+        {course.relationships?.subscriptions && isSubscriptionExpired && (
           <div className="flex flex-col lg:gap-5 gap-2">
             <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl uppercase">
               Gói Member
@@ -142,7 +119,7 @@ export default function CoursePageClient({ courseID }: CourseDetailProps) {
               className="flex overflow-x-scroll gap-2 mt-4"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-              {course?.data?.relationships?.subscriptions?.map((subscription: any) => {
+              {course.relationships?.subscriptions.map((subscription: any) => {
                 const hasPurchased = userSubscriptions.includes(subscription.id)
                 return (
                   <Link
@@ -167,13 +144,13 @@ export default function CoursePageClient({ courseID }: CourseDetailProps) {
             </div>
           </div>
         )}
-        {course?.data?.summary && (
+        {course.summary && (
           <div className="bg-primary rounded-xl my-4 p-4 lg:p-5">
             <p className="text-white text-center text-lg lg:text-4xl lg:font-bold font-medium lg:mb-4 mb-1 font-[family-name:var(--font-roboto)]">
               Tóm tắt khoá học
             </p>
             <div className="xl:px-10 max-lg:w-full mx-auto text-white h-full flex flex-col items-start list-disc pl-5">
-              {course.data.summary.split('\n').map((line: string, index: number) => (
+              {course.summary.split('\n').map((line: string, index: number) => (
                 <div key={index} className="text-[#F7F7F7] text-sm lg:text-xl mb-1">
                   {line}
                 </div>
@@ -186,58 +163,51 @@ export default function CoursePageClient({ courseID }: CourseDetailProps) {
           <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl mb-4">
             Thông tin khóa
           </p>
-          <HtmlContent
-            content={course?.data?.description}
-            className="text-[#737373] text-sm lg:text-lg whitespace-pre-line"
-          />
+          <HtmlContent content={course.description} className="text-[#737373] text-sm lg:text-lg whitespace-pre-line" />
         </div>
-        {course?.data?.equipment_ids?.length > 0 && equipments.length > 0 && (
+        {course.relationships && course.relationships.equipments.length > 0 && (
           <div>
             <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl mb-4">
               Dụng cụ
             </p>
             <ScrollArea className="w-screen-max-xl">
               <div className="flex w-max space-x-4 py-4">
-                {equipments
-                  .filter((equipment: any) => course.data.equipment_ids.includes(equipment.id))
-                  .map((equipment: any, index: number) => (
-                    <figure key={`equipment-${equipment.id}-${index}`} className="shrink-0">
-                      <div className="overflow-hidden rounded-md">
-                        <img src={equipment.image} alt={equipment.name} className="w-[168px] h-[175px] object-cover" />
-                      </div>
-                      <figcaption className="pt-2 font-medium text-base lg:text-lg text-muted-foreground text-center">
-                        {equipment.name}
-                      </figcaption>
-                    </figure>
-                  ))}
+                {course.relationships.equipments.map((equipment, index: number) => (
+                  <figure key={`equipment-${equipment.id}-${index}`} className="shrink-0">
+                    <div className="overflow-hidden rounded-md">
+                      <img src={equipment.image} alt={equipment.name} className="w-[168px] h-[175px] object-cover" />
+                    </div>
+                    <figcaption className="pt-2 font-medium text-base lg:text-lg text-muted-foreground text-center">
+                      {equipment.name}
+                    </figcaption>
+                  </figure>
+                ))}
               </div>
               <ScrollBar orientation="horizontal" />
             </ScrollArea>
           </div>
         )}
-        {course?.data?.muscle_group_ids?.length > 0 && muscleGroups.length > 0 && (
+        {course.relationships && course.relationships.muscle_groups.length > 0 && (
           <div>
             <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl mb-4">
               Nhóm cơ
             </p>
             <ScrollArea className="w-screen-max-xl">
               <div className="flex w-max space-x-4 py-4">
-                {muscleGroups
-                  .filter((muscleGroup: any) => course.data.muscle_group_ids.includes(muscleGroup.id))
-                  .map((muscleGroup: any, index: number) => (
-                    <figure key={`muscleGroup-${muscleGroup.id}-${index}`} className="shrink-0">
-                      <div className="overflow-hidden rounded-md">
-                        <img
-                          src={muscleGroup.image}
-                          alt={muscleGroup.name}
-                          className="w-[168px] h-[175px] object-cover"
-                        />
-                      </div>
-                      <figcaption className="pt-2 font-medium text-base lg:text-lg text-muted-foreground text-center">
-                        {muscleGroup.name}
-                      </figcaption>
-                    </figure>
-                  ))}
+                {course.relationships.muscle_groups.map((muscleGroup, index: number) => (
+                  <figure key={`muscleGroup-${muscleGroup.id}-${index}`} className="shrink-0">
+                    <div className="overflow-hidden rounded-md">
+                      <img
+                        src={muscleGroup.image}
+                        alt={muscleGroup.name}
+                        className="w-[168px] h-[175px] object-cover"
+                      />
+                    </div>
+                    <figcaption className="pt-2 font-medium text-base lg:text-lg text-muted-foreground text-center">
+                      {muscleGroup.name}
+                    </figcaption>
+                  </figure>
+                ))}
               </div>
               <ScrollBar orientation="horizontal" />
             </ScrollArea>
@@ -245,7 +215,7 @@ export default function CoursePageClient({ courseID }: CourseDetailProps) {
         )}
       </div>
 
-      <ActionButtons courseId={courseID} showDetails={false} back={back} />
+      <ActionButtons courseID={courseID} />
     </div>
   )
 }

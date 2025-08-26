@@ -56,7 +56,7 @@ const redirectToLogin = () => {
   }
 }
 
-export default function VideoCourseDetail({ courseId }: { courseId: Course['id'] }) {
+export function VideoCourseDetail({ courseID }: { courseID: Course['id'] }) {
   const searchParams = useSearchParams()
   const back = searchParams.get('back') || ''
   const [weeks, setWeeks] = useState<any>(null)
@@ -82,7 +82,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
       const response = await getUserCourses(session.userId)
       const userCourse = (response.data as UserCourseItem[])?.find((course) => {
         const userCourseId = Number(course.course_id)
-        const currentCourseId = Number(courseId)
+        const currentCourseId = Number(courseID)
         return userCourseId === currentCourseId && course.is_active === true
       })
 
@@ -102,7 +102,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
 
   useEffect(() => {
     checkUserCourse()
-  }, [session, courseId])
+  }, [session, courseID])
 
   const handleStartClick = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -116,7 +116,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
 
     if (status === 'not_found') {
       try {
-        await createUserCourse({ course_id: courseId }, session.userId)
+        await createUserCourse({ course_id: courseID }, session.userId)
         setCourseStatus('exists')
         return 'exists'
       } catch (error) {
@@ -131,11 +131,11 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const weeksData = await getCourseWeeks(courseId)
+        const weeksData = await getCourseWeeks(courseID)
         setWeeks(weeksData)
 
         if (weeksData.data && weeksData.data.length > 0) {
-          const daysData = await getWeekDays(courseId, weeksData.data[0]?.id)
+          const daysData = await getWeekDays(courseID, weeksData.data[0]?.id)
           setDays(daysData)
 
           const totalWeeks = weeksData.data.length
@@ -147,11 +147,11 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
     }
 
     fetchData()
-  }, [courseId])
+  }, [courseID])
 
   const checkCourseAccess = async () => {
     try {
-      const courseResponse = await getCourse(courseId)
+      const courseResponse = await getCourse(courseID)
       if (courseResponse?.data?.is_free) {
         console.log('Course is free, granting access')
         return true
@@ -165,9 +165,9 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
       // Find all subscriptions that contain the course
       const subscriptionsWithCourse = subscriptions.data.filter((sub: any) => {
         return sub.subscription?.courses?.some((course: any) => {
-          const match = course.id == courseId
+          const match = course.id == courseID
           console.log(
-            `Checking course: ${course.id} (${typeof course.id}) vs ${courseId} (${typeof courseId}), match: ${match}`
+            `Checking course: ${course.id} (${typeof course.id}) vs ${courseID} (${typeof courseID}), match: ${match}`
           )
           return match
         })
@@ -211,7 +211,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
   useEffect(() => {
     const checkCourse = async () => {
       try {
-        const courseResponse = await getCourse(courseId)
+        const courseResponse = await getCourse(courseID)
         setIsFreeCourse(courseResponse?.data?.is_free || false)
         setIsLoading(false)
       } catch (error) {
@@ -219,11 +219,11 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
       }
     }
     checkCourse()
-  }, [courseId])
+  }, [courseID])
 
   const handleDayClick = async (e: React.MouseEvent, weekId: string, dayId: string) => {
     e.preventDefault()
-    console.log('handleDayClick called with:', { weekId, dayId, courseId })
+    console.log('handleDayClick called with:', { weekId, dayId, courseId: courseID })
 
     try {
       if (isFreeCourse) {
@@ -231,7 +231,9 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
           setDialogOpen(`day-${dayId}`)
           return
         }
-        const targetUrl = `/courses/${courseId}/detail/${weekId}/${dayId}${back ? `?back=${encodeURIComponent(back)}` : ''}`
+        const targetUrl = `/courses/${courseID}/detail/${weekId}/${dayId}${
+          back ? `?back=${encodeURIComponent(back)}` : ''
+        }`
         console.log('Free course, navigating to:', targetUrl)
         window.location.href = targetUrl
         return
@@ -248,7 +250,9 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
       console.log('Course access result:', hasAccess)
 
       if (hasAccess) {
-        const targetUrl = `/courses/${courseId}/detail/${weekId}/${dayId}${back ? `?back=${encodeURIComponent(back)}` : ''}`
+        const targetUrl = `/courses/${courseID}/detail/${weekId}/${dayId}${
+          back ? `?back=${encodeURIComponent(back)}` : ''
+        }`
         console.log('User has access, navigating to:', targetUrl)
         window.location.href = targetUrl
       } else {
@@ -270,7 +274,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
     if (typeof window !== 'undefined') {
       saveCurrentUrl()
       const currentUrl = window.location.pathname + window.location.search
-      const accountUrl = `/account/packages?course_id=${courseId}&redirect=${encodeURIComponent(currentUrl)}`
+      const accountUrl = `/account/packages?course_id=${courseID}&redirect=${encodeURIComponent(currentUrl)}`
       window.location.href = accountUrl
     }
   }
@@ -293,7 +297,7 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
 
   return (
     <div className="flex flex-col gap-10 lg:mt-10 mt-2">
-      <Accordion type="multiple" defaultValue={courseData.map(c => `week-${c.week}`)} className="mt-3">
+      <Accordion type="multiple" defaultValue={courseData.map((c) => `week-${c.week}`)} className="mt-3">
         {courseData.map((week, weekIndex) => (
           <AccordionItem key={week.week} value={`week-${week.week}`}>
             <AccordionTrigger className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] text-ring text-2xl cursor-pointer font-semibold lg:font-bold">
@@ -413,3 +417,5 @@ export default function VideoCourseDetail({ courseId }: { courseId: Course['id']
     </div>
   )
 }
+
+export default VideoCourseDetail

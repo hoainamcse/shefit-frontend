@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { getDish } from '@/network/server/dishes'
-import ActionButtons from './ActionButtons'
+import ActionButtons from './_components/action-buttons'
 import Link from 'next/link'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { useSearchParams } from 'next/navigation'
@@ -156,7 +156,7 @@ export default function MealDetail({
             <p className="text-[#737373] text-sm lg:text-lg whitespace-pre-line">{dish.description}</p>
           </div>
         )}
-        <ActionButtons dishId={dish.id} />
+        <ActionButtons dishID={dish.id} />
       </div>
     </div>
   )

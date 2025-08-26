@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { getExerciseById } from '@/network/server/exercises'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import ActionButtons from './ActionButtons'
+import ActionButtons from './_components/action-buttons'
 import Link from 'next/link'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { useSearchParams } from 'next/navigation'
@@ -203,7 +203,7 @@ export default function MuscleDetail({
         </div>
       )}
 
-      <ActionButtons exerciseId={exercise?.id.toString()} />
+      <ActionButtons exerciseID={exercise?.id.toString()} />
     </div>
   )
 }

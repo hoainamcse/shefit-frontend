@@ -3,9 +3,8 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { getMealPlan } from '@/network/server/meal-plans'
-import ActionButtons from './ActionButtons'
+import { ActionButtons } from './_components/action-buttons'
 import { HtmlContent } from '@/components/html-content'
-import { BackIcon } from '@/components/icons/BackIcon'
 
 export default async function MealPlanPage({
   params,
@@ -20,14 +19,18 @@ export default async function MealPlanPage({
     const { data: mealPlan } = await getMealPlan(mealPlanID)
 
     if (!mealPlan) {
-      throw new Error('Không tìm thấy thông tin thực đơn')
+      return (
+        <div className="flex justify-center items-center h-40">
+          <p className="text-gray-500">Thực đơn không tồn tại hoặc đã bị xóa.</p>
+        </div>
+      )
     }
 
     return (
       <div>
         <div className="relative block md:hidden">
           <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto">
-            <Link href={back || "/meal-plans"} className="flex items-center">
+            <Link href={back || '/meal-plans'} className="flex items-center">
               <Button className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black shadow-none font-medium">
                 <BackIconBlack className="mb-1" /> Quay về
               </Button>
@@ -112,7 +115,7 @@ export default async function MealPlanPage({
                 </Carousel>
               </div>
             )}
-            <ActionButtons mealPlanId={mealPlan.id} />
+            <ActionButtons mealPlanID={mealPlan.id} />
           </div>
         </div>
       </div>

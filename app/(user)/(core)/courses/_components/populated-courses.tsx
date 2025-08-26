@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { getCourses } from '@/network/client/courses'
 import type { Course } from '@/models/course'
 import Link from 'next/link'
-export default function PopularCoursesCarousel() {
+export default function PopulatedCourses() {
   const [popularCourses, setPopularCourses] = useState<Course[]>([])
   const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
