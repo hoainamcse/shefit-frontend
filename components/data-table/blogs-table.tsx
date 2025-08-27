@@ -13,8 +13,8 @@ import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
-
 import { AddButton } from '../buttons/add-button'
+import { Badge } from '../ui/badge'
 
 export function BlogsTable() {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -54,7 +54,7 @@ export function BlogsTable() {
         header: 'Tên bài viết',
         accessorKey: 'title',
         cell: ({ row }) => <div className="font-medium">{row.getValue('title')}</div>,
-        size: 180,
+        size: 200,
         enableHiding: false,
       },
       {
@@ -69,7 +69,7 @@ export function BlogsTable() {
             />
           </div>
         ),
-        size: 180,
+        size: 120,
         enableSorting: false,
       },
       {
@@ -84,7 +84,22 @@ export function BlogsTable() {
             />
           </div>
         ),
-        size: 180,
+        size: 120,
+        enableSorting: false,
+      },
+      {
+        header: 'Chủ đề',
+        accessorKey: 'topics',
+        cell: ({ row }) => (
+          <div className="flex flex-wrap gap-2">
+            {row.original.topics.map((c) => (
+              <Badge key={c.id} variant="outline">
+                {c.name}
+              </Badge>
+            ))}
+          </div>
+        ),
+        size: 150,
         enableSorting: false,
       },
       {

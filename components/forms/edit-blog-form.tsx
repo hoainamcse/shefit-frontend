@@ -1,6 +1,7 @@
 'use client'
 
 import type { Blog } from '@/models/blog'
+import type { Topic } from '@/models/topic'
 
 import { z } from 'zod'
 import { toast } from 'sonner'
@@ -10,10 +11,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createBlog, updateBlog } from '@/network/client/blogs'
 
-import { FormInputField, FormRichTextField } from './fields'
+import { FormInputField, FormMultiSelectField, FormRichTextField } from './fields'
 import { MainButton } from '../buttons/main-button'
 import { ImageUploader } from '../image-uploader'
 import { Form } from '../ui/form'
+import { useRouter } from 'next/navigation'
 
 // ! Follow BlogPayload model in models/blog.ts
 const formSchema = z.object({
@@ -21,22 +23,25 @@ const formSchema = z.object({
   content: z.string(),
   thumbnail_image: z.string().url(),
   cover_image: z.string().url(),
+  topic_ids: z.array(z.string()),
 })
 
 type FormValue = z.infer<typeof formSchema>
 
 interface EditBlogFormProps {
   data?: Blog
-  onSuccess?: () => void
+  topics: Topic[]
 }
 
-export function EditBlogForm({ data, onSuccess }: EditBlogFormProps) {
+export function EditBlogForm({ data, topics }: EditBlogFormProps) {
+  const router = useRouter()
   const isEdit = !!data
   const defaultValue = {
     title: '',
     content: '',
     thumbnail_image: 'https://placehold.co/400?text=shefit.vn&font=Oswald',
     cover_image: 'https://placehold.co/400?text=shefit.vn&font=Oswald',
+    topic_ids: [],
   } as FormValue
 
   const form = useForm<FormValue>({
@@ -47,16 +52,17 @@ export function EditBlogForm({ data, onSuccess }: EditBlogFormProps) {
           content: data.content,
           thumbnail_image: data.thumbnail_image,
           cover_image: data.cover_image,
+          topic_ids: data.topics.map((t) => t.id.toString()),
         }
       : defaultValue,
   })
 
-  const exerciseMutation = useMutation({
-    mutationFn: (values: FormValue) => (isEdit ? updateBlog(data.id, values) : createBlog(values)),
+  const blogMutation = useMutation({
+    mutationFn: (values: any) => (isEdit ? updateBlog(data.id, values) : createBlog(values)),
     onSettled(data, error) {
       if (data?.status === 'success') {
         toast.success(isEdit ? 'Cập nhật bài viết thành công' : 'Tạo bài viết thành công')
-        onSuccess?.()
+        router.push(`/admin/blogs`)
       } else {
         toast.error(error?.message || 'Đã có lỗi xảy ra')
       }
@@ -64,7 +70,7 @@ export function EditBlogForm({ data, onSuccess }: EditBlogFormProps) {
   })
 
   const onSubmit = (values: FormValue) => {
-    exerciseMutation.mutate(values)
+    blogMutation.mutate({ ...values, topic_ids: values.topic_ids.map((id) => Number(id)) })
   }
 
   return (
@@ -88,9 +94,19 @@ export function EditBlogForm({ data, onSuccess }: EditBlogFormProps) {
             maxFileCount={1}
           />
         </div>
+        <FormMultiSelectField
+          form={form}
+          name="topic_ids"
+          label="Chủ đề"
+          placeholder="Chọn chủ đề"
+          data={topics.map((t) => ({
+            value: t.id.toString(),
+            label: t.name,
+          }))}
+        />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
-            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={exerciseMutation.isPending} />
+            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={blogMutation.isPending} />
           )}
         </div>
       </form>

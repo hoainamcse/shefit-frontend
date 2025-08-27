@@ -166,9 +166,13 @@ export function getMenuList(pathname: string): Group[] {
           icon: CreditCardIcon,
         },
         {
-          href: '/admin/blogs',
+          href: '',
           label: 'Bài viết',
           icon: RssIcon,
+          submenus: [
+            { href: '/admin/blogs', label: 'Danh sách' },
+            { href: '/admin/topics', label: 'Chủ đề' },
+          ],
         },
         {
           href: '/admin/coaches',

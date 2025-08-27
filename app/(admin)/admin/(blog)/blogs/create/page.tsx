@@ -1,15 +1,13 @@
-'use client'
-
-import { useRouter } from 'next/navigation'
-
+import { getTopics } from '@/network/server/topics'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { EditBlogForm } from '@/components/forms/edit-blog-form'
 
-export default function CreateBlogPage() {
-  const router = useRouter()
+export default async function CreateBlogPage() {
+  const topics = await getTopics()
+
   return (
     <ContentLayout title="Thêm bài viết">
-      <EditBlogForm onSuccess={() => router.push(`/admin/blogs`)} />
+      <EditBlogForm topics={topics.data} />
     </ContentLayout>
   )
 }

@@ -51,7 +51,7 @@ export function EditCoachForm({ data, onSuccess }: EditExerciseFormProps) {
       : defaultValue,
   })
 
-  const exerciseMutation = useMutation({
+  const coachMutation = useMutation({
     mutationFn: (values: FormValue) => (isEdit ? updateCoach(data.id, values) : createCoach(values)),
     onSettled(data, error) {
       if (data?.status === 'success') {
@@ -64,7 +64,7 @@ export function EditCoachForm({ data, onSuccess }: EditExerciseFormProps) {
   })
 
   const onSubmit = (values: FormValue) => {
-    exerciseMutation.mutate(values)
+    coachMutation.mutate(values)
   }
 
   return (
@@ -82,7 +82,7 @@ export function EditCoachForm({ data, onSuccess }: EditExerciseFormProps) {
         <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
-            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={exerciseMutation.isPending} />
+            <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={coachMutation.isPending} />
           )}
         </div>
       </form>
