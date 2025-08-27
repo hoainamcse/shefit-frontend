@@ -5,22 +5,32 @@ import type { Dish } from '@/models/dish'
 
 import { toast } from 'sonner'
 
+import { X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { createDish, deleteDish, getDishes, queryKeyDishes, importDishExcel } from '@/network/client/dishes'
+import { deleteDish, getDishes, queryKeyDishes, importDishExcel } from '@/network/client/dishes'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
-import { createDiet } from '@/network/client/diets'
+import { getDiets, queryKeyDiets } from '@/network/client/diets'
+import { useDebounce } from '@/hooks/use-debounce'
 import { Spinner } from '@/components/spinner'
-
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { EditDishForm } from '../forms/edit-dish-form'
 import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
 import { ExcelImportDialog } from '../excel-import-dialog'
-
+import { Button } from '../ui/button'
 import { EditSheet } from './edit-sheet'
 import { getYouTubeThumbnail } from '@/lib/youtube'
 
@@ -34,12 +44,34 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
     pageSize: 25,
   })
 
+  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [selectedDiet, setSelectedDiet] = useState<string | undefined>(undefined)
   const [rowSelection, setRowSelection] = useState<Dish[]>([])
 
+  const debouncedSearchQuery = useDebounce(searchQuery, 500)
+
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [queryKeyDishes, pagination],
-    queryFn: () => getDishes({ page: pagination.pageIndex, per_page: pagination.pageSize }),
+    queryKey: [
+      queryKeyDishes,
+      {
+        ...pagination,
+        ...(debouncedSearchQuery ? { name: debouncedSearchQuery } : {}),
+        ...(selectedDiet ? { diet_id: Number(selectedDiet) } : {}),
+      },
+    ],
+    queryFn: () =>
+      getDishes({
+        page: pagination.pageIndex,
+        per_page: pagination.pageSize,
+        ...(debouncedSearchQuery ? { name: debouncedSearchQuery } : {}),
+        ...(selectedDiet ? { diet_id: Number(selectedDiet) } : {}),
+      }),
     placeholderData: keepPreviousData,
+  })
+
+  const dietsQuery = useQuery({
+    queryKey: [queryKeyDiets],
+    queryFn: () => getDiets(),
   })
 
   const columns = useMemo<ColumnDef<Dish>[]>(
@@ -168,6 +200,57 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
         onDelete={onDeleteRows}
         onPaginationChange={setPagination}
         onRowSelectionChange={setRowSelection}
+        leftSection={
+          <div className="flex items-center gap-3">
+            <div className="relative w-64">
+              <Input
+                placeholder="Tìm kiếm món ăn..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pr-8"
+              />
+              {searchQuery && (
+                <button
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  onClick={() => setSearchQuery('')}
+                >
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Clear search</span>
+                </button>
+              )}
+            </div>
+            <Select value={selectedDiet || ''} onValueChange={(value) => setSelectedDiet(value || undefined)}>
+              <SelectTrigger className="w-56">
+                <SelectValue placeholder="Chọn chế độ ăn" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {dietsQuery.data?.data.map((diet) => (
+                    <SelectItem key={diet.id} value={String(diet.id)}>
+                      {diet.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+                {selectedDiet && (
+                  <>
+                    <SelectSeparator />
+                    <Button
+                      className="w-full px-2"
+                      variant="secondary"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedDiet(undefined)
+                      }}
+                    >
+                      Bỏ chọn
+                    </Button>
+                  </>
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+        }
         rightSection={
           <>
             {onConfirmRowSelection && (

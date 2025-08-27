@@ -4,6 +4,7 @@ import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import type { Exercise } from '@/models/exercise'
 
 import { toast } from 'sonner'
+import { X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
@@ -14,17 +15,30 @@ import {
   importExerciseExcel,
   queryKeyExercises,
 } from '@/network/client/exercises'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { getMuscleGroups, queryKeyMuscleGroups } from '@/network/client/muscle-groups'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { getYouTubeThumbnail } from '@/lib/youtube'
 import { Spinner } from '@/components/spinner'
+import { useDebounce } from '@/hooks/use-debounce'
 import { EditExerciseForm } from '../forms/edit-exercise-form'
 import { AddButton } from '../buttons/add-button'
 import { EditSheet } from './edit-sheet'
 import { Badge } from '../ui/badge'
 import { MainButton } from '../buttons/main-button'
 import { ExcelImportDialog } from '../excel-import-dialog'
+import { Button } from '../ui/button'
+import { Input } from '../ui/input'
 
 interface ExercisesTableProps {
   onConfirmRowSelection?: (selectedRows: Exercise[]) => void
@@ -36,12 +50,34 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
     pageSize: 25,
   })
 
+  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string | undefined>(undefined)
   const [rowSelection, setRowSelection] = useState<Exercise[]>([])
 
+  const debouncedSearchQuery = useDebounce(searchQuery, 500)
+
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [queryKeyExercises, pagination],
-    queryFn: () => getExercises({ page: pagination.pageIndex, per_page: pagination.pageSize }),
+    queryKey: [
+      queryKeyExercises,
+      {
+        ...pagination,
+        ...(debouncedSearchQuery ? { name: debouncedSearchQuery } : {}),
+        ...(selectedMuscleGroup ? { muscle_group_id: Number(selectedMuscleGroup) } : {}),
+      },
+    ],
+    queryFn: () =>
+      getExercises({
+        page: pagination.pageIndex,
+        per_page: pagination.pageSize,
+        ...(debouncedSearchQuery ? { name: debouncedSearchQuery } : {}),
+        ...(selectedMuscleGroup ? { muscle_group_id: Number(selectedMuscleGroup) } : {}),
+      }),
     placeholderData: keepPreviousData,
+  })
+
+  const muscleGroupsQuery = useQuery({
+    queryKey: [queryKeyMuscleGroups],
+    queryFn: () => getMuscleGroups(),
   })
 
   const columns = useMemo<ColumnDef<Exercise>[]>(
@@ -115,7 +151,11 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
           const thumbnail = getYouTubeThumbnail(row.getValue('youtube_url'))
           return (
             <a href={row.getValue('youtube_url')} target="_blank">
-              <img src={thumbnail || 'https://placehold.co/400?text=shefit.vn&font=Oswald'} alt={`${row.getValue('name')} thumbnail`} className="h-16 rounded-md object-cover" />
+              <img
+                src={thumbnail || 'https://placehold.co/400?text=shefit.vn&font=Oswald'}
+                alt={`${row.getValue('name')} thumbnail`}
+                className="h-16 rounded-md object-cover"
+              />
             </a>
           )
         },
@@ -206,6 +246,60 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
         onDelete={onDeleteRows}
         onPaginationChange={setPagination}
         onRowSelectionChange={setRowSelection}
+        leftSection={
+          <div className="flex items-center gap-3">
+            <div className="relative w-64">
+              <Input
+                placeholder="Tìm kiếm động tác..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pr-8"
+              />
+              {searchQuery && (
+                <button
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  onClick={() => setSearchQuery('')}
+                >
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Clear search</span>
+                </button>
+              )}
+            </div>
+            <Select
+              value={selectedMuscleGroup || ''}
+              onValueChange={(value) => setSelectedMuscleGroup(value || undefined)}
+            >
+              <SelectTrigger className="w-56">
+                <SelectValue placeholder="Chọn nhóm cơ" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {muscleGroupsQuery.data?.data.map((mg) => (
+                    <SelectItem key={mg.id} value={String(mg.id)}>
+                      {mg.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+                {selectedMuscleGroup && (
+                  <>
+                    <SelectSeparator />
+                    <Button
+                      className="w-full px-2"
+                      variant="secondary"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedMuscleGroup(undefined)
+                      }}
+                    >
+                      Bỏ chọn
+                    </Button>
+                  </>
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+        }
         rightSection={
           <>
             {onConfirmRowSelection && (
