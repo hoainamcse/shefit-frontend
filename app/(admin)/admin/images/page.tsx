@@ -4,14 +4,24 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ImageUploader } from '@/components/image-uploader'
-import { FileMetadata, getFiles, getS3FileUrl } from '@/network/client/upload'
+import { FileMetadata, getFiles, getS3FileUrl, deleteBulkFiles } from '@/network/client/upload'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { RefreshCw, Copy } from 'lucide-react'
+import { RefreshCw, Copy, Trash2, Loader2 } from 'lucide-react'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
-import { useQuery } from '@tanstack/react-query'
-import { sortByKey } from '@/lib/helpers'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useClipboard } from '@/hooks/use-clipboard'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 
 interface FormData {
   images: string[]
@@ -24,27 +34,69 @@ export default function ImagesPage() {
     },
   })
 
+  const PAGE_SIZE = 20
+  const queryClient = useQueryClient()
+  const [selectedImages, setSelectedImages] = useState<number[]>([])
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+
   const {
-    data: uploadedImages = [],
+    data,
     isLoading: loading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     refetch,
     error,
-  } = useQuery({
+  } = useInfiniteQuery({
     queryKey: ['images'],
-    queryFn: async () => {
-      const response = await getFiles()
+    queryFn: async ({ pageParam = 0 }) => {
+      const response = await getFiles({ page: pageParam, per_page: PAGE_SIZE })
       if (response.status === 'success') {
-        return response.data
+        return response
       }
       throw new Error('Failed to fetch images')
     },
-    select: (data) => data.filter((file) => !file.is_deleted),
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage.paging || typeof lastPage.paging.total !== 'number') {
+        return undefined
+      }
+      const totalPages = Math.ceil(lastPage.paging.total / PAGE_SIZE)
+      const nextPage = allPages.length
+      return nextPage < totalPages ? nextPage : undefined
+    },
+    initialPageParam: 0,
   })
 
-  const sortedImages = sortByKey(uploadedImages, 'created_at', {
-    direction: 'desc',
-    transform: (val) => new Date(val).getTime(),
+  const deleteMutation = useMutation({
+    mutationFn: (ids: number[]) => deleteBulkFiles(ids),
+    onSuccess: () => {
+      toast.success('Xóa hình ảnh thành công')
+      setSelectedImages([])
+      queryClient.invalidateQueries({ queryKey: ['images'] })
+    },
+    onError: (error) => {
+      toast.error('Không thể xóa hình ảnh: ' + (error as Error).message)
+    },
   })
+
+  const handleDeleteImages = () => {
+    if (selectedImages.length > 0) {
+      deleteMutation.mutate(selectedImages)
+      setIsDeleteDialogOpen(false)
+    }
+  }
+
+  const toggleSelectImage = (id: number) => {
+    setSelectedImages((prev) => (prev.includes(id) ? prev.filter((imageId) => imageId !== id) : [...prev, id]))
+  }
+
+  // Flatten the pages data into a single array of images
+  const uploadedImages = data?.pages.flatMap((page) => page.data.filter((file: FileMetadata) => !file.is_deleted)) || []
+
+  // Sort images by created_at in descending order
+  const sortedImages = [...uploadedImages].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  )
 
   const handleRefresh = () => {
     refetch()
@@ -110,6 +162,30 @@ export default function ImagesPage() {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Hình ảnh đã tải lên ({sortedImages.length})</span>
+            <div className="flex items-center gap-2">
+              {selectedImages.length > 0 && (
+                <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="sm" disabled={deleteMutation.isPending}>
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Xóa {selectedImages.length} hình ảnh
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Bạn có chắc chắn?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {`Thao tác này sẽ xóa ${selectedImages.length} hình ảnh đã chọn và không thể hoàn tác.`}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Hủy</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeleteImages}>Xóa</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -132,7 +208,10 @@ export default function ImagesPage() {
               {sortedImages.map((image) => (
                 <div
                   key={image.id}
-                  className="group relative border rounded-lg overflow-hidden bg-card hover:shadow-md transition-shadow"
+                  className={`group relative border rounded-lg overflow-hidden bg-card hover:shadow-md transition-shadow ${
+                    selectedImages.includes(image.id) ? 'ring-2 ring-primary' : ''
+                  }`}
+                  onClick={() => toggleSelectImage(image.id)}
                 >
                   <div className="aspect-square relative overflow-hidden">
                     <img
@@ -141,6 +220,11 @@ export default function ImagesPage() {
                       className="w-full h-full object-cover transition-transform group-hover:scale-105"
                       loading="lazy"
                     />
+                    {selectedImages.includes(image.id) && (
+                      <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center">
+                        ✓
+                      </div>
+                    )}
                   </div>
                   <div className="p-3 space-y-2">
                     <div>
@@ -156,7 +240,10 @@ export default function ImagesPage() {
                           size="sm"
                           variant="ghost"
                           className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
-                          onClick={() => copy(getS3FileUrl(image.s3_key))}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            copy(getS3FileUrl(image.s3_key))
+                          }}
                         >
                           <Copy className="w-4 h-4" />
                         </Button>
@@ -165,6 +252,21 @@ export default function ImagesPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {hasNextPage && (
+            <div className="mt-8 flex justify-center">
+              <Button onClick={() => fetchNextPage()} disabled={isFetchingNextPage} variant="outline">
+                {isFetchingNextPage ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Đang tải thêm...
+                  </>
+                ) : (
+                  'Tải thêm hình ảnh'
+                )}
+              </Button>
             </div>
           )}
         </CardContent>

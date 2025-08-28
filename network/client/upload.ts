@@ -1,4 +1,4 @@
-import type { ApiResponse } from '@/models/response'
+import type { ApiResponse, ListResponse } from '@/models/response'
 import { User } from '@/models/user'
 
 import type { UploadResponse } from '@/models/upload'
@@ -63,26 +63,21 @@ export interface FileMetadata {
   updated_at: string
 }
 
-export async function getAllFiles(): Promise<ApiResponse<FileMetadata[]>> {
-  const response = await fetchData('/v1/s3/all', {
+export async function getFiles(query?: any): Promise<ListResponse<FileMetadata>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData('/v1/s3/all' + '?' + searchParams, {
     method: 'GET',
   })
-  const data: ApiResponse<FileMetadata[]> = await response.json()
-  return data
+  return response.json()
 }
 
-export async function getFiles(): Promise<ApiResponse<FileMetadata[]>> {
-  const response = await fetchData('/v1/s3/', {
-    method: 'GET',
+export async function deleteBulkFiles(ids: number[]): Promise<ApiResponse<null>> {
+  const response = await fetchData(`/v1/s3/bulk`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(ids),
   })
-  const data: ApiResponse<FileMetadata[]> = await response.json()
-  return data
-}
-
-export async function getFilesList(): Promise<ApiResponse<FileMetadata[]>> {
-  const response = await fetchData('/v1/s3/list', {
-    method: 'GET',
-  })
-  const data: ApiResponse<FileMetadata[]> = await response.json()
-  return data
+  return response.json()
 }
