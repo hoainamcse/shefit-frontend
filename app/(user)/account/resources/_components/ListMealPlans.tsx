@@ -51,7 +51,7 @@ export default function ListMealPlans() {
 
   // Fetch subscription meal plans with infinite query
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useInfiniteQuery({
-    queryKey: ['subscriptionMealPlans', session?.userId, selectedSubscription?.subscription.id],
+    queryKey: ['subscription-meal-plans', session?.userId, selectedSubscription?.subscription.id],
     queryFn: async ({ pageParam = 0 }) =>
       getUserSubscriptionMealPlans(session!.userId, selectedSubscription!.subscription.id, {
         page: pageParam,
@@ -77,7 +77,7 @@ export default function ListMealPlans() {
     },
     onSuccess: (_, { mealPlanId, mealPlanTitle }) => {
       queryClient.setQueryData(
-        ['subscriptionMealPlans', session?.userId, selectedSubscription?.subscription.id],
+        ['subscription-meal-plans', session?.userId, selectedSubscription?.subscription.id],
         (oldData: any) => {
           if (!oldData) return oldData
 

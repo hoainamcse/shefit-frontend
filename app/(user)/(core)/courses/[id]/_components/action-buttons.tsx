@@ -11,7 +11,8 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { addUserSavedResource, checkUserAccessedResource, checkUserSavedResource } from '@/network/client/users'
+import { addFavouriteCourse } from '@/network/client/user-favourites'
+import { checkUserAccessedResource, checkUserSavedResource } from '@/network/client/users'
 
 interface ActionButtonsProps {
   courseID: Course['id']
@@ -24,14 +25,9 @@ export function ActionButtons({ courseID }: ActionButtonsProps) {
   const { session } = useSession()
   const [openLogin, setOpenLogin] = useState(false)
   const [openBuyPackage, setOpenBuyPackage] = useState(false)
+  const [showSaveDialog, setShowSaveDialog] = useState(false)
+  const [saving, setSaving] = useState(false)
   const { redirectToLogin } = useAuthRedirect()
-
-  const saveQuery = useQuery({
-    queryKey: ['user-saved-resources', session?.userId, 'course', courseID],
-    queryFn: () => checkUserSavedResource(session!.userId, 'course', courseID),
-    enabled: !!session,
-  })
-  const isSaved = saveQuery.data?.data || false
 
   const accessQuery = useQuery({
     queryKey: ['user-accessed-resources', session?.userId, 'course', courseID],
@@ -40,14 +36,24 @@ export function ActionButtons({ courseID }: ActionButtonsProps) {
   })
   const isAccessed = accessQuery.data?.data || false
 
-  const saveMutation = useMutation({
-    mutationFn: () => addUserSavedResource(session!.userId, 'course', courseID),
+  // Check saved status
+  const savedStatusQuery = useQuery({
+    queryKey: ['saved-resource-status', session?.userId, 'course', courseID],
+    queryFn: () => checkUserSavedResource(session!.userId, 'course', courseID),
+    enabled: !!session && showSaveDialog,
+  })
+
+  const favouriteMutation = useMutation({
+    mutationFn: () => addFavouriteCourse(session!.userId, courseID),
     onSuccess: () => {
-      saveQuery.refetch()
-      toast.success('Đã thêm khoá học vào danh sách!')
+      setSaving(false)
+      setShowSaveDialog(false)
+      savedStatusQuery.refetch()
+      toast.success('Đã thêm khóa học vào danh sách yêu thích!')
     },
     onError: (error) => {
-      toast.error(error.message || 'Có lỗi xảy ra khi lưu khoá học!')
+      setSaving(false)
+      toast.error(error.message || 'Có lỗi xảy ra khi thêm vào yêu thích!')
     },
   })
 
@@ -65,13 +71,18 @@ export function ActionButtons({ courseID }: ActionButtonsProps) {
     router.push(`/courses/${courseID}/detail${searchParams ? `?${searchParams.toString()}` : ''}`)
   }
 
-  const handleSaveCourse = () => {
+  const handleShowSaveOptions = () => {
     if (!session) {
       setOpenLogin(true)
       return
     }
 
-    saveMutation.mutate()
+    setShowSaveDialog(true)
+  }
+
+  const handleSaveFavorite = () => {
+    setSaving(true)
+    favouriteMutation.mutate()
   }
 
   const handleLoginClick = () => {
@@ -83,6 +94,9 @@ export function ActionButtons({ courseID }: ActionButtonsProps) {
     setOpenBuyPackage(false)
     router.push(`/account/packages?redirect=${encodeURIComponent(pathname)}`)
   }
+
+  // Extract saved status
+  const alreadySavedInFavorite = savedStatusQuery.data?.data?.in_favourite || false
 
   return (
     <>
@@ -97,25 +111,16 @@ export function ActionButtons({ courseID }: ActionButtonsProps) {
         </div>
         <div className="w-1/2">
           <Button
-            onClick={() => handleSaveCourse()}
-            disabled={isSaved || saveQuery.isLoading || saveMutation.isPending}
-            className={`w-full rounded-full text-sm lg:text-lg h-14 border-2 ${
-              isSaved
-                ? 'bg-transparent text-[#11c296] border-[#11c296] cursor-not-allowed'
-                : 'bg-[#13D8A7] text-white hover:bg-[#11c296] border-[#13D8A7]'
-            }`}
+            onClick={handleShowSaveOptions}
+            disabled={saving}
+            className="w-full rounded-full text-sm lg:text-lg h-14 border-2 bg-[#13D8A7] text-white hover:bg-[#11c296] border-[#13D8A7]"
           >
-            {saveMutation.isPending
-              ? 'Đang lưu'
-              : saveQuery.isLoading
-              ? 'Đang kiểm tra...'
-              : isSaved
-              ? 'Đã Lưu'
-              : 'Lưu'}
+            {saving ? 'Đang lưu...' : 'Lưu'}
           </Button>
         </div>
       </div>
 
+      {/* Buy Package Dialog */}
       <Dialog open={openBuyPackage} onOpenChange={setOpenBuyPackage}>
         <DialogContent>
           <DialogHeader>
@@ -132,6 +137,7 @@ export function ActionButtons({ courseID }: ActionButtonsProps) {
         </DialogContent>
       </Dialog>
 
+      {/* Login Dialog */}
       <Dialog open={openLogin} onOpenChange={setOpenLogin}>
         <DialogContent>
           <DialogHeader>
@@ -144,6 +150,83 @@ export function ActionButtons({ courseID }: ActionButtonsProps) {
                 Đăng nhập
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Save Options Dialog - Only Favorites */}
+      <Dialog open={showSaveDialog} onOpenChange={(open) => setShowSaveDialog(open)}>
+        <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center text-2xl font-bold text-[#13D8A7]">Lưu khóa học</DialogTitle>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-4">
+            {/* Loading state */}
+            {savedStatusQuery.isLoading && (
+              <div className="py-8 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#13D8A7]"></div>
+              </div>
+            )}
+
+            {/* Error state */}
+            {savedStatusQuery.error && (
+              <div className="bg-red-50 p-4 rounded-lg text-center">
+                <p className="text-red-600">Có lỗi xảy ra khi tải dữ liệu</p>
+                <Button
+                  onClick={() => savedStatusQuery.refetch()}
+                  className="mt-2 bg-red-600 hover:bg-red-700 text-white"
+                  size="sm"
+                >
+                  Thử lại
+                </Button>
+              </div>
+            )}
+
+            {!savedStatusQuery.isLoading && !savedStatusQuery.error && (
+              <>
+                {/* Favorite option */}
+                <div className="bg-white rounded-lg p-5 shadow-sm border border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <h3 className="font-medium text-lg">Yêu thích</h3>
+                      <p className="text-gray-500 text-sm">Lưu vào danh sách yêu thích</p>
+                    </div>
+                    <Button
+                      onClick={handleSaveFavorite}
+                      disabled={alreadySavedInFavorite || saving}
+                      size="sm"
+                      className={
+                        alreadySavedInFavorite
+                          ? 'bg-green-50 text-green-700 border border-green-200 hover:bg-green-50 cursor-default'
+                          : 'bg-[#13D8A7] hover:bg-[#11c296] text-white'
+                      }
+                    >
+                      {alreadySavedInFavorite ? (
+                        <span className="flex items-center gap-1">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M20 6L9 17l-5-5" />
+                          </svg>
+                          Đã lưu
+                        </span>
+                      ) : (
+                        'Lưu'
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>

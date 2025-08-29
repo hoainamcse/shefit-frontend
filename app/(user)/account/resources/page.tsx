@@ -37,8 +37,11 @@ function ExerciseContent() {
           </AccordionTrigger>
           <AccordionContent>
             <p className="text-base text-muted-foreground">
-              Bạn có thể chọn trong nhiều loại thực đơn đa dạng. Để biết bạn phù hợp thực đơn nào hãy làm Body Quiz Bảng
-              Câu Hỏi số đo body.
+              Bạn có thể chọn trong nhiều loại thực đơn đa dạng. Để biết bạn phù hợp thực đơn nào hãy làm{' '}
+              <a href="/account/quizzes" className="underline">
+                Body Quiz Bảng Câu Hỏi số đo body
+              </a>
+              .
             </p>
             <ListMealPlans />
           </AccordionContent>

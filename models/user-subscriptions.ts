@@ -9,7 +9,7 @@ type UserSubscription = {
   subscription_id: number,
   course_format: string,
   coupon_code: string,
-  status: string,
+  status: 'active' | 'expired' | 'canceled' | 'pending',
   subscription_start_at: string,
   subscription_end_at: string,
   gift_id?: number,
@@ -27,8 +27,7 @@ type UserSubscriptionDetail = Omit<UserSubscription,
     gifts: Gift
     subscription: {
       id: Subscription['id']
-      subscription_start_at: string
-      subscription_end_at: string
+      name: string
       courses: { id: number; course_name: string }[]
     }
     exercises: Pick<Exercise, 'id' | 'name'>[]

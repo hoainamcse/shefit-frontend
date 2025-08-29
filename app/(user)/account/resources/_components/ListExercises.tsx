@@ -62,7 +62,7 @@ export default function ListExercises() {
 
   // Fetch subscription exercises with infinite query
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useInfiniteQuery({
-    queryKey: ['subscriptionExercises', session?.userId, selectedSubscription?.subscription.id],
+    queryKey: ['subscription-exercises', session?.userId, selectedSubscription?.subscription.id],
     queryFn: async ({ pageParam = 0 }) =>
       getUserSubscriptionExercises(session!.userId, selectedSubscription!.subscription.id, {
         page: pageParam,
@@ -88,7 +88,7 @@ export default function ListExercises() {
     },
     onSuccess: (_, { exerciseId, exerciseTitle }) => {
       queryClient.setQueryData(
-        ['subscriptionExercises', session?.userId, selectedSubscription?.subscription.id],
+        ['subscription-exercises', session?.userId, selectedSubscription?.subscription.id],
         (oldData: any) => {
           if (!oldData) return oldData
 

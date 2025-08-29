@@ -11,7 +11,8 @@ export async function getUser(id: User['id']): Promise<ApiResponse<User>> {
   return response.json()
 }
 
-export async function getUserSubscriptions(id: User['id']): Promise<ListResponse<UserSubscriptionDetail>> {
-  const response = await fetchDataServer(`/v1/users/${id}/subscriptions`)
+export async function getUserSubscriptions(id: User['id'], query?: any): Promise<ListResponse<UserSubscriptionDetail>> {
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchDataServer(`/v1/users/${id}/subscriptions${searchParams}`)
   return response.json()
 }

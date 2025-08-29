@@ -52,12 +52,9 @@ export function LiveCourseDetail({ courseID }: { courseID: Course['id'] }) {
   const [isCheckingAccess, setIsCheckingAccess] = useState(false)
   const [courseStatus, setCourseStatus] = useState<'checking' | 'exists' | 'not_found'>('checking')
 
-  const isClassAvailable = (startTime: string, endTime: string, dayOfWeek: DayOfWeek) => {
+  const isClassAvailable = (dayOfWeek: DayOfWeek) => {
     const now = new Date()
     const currentDay = now.getDay() // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-    const currentHour = now.getHours()
-    const currentMinute = now.getMinutes()
-    const currentSecond = now.getSeconds()
 
     // Map day names to numbers
     const dayMap: { [key: string]: number } = {
@@ -72,21 +69,8 @@ export function LiveCourseDetail({ courseID }: { courseID: Course['id'] }) {
 
     const classDayNumber = dayMap[dayOfWeek]
 
-    // Check if today matches the class day
-    if (currentDay !== classDayNumber) {
-      return false
-    }
-
-    const [startHour, startMinute, startSecond] = startTime.split(':').map(Number)
-    const [endHour, endMinute, endSecond] = endTime.split(':').map(Number)
-
-    // Convert current time to seconds for easier comparison
-    const currentTimeInSeconds = currentHour * 3600 + currentMinute * 60 + currentSecond
-    const startTimeInSeconds = startHour * 3600 + startMinute * 60 + startSecond
-    const endTimeInSeconds = endHour * 3600 + endMinute * 60 + endSecond
-
-    // Class is available if current time is within the class period
-    return currentTimeInSeconds >= startTimeInSeconds && currentTimeInSeconds <= endTimeInSeconds
+    // Only check if today matches the class day
+    return currentDay === classDayNumber
   }
 
   useEffect(() => {
@@ -297,7 +281,7 @@ export function LiveCourseDetail({ courseID }: { courseID: Course['id'] }) {
                             </p>
                             <p className="text-[#737373] text-sm lg:text-lg">{session_.description}</p>
                           </div>
-                          {isClassAvailable(session_.start_time, session_.end_time, dayItem.day_of_week) ? (
+                          {isClassAvailable(dayItem.day_of_week) ? (
                             <div className="cursor-pointer" onClick={(e) => handleJoinClass(e, session_)}>
                               <div className="text-primary text-sm lg:text-lg">
                                 {isCheckingAccess ? 'Đang kiểm tra...' : 'Vào lớp'}

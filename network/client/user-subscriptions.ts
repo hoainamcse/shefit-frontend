@@ -8,6 +8,8 @@ import type { ApiResponse, ListResponse } from '@/models/response'
 import { fetchData } from '../helpers/fetch-data'
 import { Subscription } from '@/models/subscription'
 
+export const queryKeyUserSubscriptions = 'user-subscriptions'
+
 // UserSubscription Dish
 export async function getUserSubscriptionDishes(
   user_id: User['id'],

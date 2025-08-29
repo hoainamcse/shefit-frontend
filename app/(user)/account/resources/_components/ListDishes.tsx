@@ -51,7 +51,7 @@ export default function ListDishes() {
 
   // Fetch subscription dishes with infinite query
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useInfiniteQuery({
-    queryKey: ['subscriptionDishes', session?.userId, selectedSubscription?.subscription.id],
+    queryKey: ['subscription-dishes', session?.userId, selectedSubscription?.subscription.id],
     queryFn: async ({ pageParam = 0 }) =>
       getUserSubscriptionDishes(session!.userId, selectedSubscription!.subscription.id, {
         page: pageParam,
@@ -77,7 +77,7 @@ export default function ListDishes() {
     },
     onSuccess: (_, { dishId, dishTitle }) => {
       queryClient.setQueryData(
-        ['subscriptionDishes', session?.userId, selectedSubscription?.subscription.id],
+        ['subscription-dishes', session?.userId, selectedSubscription?.subscription.id],
         (oldData: any) => {
           if (!oldData) return oldData
 

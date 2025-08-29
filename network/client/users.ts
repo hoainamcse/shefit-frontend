@@ -86,8 +86,9 @@ export async function createUserCourse(data: any, id: User['id']): Promise<ApiRe
 }
 
 // User Subscription
-export async function getUserSubscriptions(id: User['id']): Promise<ListResponse<UserSubscriptionDetail>> {
-  const response = await fetchData(`/v1/users/${id}/subscriptions`)
+export async function getUserSubscriptions(id: User['id'], query?: any): Promise<ListResponse<UserSubscriptionDetail>> {
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData(`/v1/users/${id}/subscriptions${searchParams}`)
   return response.json()
 }
 
@@ -122,7 +123,12 @@ export async function checkUserSavedResource(
   userID: User['id'],
   resourceType: string,
   resourceID: number
-): Promise<ApiResponse<boolean>> {
+): Promise<
+  ApiResponse<{
+    in_favourite: boolean
+    user_subscription_ids: number[]
+  }>
+> {
   const response = await fetchData(
     `/v1/users/${userID}/resources/saved?resource_type=${resourceType}&resource_id=${resourceID}`,
     {

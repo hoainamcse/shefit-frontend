@@ -326,8 +326,11 @@ export default function FavouriteContent() {
           Thực đơn yêu thích
         </h2>
         <p className="text-base text-muted-foreground">
-          Bạn có thể chọn trong nhiều loại thực đơn đa dạng. Để biết bạn phù hợp thực đơn nào hãy làm Body Quiz Bảng Câu
-          Hỏi số đo body.
+          Bạn có thể chọn trong nhiều loại thực đơn đa dạng. Để biết bạn phù hợp thực đơn nào hãy làm{' '}
+          <a href="/account/quizzes" className="underline">
+            Body Quiz Bảng Câu Hỏi số đo body
+          </a>
+          .
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
           {mealPlanQuery.isLoading ? (
@@ -389,7 +392,9 @@ export default function FavouriteContent() {
           ) : exercises.length > 0 ? (
             exercises.map((exercise) => (
               <Link
-                href={`/exercises/${exercise.id}?muscle_group_id=${exercise.muscle_groups?.[0]?.id || ''}&back=%2Faccount%2Fresources`}
+                href={`/exercises/${exercise.id}?muscle_group_id=${
+                  exercise.muscle_groups?.[0]?.id || ''
+                }&back=%2Faccount%2Fresources`}
                 key={exercise.id}
               >
                 <div>

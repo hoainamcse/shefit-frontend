@@ -3,99 +3,76 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { getUserSubscriptions } from '@/network/client/users'
-import { getSubscription } from '@/network/client/subscriptions'
+import { UserSubscriptionDetail } from '@/models/user-subscriptions'
 import { useSession } from '@/hooks/use-session'
-import { useEffect, useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useSubscription } from './SubscriptionContext'
+import { useQuery } from '@tanstack/react-query'
 
 export default function ListSubscriptions() {
   const { session } = useSession()
-  const [isLoading, setIsLoading] = useState(true)
-  const [userSubscriptions, setUserSubscriptions] = useState<any[]>([])
-  const [subscriptionNames, setSubscriptionNames] = useState<{ [key: number]: string }>({})
-  const [namesLoaded, setNamesLoaded] = useState(false)
   const {
     selectedSubscription,
     setSelectedSubscription,
     showFavorites,
     setShowFavorites,
     setIsLoading: setContextLoading,
+    isLoading: contextLoading,
   } = useSubscription()
 
+  // Fetch user subscriptions using React Query
+  const {
+    data: userSubsResponse,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['user-subscriptions', session?.userId],
+    queryFn: () => getUserSubscriptions(session!.userId),
+    enabled: !!session,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
+
+  // Update context loading state based on query state
   useEffect(() => {
-    async function fetchData() {
-      if (!session) return
+    setContextLoading(isLoading)
 
-      try {
-        setContextLoading(true)
-        const userSubsResponse = await getUserSubscriptions(session.userId)
-        if (userSubsResponse.data && userSubsResponse.data.length > 0) {
-          const currentDate = new Date()
+    if (isError) {
+      console.error('Error fetching subscriptions')
+      setContextLoading(false)
+    }
+  }, [isLoading, isError, setContextLoading])
 
-          const sortedSubscriptions = [...userSubsResponse.data].sort((a, b) => {
-            const aEndDate = new Date(a.subscription_end_at)
-            const bEndDate = new Date(b.subscription_end_at)
-            const aIsActive = currentDate <= aEndDate
-            const bIsActive = currentDate <= bEndDate
+  // Process and sort subscriptions
+  const userSubscriptions = useMemo<UserSubscriptionDetail[]>(() => {
+    if (!userSubsResponse?.data?.length) return []
 
-            if (aIsActive && !bIsActive) return -1
-            if (!aIsActive && bIsActive) return 1
+    const currentDate = new Date()
+    return [...userSubsResponse.data].sort((a: UserSubscriptionDetail, b: UserSubscriptionDetail) => {
+      const aEndDate = new Date(a.subscription_end_at)
+      const bEndDate = new Date(b.subscription_end_at)
+      const aIsActive = currentDate <= aEndDate
+      const bIsActive = currentDate <= bEndDate
 
-            return bEndDate.getTime() - aEndDate.getTime()
-          })
+      if (aIsActive && !bIsActive) return -1
+      if (!aIsActive && bIsActive) return 1
 
-          setUserSubscriptions(sortedSubscriptions)
+      return bEndDate.getTime() - aEndDate.getTime()
+    })
+  }, [userSubsResponse?.data])
 
-          if (!selectedSubscription) {
-            const firstActiveSubscription = sortedSubscriptions.find((sub) => {
-              const endDate = new Date(sub.subscription_end_at)
-              return currentDate <= endDate
-            })
-
-            if (firstActiveSubscription) {
-              setSelectedSubscription(firstActiveSubscription)
-              setShowFavorites(false)
-            } else {
-              setSelectedSubscription(sortedSubscriptions[0])
-              setShowFavorites(false)
-            }
-          }
-          const namesPromises = sortedSubscriptions.map(async (sub) => {
-            try {
-              const subResponse = await getSubscription(sub.subscription.id)
-              return { id: sub.subscription.id, name: subResponse.data?.name || `Gói tập ${sub.subscription.id}` }
-            } catch (error) {
-              console.error('Error fetching subscription:', error)
-              return { id: sub.subscription.id, name: `Gói tập ${sub.subscription.id}` }
-            }
-          })
-
-          const subscriptionData = await Promise.all(namesPromises)
-          const namesMap: { [key: number]: string } = {}
-          let hasEmptyNames = false
-
-          subscriptionData.forEach((item) => {
-            if (item) {
-              namesMap[item.id] = item.name
-              if (!item.name) hasEmptyNames = true
-            }
-          })
-
-          setSubscriptionNames(namesMap)
-          setNamesLoaded(true)
-        } else {
-          setSelectedSubscription(undefined)
-          setShowFavorites(true)
-        }
-      } catch (error) {
-        console.error('Error fetching subscriptions:', error)
-      } finally {
-        setContextLoading(false)
-      }
+  // Set favorites as default
+  useEffect(() => {
+    if (isLoading) {
+      setContextLoading(true)
+      return
     }
 
-    fetchData()
-  }, [session, setContextLoading])
+    if (!selectedSubscription) {
+      // Always default to favorites
+      setSelectedSubscription(undefined)
+      setShowFavorites(true)
+    }
+  }, [isLoading, selectedSubscription, setContextLoading, setSelectedSubscription, setShowFavorites])
 
   const handleSubscriptionChange = async (value: string) => {
     if (value === 'favorites') {
@@ -106,7 +83,7 @@ export default function ListSubscriptions() {
     setShowFavorites(false)
 
     const subscriptionId = parseInt(value)
-    const subscription = userSubscriptions.find((sub) => sub.id === subscriptionId)
+    const subscription = userSubscriptions.find((sub: UserSubscriptionDetail) => sub.id === subscriptionId)
     if (subscription) {
       setSelectedSubscription(subscription)
     }
@@ -124,36 +101,21 @@ export default function ListSubscriptions() {
           onValueChange={handleSubscriptionChange}
         >
           <SelectTrigger className="w-full h-[54px] text-left">
-            <SelectValue placeholder={isLoading ? 'Đang tải...' : 'Gói member của bạn'} />
+            <SelectValue placeholder={contextLoading ? 'Đang tải...' : 'Gói member của bạn'} />
           </SelectTrigger>
           <SelectContent className="w-full max-h-[300px] overflow-y-auto">
-            {!namesLoaded ? (
-              <div className="px-3 py-2 text-sm text-gray-500">Đang tải danh sách gói tập...</div>
-            ) : (
-              <>
-                {userSubscriptions.map((subscription) => {
-                  const subscriptionId = subscription.id.toString()
-                  const endDate = new Date(subscription.subscription_end_at)
-                  const isSubscriptionActive = currentDate <= endDate
-                  const subscriptionName = subscriptionNames[subscription.subscription?.id]
+            {userSubscriptions.map((subscription: UserSubscriptionDetail) => {
+              const subscriptionId = subscription.id.toString()
 
-                  if (!subscriptionName) return null
-
-                  return (
-                    <SelectItem
-                      key={subscriptionId}
-                      value={subscriptionId}
-                      className="cursor-pointer hover:bg-gray-100"
-                    >
-                      {subscriptionName}
-                    </SelectItem>
-                  )
-                })}
-                <SelectItem key="favorites" value="favorites">
-                  Yêu thích
+              return (
+                <SelectItem key={subscriptionId} value={subscriptionId} className="cursor-pointer hover:bg-gray-100">
+                  {subscription.subscription.name}
                 </SelectItem>
-              </>
-            )}
+              )
+            })}
+            <SelectItem key="favorites" value="favorites">
+              Yêu thích
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>

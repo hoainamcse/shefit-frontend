@@ -3,10 +3,10 @@
 import Link from 'next/link'
 import { useSession } from '@/hooks/use-session'
 import { useSubscription } from './SubscriptionContext'
-import { getCourse } from '@/network/client/courses'
+import { getCourses } from '@/network/client/courses'
 import { useRouter } from 'next/navigation'
-import { useState, useEffect, useMemo } from 'react'
-import { DeleteIcon } from '@/components/icons/DeleteIcon'
+import { useState, useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Lock } from 'lucide-react'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import {
@@ -19,11 +19,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import type { Course } from '@/models/course'
-
-type CourseWithCategory = Course & {
-  category?: string
-}
 
 export function ListCourses() {
   const router = useRouter()
@@ -32,9 +27,6 @@ export function ListCourses() {
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [renewDialogOpen, setRenewDialogOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [courses, setCourses] = useState<CourseWithCategory[]>([])
-
   const isSubscriptionExpired = useMemo(() => {
     if (!selectedSubscription?.subscription_end_at) return true
     const endDate = new Date(selectedSubscription.subscription_end_at)
@@ -60,44 +52,14 @@ export function ListCourses() {
     return subscriptionCourses.map((course) => course.id)
   }, [subscriptionCourses])
 
-  useEffect(() => {
-    const fetchCourseDetails = async () => {
-      if (!selectedSubscription?.subscription?.courses?.length) {
-        setCourses([])
-        setIsLoading(false)
-        return
-      }
+  // Use React Query to fetch courses by IDs
+  const { data: coursesData, isLoading } = useQuery({
+    queryKey: ['subscription-courses', session?.userId, selectedSubscription?.subscription.id],
+    queryFn: () => getCourses({ ids: courseIds.join(',') }),
+    enabled: !!session?.userId && !!selectedSubscription?.subscription.id && courseIds.length > 0,
+  })
 
-      try {
-        setIsLoading(true)
-        const coursePromises = subscriptionCourses.map(async (course) => {
-          try {
-            const courseId = typeof course.id === 'string' ? parseInt(course.id, 10) : course.id
-            const response = await getCourse(courseId)
-            if (response && response.status === 'success' && response.data) {
-              return {
-                ...response.data,
-                category: (response.data as any).category || '',
-              }
-            }
-            return null
-          } catch (error) {
-            console.error(`Error fetching course ${course.id}:`, error)
-            return null
-          }
-        })
-
-        const courses = (await Promise.all(coursePromises)).filter(Boolean)
-        setCourses(courses as CourseWithCategory[])
-      } catch (error) {
-        console.error('Error in fetchCourseDetails:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchCourseDetails()
-  }, [selectedSubscription, subscriptionCourses, courseIds])
+  const courses = courseIds.length > 0 ? coursesData?.data || [] : []
 
   if (!session) {
     return (
@@ -227,7 +189,7 @@ export function ListCourses() {
                     </div>
                   </div>
                   <div className="flex gap-2 justify-end flex-col items-end text-sm lg:text-base">
-                    {course.form_categories?.map((cat) => cat.name).join(', ')}
+                    {course.form_categories.map((cat) => cat.name).join(', ')}
                   </div>
                 </div>
               </div>
