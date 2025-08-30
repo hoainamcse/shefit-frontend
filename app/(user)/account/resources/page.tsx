@@ -2,13 +2,13 @@
 
 import React from 'react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import ListMealPlans from './_components/ListMealPlans'
-import ListExercises from './_components/ListExercises'
-import { ListCourses } from './_components/ListCourses'
-import ListSubscriptions from './_components/ListSubscriptions'
-import { SubscriptionProvider, useSubscription } from './_components/SubscriptionContext'
-import ListDishes from './_components/ListDishes'
-import FavouriteContent from './_components/FavouriteContent'
+import ListMealPlans from './_components/list-meal-plans'
+import ListExercises from './_components/list-exercises'
+import { ListCourses } from './_components/list-courses'
+import ListSubscriptions from './_components/list-subscriptions'
+import { SubscriptionProvider, useSubscription } from './_components/subscription-context'
+import ListDishes from './_components/list-dishes'
+import FavouriteContent from './_components/favourite-content'
 
 function ExerciseContent() {
   const { showFavorites } = useSubscription()

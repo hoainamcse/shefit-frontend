@@ -13,12 +13,13 @@ import {
   deleteNotification,
   getNotifications,
   queryKeyNotifications,
-  updateNotification
+  updateNotification,
 } from '@/network/client/notifications'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
+import { htmlToText } from '@/lib/helpers'
 import { Switch } from '../ui/switch'
 import { AddButton } from '../buttons/add-button'
 
@@ -41,7 +42,7 @@ export function NotificationsTable() {
           title: notification.title,
           content: notification.content,
           notify_date: notification.notify_date,
-          pinned
+          pinned,
         })
         toast.success('Đã cập nhật trạng thái ghim')
         refetch()
@@ -85,7 +86,7 @@ export function NotificationsTable() {
       {
         header: 'Nội dung',
         accessorKey: 'content',
-        cell: ({ row }) => <div className="max-w-md truncate">{row.getValue('content')}</div>,
+        cell: ({ row }) => <div className="max-w-md truncate">{htmlToText(row.getValue('content'))}</div>,
         size: 300,
         enableSorting: false,
       },

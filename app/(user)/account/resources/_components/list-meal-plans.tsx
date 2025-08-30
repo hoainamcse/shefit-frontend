@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { useSubscription } from './SubscriptionContext'
+import { useSubscription } from './subscription-context'
 import { useSession } from '@/hooks/use-session'
 import {
   Dialog,
@@ -14,17 +14,17 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog'
-
+import { MealPlan } from '@/models/meal-plan'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
-import { getUserSubscriptionDishes, removeUserSubscriptionDish } from '@/network/client/user-subscriptions'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { getUserSubscriptionMealPlans, removeUserSubscriptionMealPlan } from '@/network/client/user-subscriptions'
 import { Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
 import { toast } from 'sonner'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
 
-export default function ListDishes() {
+export default function ListMealPlans() {
   const { session } = useSession()
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -49,11 +49,11 @@ export default function ListDishes() {
     redirectToAccount('packages')
   }
 
-  // Fetch subscription dishes with infinite query
+  // Fetch subscription meal plans with infinite query
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useInfiniteQuery({
-    queryKey: ['subscription-dishes', session?.userId, selectedSubscription?.subscription.id],
+    queryKey: ['subscription-meal-plans', session?.userId, selectedSubscription?.subscription.id],
     queryFn: async ({ pageParam = 0 }) =>
-      getUserSubscriptionDishes(session!.userId, selectedSubscription!.subscription.id, {
+      getUserSubscriptionMealPlans(session!.userId, selectedSubscription!.subscription.id, {
         page: pageParam,
         per_page: 6,
       }),
@@ -69,15 +69,15 @@ export default function ListDishes() {
 
   const isLoading = status === 'pending'
 
-  // Delete dish mutation
-  const { mutate: handleDeleteFavouriteDish } = useMutation({
-    mutationFn: async ({ dishId, dishTitle }: { dishId: number; dishTitle: string }) => {
+  // Delete meal plan mutation
+  const { mutate: handleDeleteMealPlan } = useMutation({
+    mutationFn: async ({ mealPlanId, mealPlanTitle }: { mealPlanId: number; mealPlanTitle: string }) => {
       if (!session?.userId) throw new Error('User not authenticated')
-      return await removeUserSubscriptionDish(session.userId, selectedSubscription?.subscription.id!, dishId)
+      return await removeUserSubscriptionMealPlan(session.userId, selectedSubscription?.subscription.id!, mealPlanId)
     },
-    onSuccess: (_, { dishId, dishTitle }) => {
+    onSuccess: (_, { mealPlanId, mealPlanTitle }) => {
       queryClient.setQueryData(
-        ['subscription-dishes', session?.userId, selectedSubscription?.subscription.id],
+        ['subscription-meal-plans', session?.userId, selectedSubscription?.subscription.id],
         (oldData: any) => {
           if (!oldData) return oldData
 
@@ -85,37 +85,36 @@ export default function ListDishes() {
             ...oldData,
             pages: oldData.pages.map((page: any) => ({
               ...page,
-              data: page.data.filter((dish: any) => dish.id !== dishId),
+              data: page.data.filter((mealPlan: any) => mealPlan.id !== mealPlanId),
             })),
           }
         }
       )
 
-      toast.success(`Đã xóa ${dishTitle} khỏi danh sách`)
+      toast.success(`Đã xóa ${mealPlanTitle} khỏi danh sách`)
     },
     onError: (error) => {
-      console.error('Error deleting dish:', error)
-      toast.error('Có lỗi xảy ra khi xóa món ăn')
+      console.error('Error deleting meal plan:', error)
+      toast.error('Có lỗi xảy ra khi xóa thực đơn')
     },
   })
 
-  // Combine all dishes from all pages
-  const combinedDishes = useMemo(() => {
+  // Combine all meal plans from all pages
+  const combinedMealPlans = useMemo(() => {
     if (!data?.pages) return []
     return data.pages.flatMap((page) => page.data).filter(Boolean)
   }, [data?.pages])
-
   if (!session) {
     return (
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
           <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-sm lg:text-lg">
-            Thêm món ăn
+            Thêm thực đơn
           </Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-center text-lg lg:text-xl font-bold">
+            <DialogTitle className="text-center text-sm lg:text-lg font-bold">
               VUI LÒNG ĐĂNG NHẬP VÀ MUA GÓI
             </DialogTitle>
           </DialogHeader>
@@ -147,10 +146,10 @@ export default function ListDishes() {
     )
   }
 
-  if (combinedDishes.length === 0 && !isLoading) {
+  if (combinedMealPlans.length === 0 && !isLoading) {
     return (
-      <Link href="/gallery#dishes">
-        <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg">Thêm món ăn</Button>
+      <Link href="/meal-plans">
+        <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg">Thêm thực đơn</Button>
       </Link>
     )
   }
@@ -183,15 +182,11 @@ export default function ListDishes() {
         </DialogContent>
       </Dialog>
 
-      <div className="grid grid-cols-3 lg:gap-6 gap-4 mx-auto mt-6 text-sm lg:text-lg">
-        {combinedDishes.map((dish) => (
-          <div key={dish.id} className="group">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
+        {combinedMealPlans.map((mealPlan) => (
+          <div key={mealPlan.id} className="group">
             <Link
-              href={
-                isSubscriptionExpired
-                  ? '#'
-                  : `/dishes/${dish.id}?diet_id=${dish.diet?.id || ''}&back=%2Faccount%2Fresources`
-              }
+              href={isSubscriptionExpired ? '#' : `/meal-plans/${mealPlan.id}?back=%2Faccount%2Fresources`}
               onClick={
                 isSubscriptionExpired
                   ? (e) => {
@@ -213,9 +208,9 @@ export default function ListDishes() {
                       onClick={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
-                        handleDeleteFavouriteDish({ dishId: dish.id, dishTitle: dish.name })
+                        handleDeleteMealPlan({ mealPlanId: mealPlan.id, mealPlanTitle: mealPlan.title })
                       }}
-                      className="lg:block hidden"
+                      className="lg:block hidden cursor-pointer"
                     >
                       <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                     </div>
@@ -223,20 +218,24 @@ export default function ListDishes() {
                       onClick={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
-                        handleDeleteFavouriteDish({ dishId: dish.id, dishTitle: dish.name })
+                        handleDeleteMealPlan({ mealPlanId: mealPlan.id, mealPlanTitle: mealPlan.title })
                       }}
-                      className="lg:hidden block"
+                      className="lg:hidden block cursor-pointer"
                     >
                       <DeleteIconMini className="text-white hover:text-red-500 transition-colors duration-300" />
                     </div>
                   </div>
                   <img
-                    src={dish.image}
-                    alt={dish.name}
-                    className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
+                    src={mealPlan.assets.thumbnail}
+                    alt={mealPlan.title}
+                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                   />
                 </div>
-                <p className="font-medium text-sm lg:text-lg">{dish.name}</p>
+                <p className="font-medium text-sm lg:text-base">{mealPlan.title}</p>
+                <p className="text-[#737373] text-sm lg:text-base">{mealPlan.subtitle}</p>
+                <p className="text-[#737373] text-sm lg:text-base">
+                  Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
+                </p>
               </div>
             </Link>
           </div>
@@ -255,13 +254,13 @@ export default function ListDishes() {
                 Đang tải...
               </div>
             ) : (
-              'Tải thêm món ăn'
+              'Tải thêm thực đơn'
             )}
           </Button>
         )}
-        <Link href="/gallery#dishes">
+        <Link href="/meal-plans">
           <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg lg:mt-2 mt-2">
-            Thêm món ăn
+            Thêm thực đơn
           </Button>
         </Link>
       </div>

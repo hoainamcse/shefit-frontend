@@ -1,6 +1,6 @@
 import React from 'react'
 import { Coach } from '@/models/coach'
-import styles from './CoachCard.module.css'
+import styles from './coach-card.module.css'
 
 interface CoachCardProps {
   coach: Coach

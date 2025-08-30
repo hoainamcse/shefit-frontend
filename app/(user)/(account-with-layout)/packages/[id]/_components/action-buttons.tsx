@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 
-export default function AcctionButton({ subscription }: { subscription: Subscription }) {
+export default function ActionButtons({ subscription }: { subscription: Subscription }) {
   const { session } = useSession()
   const isFreeSubscription = subscription.prices.length > 0 && subscription.prices.every((price) => price.price === 0)
 

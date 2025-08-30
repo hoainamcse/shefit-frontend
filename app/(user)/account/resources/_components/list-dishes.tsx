@@ -2,9 +2,8 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
 import { Button } from '@/components/ui/button'
-import { useSubscription } from './SubscriptionContext'
+import { useSubscription } from './subscription-context'
 import { useSession } from '@/hooks/use-session'
 import {
   Dialog,
@@ -15,31 +14,21 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog'
+
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
-import { getYouTubeThumbnail } from '@/lib/youtube'
+import { getUserSubscriptionDishes, removeUserSubscriptionDish } from '@/network/client/user-subscriptions'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { getUserSubscriptionExercises, removeUserSubscriptionExercise } from '@/network/client/user-subscriptions'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
 import { toast } from 'sonner'
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
-const ReactPlayer = dynamic(() => import('react-player/lazy'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full aspect-video bg-gray-100 flex items-center justify-center">
-      <p className="text-gray-500">Đang tải video...</p>
-    </div>
-  ),
-})
-
-export default function ListExercises() {
+export default function ListDishes() {
   const { session } = useSession()
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [renewDialogOpen, setRenewDialogOpen] = useState(false)
-  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null)
   const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -60,11 +49,11 @@ export default function ListExercises() {
     redirectToAccount('packages')
   }
 
-  // Fetch subscription exercises with infinite query
+  // Fetch subscription dishes with infinite query
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useInfiniteQuery({
-    queryKey: ['subscription-exercises', session?.userId, selectedSubscription?.subscription.id],
+    queryKey: ['subscription-dishes', session?.userId, selectedSubscription?.subscription.id],
     queryFn: async ({ pageParam = 0 }) =>
-      getUserSubscriptionExercises(session!.userId, selectedSubscription!.subscription.id, {
+      getUserSubscriptionDishes(session!.userId, selectedSubscription!.subscription.id, {
         page: pageParam,
         per_page: 6,
       }),
@@ -80,15 +69,15 @@ export default function ListExercises() {
 
   const isLoading = status === 'pending'
 
-  // Delete exercise mutation
-  const { mutate: handleDeleteFavouriteExercise } = useMutation({
-    mutationFn: async ({ exerciseId, exerciseTitle }: { exerciseId: number; exerciseTitle: string }) => {
+  // Delete dish mutation
+  const { mutate: handleDeleteFavouriteDish } = useMutation({
+    mutationFn: async ({ dishId, dishTitle }: { dishId: number; dishTitle: string }) => {
       if (!session?.userId) throw new Error('User not authenticated')
-      return await removeUserSubscriptionExercise(session.userId, selectedSubscription?.subscription.id!, exerciseId)
+      return await removeUserSubscriptionDish(session.userId, selectedSubscription?.subscription.id!, dishId)
     },
-    onSuccess: (_, { exerciseId, exerciseTitle }) => {
+    onSuccess: (_, { dishId, dishTitle }) => {
       queryClient.setQueryData(
-        ['subscription-exercises', session?.userId, selectedSubscription?.subscription.id],
+        ['subscription-dishes', session?.userId, selectedSubscription?.subscription.id],
         (oldData: any) => {
           if (!oldData) return oldData
 
@@ -96,22 +85,22 @@ export default function ListExercises() {
             ...oldData,
             pages: oldData.pages.map((page: any) => ({
               ...page,
-              data: page.data.filter((exercise: any) => exercise.id !== exerciseId),
+              data: page.data.filter((dish: any) => dish.id !== dishId),
             })),
           }
         }
       )
 
-      toast.success(`Đã xóa ${exerciseTitle} khỏi danh sách`)
+      toast.success(`Đã xóa ${dishTitle} khỏi danh sách`)
     },
     onError: (error) => {
-      console.error('Error deleting exercise:', error)
-      toast.error('Có lỗi xảy ra khi xóa động tác')
+      console.error('Error deleting dish:', error)
+      toast.error('Có lỗi xảy ra khi xóa món ăn')
     },
   })
 
-  // Combine all exercises from all pages
-  const combinedExercises = useMemo(() => {
+  // Combine all dishes from all pages
+  const combinedDishes = useMemo(() => {
     if (!data?.pages) return []
     return data.pages.flatMap((page) => page.data).filter(Boolean)
   }, [data?.pages])
@@ -120,8 +109,8 @@ export default function ListExercises() {
     return (
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
-          <Button className="bg-[#13D8A7] text-white lg:text-lg text-sm w-full rounded-full h-14 mt-6 ">
-            Thêm động tác
+          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-sm lg:text-lg">
+            Thêm món ăn
           </Button>
         </DialogTrigger>
         <DialogContent>
@@ -158,16 +147,16 @@ export default function ListExercises() {
     )
   }
 
-  if (combinedExercises.length === 0 && !isLoading) {
+  if (combinedDishes.length === 0 && !isLoading) {
     return (
-      <Link href="/gallery#exercises">
-        <Button className="bg-[#13D8A7] text-white lg:text-lg text-sm w-full rounded-full h-14">Thêm động tác</Button>
+      <Link href="/gallery#dishes">
+        <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg">Thêm món ăn</Button>
       </Link>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div>
       <Dialog open={renewDialogOpen} onOpenChange={setRenewDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -194,44 +183,14 @@ export default function ListExercises() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
-          {selectedVideoUrl && (
-            <ReactPlayer
-              url={selectedVideoUrl}
-              width="100%"
-              height="100%"
-              controls
-              config={{
-                youtube: {
-                  playerVars: {
-                    modestbranding: 1,
-                    rel: 0,
-                    showinfo: 0,
-                    origin: typeof window !== 'undefined' ? window.location.origin : '',
-                  },
-                },
-              }}
-              style={{
-                aspectRatio: '16/9',
-                width: '100%',
-                height: '100%',
-              }}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
-
-      <div className="grid grid-cols-3 lg:gap-6 gap-4 mx-auto mt-6 text-base lg:text-lg">
-        {combinedExercises.map((exercise) => (
-          <div key={exercise.id} className="group">
+      <div className="grid grid-cols-3 lg:gap-6 gap-4 mx-auto mt-6 text-sm lg:text-lg">
+        {combinedDishes.map((dish) => (
+          <div key={dish.id} className="group">
             <Link
               href={
                 isSubscriptionExpired
                   ? '#'
-                  : `/exercises/${exercise.id}?muscle_group_id=${
-                      exercise.muscle_groups?.[0]?.id || ''
-                    }&back=%2Faccount%2Fresources`
+                  : `/dishes/${dish.id}?diet_id=${dish.diet?.id || ''}&back=%2Faccount%2Fresources`
               }
               onClick={
                 isSubscriptionExpired
@@ -254,7 +213,7 @@ export default function ListExercises() {
                       onClick={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
-                        handleDeleteFavouriteExercise({ exerciseId: exercise.id, exerciseTitle: exercise.name })
+                        handleDeleteFavouriteDish({ dishId: dish.id, dishTitle: dish.name })
                       }}
                       className="lg:block hidden"
                     >
@@ -264,7 +223,7 @@ export default function ListExercises() {
                       onClick={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
-                        handleDeleteFavouriteExercise({ exerciseId: exercise.id, exerciseTitle: exercise.name })
+                        handleDeleteFavouriteDish({ dishId: dish.id, dishTitle: dish.name })
                       }}
                       className="lg:hidden block"
                     >
@@ -272,25 +231,12 @@ export default function ListExercises() {
                     </div>
                   </div>
                   <img
-                    src={
-                      getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/400?text=shefit.vn&font=Oswald'
-                    }
-                    alt={exercise.name}
+                    src={dish.image}
+                    alt={dish.name}
                     className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                   />
-                  {!isSubscriptionExpired && (
-                    <button
-                      className="absolute inset-0 m-auto w-16 h-16 flex items-center justify-center"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        setSelectedVideoUrl(exercise.youtube_url)
-                        setDialogOpen(true)
-                      }}
-                    ></button>
-                  )}
                 </div>
-                <p className="font-medium text-sm lg:text-lg">{exercise.name}</p>
+                <p className="font-medium text-sm lg:text-lg">{dish.name}</p>
               </div>
             </Link>
           </div>
@@ -309,13 +255,13 @@ export default function ListExercises() {
                 Đang tải...
               </div>
             ) : (
-              'Tải thêm động tác'
+              'Tải thêm món ăn'
             )}
           </Button>
         )}
-        <Link href="/gallery#exercises">
+        <Link href="/gallery#dishes">
           <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg lg:mt-2 mt-2">
-            Thêm động tác
+            Thêm món ăn
           </Button>
         </Link>
       </div>

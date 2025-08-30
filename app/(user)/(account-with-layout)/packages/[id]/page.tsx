@@ -4,8 +4,8 @@ import { ChevronRight } from 'lucide-react'
 import { courseLevelLabel, courseFormLabel } from '@/lib/label'
 import Link from 'next/link'
 import { getMealPlans } from '@/network/server/meal-plans'
-import AcctionButton from './_components/AcctionButton'
-import SubscriptionInfo from './_components/SubscriptionInfo'
+import ActionButtons from './_components/action-buttons'
+import SubscriptionInfo from './_components/subscription-info'
 import { BackIcon } from '@/components/icons/BackIcon'
 import { HTMLRenderer } from '@/components/html-renderer'
 import { Button } from '@/components/ui/button'
@@ -141,7 +141,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                 </div>
                 <HTMLRenderer className="whitespace-pre-line" content={subscriptionData?.result_checkup || ''} />
               </div>
-              <AcctionButton subscription={subscription.data} />
+              <ActionButtons subscription={subscription.data} />
             </div>
           </div>
         </div>

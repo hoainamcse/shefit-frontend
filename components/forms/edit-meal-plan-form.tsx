@@ -336,12 +336,16 @@ function EditMealPlanAssets({ form }: { form: ReturnType<typeof useForm<FormValu
             control={form.control}
             name="assets.homepage_thumbnail"
             label="Hình ảnh đại diện (Homepage)"
+            description="Ảnh đại diện (mặc định) sẽ được sử dụng nếu không đặt"
           />
-          <p className="text-[0.8rem] text-muted-foreground">Ảnh đại diện (mặc định) sẽ được sử dụng nếu không đặt</p>
           <Separator />
           <FormImageSelectField control={form.control} name="assets.mobile_cover" label="Hình ảnh bìa (Mobile)" />
-          <FormImageSelectField control={form.control} name="assets.desktop_cover" label="Hình ảnh bìa (Desktop)" />
-          <p className="text-[0.8rem] text-muted-foreground">Ảnh bìa mobile sẽ được sử dụng nếu không đặt</p>
+          <FormImageSelectField
+            control={form.control}
+            name="assets.desktop_cover"
+            label="Hình ảnh bìa (Desktop)"
+            description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
+          />
           <FormInputField
             form={form}
             name="assets.youtube_cover"

@@ -1,8 +1,8 @@
 'use client'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import CurrentCart from './current-cart'
-import PurchasedOrder from './purchased-order'
+import CurrentCart from './_components/current-cart'
+import PurchasedOrder from './_components/purchased-order'
 import { useSession } from '@/hooks/use-session'
 import { Button } from '@/components/ui/button'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'

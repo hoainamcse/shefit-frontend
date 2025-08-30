@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import UserGreeting from './user-greeting'
+import UserGreeting from './_components/user-greeting'
 
 export default async function AccountLayout({ children }: { children: React.ReactNode }) {
   return (

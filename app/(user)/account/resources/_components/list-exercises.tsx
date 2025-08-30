@@ -2,8 +2,9 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { Button } from '@/components/ui/button'
-import { useSubscription } from './SubscriptionContext'
+import { useSubscription } from './subscription-context'
 import { useSession } from '@/hooks/use-session'
 import {
   Dialog,
@@ -14,21 +15,31 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { MealPlan } from '@/models/meal-plan'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
+import { getYouTubeThumbnail } from '@/lib/youtube'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
-import { getUserSubscriptionMealPlans, removeUserSubscriptionMealPlan } from '@/network/client/user-subscriptions'
+import { getUserSubscriptionExercises, removeUserSubscriptionExercise } from '@/network/client/user-subscriptions'
 import { Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
 import { toast } from 'sonner'
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
 
-export default function ListMealPlans() {
+const ReactPlayer = dynamic(() => import('react-player/lazy'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full aspect-video bg-gray-100 flex items-center justify-center">
+      <p className="text-gray-500">Đang tải video...</p>
+    </div>
+  ),
+})
+
+export default function ListExercises() {
   const { session } = useSession()
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [renewDialogOpen, setRenewDialogOpen] = useState(false)
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null)
   const { redirectToLogin, redirectToAccount } = useAuthRedirect()
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -49,11 +60,11 @@ export default function ListMealPlans() {
     redirectToAccount('packages')
   }
 
-  // Fetch subscription meal plans with infinite query
+  // Fetch subscription exercises with infinite query
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useInfiniteQuery({
-    queryKey: ['subscription-meal-plans', session?.userId, selectedSubscription?.subscription.id],
+    queryKey: ['subscription-exercises', session?.userId, selectedSubscription?.subscription.id],
     queryFn: async ({ pageParam = 0 }) =>
-      getUserSubscriptionMealPlans(session!.userId, selectedSubscription!.subscription.id, {
+      getUserSubscriptionExercises(session!.userId, selectedSubscription!.subscription.id, {
         page: pageParam,
         per_page: 6,
       }),
@@ -69,15 +80,15 @@ export default function ListMealPlans() {
 
   const isLoading = status === 'pending'
 
-  // Delete meal plan mutation
-  const { mutate: handleDeleteMealPlan } = useMutation({
-    mutationFn: async ({ mealPlanId, mealPlanTitle }: { mealPlanId: number; mealPlanTitle: string }) => {
+  // Delete exercise mutation
+  const { mutate: handleDeleteFavouriteExercise } = useMutation({
+    mutationFn: async ({ exerciseId, exerciseTitle }: { exerciseId: number; exerciseTitle: string }) => {
       if (!session?.userId) throw new Error('User not authenticated')
-      return await removeUserSubscriptionMealPlan(session.userId, selectedSubscription?.subscription.id!, mealPlanId)
+      return await removeUserSubscriptionExercise(session.userId, selectedSubscription?.subscription.id!, exerciseId)
     },
-    onSuccess: (_, { mealPlanId, mealPlanTitle }) => {
+    onSuccess: (_, { exerciseId, exerciseTitle }) => {
       queryClient.setQueryData(
-        ['subscription-meal-plans', session?.userId, selectedSubscription?.subscription.id],
+        ['subscription-exercises', session?.userId, selectedSubscription?.subscription.id],
         (oldData: any) => {
           if (!oldData) return oldData
 
@@ -85,36 +96,37 @@ export default function ListMealPlans() {
             ...oldData,
             pages: oldData.pages.map((page: any) => ({
               ...page,
-              data: page.data.filter((mealPlan: any) => mealPlan.id !== mealPlanId),
+              data: page.data.filter((exercise: any) => exercise.id !== exerciseId),
             })),
           }
         }
       )
 
-      toast.success(`Đã xóa ${mealPlanTitle} khỏi danh sách`)
+      toast.success(`Đã xóa ${exerciseTitle} khỏi danh sách`)
     },
     onError: (error) => {
-      console.error('Error deleting meal plan:', error)
-      toast.error('Có lỗi xảy ra khi xóa thực đơn')
+      console.error('Error deleting exercise:', error)
+      toast.error('Có lỗi xảy ra khi xóa động tác')
     },
   })
 
-  // Combine all meal plans from all pages
-  const combinedMealPlans = useMemo(() => {
+  // Combine all exercises from all pages
+  const combinedExercises = useMemo(() => {
     if (!data?.pages) return []
     return data.pages.flatMap((page) => page.data).filter(Boolean)
   }, [data?.pages])
+
   if (!session) {
     return (
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
-          <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 mt-6 text-sm lg:text-lg">
-            Thêm thực đơn
+          <Button className="bg-[#13D8A7] text-white lg:text-lg text-sm w-full rounded-full h-14 mt-6 ">
+            Thêm động tác
           </Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-center text-sm lg:text-lg font-bold">
+            <DialogTitle className="text-center text-lg lg:text-xl font-bold">
               VUI LÒNG ĐĂNG NHẬP VÀ MUA GÓI
             </DialogTitle>
           </DialogHeader>
@@ -146,16 +158,16 @@ export default function ListMealPlans() {
     )
   }
 
-  if (combinedMealPlans.length === 0 && !isLoading) {
+  if (combinedExercises.length === 0 && !isLoading) {
     return (
-      <Link href="/meal-plans">
-        <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg">Thêm thực đơn</Button>
+      <Link href="/gallery#exercises">
+        <Button className="bg-[#13D8A7] text-white lg:text-lg text-sm w-full rounded-full h-14">Thêm động tác</Button>
       </Link>
     )
   }
 
   return (
-    <div>
+    <div className="space-y-6">
       <Dialog open={renewDialogOpen} onOpenChange={setRenewDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -182,11 +194,45 @@ export default function ListMealPlans() {
         </DialogContent>
       </Dialog>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
-        {combinedMealPlans.map((mealPlan) => (
-          <div key={mealPlan.id} className="group">
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          {selectedVideoUrl && (
+            <ReactPlayer
+              url={selectedVideoUrl}
+              width="100%"
+              height="100%"
+              controls
+              config={{
+                youtube: {
+                  playerVars: {
+                    modestbranding: 1,
+                    rel: 0,
+                    showinfo: 0,
+                    origin: typeof window !== 'undefined' ? window.location.origin : '',
+                  },
+                },
+              }}
+              style={{
+                aspectRatio: '16/9',
+                width: '100%',
+                height: '100%',
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <div className="grid grid-cols-3 lg:gap-6 gap-4 mx-auto mt-6 text-base lg:text-lg">
+        {combinedExercises.map((exercise) => (
+          <div key={exercise.id} className="group">
             <Link
-              href={isSubscriptionExpired ? '#' : `/meal-plans/${mealPlan.id}?back=%2Faccount%2Fresources`}
+              href={
+                isSubscriptionExpired
+                  ? '#'
+                  : `/exercises/${exercise.id}?muscle_group_id=${
+                      exercise.muscle_groups?.[0]?.id || ''
+                    }&back=%2Faccount%2Fresources`
+              }
               onClick={
                 isSubscriptionExpired
                   ? (e) => {
@@ -208,9 +254,9 @@ export default function ListMealPlans() {
                       onClick={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
-                        handleDeleteMealPlan({ mealPlanId: mealPlan.id, mealPlanTitle: mealPlan.title })
+                        handleDeleteFavouriteExercise({ exerciseId: exercise.id, exerciseTitle: exercise.name })
                       }}
-                      className="lg:block hidden cursor-pointer"
+                      className="lg:block hidden"
                     >
                       <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
                     </div>
@@ -218,24 +264,33 @@ export default function ListMealPlans() {
                       onClick={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
-                        handleDeleteMealPlan({ mealPlanId: mealPlan.id, mealPlanTitle: mealPlan.title })
+                        handleDeleteFavouriteExercise({ exerciseId: exercise.id, exerciseTitle: exercise.name })
                       }}
-                      className="lg:hidden block cursor-pointer"
+                      className="lg:hidden block"
                     >
                       <DeleteIconMini className="text-white hover:text-red-500 transition-colors duration-300" />
                     </div>
                   </div>
                   <img
-                    src={mealPlan.assets.thumbnail}
-                    alt={mealPlan.title}
-                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
+                    src={
+                      getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/400?text=shefit.vn&font=Oswald'
+                    }
+                    alt={exercise.name}
+                    className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
                   />
+                  {!isSubscriptionExpired && (
+                    <button
+                      className="absolute inset-0 m-auto w-16 h-16 flex items-center justify-center"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        setSelectedVideoUrl(exercise.youtube_url)
+                        setDialogOpen(true)
+                      }}
+                    ></button>
+                  )}
                 </div>
-                <p className="font-medium text-sm lg:text-base">{mealPlan.title}</p>
-                <p className="text-[#737373] text-sm lg:text-base">{mealPlan.subtitle}</p>
-                <p className="text-[#737373] text-sm lg:text-base">
-                  Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
-                </p>
+                <p className="font-medium text-sm lg:text-lg">{exercise.name}</p>
               </div>
             </Link>
           </div>
@@ -254,13 +309,13 @@ export default function ListMealPlans() {
                 Đang tải...
               </div>
             ) : (
-              'Tải thêm thực đơn'
+              'Tải thêm động tác'
             )}
           </Button>
         )}
-        <Link href="/meal-plans">
+        <Link href="/gallery#exercises">
           <Button className="bg-[#13D8A7] text-white w-full rounded-full h-14 text-sm lg:text-lg lg:mt-2 mt-2">
-            Thêm thực đơn
+            Thêm động tác
           </Button>
         </Link>
       </div>

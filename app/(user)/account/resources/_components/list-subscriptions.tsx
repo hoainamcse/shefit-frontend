@@ -6,7 +6,7 @@ import { getUserSubscriptions } from '@/network/client/users'
 import { UserSubscriptionDetail } from '@/models/user-subscriptions'
 import { useSession } from '@/hooks/use-session'
 import { useState, useEffect, useMemo } from 'react'
-import { useSubscription } from './SubscriptionContext'
+import { useSubscription } from './subscription-context'
 import { useQuery } from '@tanstack/react-query'
 
 export default function ListSubscriptions() {

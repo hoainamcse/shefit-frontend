@@ -9,7 +9,7 @@ import { getBodyQuizzes } from '@/network/server/body-quizzes'
 import { useSession } from '@/hooks/use-session'
 import { ListResponse } from '@/models/response'
 import type { BodyQuiz, UserBodyQuiz } from '@/models/body-quiz'
-import ListQuiz from './list-quiz'
+import ListQuiz from './_components/list-quiz'
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
   return new Intl.DateTimeFormat('vi-VN', {

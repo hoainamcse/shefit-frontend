@@ -1,6 +1,6 @@
 import React from 'react'
 import { getCoaches } from '@/network/server/coaches'
-import { CoachCard } from './CoachCard'
+import { CoachCard } from './_components/coach-card'
 
 export const dynamic = 'force-dynamic'
 

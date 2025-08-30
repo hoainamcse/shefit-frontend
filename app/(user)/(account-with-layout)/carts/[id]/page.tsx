@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
-import FormCartDetail from './FormCartDetail'
+import FormCartDetail from './_components/form-cart-detail'
 import { getCart } from '@/network/server/carts'
 
 export default async function CartDetail({ params }: { params: Promise<{ id: number }> }) {

@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import * as z from 'zod'
+import Link from 'next/link'
 import Image from 'next/image'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import * as z from 'zod'
 
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
@@ -177,11 +178,19 @@ export default function AccountInformation() {
   })
 
   if (isLoading) {
-    return <div>Đang tải...</div>
+    return <div className="p-4 text-center">Đang tải...</div>
   }
 
-  if (!userData) {
-    return <div>Không tìm thấy thông tin người dùng</div>
+  if (!session || !userData) {
+    return (
+      <div className="p-4 text-center">
+        <h2 className="text-xl font-bold mb-2">Vui lòng đăng nhập</h2>
+        <p className="mb-4">Bạn cần đăng nhập để xem thông tin tài khoản</p>
+        <Link href="/auth/login?redirect=%2Faccount%2Fpreferences" className="text-primary hover:underline">
+          Đến trang đăng nhập
+        </Link>
+      </div>
+    )
   }
 
   return (

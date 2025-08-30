@@ -6,7 +6,7 @@ import { getUser } from '@/network/client/users'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { BodyIcon } from '@/components/icons/BodyIcon'
-import { CartIcon } from '@/components/icons/cart-icon'
+import { CartIcon } from '@/components/icons/CartIcon'
 import { PackageBoxIcon } from '@/components/icons/package-box-icon'
 import { ProfileCardIcon } from '@/components/icons/profile-card-icon'
 import { QuizIcon } from '@/components/icons/quiz-icon'
@@ -32,6 +32,11 @@ const TABS = [
     label: 'Thông tin tài khoản',
     icon: <ProfileCardIcon />,
   },
+  {
+    value: 'notifications',
+    label: 'Thông báo',
+    icon: <ProfileCardIcon />,
+  }
 ]
 
 export default function UserGreeting() {

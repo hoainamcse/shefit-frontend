@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useSession } from '@/hooks/use-session'
-import { useSubscription } from './SubscriptionContext'
+import { useSubscription } from './subscription-context'
 import { getCourses } from '@/network/client/courses'
 import { useRouter } from 'next/navigation'
 import { useState, useMemo } from 'react'

@@ -1,4 +1,4 @@
-import { Notification, NotificationPayload } from '@/models/notification'
+import { Notification, NotificationPayload, UserNotification, UserNotificationPayload } from '@/models/notification'
 import { fetchData } from '../helpers/fetch-data'
 import { ApiResponse, ListResponse } from '@/models/response'
 
@@ -43,3 +43,35 @@ export async function deleteNotification(id: Notification['id']): Promise<ApiRes
 //   })
 //   return response.json()
 // }
+
+export const queryKeyUserNotifications = 'user-notifications'
+
+export async function getUserNotifications(userId: number, query?: any): Promise<ListResponse<UserNotification>> {
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData(`/v1/users/${userId}/notifications${searchParams}`)
+  return response.json()
+}
+
+export async function createUserNotification(
+  userId: number,
+  notificationId: number,
+  data: UserNotificationPayload
+): Promise<ApiResponse<UserNotification>> {
+  const response = await fetchData(`/v1/users/${userId}/notifications/${notificationId}`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return response.json()
+}
+
+export async function updateUserNotification(
+  userId: number,
+  notificationId: number,
+  data: UserNotificationPayload
+): Promise<ApiResponse<UserNotification>> {
+  const response = await fetchData(`/v1/users/${userId}/notifications/${notificationId}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+  return response.json()
+}

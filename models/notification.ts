@@ -14,7 +14,7 @@ type UserNotification = {
   is_read: boolean
 }
 
-type UserNotificationPayload = Omit<UserNotification, 'user_id' | 'notification'> & { notification_id: number }
+type UserNotificationPayload = Omit<UserNotification, 'user_id' | 'notification'>
 
 export type { Notification, NotificationPayload }
 export type { UserNotification, UserNotificationPayload }
