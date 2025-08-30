@@ -10,10 +10,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createEquipment, updateEquipment } from '@/network/client/equipments'
 
-import { FormInputField } from './fields'
+import { FormImageSelectField, FormInputField } from './fields'
 import { MainButton } from '../buttons/main-button'
 import { Form } from '../ui/form'
-import { ImageUploader } from '../image-uploader'
 
 // ! Follow EquipmentPayload model ins models/equipment.ts
 const formSchema = z.object({
@@ -62,7 +61,7 @@ export function EditEquipmentForm({ data, onSuccess }: EditEquipmentFormProps) {
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
         <FormInputField form={form} name="name" label="Tên dụng cụ" withAsterisk placeholder="Nhập tên dụng cụ" />
-        <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
+        <FormImageSelectField control={form.control} name="image" label="Hình ảnh" />
 
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (

@@ -4,9 +4,9 @@ import * as React from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, useFieldArray } from 'react-hook-form'
 import * as z from 'zod'
-import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useState, useTransition } from 'react'
 
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 import { MainButton } from '@/components/buttons/main-button'
@@ -15,14 +15,11 @@ import { Trash2, Plus } from 'lucide-react'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent } from '../ui/card'
 import { Subscription } from '@/models/subscription'
-import { FormInputField, FormSelectField, FormRichTextField, FormNumberField } from './fields'
+import { FormInputField, FormSelectField, FormRichTextField, FormNumberField, FormImageSelectField } from './fields'
 import { useRouter } from 'next/navigation'
 import { createSubscription, updateSubscription, updateSubscriptionPrices } from '@/network/client/subscriptions'
 import { createGift, updateGift } from '@/network/client/subscriptions'
-import { getCourses } from '@/network/client/courses'
 import { giftTypeOptions } from '@/lib/label'
-import { ImageUploader } from '../image-uploader'
-import { CoverMediaSelector } from './cover-media-selector'
 import { Label } from '../ui/label'
 import { EditDialog } from '../data-table/edit-dialog'
 import { CoursesTable } from '../data-table/courses-table'
@@ -433,12 +430,10 @@ export function CreateSubscriptionForm({ isEdit, data }: CreateSubscriptionFormP
                                   <>
                                     <FormInputField form={form} name={`gifts.${index}.name`} label="Tên quà tặng" />
 
-                                    <ImageUploader
-                                      form={form}
+                                    <FormImageSelectField
+                                      control={form.control}
                                       name={`gifts.${index}.image`}
                                       label="Hình ảnh quà tặng"
-                                      accept={{ 'image/*': [] }}
-                                      maxFileCount={1}
                                     />
                                   </>
                                 )}
@@ -758,48 +753,24 @@ function EditSubscriptionAssets({ form }: { form: ReturnType<typeof useForm<Form
         description="Chỉnh sửa các thông tin liên quan đến gói tập"
       >
         <div className="space-y-4">
-          <ImageUploader
-            form={form}
-            name="assets.thumbnail"
-            label="Hình ảnh đại diện"
-            accept={{ 'image/*': [] }}
-            maxFileCount={1}
-          />
-          <ImageUploader
-            form={form}
+          <FormImageSelectField control={form.control} name="assets.thumbnail" label="Hình ảnh đại diện" />
+          <FormImageSelectField
+            control={form.control}
             name="assets.homepage_thumbnail"
             label="Hình ảnh đại diện (Homepage)"
-            accept={{ 'image/*': [] }}
-            maxFileCount={1}
           />
-          <p className="text-[0.8rem] text-muted-foreground">
-            Nếu không có ảnh đại diện cho homepage, ảnh đại diện mặc định sẽ được sử dụng
-          </p>
+          <p className="text-[0.8rem] text-muted-foreground">Ảnh đại diện (mặc định) sẽ được sử dụng nếu không đặt</p>
           <Separator />
-          <ImageUploader
-            form={form}
-            name="assets.mobile_cover"
-            label="Hình ảnh bìa (Mobile)"
-            accept={{ 'image/*': [] }}
-            maxFileCount={1}
-          />
-          <ImageUploader
-            form={form}
-            name="assets.desktop_cover"
-            label="Hình ảnh bìa (Desktop)"
-            accept={{ 'image/*': [] }}
-            maxFileCount={1}
-          />
-          <p className="text-[0.8rem] text-muted-foreground">
-            Nếu không có ảnh bìa cho desktop, ảnh bìa mặc định sẽ được sử dụng
-          </p>
+          <FormImageSelectField control={form.control} name="assets.mobile_cover" label="Hình ảnh bìa (Mobile)" />
+          <FormImageSelectField control={form.control} name="assets.desktop_cover" label="Hình ảnh bìa (Desktop)" />
+          <p className="text-[0.8rem] text-muted-foreground">Ảnh bìa mobile sẽ được sử dụng nếu không đặt</p>
           <FormInputField
             form={form}
             name="assets.youtube_cover"
-            label="Hình ảnh bìa (YouTube)"
+            label="Video bìa (YouTube)"
             placeholder="Nhập URL video YouTube"
             // defaultValue={DEFAULT_YOUTUBE_URL}
-            description="Nếu không có ảnh bìa YouTube, ảnh bìa mặc định sẽ được sử dụng"
+            description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
           />
         </div>
       </EditSheet>

@@ -1,7 +1,6 @@
 import React from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { ImageUploader } from '../image-uploader'
-import { FormInputField } from './fields'
+import { FormImageSelectField, FormInputField } from './fields'
 
 interface CoverMediaSelectorProps {
   form: UseFormReturn<any>
@@ -9,7 +8,6 @@ interface CoverMediaSelectorProps {
   setShowYoutubeUrlInput: (val: boolean) => void
   coverImageName: string
   youtubeUrlName: string
-  imageUploaderProps?: Partial<React.ComponentProps<typeof ImageUploader>>
 }
 
 export const CoverMediaSelector: React.FC<CoverMediaSelectorProps> = ({
@@ -18,7 +16,6 @@ export const CoverMediaSelector: React.FC<CoverMediaSelectorProps> = ({
   setShowYoutubeUrlInput,
   coverImageName = 'cover_image',
   youtubeUrlName = 'youtube_url',
-  imageUploaderProps = {},
 }) => {
   return (
     <div className="flex flex-col gap-1">
@@ -56,13 +53,7 @@ export const CoverMediaSelector: React.FC<CoverMediaSelectorProps> = ({
       {showYoutubeUrlInput ? (
         <FormInputField form={form} name={youtubeUrlName} placeholder="Nhập link youtube" />
       ) : (
-        <ImageUploader
-          form={form}
-          name={coverImageName}
-          accept={{ 'image/*': [] }}
-          maxFileCount={1}
-          {...imageUploaderProps}
-        />
+        <FormImageSelectField control={form.control} name={coverImageName} />
       )}
     </div>
   )

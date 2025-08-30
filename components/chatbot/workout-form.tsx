@@ -185,7 +185,7 @@ export function WorkoutForm({ onSubmit, onCancel }: WorkoutFormProps) {
               <FormItem>
                 <FormLabel>Chị có bị chấn thương hay đau vùng nào không?</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Mô tả tình trạng sức khỏe hoặc chấn thương (nếu có)" {...field} rows={2} />
+                  <Textarea placeholder="Mô tả tình trạng sức khỏe hoặc chấn thương (nếu có)" {...field} rows={4} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

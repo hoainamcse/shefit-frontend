@@ -14,7 +14,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext
 import Link from 'next/link'
 import { z } from 'zod'
 import { formSchema } from '@/app/(admin)/admin/(configurations)/homepage/schema'
-import { HtmlContent } from '@/components/html-content'
+import { HTMLRenderer } from '@/components/html-renderer'
 import { getCourses } from '../../../network/client/courses'
 import { useQuery } from '@tanstack/react-query'
 import { getWorkoutMethods } from '@/network/client/workout-methods'
@@ -118,7 +118,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
       <div className="bg-[#FFF3F3] mx-auto">
         <div className="py-16 md:py-12 space-y-8 lg:space-y-10">
           <div className="max-w-[500px] px-4 lg:px-6 mx-auto flex flex-col items-center justify-center text-center gap-4">
-            <HtmlContent
+            <HTMLRenderer
               content={data.title}
               className="font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl font-bold"
             />
@@ -477,7 +477,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
       <div className="bg-[#DADADA] mx-auto">
         <div className="py-16 md:py-12 space-y-8 lg:space-y-10">
           <div className="max-w-[500px] px-4 lg:px-6 mx-auto flex flex-col items-center justify-center text-center gap-4">
-            <HtmlContent
+            <HTMLRenderer
               content={data.title}
               className="font-[family-name:var(--font-coiny)] text-2xl lg:text-4xl font-bold"
             />
@@ -501,7 +501,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
               </div>
               {parsedFeatures[selectedMethod]?.description && (
                 <div className="mx-auto text-center mb-6 px-8 lg:px-12">
-                  <HtmlContent
+                  <HTMLRenderer
                     content={parsedFeatures[selectedMethod].description}
                     className="text-[#FB4A64] text-sm lg:text-lg whitespace-pre-line"
                   />

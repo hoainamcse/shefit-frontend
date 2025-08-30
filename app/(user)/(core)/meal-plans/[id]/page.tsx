@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { getMealPlan } from '@/network/server/meal-plans'
 import { ActionButtons } from './_components/action-buttons'
-import { HtmlContent } from '@/components/html-content'
+import { HTMLRenderer } from '@/components/html-renderer'
 
 export default async function MealPlanPage({
   params,
@@ -80,7 +80,7 @@ export default async function MealPlanPage({
               <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl md:text-4xl mb-4">
                 Thông tin thực đơn
               </div>
-              <HtmlContent
+              <HTMLRenderer
                 className="text-[#737373] text-sm lg:text-lg whitespace-pre-line"
                 content={mealPlan.description}
               />

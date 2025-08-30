@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from 'react'
 
+import { ScrollArea } from '../ui/scroll-area'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog'
 
 interface EditDialogProps extends PropsWithChildren {
@@ -19,10 +20,10 @@ export function EditDialog({ children, title, description, open, onOpenChange }:
             {description && <DialogDescription className="truncate">{description}</DialogDescription>}
           </DialogHeader>
 
-          <div className="flex-1 overflow-hidden p-4 min-h-0">
-            <div className="w-full h-full overflow-auto border rounded-md bg-white">
-              <div className="max-w-full overflow-x-auto">{children}</div>
-            </div>
+          <div className="flex-1 overflow-hidden min-h-0">
+            <ScrollArea className="w-full h-full overflow-auto">
+              <div className="max-w-full overflow-x-auto p-4">{children}</div>
+            </ScrollArea>
           </div>
         </div>
       </DialogContent>

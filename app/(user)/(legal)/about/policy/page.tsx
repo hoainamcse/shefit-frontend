@@ -1,4 +1,4 @@
-import { HtmlContent } from '@/components/html-content'
+import { HTMLRenderer } from '@/components/html-renderer'
 import { getConfiguration } from '@/network/server/configurations'
 
 export const dynamic = 'force-dynamic'
@@ -17,11 +17,11 @@ export default async function PolicyPage() {
       <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold xl:text-4xl max-lg:text-2xl">
         Chính sách bảo mật
       </div>
-      <HtmlContent content={policyData.privacy_policy} className="text-gray-500 xl:text-lg max-lg:text-sm" />
+      <HTMLRenderer content={policyData.privacy_policy} className="text-gray-500 xl:text-lg max-lg:text-sm" />
       <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold xl:text-4xl max-lg:text-2xl">
         Chính Sách Bảo Vệ Thông Tin Cá Nhân Khách Hàng
       </div>
-      <HtmlContent content={policyData.personal_policy} className="text-gray-500 xl:text-lg max-lg:text-sm" />
+      <HTMLRenderer content={policyData.personal_policy} className="text-gray-500 xl:text-lg max-lg:text-sm" />
     </div>
   )
 }

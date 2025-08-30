@@ -1,6 +1,6 @@
 import type { Blog } from '@/models/blog'
 import { getBlog } from '@/network/server/blogs'
-import { HtmlContent } from '@/components/html-content'
+import { HTMLRenderer } from '@/components/html-renderer'
 import Link from 'next/link'
 import { BackIcon } from '@/components/icons/BackIcon'
 import { htmlToText } from '@/lib/helpers'
@@ -47,7 +47,7 @@ export default async function BlogPage({ params }: { params: Promise<{ id: Blog[
           <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold xl:text-4xl mb-5 max-lg:text-xl">
             {data.title}
           </div>
-          <HtmlContent content={data.content} className="text-gray-500 xl:text-lg max-lg:text-lg" />
+          <HTMLRenderer content={data.content} className="text-gray-500 xl:text-lg max-lg:text-lg" />
         </div>
       </div>
     </div>

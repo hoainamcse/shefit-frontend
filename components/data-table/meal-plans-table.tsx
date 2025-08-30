@@ -247,7 +247,7 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
   const router = useRouter()
 
   const onAddRow = () => {
-    router.push('/admin/meal-plans/create')
+    router.push('/admin/meal-plans/new')
   }
 
   const onEditRow = (row: MealPlan) => {

@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { UseFormReturn } from 'react-hook-form'
 
-import { FormInputField, FormTextareaField } from '@/components/forms/fields'
-import { ImageUploader } from '@/components/image-uploader'
+import { FormImageSelectField, FormInputField, FormTextareaField } from '@/components/forms/fields'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -117,8 +116,8 @@ export function HeroSection({ form }: SectionProps) {
         <FormInputField form={form} name="data.section_1.features.2" label="Tiêu biểu 3" placeholder="Nhập tiêu biểu" />
       </div>
       <FormTextareaField form={form} name="data.section_1.description" label="Mô tả" placeholder="Nhập mô tả" />
-      <ImageUploader form={form} name="data.section_1.image_desktop" label="Hình ảnh desktop" />
-      <ImageUploader form={form} name="data.section_1.image_mobile" label="Hình ảnh mobile" />
+      <FormImageSelectField control={form.control} name="data.section_1.image_desktop" label="Hình ảnh desktop" />
+      <FormImageSelectField control={form.control} name="data.section_1.image_mobile" label="Hình ảnh mobile" />
       <div className="grid grid-cols-2 gap-4">
         <FormInputField form={form} name="data.section_1.cta.text" label="Nút CTA" placeholder="Nhập văn bản nút" />
         <FormInputField form={form} name="data.section_1.cta.href" label="Liên kết CTA" placeholder="Nhập liên kết" />
@@ -179,8 +178,8 @@ export function FeaturedSection({ form }: SectionProps) {
           />
         </div>
       </div>
-      <ImageUploader form={form} name="data.section_2.image_desktop" label="Hình ảnh desktop" />
-      <ImageUploader form={form} name="data.section_2.image_mobile" label="Hình ảnh mobile" />
+      <FormImageSelectField control={form.control} name="data.section_2.image_desktop" label="Hình ảnh desktop" />
+      <FormImageSelectField control={form.control} name="data.section_2.image_mobile" label="Hình ảnh mobile" />
       <div className="grid grid-cols-2 gap-4">
         <FormInputField form={form} name="data.section_2.cta.text" label="Nút CTA" placeholder="Nhập văn bản nút" />
         <FormInputField form={form} name="data.section_2.cta.href" label="Liên kết CTA" placeholder="Nhập liên kết" />
@@ -538,7 +537,7 @@ export function FAQSection({ form }: SectionProps) {
         label="Mô tả trên"
         placeholder="Nhập mô tả"
       />
-      <ImageUploader form={form} name="data.section_10.top.image" label="Hình ảnh trên" />
+      <FormImageSelectField control={form.control} name="data.section_10.top.image" label="Hình ảnh trên" />
       <FormInputField form={form} name="data.section_10.bottom.title" label="Tiêu đề dưới" placeholder="Nhập tiêu đề" />
       <FormTextareaField
         form={form}
@@ -546,7 +545,7 @@ export function FAQSection({ form }: SectionProps) {
         label="Mô tả dưới"
         placeholder="Nhập mô tả"
       />
-      <ImageUploader form={form} name="data.section_10.bottom.image" label="Hình ảnh dưới" />
+      <FormImageSelectField control={form.control} name="data.section_10.bottom.image" label="Hình ảnh dưới" />
     </>
   )
 }
@@ -554,7 +553,7 @@ export function FAQSection({ form }: SectionProps) {
 export function ContactSection({ form }: SectionProps) {
   return (
     <>
-      <ImageUploader form={form} name="data.section_11.image" label="Hình ảnh" />
+      <FormImageSelectField control={form.control} name="data.section_11.image" label="Hình ảnh" />
       <FormTextareaField form={form} name="data.section_11.description" label="Mô tả" placeholder="Nhập mô tả" />
       <div className="grid grid-cols-2 gap-4">
         <FormInputField form={form} name="data.section_11.cta.text" label="Nút CTA" placeholder="Nhập văn bản nút" />

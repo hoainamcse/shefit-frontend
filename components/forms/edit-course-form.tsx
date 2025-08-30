@@ -16,7 +16,6 @@ import { Form } from '../ui/form'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { Separator } from '../ui/separator'
-import { ImageUploader } from '../image-uploader'
 import { MainButton } from '../buttons/main-button'
 import { EditSheet } from '../data-table/edit-sheet'
 import { EditDialog } from '../data-table/edit-dialog'
@@ -25,7 +24,14 @@ import { FormCategoryTable } from '../data-table/form-category-table'
 import { MuscleGroupsTable } from '../data-table/muscle-groups-table'
 import { SubscriptionsTable } from '../data-table/subscriptions-table'
 import { WorkoutMethodsTable } from '../data-table/workout-methods-table'
-import { FormInputField, FormNumberField, FormRadioField, FormSwitchField, FormTextareaField } from './fields'
+import {
+  FormImageSelectField,
+  FormInputField,
+  FormNumberField,
+  FormRadioField,
+  FormSwitchField,
+  FormTextareaField,
+} from './fields'
 
 // ! Follow CoursePayload model in models/course.ts
 const formSchema = z.object({
@@ -368,48 +374,24 @@ function EditCourseAssets({ form }: { form: ReturnType<typeof useForm<FormValue>
         description="Chỉnh sửa các thông tin liên quan đến khoá tập"
       >
         <div className="space-y-4">
-          <ImageUploader
-            form={form}
-            name="assets.thumbnail"
-            label="Hình ảnh đại diện"
-            accept={{ 'image/*': [] }}
-            maxFileCount={1}
-          />
-          <ImageUploader
-            form={form}
+          <FormImageSelectField control={form.control} name="assets.thumbnail" label="Hình ảnh đại diện" />
+          <FormImageSelectField
+            control={form.control}
             name="assets.homepage_thumbnail"
             label="Hình ảnh đại diện (Homepage)"
-            accept={{ 'image/*': [] }}
-            maxFileCount={1}
           />
-          <p className="text-[0.8rem] text-muted-foreground">
-            Nếu không có ảnh đại diện cho homepage, ảnh đại diện mặc định sẽ được sử dụng
-          </p>
+          <p className="text-[0.8rem] text-muted-foreground">Ảnh đại diện (mặc định) sẽ được sử dụng nếu không đặt</p>
           <Separator />
-          <ImageUploader
-            form={form}
-            name="assets.mobile_cover"
-            label="Hình ảnh bìa (Mobile)"
-            accept={{ 'image/*': [] }}
-            maxFileCount={1}
-          />
-          <ImageUploader
-            form={form}
-            name="assets.desktop_cover"
-            label="Hình ảnh bìa (Desktop)"
-            accept={{ 'image/*': [] }}
-            maxFileCount={1}
-          />
-          <p className="text-[0.8rem] text-muted-foreground">
-            Nếu không có ảnh bìa cho desktop, ảnh bìa mặc định sẽ được sử dụng
-          </p>
+          <FormImageSelectField control={form.control} name="assets.mobile_cover" label="Hình ảnh bìa (Mobile)" />
+          <FormImageSelectField control={form.control} name="assets.desktop_cover" label="Hình ảnh bìa (Desktop)" />
+          <p className="text-[0.8rem] text-muted-foreground">Ảnh bìa mobile sẽ được sử dụng nếu không đặt</p>
           <FormInputField
             form={form}
             name="assets.youtube_cover"
-            label="Hình ảnh bìa (YouTube)"
+            label="Video bìa (YouTube)"
             placeholder="Nhập URL video YouTube"
             // defaultValue={DEFAULT_YOUTUBE_URL}
-            description="Nếu không có ảnh bìa YouTube, ảnh bìa mặc định sẽ được sử dụng"
+            description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
           />
         </div>
       </EditSheet>

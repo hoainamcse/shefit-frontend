@@ -13,8 +13,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Check, X } from 'lucide-react'
-import { FormInputField, FormMultiSelectField, FormNumberField, FormSelectField, FormTextareaField } from './fields'
-import { ImageUploader } from '@/components/image-uploader'
+import {
+  FormImageSelectField,
+  FormInputField,
+  FormMultiSelectField,
+  FormNumberField,
+  FormSelectField,
+  FormTextareaField,
+} from './fields'
 import { Product, ProductCategory, ProductColor, ProductSize } from '@/models/product'
 import { createProduct, getCategories, getColors, getSizes, updateProduct } from '@/network/client/products'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
@@ -268,7 +274,7 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
                 />
               )}
 
-              <ImageUploader form={form} name="image_urls" accept={{ 'image/*': [] }} maxFileCount={10} />
+              <FormImageSelectField control={form.control} name="image_urls" label="Hình ảnh sản phẩm" maxImages={10} />
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <FormLabel>Tính năng</FormLabel>
@@ -304,12 +310,10 @@ export default function CreateProductForm({ isEdit = false, data }: ProductFormP
                           placeholder="Nhập tên tính năng"
                         />
 
-                        <ImageUploader
-                          form={form}
+                        <FormImageSelectField
+                          control={form.control}
                           name={`features.${index}.image_url`}
                           label="Hình ảnh tính năng"
-                          accept={{ 'image/*': [] }}
-                          maxFileCount={1}
                         />
                       </div>
                     </FormItem>

@@ -10,10 +10,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createCoach, updateCoach } from '@/network/client/coaches'
 
-import { FormInputField, FormTextareaField } from './fields'
+import { FormImageSelectField, FormInputField, FormTextareaField } from './fields'
 import { MainButton } from '../buttons/main-button'
 import { Form } from '../ui/form'
-import { ImageUploader } from '../image-uploader'
 
 // ! Follow CoachPayload model in models/coach.ts
 const formSchema = z.object({
@@ -79,7 +78,7 @@ export function EditCoachForm({ data, onSuccess }: EditExerciseFormProps) {
           placeholder="Nhập mô tả"
           className="h-[200px]"
         />
-        <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
+        <FormImageSelectField control={form.control} name="image" label="Hình ảnh" />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
             <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={coachMutation.isPending} />

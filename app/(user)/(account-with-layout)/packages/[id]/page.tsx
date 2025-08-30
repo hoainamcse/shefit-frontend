@@ -7,7 +7,7 @@ import { getMealPlans } from '@/network/server/meal-plans'
 import AcctionButton from './_components/AcctionButton'
 import SubscriptionInfo from './_components/SubscriptionInfo'
 import { BackIcon } from '@/components/icons/BackIcon'
-import { HtmlContent } from '@/components/html-content'
+import { HTMLRenderer } from '@/components/html-renderer'
 import { Button } from '@/components/ui/button'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { Subscription } from '@/models/subscription'
@@ -61,7 +61,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                 <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#FF7873] text-2xl md:text-4xl mb-4">
                   Thông tin khóa
                 </div>
-                <HtmlContent className="whitespace-pre-line" content={subscriptionData?.description_2 || ''} />
+                <HTMLRenderer className="whitespace-pre-line" content={subscriptionData?.description_2 || ''} />
               </div>
               <div>
                 <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#FF7873] text-2xl md:text-4xl mb-4">
@@ -104,7 +104,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                   <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#FF7873] text-2xl md:text-4xl mb-4">
                     Thực đơn
                   </div>
-                  <HtmlContent
+                  <HTMLRenderer
                     className="whitespace-pre-line mb-5"
                     content={subscriptionData?.meal_plan_description || ''}
                   />
@@ -139,7 +139,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                 <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#FF7873] text-2xl md:text-4xl mb-4">
                   Theo dõi kết quả
                 </div>
-                <HtmlContent className="whitespace-pre-line" content={subscriptionData?.result_checkup || ''} />
+                <HTMLRenderer className="whitespace-pre-line" content={subscriptionData?.result_checkup || ''} />
               </div>
               <AcctionButton subscription={subscription.data} />
             </div>

@@ -10,10 +10,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createMuscleGroup, updateMuscleGroup } from '@/network/client/muscle-groups'
 
-import { FormInputField } from './fields'
+import { FormImageSelectField, FormInputField } from './fields'
 import { MainButton } from '../buttons/main-button'
 import { Form } from '../ui/form'
-import { ImageUploader } from '../image-uploader'
 
 // ! Follow MuscleGroupPayload model in models/muscle-group.ts
 const formSchema = z.object({
@@ -62,7 +61,7 @@ export function EditMuscleGroupForm({ data, onSuccess }: EditMuscleGroupFormProp
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
         <FormInputField form={form} name="name" label="Tên nhóm cơ" withAsterisk placeholder="Nhập tên nhóm cơ" />
-        <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
+        <FormImageSelectField control={form.control} name="image" label="Hình ảnh" />
 
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (

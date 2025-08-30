@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 
-interface HtmlContentProps extends React.HTMLAttributes<HTMLDivElement> {
+interface HTMLRendererProps extends React.HTMLAttributes<HTMLDivElement> {
   content: string
   className?: string
 }
@@ -11,7 +11,7 @@ interface HtmlContentProps extends React.HTMLAttributes<HTMLDivElement> {
 /**
  * A component for safely rendering HTML content from rich text editors
  */
-const HtmlContent = ({ content, className, ...props }: HtmlContentProps) => {
+const HTMLRenderer = ({ content, className, ...props }: HTMLRendererProps) => {
   return (
     <div
       className={cn('prose max-w-none html-content', className)}
@@ -21,4 +21,4 @@ const HtmlContent = ({ content, className, ...props }: HtmlContentProps) => {
   )
 }
 
-export { HtmlContent }
+export { HTMLRenderer }

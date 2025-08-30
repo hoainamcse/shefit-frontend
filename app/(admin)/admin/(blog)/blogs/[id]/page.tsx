@@ -5,9 +5,9 @@ import { EditBlogForm } from '@/components/forms/edit-blog-form'
 import { getBlog } from '@/network/server/blogs'
 import { getTopics } from '@/network/server/topics'
 
-export default async function EditBlogPage({ params }: { params: Promise<{ blog_id: Blog['id'] }> }) {
-  const { blog_id } = await params
-  const [blog, topics] = await Promise.all([getBlog(blog_id), getTopics()])
+export default async function EditBlogPage({ params }: { params: Promise<{ id: Blog['id'] }> }) {
+  const { id } = await params
+  const [blog, topics] = await Promise.all([getBlog(id), getTopics()])
 
   return (
     <ContentLayout title="Chỉnh sửa bài viết">

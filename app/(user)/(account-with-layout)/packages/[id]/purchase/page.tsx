@@ -10,7 +10,7 @@ import Link from 'next/link'
 import ShefitLogo from '@/public/logo-vertical-dark.png'
 import { formatDuration } from '@/lib/helpers'
 import { getSubscription } from '@/network/client/subscriptions'
-import { HtmlContent } from '@/components/html-content'
+import { HTMLRenderer } from '@/components/html-renderer'
 import { Subscription } from '@/models/subscription'
 
 export default function PackageDetail({ params }: { params: Promise<{ id: Subscription['id'] }> }) {
@@ -48,7 +48,7 @@ export default function PackageDetail({ params }: { params: Promise<{ id: Subscr
               .filter((item: string) => item.trim() !== '')
               .map((content: string, index: number) => (
                 <li key={index} className="[&>p]:m-0 [&>p]:inline list-item">
-                  <HtmlContent content={content} className="whitespace-pre-line" />
+                  <HTMLRenderer content={content} className="whitespace-pre-line" />
                 </li>
               ))
           })()}

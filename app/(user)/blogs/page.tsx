@@ -13,7 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { getBlogs } from '@/network/client/blogs'
 import { getTopics } from '@/network/client/topics'
-import { HtmlContent } from '@/components/html-content'
+import { HTMLRenderer } from '@/components/html-renderer'
 
 export default function BlogsPage() {
   const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null)
@@ -128,7 +128,7 @@ export default function BlogsPage() {
                       </Badge>
                     ))}
                   </div>
-                  <HtmlContent
+                  <HTMLRenderer
                     content={blog.content}
                     className="text-gray-500 max-lg:text-xs line-clamp-4 overflow-hidden"
                   />

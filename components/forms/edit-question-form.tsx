@@ -13,11 +13,10 @@ import { createQuestion, updateQuestion } from '@/network/client/body-quizzes'
 
 import { Input } from '../ui/input'
 import { Checkbox } from '../ui/checkbox'
-import { ImageUploader } from '../image-uploader'
 import { AddButton } from '../buttons/add-button'
 import { MainButton } from '../buttons/main-button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
-import { FormInputField, FormSelectField, FormSwitchField, FormTextareaField } from './fields'
+import { FormImageSelectField, FormInputField, FormSelectField, FormSwitchField, FormTextareaField } from './fields'
 
 // ! Follow QuestionPayload model in models/body-quiz.ts
 const formSchema = z
@@ -225,7 +224,7 @@ export function EditQuestionForm({ data, onSuccess }: EditQuestionFormProps) {
             <FormTextareaField form={form} name="answer" label="Đáp án (hoặc ví dụ câu trả lời)" placeholder="Nhập đáp án" />
           </>
         )}
-        <ImageUploader form={form} name="image" label="Hình ảnh" accept={{ 'image/*': [] }} maxFileCount={1} />
+        <FormImageSelectField control={form.control} name="image" label="Hình ảnh" />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
             <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={questionMutation.isPending} />

@@ -11,9 +11,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createBlog, updateBlog } from '@/network/client/blogs'
 
-import { FormInputField, FormMultiSelectField, FormRichTextField } from './fields'
+import { FormImageSelectField, FormInputField, FormMultiSelectField, FormRichTextField } from './fields'
 import { MainButton } from '../buttons/main-button'
-import { ImageUploader } from '../image-uploader'
 import { Form } from '../ui/form'
 import { useRouter } from 'next/navigation'
 
@@ -78,22 +77,10 @@ export function EditBlogForm({ data, topics }: EditBlogFormProps) {
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
         <FormInputField form={form} name="title" label="Tên bài viết" withAsterisk placeholder="Nhập tên bài viết" />
         <FormRichTextField form={form} name="content" label="Nội dung" placeholder="Nhập nội dung" />
-        <div className="grid grid-cols-2 gap-4">
-          <ImageUploader
-            form={form}
-            name="thumbnail_image"
-            label="Hình ảnh đại diện"
-            accept={{ 'image/*': [] }}
-            maxFileCount={1}
-          />
-          <ImageUploader
-            form={form}
-            name="cover_image"
-            label="Hình ảnh bìa"
-            accept={{ 'image/*': [] }}
-            maxFileCount={1}
-          />
-        </div>
+        {/* <div className="grid grid-cols-2 gap-4"> */}
+        <FormImageSelectField control={form.control} name="thumbnail_image" label="Hình ảnh đại diện" />
+        {/* <FormImageSelectField control={form.control} name="cover_image" label="Hình ảnh bìa" /> */}
+        {/* </div> */}
         <FormMultiSelectField
           form={form}
           name="topic_ids"

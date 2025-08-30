@@ -272,7 +272,7 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
   const router = useRouter()
 
   const onAddRow = () => {
-    router.push(`/admin/courses/create?${searchParams?.toString()}`)
+    router.push(`/admin/courses/new?${searchParams?.toString()}`)
   }
 
   const onEditRow = (row: Course) => {

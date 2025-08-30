@@ -143,7 +143,7 @@ export function MealForm({ onSubmit, onCancel }: MealFormProps) {
                   <Textarea
                     placeholder="Mô tả sở thích ăn uống, món ăn yêu thích, thực phẩm không thích hoặc dị ứng..."
                     {...field}
-                    rows={3}
+                    rows={4}
                   />
                 </FormControl>
                 <FormMessage />

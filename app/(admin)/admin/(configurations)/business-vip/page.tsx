@@ -9,8 +9,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { getConfiguration, queryKeyConfigurations, updateConfiguration } from '@/network/client/configurations'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { MainButton } from '@/components/buttons/main-button'
-import { FormRichTextField } from '@/components/forms/fields'
-import { ImageUploader } from '@/components/image-uploader'
+import { FormImageSelectField, FormRichTextField } from '@/components/forms/fields'
 import { Configuration } from '@/models/configuration'
 import { Spinner } from '@/components/spinner'
 import { Form } from '@/components/ui/form'
@@ -94,7 +93,7 @@ function EditAboutUsForm({ data, onSuccess }: EditAboutUsFormProps) {
   return (
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-        <ImageUploader form={form} name="data.thumbnail_image" label="Hình ảnh" />
+        <FormImageSelectField control={form.control} name="data.thumbnail_image" label="Hình ảnh" />
         <FormRichTextField
           form={form}
           name="data.description"

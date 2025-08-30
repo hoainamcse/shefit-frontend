@@ -13,7 +13,7 @@ interface EditSheetProps extends PropsWithChildren {
 export function EditSheet({ children, title, description, open, onOpenChange }: EditSheetProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="p-0">
+      <SheetContent className="p-0 sm:max-w-md">
         <div className="flex h-full w-full flex-col gap-0">
           <SheetHeader className="flex-none border-b border-dashed p-4 text-left">
             <SheetTitle>{title ?? 'Chỉnh sửa'}</SheetTitle>

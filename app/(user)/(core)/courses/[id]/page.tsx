@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useSession } from '@/hooks/use-session'
 import { getUserSubscriptions } from '@/network/client/users'
-import { HtmlContent } from '@/components/html-content'
+import { HTMLRenderer } from '@/components/html-renderer'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 
 export default function CoursePage() {
@@ -163,7 +163,7 @@ export default function CoursePage() {
           <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl mb-4">
             Thông tin khóa
           </p>
-          <HtmlContent content={course.description} className="text-[#737373] text-sm lg:text-lg whitespace-pre-line" />
+          <HTMLRenderer content={course.description} className="text-[#737373] text-sm lg:text-lg whitespace-pre-line" />
         </div>
         {course.relationships && course.relationships.equipments.length > 0 && (
           <div>

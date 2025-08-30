@@ -21,11 +21,11 @@ export default function CreateCoursePage() {
         <div className="flex gap-4 mt-4">
           <MainButton
             text="Khoá tập video"
-            onClick={() => router.push(`/admin/courses/create?course_format=video&${searchParams?.toString()}`)}
+            onClick={() => router.push(`/admin/courses/new?course_format=video&${searchParams?.toString()}`)}
           />
           <MainButton
             text="Khoá tập Zoom"
-            onClick={() => router.push(`/admin/courses/create?course_format=live&${searchParams?.toString()}`)}
+            onClick={() => router.push(`/admin/courses/new?course_format=live&${searchParams?.toString()}`)}
           />
         </div>
       </ContentLayout>

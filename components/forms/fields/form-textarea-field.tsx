@@ -40,7 +40,7 @@ function FormTextareaField<
             </FormLabel>
           )}
           <FormControl>
-            <Textarea {...inputProps} {...field} />
+            <Textarea rows={4} {...inputProps} {...field} />
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />

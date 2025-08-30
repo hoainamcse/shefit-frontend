@@ -8,7 +8,7 @@ import { CupIcon } from '@/components/icons/CupIcon'
 import { getCourses } from '@/network/server/courses'
 import { getMealPlans } from '@/network/server/meal-plans'
 import { BodyIcon } from '@/components/icons/BodyIcon'
-import { HtmlContent } from '@/components/html-content'
+import { HTMLRenderer } from '@/components/html-renderer'
 import { ArrowIcon } from '@/components/icons/ArrowIcon'
 import { PersonIcon } from '@/components/icons/PersonIcon'
 import { MainButton } from '@/components/buttons/main-button'
@@ -194,7 +194,7 @@ async function SectionThreeData({ data }: { data: DataType['section_3'] }) {
                   </div>
                 </Link>
                 <div className="flex-1 flex items-center justify-center text-base lg:text-lg mt-4">
-                  <HtmlContent
+                  <HTMLRenderer
                     content={item.subscription.description_homepage}
                     className="text-center px-2 text-neutral-500 text-xs lg:text-base whitespace-pre-line"
                   />
@@ -283,7 +283,7 @@ export function SectionFour({ data }: { data: DataType['section_4'] }) {
       <div className="container mx-auto">
         <div className="lg:bg-[#FF7873] bg-[#FFA5A5] lg:py-8 py-6 rounded-xl px-4">
           <div className="max-w-2xl mx-auto flex flex-col items-center justify-center text-center gap-2 lg:gap-4 text-background">
-            <HtmlContent
+            <HTMLRenderer
               content={data.title}
               className="text-lg lg:text-4xl font-bold px-8 lg:px-0 font-[family-name:var(--font-roboto)]"
             />

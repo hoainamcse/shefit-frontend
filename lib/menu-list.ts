@@ -12,6 +12,9 @@ import {
   User2Icon,
   HomeIcon,
   Images,
+  BellPlus,
+  UserCog2,
+  Users2,
 } from 'lucide-react'
 
 type Submenu = {
@@ -161,11 +164,6 @@ export function getMenuList(pathname: string): Group[] {
           ],
         },
         {
-          href: '/admin/subscriptions',
-          label: 'Gói tập',
-          icon: CreditCardIcon,
-        },
-        {
           href: '',
           label: 'Bài viết',
           icon: RssIcon,
@@ -175,9 +173,14 @@ export function getMenuList(pathname: string): Group[] {
           ],
         },
         {
+          href: '/admin/subscriptions',
+          label: 'Gói tập',
+          icon: CreditCardIcon,
+        },
+        {
           href: '/admin/coaches',
           label: 'Huấn luyện viên',
-          icon: User2Icon,
+          icon: UserCog2,
         },
       ],
     },
@@ -187,7 +190,12 @@ export function getMenuList(pathname: string): Group[] {
         {
           href: '/admin/users',
           label: 'Tài khoản',
-          icon: Settings,
+          icon: Users2,
+        },
+        {
+          href: '/admin/notifications',
+          label: 'Thông báo',
+          icon: BellPlus,
         },
         {
           href: '/admin/images',

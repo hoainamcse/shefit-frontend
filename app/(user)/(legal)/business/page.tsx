@@ -1,5 +1,5 @@
 import { getConfiguration } from '@/network/server/configurations'
-import { HtmlContent } from '@/components/html-content'
+import { HTMLRenderer } from '@/components/html-renderer'
 
 export const dynamic = 'force-dynamic'
 
@@ -24,7 +24,7 @@ export default async function BusinessPage() {
         <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold lg:text-4xl text-2xl mb-6">
           Doanh Nghiệp & VIP
         </div>
-        <HtmlContent
+        <HTMLRenderer
           content={businessData?.description?.replace(/\n/g, '<br />')}
           className="text-gray-500 lg:text-lg text-sm font-normal whitespace-pre-line text-justify"
         />

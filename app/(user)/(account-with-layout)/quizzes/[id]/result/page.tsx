@@ -6,7 +6,7 @@ import { UserBodyQuiz } from '@/models/body-quiz'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
-import { HtmlContent } from '@/components/html-content'
+import { HTMLRenderer } from '@/components/html-renderer'
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
@@ -87,7 +87,7 @@ export default function QuizResultPage() {
         <p className="text-gray-500">
           <span className="text-ring underline text-xl">HLV Đánh Giá</span>
         </p>
-        <HtmlContent content={quizData.comment || "Chưa có kết quả đánh giá"} className='text-gray-500 xl:text-lg max-lg:sm' />
+        <HTMLRenderer content={quizData.comment || "Chưa có kết quả đánh giá"} className='text-gray-500 xl:text-lg max-lg:sm' />
       </div>
     </div>
   )

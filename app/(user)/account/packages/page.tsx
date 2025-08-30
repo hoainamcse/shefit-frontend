@@ -12,7 +12,7 @@ import { ListResponse } from '@/models/response'
 import { Subscription } from '@/models/subscription'
 import { useSearchParams } from 'next/navigation'
 import { getUserSubscriptions } from '@/network/client/users'
-import { HtmlContent } from '@/components/html-content'
+import { HTMLRenderer } from '@/components/html-renderer'
 
 export default function PurchasePackage() {
   const { session } = useSession()
@@ -178,7 +178,7 @@ export default function PurchasePackage() {
                         <ul className="list-disc pl-7 text-sm md:text-lg text-[#737373] w-full space-y-2">
                           {parsedDescription.map((content: string, index: number) => (
                             <li key={index} className="[&>p]:m-0 [&>p]:inline list-item">
-                              <HtmlContent content={content} className="whitespace-pre-line" />
+                              <HTMLRenderer content={content} className="whitespace-pre-line" />
                             </li>
                           ))}
                         </ul>
