@@ -167,7 +167,7 @@ export function FormImageSelectField<
 
       {/* Image selection dialog */}
       <EditDialog
-        title={`Chọn hình ảnh${maxImages > 1 ? ` (tối đa ${maxImages})` : ''}`}
+        title={`Chọn hình ảnh${maxImages > 0 ? ` (tối đa ${maxImages})` : ''}`}
         description="Chọn từ hình đã tải lên hoặc tải hình mới"
         open={isOpen}
         onOpenChange={setIsOpen}

@@ -72,21 +72,21 @@ export function BlogsTable() {
         size: 120,
         enableSorting: false,
       },
-      // {
-      //   header: 'Hình ảnh bìa',
-      //   accessorKey: 'cover_image',
-      //   cell: ({ row }) => (
-      //     <div>
-      //       <img
-      //         src={row.getValue('cover_image')}
-      //         alt={`${row.getValue('title')} thumbnail`}
-      //         className="h-16 w-28 rounded-md object-cover"
-      //       />
-      //     </div>
-      //   ),
-      //   size: 120,
-      //   enableSorting: false,
-      // },
+      {
+        header: 'Hình ảnh bìa',
+        accessorKey: 'cover_image',
+        cell: ({ row }) => (
+          <div>
+            <img
+              src={row.getValue('cover_image')}
+              alt={`${row.getValue('title')} thumbnail`}
+              className="h-16 w-28 rounded-md object-cover"
+            />
+          </div>
+        ),
+        size: 120,
+        enableSorting: false,
+      },
       {
         header: 'Chủ đề',
         accessorKey: 'topics',

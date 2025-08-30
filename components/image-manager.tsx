@@ -49,6 +49,11 @@ export interface ImageManagerProps {
    * Custom page size for infinite query
    */
   pageSize?: number
+
+  /**
+   * Whether to allow selecting images
+   */
+  allowSelect?: boolean
 }
 
 export function ImageManager({
@@ -58,11 +63,11 @@ export function ImageManager({
   className,
   showUploadTab = true,
   pageSize = 20,
+  allowSelect = true,
 }: ImageManagerProps) {
   const [selectedImages, setSelectedImages] = useState<ImageItem[]>([])
   const isMaxSelected = maxSelect > 0 && selectedImages.length >= maxSelect
 
-  // Handle clipboard operations
   const { copy, copied } = useClipboard()
 
   useEffect(() => {
@@ -71,7 +76,6 @@ export function ImageManager({
     }
   }, [copied])
 
-  // Load images with infinite query
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch, error } = useInfiniteQuery({
     queryKey: ['images'],
     queryFn: async ({ pageParam = 0 }) => {
@@ -92,24 +96,19 @@ export function ImageManager({
     initialPageParam: 0,
   })
 
-  // Delete mutation for individual image deletion
   const deleteMutation = useMutation({
     mutationFn: (id: number) => deleteBulkFiles([id]),
     onSuccess: () => {
-      toast.success('Image deleted successfully')
+      toast.success('Hình ảnh đã được xóa thành công')
       refetch()
     },
     onError: (error) => {
-      toast.error('Failed to delete image: ' + (error as Error).message)
+      toast.error('Không thể xóa hình ảnh: ' + (error as Error).message)
     },
   })
 
-  // Format file size
-  const formatFileSize = (bytes: number) => {
-    return formatBytes(bytes)
-  }
+  const formatFileSize = (bytes: number) => formatBytes(bytes)
 
-  // Format date
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -118,78 +117,63 @@ export function ImageManager({
     })
   }
 
-  // Flatten images from all pages and filter out deleted files
   const allImages = data?.pages.flatMap((page) => page.data.filter((file: FileMetadata) => !file.is_deleted)) || []
 
-  // Sort images by date (most recent first)
-  const filteredImages = allImages.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  const sortedImages = allImages.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
-  // Check if an image is selected
-  const isImageSelected = useCallback(
-    (id: string) => {
-      return selectedImages.some((img) => img.id === id)
-    },
-    [selectedImages]
-  )
+  const isImageSelected = useCallback((id: string) => selectedImages.some((img) => img.id === id), [selectedImages])
 
-  // Handle image selection
+  const canSelectMoreImages = maxSelect === 0 || selectedImages.length < maxSelect
+
   const toggleImageSelection = useCallback(
     (image: FileMetadata) => {
-      // Create the new image object
+      if (!allowSelect) return
+
+      const imageId = image.s3_key
+      const isAlreadySelected = isImageSelected(imageId)
+
+      // Always allow deselection
+      if (isAlreadySelected) {
+        setSelectedImages((prev) => prev.filter((img) => img.id !== imageId))
+        return
+      }
+
+      // Don't allow new selections if we've reached the limit
+      if (maxSelect > 0 && selectedImages.length >= maxSelect) {
+        return
+      }
+
       const newImage = {
-        id: image.s3_key,
-        url: getS3FileUrl(image.s3_key),
+        id: imageId,
+        url: getS3FileUrl(imageId),
         name: image.filename,
       }
 
-      setSelectedImages((prev) => {
-        const isAlreadySelected = prev.some((img) => img.id === image.s3_key)
+      // For single selection mode, replace existing selection
+      if (maxSelect === 1) {
+        setSelectedImages([newImage])
+        return
+      }
 
-        // If already selected, just remove it
-        if (isAlreadySelected) {
-          return prev.filter((img) => img.id !== image.s3_key)
-        }
-
-        // For single select (maxSelect=1), replace the current selection
-        if (maxSelect === 1) {
-          return [newImage]
-        }
-
-        // For multi-select with limit
-        if (maxSelect > 0 && prev.length >= maxSelect) {
-          toast.error(`You can only select up to ${maxSelect} images.`)
-          return prev
-        }
-
-        // Default: add to selection
-        return [...prev, newImage]
-      })
+      // Add to existing selections
+      setSelectedImages((prev) => [...prev, newImage])
     },
-    [maxSelect]
+    [maxSelect, allowSelect, isImageSelected, selectedImages]
   )
 
-  // Handle upload success
   const handleUploadSuccess = (images: ImageItem[]) => {
     refetch()
-
-    if (onUploadSuccess) {
-      onUploadSuccess(images)
-    }
+    onUploadSuccess?.(images)
   }
-
-  // Remove automatic callback when selectedImages changes
-  // We'll let the parent component handle confirmation explicitly
-
-  // No longer need a confirmation handler as it's moved to parent component
 
   return (
     <div className={cn('flex flex-col h-full max-h-full', className)}>
       {/* Tabs Navigation */}
-      <Tabs defaultValue="upload" className="flex flex-col h-full">
+      <Tabs defaultValue="gallery" className="flex flex-col h-full">
         <div className="flex justify-between items-center pb-4 flex-shrink-0 border-b">
           <TabsList>
-            {showUploadTab && <TabsTrigger value="upload">Tải lên</TabsTrigger>}
             <TabsTrigger value="gallery">Thư viện</TabsTrigger>
+            {showUploadTab && <TabsTrigger value="upload">Tải lên</TabsTrigger>}
           </TabsList>
 
           {onConfirmSelectedImages && selectedImages.length > 0 && (
@@ -205,15 +189,6 @@ export function ImageManager({
           )}
         </div>
 
-        {/* Upload Tab */}
-        {showUploadTab && (
-          <TabsContent value="upload" className="flex-grow mt-0 pt-4 border-0">
-            <div className="h-full">
-              <ImageUploader onSuccess={handleUploadSuccess} label="Tải lên hình ảnh" className="w-full" />
-            </div>
-          </TabsContent>
-        )}
-
         {/* Gallery Tab */}
         <TabsContent value="gallery" className="flex-col flex-grow min-h-0 mt-0 pt-4 border-0 overflow-hidden">
           {/* Gallery content with proper overflow handling */}
@@ -227,14 +202,14 @@ export function ImageManager({
                 <RefreshCw className="w-6 h-6 animate-spin mr-2" />
                 <span>Loading images...</span>
               </div>
-            ) : filteredImages.length === 0 ? (
+            ) : sortedImages.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground absolute inset-0 flex flex-col items-center justify-center">
                 <p>No images uploaded yet. Go to Upload tab to add images.</p>
               </div>
             ) : (
               <ScrollArea className="h-full pr-1">
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                  {filteredImages.map((image: FileMetadata) => (
+                  {sortedImages.map((image: FileMetadata) => (
                     <div
                       key={image.id}
                       className={cn(
@@ -257,7 +232,7 @@ export function ImageManager({
                           </div>
                         )}
                         {/* Hover actions overlay - Copy URL and Delete buttons */}
-                        {!onConfirmSelectedImages && (
+                        {!onConfirmSelectedImages && !(isMaxSelected && !isImageSelected(image.s3_key)) && (
                           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                             <Button
                               size="icon"
@@ -275,13 +250,18 @@ export function ImageManager({
                               size="icon"
                               variant="destructive"
                               className="h-8 w-8"
+                              disabled={deleteMutation.isPending}
                               onClick={(e) => {
                                 e.stopPropagation()
                                 deleteMutation.mutate(image.id)
                               }}
                               title="Delete image"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              {deleteMutation.isPending && deleteMutation.variables === image.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Trash2 className="h-4 w-4" />
+                              )}
                             </Button>
                           </div>
                         )}
@@ -314,6 +294,15 @@ export function ImageManager({
             )}
           </div>
         </TabsContent>
+
+        {/* Upload Tab */}
+        {showUploadTab && (
+          <TabsContent value="upload" className="flex-grow mt-0 pt-4 border-0">
+            <div className="h-full">
+              <ImageUploader onSuccess={handleUploadSuccess} label="Tải lên hình ảnh" className="w-full" />
+            </div>
+          </TabsContent>
+        )}
       </Tabs>
 
       {/* No footer in this component anymore - it's moved to parent */}

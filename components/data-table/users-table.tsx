@@ -19,6 +19,7 @@ import {
   getUser,
   getUsers,
   getUserSubscriptions,
+  importUsersExcel,
   queryKeyUsers,
   updateUser,
 } from '@/network/client/users'
@@ -38,6 +39,7 @@ import { FormInputField, FormSelectField } from '../forms/fields'
 import { Form } from '../ui/form'
 import { Button } from '../ui/button'
 import { useSession } from '@/hooks/use-session'
+import { ExcelImportDialog } from '../excel-import-dialog'
 
 export function UsersTable() {
   const { session, isLoading: isPending } = useSession()
@@ -296,6 +298,13 @@ export function UsersTable() {
             <AddButton text="Thêm tài khoản" />
           </CreateAccountDialog>
           <ExportDialog data={data?.data} onSuccess={() => toast.success('Đã xuất danh sách tài khoản thành công')} />
+          <ExcelImportDialog
+            title="Tài khoản"
+            handleSubmit={async (file: File) => {
+              await importUsersExcel(file)
+              refetch()
+            }}
+          />
         </>
       }
     />

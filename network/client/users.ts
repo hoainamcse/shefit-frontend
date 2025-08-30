@@ -54,6 +54,17 @@ export async function updatePassword(data: any): Promise<ApiResponse<any>> {
   return response.json()
 }
 
+
+export async function importUsersExcel(file: File): Promise<ApiResponse<any>> {
+  const formData = new FormData()
+  formData.append('file', file, file.name)
+  const response = await fetchData('/v1/users/import-excel', {
+    method: 'POST',
+    body: formData,
+  }, false)
+  return await response.json()
+}
+
 // User Cart
 export async function getUserCarts(id: User['id']): Promise<ListResponse<UserCart>> {
   const response = await fetchData(`/v1/users/${id}/carts`)

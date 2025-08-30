@@ -4,7 +4,7 @@ import { ImageManager } from '@/components/image-manager'
 export default function ImagesPage() {
   return (
     <ContentLayout title="Thư viện Hình ảnh">
-      <ImageManager pageSize={30} />
+      <ImageManager pageSize={30} allowSelect={false} />
     </ContentLayout>
   )
 }

@@ -110,8 +110,16 @@ function FormRichTextField<
                       table: function () {
                         const quill = (this as any).quill
                         if (quill) {
-                          const tableRows = parseInt(prompt('Số lượng hàng', '3') || '3', 10)
-                          const tableCols = parseInt(prompt('Số lượng cột', '3') || '3', 10)
+                          const rowPrompt = prompt('Number of rows:', '3')
+                          // If user cancels the prompt, rowPrompt will be null
+                          if (rowPrompt === null) return
+
+                          const colPrompt = prompt('Number of columns:', '3')
+                          // If user cancels the second prompt, colPrompt will be null
+                          if (colPrompt === null) return
+
+                          const tableRows = parseInt(rowPrompt || '3', 10)
+                          const tableCols = parseInt(colPrompt || '3', 10)
                           const table = []
                           for (let r = 0; r < tableRows; r++) {
                             const row = []
