@@ -1,415 +1,139 @@
 'use client'
 
-import { ArrowPinkIcon } from '@/components/icons/ArrowPinkIcon'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { getCourseWeeks, getWeekDays, getCourse } from '@/network/client/courses'
-import { useState, useEffect } from 'react'
-import { useSession } from '@/hooks/use-session'
+import type { Course } from '@/models/course'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useQueries } from '@tanstack/react-query'
+
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Course } from '@/models/course'
-import { getUserSubscriptions } from '@/network/client/users'
-import { UserCourse } from '@/models/user-courses'
-import { createUserCourse, getUserCourses } from '@/network/client/users'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { ArrowPinkIcon } from '@/components/icons/ArrowPinkIcon'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { useSession } from '@/hooks/use-session'
+import { checkUserAccessedResource } from '@/network/client/users'
+import { getCourseWeeks, queryKeyCourseWeeks } from '@/network/client/courses'
 
-interface UserCourseItem extends UserCourse {
-  is_active: boolean
-  start_date: string
-  end_date: string
-  course_id: number
-}
-
-type CourseDay = {
-  day: number
-  content: string
-}
-
-type CourseWeek = {
-  week: number
-  days: CourseDay[]
-}
-
-export const mapCourseData = (totalWeeks: number): CourseWeek[] => {
-  return Array.from({ length: totalWeeks }, (_, weekIndex) => ({
-    week: weekIndex + 1,
-    days: Array.from({ length: 7 }, (_, dayIndex) => ({
-      day: dayIndex + 1,
-      content: `Nội dung ngày ${dayIndex + 1}`,
-    })),
-  }))
-}
-
-const saveCurrentUrl = () => {
-  if (typeof window !== 'undefined') {
-    const currentUrl = window.location.pathname + window.location.search
-    sessionStorage.setItem('redirectAfterLogin', currentUrl)
-  }
-}
-
-const redirectToLogin = () => {
-  if (typeof window !== 'undefined') {
-    saveCurrentUrl()
-    const currentUrl = window.location.pathname + window.location.search
-    const loginUrl = `/auth/login?redirect=${encodeURIComponent(currentUrl)}`
-    window.location.href = loginUrl
-  }
-}
-
-export function VideoCourseDetail({ courseID }: { courseID: Course['id'] }) {
-  const searchParams = useSearchParams()
-  const back = searchParams.get('back') || ''
-  const [weeks, setWeeks] = useState<any>(null)
-  const [days, setDays] = useState<any>(null)
-  const [courseData, setCourseData] = useState<CourseWeek[]>([])
-  const { session } = useSession()
-  const [dialogOpen, setDialogOpen] = useState<string | false>(false)
-  const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false)
-  const [checkingAccess, setCheckingAccess] = useState(false)
-  const [isFreeCourse, setIsFreeCourse] = useState(false)
-  const [showLoginDialog, setShowLoginDialog] = useState(false)
-  const [courseStatus, setCourseStatus] = useState<'checking' | 'exists' | 'not_found'>('checking')
+export function VideoCourseDetail({ courseID, query }: { courseID: Course['id']; query: string }) {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(true)
+  const { session } = useSession()
+  const [openLogin, setOpenLogin] = useState(false)
+  const [openBuyPackage, setOpenBuyPackage] = useState(false)
 
-  const checkUserCourse = async () => {
+  // Use useQueries to fetch course weeks and check user access
+  const queries = useQueries({
+    queries: [
+      {
+        queryKey: [queryKeyCourseWeeks, courseID],
+        queryFn: () => getCourseWeeks(courseID),
+      },
+      {
+        queryKey: ['user-accessed-resources', session?.userId, 'course', courseID],
+        queryFn: () => checkUserAccessedResource(session?.userId!, 'course', courseID),
+        enabled: !!session?.userId,
+      },
+    ],
+  })
+
+  const courseWeeks = queries[0].data?.data || []
+  const isCourseWeeksLoading = queries[0].isLoading
+  const isAccessed = queries[1].data?.data || false
+
+  if (isCourseWeeksLoading) {
+    return (
+      <div className="flex justify-center items-center h-40">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  // Navigate to course day or show purchase dialog
+  const handleStartCourse = async (weekId: number, dayId: number) => {
     if (!session) {
-      setCourseStatus('not_found')
-      return 'not_found'
+      setOpenLogin(true)
+      return
     }
 
-    try {
-      const response = await getUserCourses(session.userId)
-      const userCourse = (response.data as UserCourseItem[])?.find((course) => {
-        const userCourseId = Number(course.course_id)
-        const currentCourseId = Number(courseID)
-        return userCourseId === currentCourseId && course.is_active === true
-      })
-
-      if (userCourse) {
-        setCourseStatus('exists')
-        return 'exists'
-      } else {
-        setCourseStatus('not_found')
-        return 'not_found'
-      }
-    } catch (error) {
-      console.error('Error checking user course:', error)
-      setCourseStatus('not_found')
-      return 'not_found'
+    if (!isAccessed) {
+      setOpenBuyPackage(true)
+      return
     }
+
+    router.push(`/courses/${courseID}/detail/${weekId}/${dayId}${query}`)
   }
 
-  useEffect(() => {
-    checkUserCourse()
-  }, [session, courseID])
-
-  const handleStartClick = async (e: React.MouseEvent) => {
-    e.preventDefault()
-
-    if (!session) {
-      setShowLoginDialog(true)
-      return 'not_logged_in'
-    }
-
-    const status = await checkUserCourse()
-
-    if (status === 'not_found') {
-      try {
-        await createUserCourse({ course_id: courseID }, session.userId)
-        setCourseStatus('exists')
-        return 'exists'
-      } catch (error) {
-        console.error('Error creating user course:', error)
-        return 'error'
-      }
-    }
-
-    return status
-  }
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const weeksData = await getCourseWeeks(courseID)
-        setWeeks(weeksData)
-
-        if (weeksData.data && weeksData.data.length > 0) {
-          const daysData = await getWeekDays(courseID, weeksData.data[0]?.id)
-          setDays(daysData)
-
-          const totalWeeks = weeksData.data.length
-          setCourseData(mapCourseData(totalWeeks))
-        }
-      } catch (error) {
-        console.error('Error fetching video detail data:', error)
-      }
-    }
-
-    fetchData()
-  }, [courseID])
-
-  const checkCourseAccess = async () => {
-    try {
-      const courseResponse = await getCourse(courseID)
-      if (courseResponse?.data?.is_free) {
-        console.log('Course is free, granting access')
-        return true
-      }
-      if (!session?.userId) return false
-      setCheckingAccess(true)
-      console.log('Fetching subscriptions for user:', session.userId)
-      const subscriptions = await getUserSubscriptions(session.userId)
-      console.log('Subscriptions data:', subscriptions.data)
-
-      // Find all subscriptions that contain the course
-      const subscriptionsWithCourse = subscriptions.data.filter((sub: any) => {
-        return sub.subscription?.courses?.some((course: any) => {
-          const match = course.id == courseID
-          console.log(
-            `Checking course: ${course.id} (${typeof course.id}) vs ${courseID} (${typeof courseID}), match: ${match}`
-          )
-          return match
-        })
-      })
-
-      console.log('Subscriptions with this course:', subscriptionsWithCourse.length)
-
-      if (subscriptionsWithCourse.length > 0) {
-        const sortedSubscriptions = [...subscriptionsWithCourse].sort((a: any, b: any) => {
-          const dateA = new Date(a.subscription_end_at)
-          const dateB = new Date(b.subscription_end_at)
-          return dateB.getTime() - dateA.getTime()
-        })
-        const latestSubscription = sortedSubscriptions[0]
-        const endDate = new Date(latestSubscription.subscription_end_at)
-        const currentDate = new Date()
-
-        const isActive = latestSubscription.status === 'active'
-        const isNotExpired = endDate > currentDate
-
-        console.log(
-          `Latest subscription (ID: ${
-            latestSubscription.id
-          }): active=${isActive}, expired=${!isNotExpired}, ends at ${endDate}`
-        )
-
-        const hasAccess = isActive && isNotExpired
-        console.log('Final access check result:', hasAccess)
-        return hasAccess
-      }
-
-      return false
-    } catch (error) {
-      console.error('Error checking course access:', error)
-      return false
-    } finally {
-      setCheckingAccess(false)
-    }
-  }
-
-  useEffect(() => {
-    const checkCourse = async () => {
-      try {
-        const courseResponse = await getCourse(courseID)
-        setIsFreeCourse(courseResponse?.data?.is_free || false)
-        setIsLoading(false)
-      } catch (error) {
-        console.error('Error checking course:', error)
-      }
-    }
-    checkCourse()
-  }, [courseID])
-
-  const handleDayClick = async (e: React.MouseEvent, weekId: string, dayId: string) => {
-    e.preventDefault()
-    console.log('handleDayClick called with:', { weekId, dayId, courseId: courseID })
-
-    try {
-      if (isFreeCourse) {
-        if (!session?.userId) {
-          setDialogOpen(`day-${dayId}`)
-          return
-        }
-        const targetUrl = `/courses/${courseID}/detail/${weekId}/${dayId}${
-          back ? `?back=${encodeURIComponent(back)}` : ''
-        }`
-        console.log('Free course, navigating to:', targetUrl)
-        window.location.href = targetUrl
-        return
-      }
-
-      if (!session?.userId) {
-        console.log('No user ID, showing login dialog')
-        setDialogOpen(`day-${dayId}`)
-        return
-      }
-
-      console.log('Checking course access...')
-      const hasAccess = await checkCourseAccess()
-      console.log('Course access result:', hasAccess)
-
-      if (hasAccess) {
-        const targetUrl = `/courses/${courseID}/detail/${weekId}/${dayId}${
-          back ? `?back=${encodeURIComponent(back)}` : ''
-        }`
-        console.log('User has access, navigating to:', targetUrl)
-        window.location.href = targetUrl
-      } else {
-        console.log('No active subscription found, showing purchase dialog')
-        setPurchaseDialogOpen(true)
-      }
-    } catch (error) {
-      console.error('Error handling day click:', error)
-      setPurchaseDialogOpen(true)
-    }
-  }
-
+  // Navigate to login page
   const handleLoginClick = () => {
-    setDialogOpen(false)
-    redirectToLogin()
+    router.push(`/auth/login?redirect=${encodeURIComponent(`/courses/${courseID}/detail${query}`)}`)
   }
 
+  // Navigate to packages page with course ID
   const handleBuyPackageClick = () => {
-    if (typeof window !== 'undefined') {
-      saveCurrentUrl()
-      const currentUrl = window.location.pathname + window.location.search
-      const accountUrl = `/account/packages?course_id=${courseID}&redirect=${encodeURIComponent(currentUrl)}`
-      window.location.href = accountUrl
-    }
+    router.push(`/packages?course_id=${courseID}&redirect=${encodeURIComponent(`/courses/${courseID}/detail${query}`)}`)
   }
 
-  if (!weeks || !days) {
-    return (
-      <div className="flex justify-center items-center h-40">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-40">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-
+  // Render course weeks and days accordion
   return (
     <div className="flex flex-col gap-10 lg:mt-10 mt-2">
-      <Accordion type="multiple" defaultValue={courseData.map((c) => `week-${c.week}`)} className="mt-3">
-        {courseData.map((week, weekIndex) => (
-          <AccordionItem key={week.week} value={`week-${week.week}`}>
+      <Accordion type="multiple" defaultValue={courseWeeks.map((c) => `week-${c.week_number}`)} className="mt-3">
+        {courseWeeks.map((week) => (
+          <AccordionItem key={week.id} value={`week-${week.week_number}`}>
             <AccordionTrigger className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] text-ring text-2xl cursor-pointer font-semibold lg:font-bold">
-              <div>Tuần {week.week}</div>
+              <div>Tuần {week.week_number}</div>
             </AccordionTrigger>
             <AccordionContent>
               <ol className="flex flex-col gap-2 text-lg">
-                {days.data
-                  .sort((a: any, b: any) => a.id - b.id)
-                  .map((day: any, index: number) => (
-                    <li key={day.id} className="flex justify-between items-center">
-                      <div className="flex gap-1 text-sm lg:text-lg">
-                        <span className="font-semibold text-gray-900 dark:text-gray-50">Ngày </span>
-                        <span className="text-gray-900 dark:text-gray-50">{index + 1}</span>
-                        <p>{day.description}</p>
-                      </div>
-                      {session?.userId ? (
-                        <div
-                          onClick={async (e) => {
-                            e.preventDefault()
-                            await checkUserCourse()
-                            await handleStartClick(e)
-                            handleDayClick(e, weeks.data[weekIndex]?.id, day.id)
-                          }}
-                          className="cursor-pointer"
-                        >
-                          <ArrowPinkIcon />
-                        </div>
-                      ) : (
-                        <Dialog
-                          open={dialogOpen === `day-${day.id}`}
-                          onOpenChange={(open) => {
-                            if (!open) setDialogOpen(false)
-                          }}
-                        >
-                          <DialogTrigger asChild>
-                            <div onClick={() => setDialogOpen(`day-${day.id}`)} className="cursor-pointer">
-                              <ArrowPinkIcon />
-                            </div>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
-                            </DialogHeader>
-                            <div className="flex flex-col items-center text-center gap-6">
-                              {isFreeCourse ? (
-                                <>
-                                  <p className="text-base">ĐĂNG NHẬP ĐỂ TRUY CẬP KHÓA TẬP FREE</p>
-                                  <div className="flex justify-center w-full px-10">
-                                    <Button
-                                      className="bg-[#13D8A7] rounded-full w-full text-base max-w-xs"
-                                      onClick={handleLoginClick}
-                                    >
-                                      Đăng nhập
-                                    </Button>
-                                  </div>
-                                </>
-                              ) : (
-                                <>
-                                  <p className="text-base">ĐĂNG NHẬP & MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
-                                  <div className="flex gap-4 justify-center w-full px-10">
-                                    <div className="flex-1">
-                                      <Button
-                                        className="bg-[#13D8A7] rounded-full w-full text-base"
-                                        onClick={handleBuyPackageClick}
-                                      >
-                                        Mua gói Member
-                                      </Button>
-                                    </div>
-                                    <div className="flex-1">
-                                      <Button
-                                        className="bg-[#13D8A7] rounded-full w-full text-base"
-                                        onClick={handleLoginClick}
-                                      >
-                                        Đăng nhập
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </>
-                              )}
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                      )}
-                    </li>
-                  ))}
+                {week.days.map((day, index) => (
+                  <li key={day.id} className="flex justify-between items-center">
+                    <div className="flex gap-1 text-sm lg:text-lg">
+                      <span className="font-semibold text-gray-900 dark:text-gray-50">Ngày </span>
+                      <span className="text-gray-900 dark:text-gray-50">{index + 1}</span>
+                      <p>{day.description}</p>
+                    </div>
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => handleStartCourse(week.id, day.id)}
+                      aria-label={`Start course day ${index + 1}`}
+                    >
+                      <ArrowPinkIcon />
+                    </div>
+                  </li>
+                ))}
               </ol>
             </AccordionContent>
           </AccordionItem>
         ))}
       </Accordion>
 
-      <Dialog open={purchaseDialogOpen} onOpenChange={setPurchaseDialogOpen}>
+      {/* Login Dialog */}
+      <Dialog open={openLogin} onOpenChange={setOpenLogin}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center text-center gap-6">
-            <p className="text-base">HÃY MUA GÓI ĐỂ TRUY CẬP KHÓA TẬP</p>
+            <p className="text-base">ĐĂNG NHẬP TRUY CẬP KHÓA TẬP</p>
             <div className="flex gap-4 justify-center w-full px-10">
-              <div className="flex-1">
-                <Button
-                  className="bg-[#13D8A7] rounded-full w-full text-base"
-                  onClick={() => {
-                    setPurchaseDialogOpen(false)
-                    handleBuyPackageClick()
-                  }}
-                  disabled={checkingAccess}
-                >
-                  {checkingAccess ? 'Đang kiểm tra...' : 'Mua gói Member'}
-                </Button>
-              </div>
+              <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleLoginClick}>
+                Đăng nhập
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Buy Package Dialog */}
+      <Dialog open={openBuyPackage} onOpenChange={setOpenBuyPackage}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center text-center gap-6">
+            <p className="text-base">MUA GÓI MEMBER ĐỂ TRUY CẬP KHOÁ TẬP</p>
+            <div className="w-full px-10">
+              <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleBuyPackageClick}>
+                Mua gói Member
+              </Button>
             </div>
           </div>
         </DialogContent>

@@ -134,7 +134,7 @@ export function UsersTable() {
         size: 120,
       },
       {
-        header: 'SDT',
+        header: 'SĐT',
         accessorKey: 'phone_number',
         size: 150,
       },

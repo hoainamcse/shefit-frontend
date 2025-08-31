@@ -1,35 +1,36 @@
 import { getSubscription } from '@/network/server/subscriptions'
 import { getCourses } from '@/network/server/courses'
-import { ChevronRight } from 'lucide-react'
 import { courseLevelLabel, courseFormLabel } from '@/lib/label'
 import Link from 'next/link'
 import { getMealPlans } from '@/network/server/meal-plans'
 import ActionButtons from './_components/action-buttons'
 import SubscriptionInfo from './_components/subscription-info'
-import { BackIcon } from '@/components/icons/BackIcon'
+import { serializeSearchParams } from '@/utils/searchParams'
 import { HTMLRenderer } from '@/components/html-renderer'
 import { Button } from '@/components/ui/button'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { Subscription } from '@/models/subscription'
 
-export default async function PackageDetail({ params }: { params: Promise<{ id: Subscription['id'] }> }) {
+export default async function PackageDetail({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: Subscription['id'] }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const { id: subscriptionId } = await params
+  const _searchParams = await searchParams
+  const query = serializeSearchParams(_searchParams)
+  const back = typeof _searchParams.back === 'string' ? _searchParams.back : ''
   const subscription = await getSubscription(subscriptionId)
   const courses = await getCourses()
   const mealPlans = await getMealPlans()
-  const NextButton = ({ className, href }: { className?: string; href?: string }) => {
-    return (
-      <button type="button" className={`bg-background p-2 rounded-3xl text-ring ${className}`}>
-        <ChevronRight className="w-4 h-4" />
-      </button>
-    )
-  }
 
   const subscriptionData = subscription?.data
   return (
     <div>
       <div className="relative">
-        <Link href="/account/packages" className="lg:hidden items-center gap-2 cursor-pointer">
+        <Link href={back || '/packages'} className="lg:hidden items-center gap-2 cursor-pointer">
           <Button className="px-4 flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black shadow-none font-medium">
             <BackIconBlack className="mb-1" /> Quay về
           </Button>
@@ -141,7 +142,7 @@ export default async function PackageDetail({ params }: { params: Promise<{ id: 
                 </div>
                 <HTMLRenderer className="whitespace-pre-line" content={subscriptionData?.result_checkup || ''} />
               </div>
-              <ActionButtons subscription={subscription.data} />
+              <ActionButtons subscription={subscription.data} query={query} />
             </div>
           </div>
         </div>

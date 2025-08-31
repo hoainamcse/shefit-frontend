@@ -112,7 +112,7 @@ export default function CoursesPage() {
 
   const handleSubscriptionClick = async (course: Course) => {
     if (!session?.userId) {
-      router.push(`/account/packages?course_id=${course.id}`)
+      router.push(`/packages?course_id=${course.id}`)
       return
     }
 
@@ -126,11 +126,11 @@ export default function CoursesPage() {
         setSelectedCourse(course)
         setShowAccessDialog(true)
       } else {
-        router.push(`/account/packages?course_id=${course.id}`)
+        router.push(`/packages?course_id=${course.id}`)
       }
     } catch (error) {
       console.error('Error checking course access:', error)
-      router.push(`/account/packages?course_id=${course.id}`)
+      router.push(`/packages?course_id=${course.id}`)
     } finally {
       setIsCheckingAccess(false)
     }

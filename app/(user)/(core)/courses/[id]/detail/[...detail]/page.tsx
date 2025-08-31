@@ -4,16 +4,18 @@ import { VideoClient } from './_components/video-client'
 import { Course } from '@/models/course'
 import Link from 'next/link'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
+import { serializeSearchParams } from '@/utils/searchParams'
 
 export default async function Video({
   params,
   searchParams,
 }: {
   params: Promise<{ id: Course['id']; detail: string[] }>
-  searchParams: Promise<{ back?: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const { id: courseID, detail } = await params
-  const { back = '' } = await searchParams
+  const _searchParams = await searchParams
+  const query = serializeSearchParams(_searchParams)
 
   try {
     const weeks = await getCourseWeeks(courseID)
@@ -35,7 +37,7 @@ export default async function Video({
     return (
       <div className="flex flex-col">
         <Link
-          href={`/courses/${courseID}/detail${back ? `?back=${encodeURIComponent(back)}` : ''}`}
+          href={`/courses/${courseID}/detail${query}`}
           className="inline-flex items-center gap-2 text-lg font-semibold transition-colors px-4 mt-4 w-36"
         >
           <BackIconBlack className="w-5 h-5" />

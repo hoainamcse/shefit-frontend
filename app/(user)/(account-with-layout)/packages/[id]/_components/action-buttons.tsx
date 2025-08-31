@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 
-export default function ActionButtons({ subscription }: { subscription: Subscription }) {
+export default function ActionButtons({ subscription, query }: { subscription: Subscription; query: string }) {
   const { session } = useSession()
   const isFreeSubscription = subscription.prices.length > 0 && subscription.prices.every((price) => price.price === 0)
 
@@ -65,7 +65,7 @@ export default function ActionButtons({ subscription }: { subscription: Subscrip
 
   if (!isFreeSubscription && isSubscribed) {
     return (
-      <Link href={`/packages/${subscription.id}/purchase`} className="mx-auto max-lg:w-full">
+      <Link href={`/packages/${subscription.id}/purchase${query}`} className="mx-auto max-lg:w-full">
         <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] max-md:w-full w-full px-5 mx-auto text-base">
           Gia hạn gói
         </Button>
@@ -75,7 +75,7 @@ export default function ActionButtons({ subscription }: { subscription: Subscrip
 
   if (!isFreeSubscription && !isSubscribed) {
     return (
-      <Link href={`/packages/${subscription.id}/purchase`} className="mx-auto max-lg:w-full">
+      <Link href={`/packages/${subscription.id}/purchase${query}`} className="mx-auto max-lg:w-full">
         <Button className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] max-md:w-full w-full px-5 mx-auto text-base lg:text-lg">
           Mua gói
         </Button>

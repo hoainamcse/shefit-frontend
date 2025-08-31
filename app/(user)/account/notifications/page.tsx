@@ -5,7 +5,7 @@ import type { Notification, UserNotification } from '@/models/notification'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQueries, useMutation } from '@tanstack/react-query'
 
 import {
   getNotifications,
@@ -21,22 +21,24 @@ import { htmlToText } from '@/lib/helpers'
 export default function NotificationsPage() {
   const router = useRouter()
   const { session, isLoading: isUserLoading } = useSession()
-  // Fetch all notifications
-  const { data: notificationsData, isLoading: isNotificationsLoading } = useQuery({
-    queryKey: [queryKeyNotifications],
-    queryFn: () => getNotifications(),
-    enabled: !!session,
-  })
 
-  // Fetch user's notifications if user is logged in
-  const {
-    data: userNotificationsData,
-    isLoading: isUserNotificationsLoading,
-    refetch: refetchUserNotifications,
-  } = useQuery({
-    queryKey: [queryKeyUserNotifications, session?.userId],
-    queryFn: () => getUserNotifications(session?.userId as number),
-    enabled: !!session?.userId,
+  // Use useQueries to fetch notifications and user notifications
+  const [
+    { data: notificationsData, isLoading: isNotificationsLoading },
+    { data: userNotificationsData, isLoading: isUserNotificationsLoading, refetch: refetchUserNotifications },
+  ] = useQueries({
+    queries: [
+      {
+        queryKey: [queryKeyNotifications],
+        queryFn: () => getNotifications(),
+        enabled: !!session,
+      },
+      {
+        queryKey: [queryKeyUserNotifications, session?.userId],
+        queryFn: () => getUserNotifications(session?.userId as number),
+        enabled: !!session?.userId,
+      },
+    ],
   })
 
   // Create user notification mutation
@@ -65,7 +67,7 @@ export default function NotificationsPage() {
   const userNotificationsMap = useMemo(() => {
     const map: Record<number, UserNotification> = {}
     if (userNotificationsData?.data) {
-      userNotificationsData.data.forEach((userNotification) => {
+      userNotificationsData.data.forEach((userNotification: UserNotification) => {
         map[userNotification.notification.id] = userNotification
       })
     }

@@ -6,54 +6,59 @@ import type { UserSubscriptionDetail } from '@/models/user-subscriptions'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { format } from 'date-fns'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
-import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { addFavouriteMealPlan } from '@/network/client/user-favourites'
 import { getUserSubscriptions, checkUserAccessedResource, checkUserSavedResource } from '@/network/client/users'
 import { addUserSubscriptionMealPlan, queryKeyUserSubscriptions } from '@/network/client/user-subscriptions'
 
 interface ActionButtonsProps {
   mealPlanID: MealPlan['id']
+  query: string
 }
 
-export function ActionButtons({ mealPlanID }: ActionButtonsProps) {
+export function ActionButtons({ mealPlanID, query }: ActionButtonsProps) {
   const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
   const { session } = useSession()
   const queryClient = useQueryClient()
   const [openLogin, setOpenLogin] = useState(false)
   const [openBuyPackage, setOpenBuyPackage] = useState(false)
   const [showSaveOptionsDialog, setShowSaveOptionsDialog] = useState(false)
   const [saving, setSaving] = useState(false)
-  const { redirectToLogin } = useAuthRedirect()
 
-  // Check access status
-  const accessQuery = useQuery({
-    queryKey: ['user-accessed-resources', session?.userId, 'meal-plan', mealPlanID],
-    queryFn: () => checkUserAccessedResource(session!.userId, 'meal_plan', mealPlanID),
-    enabled: !!session,
+  // Use useQueries to batch multiple queries
+  const queries = useQueries({
+    queries: [
+      // Check access status
+      {
+        queryKey: ['user-accessed-resources', session?.userId, 'meal-plan', mealPlanID],
+        queryFn: () => checkUserAccessedResource(session!.userId, 'meal_plan', mealPlanID),
+        enabled: !!session,
+      },
+      // Check saved status
+      {
+        queryKey: ['saved-resource-status', session?.userId, 'meal_plan', mealPlanID],
+        queryFn: () => checkUserSavedResource(session!.userId, 'meal_plan', mealPlanID),
+        enabled: !!session && showSaveOptionsDialog,
+      },
+      // Fetch user subscriptions
+      {
+        queryKey: [queryKeyUserSubscriptions, session?.userId],
+        queryFn: () => getUserSubscriptions(session!.userId),
+        enabled: !!session && showSaveOptionsDialog,
+      },
+    ],
   })
+
+  const accessQuery = queries[0]
+  const savedStatusQuery = queries[1]
+  const subscriptionsQuery = queries[2]
+
   const isAccessed = accessQuery.data?.data || false
-
-  // Check saved status
-  const savedStatusQuery = useQuery({
-    queryKey: ['saved-resource-status', session?.userId, 'meal_plan', mealPlanID],
-    queryFn: () => checkUserSavedResource(session!.userId, 'meal_plan', mealPlanID),
-    enabled: !!session && showSaveOptionsDialog,
-  })
-
-  // Fetch user subscriptions
-  const subscriptionsQuery = useQuery({
-    queryKey: [queryKeyUserSubscriptions, session?.userId],
-    queryFn: () => getUserSubscriptions(session!.userId),
-    enabled: !!session && showSaveOptionsDialog,
-  })
 
   const favouriteMutation = useMutation({
     mutationFn: () => addFavouriteMealPlan(session!.userId, mealPlanID),
@@ -105,7 +110,7 @@ export function ActionButtons({ mealPlanID }: ActionButtonsProps) {
       return
     }
 
-    router.push(`/meal-plans/${mealPlanID}/detail${searchParams ? `?${searchParams.toString()}` : ''}`)
+    router.push(`/meal-plans/${mealPlanID}/detail${query}`)
   }
 
   const handleShowSaveOptions = () => {
@@ -127,14 +132,14 @@ export function ActionButtons({ mealPlanID }: ActionButtonsProps) {
     subscriptionMutation.mutate({ subscriptionId })
   }
 
+  // Navigate to login page
   const handleLoginClick = () => {
-    setOpenLogin(false)
-    redirectToLogin()
+    router.push(`/auth/login?redirect=${encodeURIComponent(`/meal-plans/${mealPlanID}${query}`)}`)
   }
 
+  // Navigate to packages page with course ID
   const handleBuyPackageClick = () => {
-    setOpenBuyPackage(false)
-    router.push(`/account/packages?redirect=${encodeURIComponent(pathname)}`)
+    router.push(`/packages?redirect=${encodeURIComponent(`/meal-plans/${mealPlanID}${query}`)}`)
   }
 
   // Extract saved status
@@ -187,7 +192,7 @@ export function ActionButtons({ mealPlanID }: ActionButtonsProps) {
             <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center text-center gap-6">
-            <p className="text-base">ĐĂNG NHẬP ĐỂ LƯU THỰC ĐƠN</p>
+            <p className="text-base">ĐĂNG NHẬP ĐỂ TRUY CẬP & LƯU THỰC ĐƠN</p>
             <div className="flex gap-4 justify-center w-full px-10">
               <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleLoginClick}>
                 Đăng nhập

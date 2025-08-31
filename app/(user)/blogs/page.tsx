@@ -5,7 +5,7 @@ import type { Topic } from '@/models/topic'
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -18,22 +18,20 @@ import { HTMLRenderer } from '@/components/html-renderer'
 export default function BlogsPage() {
   const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null)
 
-  const {
-    data: topicsResponse,
-    isLoading: isTopicsLoading,
-    error: topicsError,
-  } = useQuery({
-    queryKey: ['topics'],
-    queryFn: getTopics,
-  })
-
-  const {
-    data: blogsResponse,
-    isLoading: isBlogsLoading,
-    error: blogsError,
-  } = useQuery({
-    queryKey: ['blogs', selectedTopicId],
-    queryFn: () => getBlogs(selectedTopicId ? { topic_id: selectedTopicId } : {}),
+  const [
+    { data: topicsResponse, isLoading: isTopicsLoading, error: topicsError },
+    { data: blogsResponse, isLoading: isBlogsLoading, error: blogsError },
+  ] = useQueries({
+    queries: [
+      {
+        queryKey: ['topics'],
+        queryFn: getTopics,
+      },
+      {
+        queryKey: ['blogs', selectedTopicId],
+        queryFn: () => getBlogs(selectedTopicId ? { topic_id: selectedTopicId } : {}),
+      },
+    ],
   })
 
   const topics: Topic[] = topicsResponse?.data || []

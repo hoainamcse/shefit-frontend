@@ -333,7 +333,7 @@ export async function SectionSeven({ data }: { data: DataType['section_7'] }) {
                             size="icon"
                             icon={ArrowRight}
                             variant="secondary"
-                            href={`/meal-plans/${item.id}?back=%2F`}
+                            href={`/meal-plans/${item.id}`}
                             className="rounded-full text-primary transform transition-transform duration-300 hover:translate-x-1"
                           />
                         </div>

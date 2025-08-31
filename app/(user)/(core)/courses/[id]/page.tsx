@@ -1,10 +1,11 @@
 'use client'
 
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { getCourse } from '@/network/client/courses'
+import { getCourse, queryKeyCourses } from '@/network/client/courses'
 import { courseLevelLabel } from '@/lib/label'
-import { useState, useEffect } from 'react'
+import { useQueries } from '@tanstack/react-query'
 import { CourseLevel, Course } from '@/models/course'
+import { queryKeyUserSubscriptions } from '@/network/client/user-subscriptions'
 import { useParams, useSearchParams } from 'next/navigation'
 import { ActionButtons } from './_components/action-buttons'
 import { Button } from '@/components/ui/button'
@@ -20,45 +21,40 @@ export default function CoursePage() {
   const searchParams = useSearchParams()
   const back = searchParams.get('back') || ''
   const { session } = useSession()
-  const [course, setCourse] = useState<Course | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [userSubscriptions, setUserSubscriptions] = useState<number[]>([])
-  const [isSubscriptionExpired, setIsSubscriptionExpired] = useState(true)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const courseData = await getCourse(courseID)
-        setCourse(courseData.data)
+  // Use useQueries to fetch both course data and user subscriptions
+  const [{ data: courseData, isLoading: isCourseLoading }, { data: userSubscriptionsData }] = useQueries({
+    queries: [
+      {
+        queryKey: [queryKeyCourses, courseID],
+        queryFn: () => getCourse(courseID),
+        enabled: !!courseID,
+      },
+      {
+        queryKey: [queryKeyUserSubscriptions, session?.userId],
+        queryFn: () => getUserSubscriptions(session?.userId!),
+        enabled: !!session?.userId,
+      },
+    ],
+  })
 
-        if (session?.userId) {
-          const userSubscriptionsData = await getUserSubscriptions(session.userId)
-          const subscribedIds = userSubscriptionsData.data?.map((sub) => sub.subscription.id) || []
-          setUserSubscriptions(subscribedIds)
+  const course = courseData?.data
+  const courseEquipments = course?.relationships?.equipments || []
+  const courseMuscleGroups = course?.relationships?.muscle_groups || []
+  const courseSubscriptions = course?.relationships?.subscriptions || []
 
-          // Check if any subscription is still valid (subscription_end_at is in the future)
-          const subscriptions = userSubscriptionsData.data || []
-          const hasValidSubscription = subscriptions.some((sub) => {
-            if (!sub.subscription_end_at) return false
-            const endDate = new Date(sub.subscription_end_at)
-            return new Date() <= endDate
-          })
+  const userSubscriptions = userSubscriptionsData?.data || []
+  const purchasedSubscriptionIds = userSubscriptions.map((sub) => sub.subscription.id)
+  const enableSave = !courseSubscriptions.some(
+    (sub) =>
+      purchasedSubscriptionIds.includes(sub.id) &&
+      isActiveSubscription(
+        userSubscriptions.find((s) => s.subscription.id === sub.id)?.status || '',
+        userSubscriptions.find((s) => s.subscription.id === sub.id)?.subscription_end_at || ''
+      )
+  )
 
-          setIsSubscriptionExpired(!hasValidSubscription)
-        } else {
-          setIsSubscriptionExpired(true)
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [courseID, session?.userId])
-
-  if (isLoading) {
+  if (isCourseLoading) {
     return (
       <div className="flex justify-center items-center h-40">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
@@ -69,7 +65,7 @@ export default function CoursePage() {
   if (!course) {
     return (
       <div className="flex justify-center items-center h-40">
-        <p className="text-gray-500">Khóa học không tồn tại hoặc đã bị xóa.</p>
+        <p className="text-gray-500">Khóa tập không tồn tại hoặc đã bị xóa.</p>
       </div>
     )
   }
@@ -109,45 +105,69 @@ export default function CoursePage() {
             {course.relationships?.form_categories.map((fg) => fg.name).join(', ')}
           </div>
         </div>
-        {course.relationships?.subscriptions && isSubscriptionExpired && (
+        {courseSubscriptions.length > 0 && (
           <div className="flex flex-col lg:gap-5 gap-2">
             <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl uppercase">
               Gói Member
             </div>
-            <div className="text-[#737373] text-lg lg:text-xl">Bạn cần mua các Gói Member sau để truy cập khóa tập</div>
+            <div className="text-[#737373] text-lg lg:text-xl">
+              Bạn cần mua một trong các Gói Member sau để truy cập khóa tập
+            </div>
             <div
               className="flex overflow-x-scroll gap-2 mt-4"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-              {course.relationships?.subscriptions.map((subscription: any) => {
-                const hasPurchased = userSubscriptions.includes(subscription.id)
-                return (
-                  <Link
-                    key={subscription.id}
-                    href={`/packages/${subscription.id}`}
-                    className={`text-sm rounded-full hover:opacity-90 ${
-                      hasPurchased ? 'bg-[#319F43]' : 'bg-[#DA1515]'
-                    }`}
-                  >
-                    <Button
-                      key={subscription.id}
-                      variant="default"
-                      className={`text-sm rounded-full hover:opacity-90 py-2 px-5 ${
-                        hasPurchased ? 'bg-[#319F43]' : 'bg-[#DA1515]'
-                      }`}
-                    >
-                      {subscription.name}
-                    </Button>
-                  </Link>
-                )
-              })}
+              <div className="flex flex-col w-full">
+                <div className="flex flex-wrap gap-3 mb-4">
+                  {courseSubscriptions.map((subscription) => {
+                    const hasPurchased = purchasedSubscriptionIds.includes(subscription.id)
+                    const isActive =
+                      hasPurchased &&
+                      userSubscriptions.some(
+                        (sub) =>
+                          sub.subscription.id === subscription.id &&
+                          isActiveSubscription(sub.status, sub.subscription_end_at)
+                      )
+
+                    return (
+                      <Button
+                        key={subscription.id}
+                        variant="default"
+                        className={`text-sm md:text-base rounded-full hover:opacity-90 py-2 px-5 flex items-center gap-2 ${
+                          !hasPurchased
+                            ? 'bg-gray-200 hover:bg-gray-300 text-gray-500'
+                            : isActive
+                            ? 'bg-green-500 hover:bg-green-600'
+                            : 'bg-red-500 hover:bg-red-600'
+                        }`}
+                        asChild
+                      >
+                        <Link href={`/packages/${subscription.id}`}>{subscription.name}</Link>
+                      </Button>
+                    )
+                  })}
+                </div>
+                <div className="text-xs text-gray-500 flex flex-col gap-1 mt-1">
+                  <p>
+                    • <span className="font-medium">Chưa mua</span>: Bạn cần mua gói này để truy cập khóa tập
+                  </p>
+                  <p>
+                    • <span className="font-medium text-green-600">Đang kích hoạt</span>: Bạn đã mua và có thể truy cập
+                    khóa tập
+                  </p>
+                  <p>
+                    • <span className="font-medium text-red-600">Đã hết hạn</span>: Gói đã mua nhưng đã hết hạn, cần gia
+                    hạn
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         )}
         {course.summary && (
           <div className="bg-primary rounded-xl my-4 p-4 lg:p-5">
             <p className="text-white text-center text-lg lg:text-4xl lg:font-bold font-medium lg:mb-4 mb-1 font-[family-name:var(--font-roboto)]">
-              Tóm tắt khoá học
+              Tóm tắt khoá tập
             </p>
             <div className="xl:px-10 max-lg:w-full mx-auto text-white h-full flex flex-col items-start list-disc pl-5">
               {course.summary.split('\n').map((line: string, index: number) => (
@@ -163,16 +183,19 @@ export default function CoursePage() {
           <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl mb-4">
             Thông tin khóa
           </p>
-          <HTMLRenderer content={course.description} className="text-[#737373] text-sm lg:text-lg whitespace-pre-line" />
+          <HTMLRenderer
+            content={course.description}
+            className="text-[#737373] text-sm lg:text-lg whitespace-pre-line"
+          />
         </div>
-        {course.relationships && course.relationships.equipments.length > 0 && (
+        {courseEquipments.length > 0 && (
           <div>
             <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl mb-4">
               Dụng cụ
             </p>
             <ScrollArea className="w-screen-max-xl">
               <div className="flex w-max space-x-4 py-4">
-                {course.relationships.equipments.map((equipment, index: number) => (
+                {courseEquipments.map((equipment, index: number) => (
                   <figure key={`equipment-${equipment.id}-${index}`} className="shrink-0">
                     <div className="overflow-hidden rounded-md">
                       <img src={equipment.image} alt={equipment.name} className="w-[168px] h-[175px] object-cover" />
@@ -187,14 +210,14 @@ export default function CoursePage() {
             </ScrollArea>
           </div>
         )}
-        {course.relationships && course.relationships.muscle_groups.length > 0 && (
+        {courseMuscleGroups.length > 0 && (
           <div>
             <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl mb-4">
               Nhóm cơ
             </p>
             <ScrollArea className="w-screen-max-xl">
               <div className="flex w-max space-x-4 py-4">
-                {course.relationships.muscle_groups.map((muscleGroup, index: number) => (
+                {courseMuscleGroups.map((muscleGroup, index: number) => (
                   <figure key={`muscleGroup-${muscleGroup.id}-${index}`} className="shrink-0">
                     <div className="overflow-hidden rounded-md">
                       <img
@@ -215,7 +238,13 @@ export default function CoursePage() {
         )}
       </div>
 
-      <ActionButtons courseID={courseID} />
+      <ActionButtons courseID={courseID} enableSave={enableSave} />
     </div>
   )
+}
+
+function isActiveSubscription(status: string, endDate: string) {
+  const now = new Date()
+  const end = new Date(endDate)
+  return status === 'active' && end > now
 }

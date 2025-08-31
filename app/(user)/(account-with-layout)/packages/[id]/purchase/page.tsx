@@ -11,16 +11,19 @@ import ShefitLogo from '@/public/logo-vertical-dark.png'
 import { formatDuration } from '@/lib/helpers'
 import { getSubscription } from '@/network/client/subscriptions'
 import { HTMLRenderer } from '@/components/html-renderer'
-import { Subscription } from '@/models/subscription'
+import { useParams, useSearchParams } from 'next/navigation'
 
-export default function PackageDetail({ params }: { params: Promise<{ id: Subscription['id'] }> }) {
+export default function PackageDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = useParams<{ id: string }>()
+  const searchParams = useSearchParams()
+  const query = searchParams ? `?${searchParams.toString()}` : ''
   const [selectedGiftId, setSelectedGiftId] = useState<number | null>(null)
   const [subscription, setSubscription] = useState<any>(null)
 
   useEffect(() => {
     const fetchData = async () => {
       const slug = (await params).id
-      const data = await getSubscription(slug)
+      const data = await getSubscription(Number(slug))
       setSubscription(data)
     }
     fetchData()
@@ -29,7 +32,7 @@ export default function PackageDetail({ params }: { params: Promise<{ id: Subscr
   return subscription?.data ? (
     <div className="flex">
       <div className="lg:py-16 py-4 px-4 md:py-16 md:px-10 xl:p-[60px] flex-1 max-w-[832px]">
-        <Link href="/account/packages" className="flex items-center gap-2 mb-4 md:mb-16 cursor-pointer">
+        <Link href={`/packages/${id}${query}`} className="flex items-center gap-2 mb-4 md:mb-16 cursor-pointer">
           <BackIcon color="#000000" className="mb-1" />
           <div className="text-xl text-[#000000] font-semibold">Quay về</div>
         </Link>
@@ -38,21 +41,9 @@ export default function PackageDetail({ params }: { params: Promise<{ id: Subscr
           Gói {subscription.data.name}
         </div>
 
-        <ul className="list-disc pl-7 text-base md:text-xl text-[#737373] mb-7 space-y-2">
-          {(() => {
-            const parser = new DOMParser()
-            const doc = parser.parseFromString(subscription.data.description_1, 'text/html')
-            const paragraphs = Array.from(doc.querySelectorAll('p')).map((p) => p.innerHTML)
-
-            return paragraphs
-              .filter((item: string) => item.trim() !== '')
-              .map((content: string, index: number) => (
-                <li key={index} className="[&>p]:m-0 [&>p]:inline list-item">
-                  <HTMLRenderer content={content} className="whitespace-pre-line" />
-                </li>
-              ))
-          })()}
-        </ul>
+        <div className="text-base md:text-xl mb-7">
+          <HTMLRenderer content={subscription.data.description_1} className="whitespace-pre-line text-[#737373]" />
+        </div>
 
         <div className="mb-8">
           <div className="font-semibold text-[#000000] text-xl md:text-2xl mb-3">Loại hình</div>

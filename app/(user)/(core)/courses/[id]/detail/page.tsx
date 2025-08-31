@@ -27,7 +27,7 @@ export default async function CourseDetailPage({
   if (!course) {
     return (
       <div className="flex justify-center items-center h-40">
-        <p className="text-gray-500">Khóa học không tồn tại hoặc đã bị xóa.</p>
+        <p className="text-gray-500">Khóa tập không tồn tại hoặc đã bị xóa.</p>
       </div>
     )
   }
@@ -69,9 +69,9 @@ export default async function CourseDetailPage({
         </div>
 
         {course.course_format === 'video' ? (
-          <VideoCourseDetail courseID={courseID} />
+          <VideoCourseDetail courseID={courseID} query={query} />
         ) : (
-          <LiveCourseDetail courseID={courseID} />
+          <LiveCourseDetail courseID={courseID} query={query} />
         )}
       </div>
     </div>

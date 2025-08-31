@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import PurchasedPackage from './_components/purchased-package'
 import { cn } from '@/lib/utils'
 import { useSession } from '@/hooks/use-session'
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { ListResponse } from '@/models/response'
 import { Subscription } from '@/models/subscription'
 import { useSearchParams } from 'next/navigation'
@@ -105,14 +105,6 @@ export default function PurchasePackage() {
     return allSubscriptions.data.filter((sub) => !purchasedSubscriptionIds.includes(Number(sub.id)))
   }, [allSubscriptions.data, session, courseId, mealPlansId, purchasedSubscriptionIds, isUserSubscriptionsLoaded])
 
-  const parseDescription = useCallback((description: string) => {
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(description, 'text/html')
-    const paragraphs = Array.from(doc.querySelectorAll('p')).map((p) => p.innerHTML)
-
-    return paragraphs.filter((item: string) => item.trim() !== '')
-  }, [])
-
   if (isLoading || (session && !isUserSubscriptionsLoaded)) {
     return (
       <div className="pb-16 md:pb-16 px-5 lg:px-12 sm:px-9">
@@ -165,44 +157,39 @@ export default function PurchasePackage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16 lg:px-12">
-              {filteredSubscriptions.sort((a, b) => a.display_order - b.display_order).map((subscription) => {
-                const parsedDescription = parseDescription(subscription.description_1)
-
-                return (
-                  <div key={subscription.id} className="bg-[#FFAEB01A] lg:rounded-[20px] lg:p-5 p-4 h-full">
-                    <div className="flex flex-col 2xl:flex-row 2xl:gap-4 h-full justify-between">
-                      <div className="flex flex-col gap-5 justify-between h-full w-full 2xl:w-1/2">
-                        <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#000000] text-lg lg:text-xl">
-                          {subscription.name}
+              {filteredSubscriptions
+                .sort((a, b) => a.display_order - b.display_order)
+                .map((subscription) => {
+                  return (
+                    <div key={subscription.id} className="bg-[#FFAEB01A] lg:rounded-[20px] lg:p-5 p-4 h-full">
+                      <div className="flex flex-col 2xl:flex-row 2xl:gap-4 h-full justify-between">
+                        <div className="flex flex-col gap-5 justify-between h-full w-full 2xl:w-1/2">
+                          <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#000000] text-lg lg:text-xl">
+                            {subscription.name}
+                          </div>
+                          <div className="text-sm md:text-lg">
+                            <HTMLRenderer
+                              content={subscription.description_1}
+                              className="whitespace-pre-line text-[#737373]"
+                            />
+                          </div>
+                          <Link href={`/packages/${subscription.id}?back=%2Faccount%2Fpackages`}>
+                            <Button className="bg-[#13D8A7] w-[190px] h-[38px] rounded-[26px] text-sm md:text-lg font-normal md:pt-2.5 md:pb-1.5">
+                              Chọn gói
+                            </Button>
+                          </Link>
                         </div>
-                        <ul className="list-disc pl-7 text-sm md:text-lg text-[#737373] w-full space-y-2">
-                          {parsedDescription.map((content: string, index: number) => (
-                            <li key={index} className="[&>p]:m-0 [&>p]:inline list-item">
-                              <HTMLRenderer content={content} className="whitespace-pre-line" />
-                            </li>
-                          ))}
-                        </ul>
-                        <Link
-                          href={`/packages/${subscription.id}${
-                            courseId ? `?course_id=${courseId}` : mealPlansId ? `?meal_plans_id=${mealPlansId}` : ''
-                          }`}
-                        >
-                          <Button className="bg-[#13D8A7] w-[190px] h-[38px] rounded-[26px] text-sm md:text-lg font-normal md:pt-2.5 md:pb-1.5">
-                            Chọn gói
-                          </Button>
-                        </Link>
-                      </div>
-                      <div className="w-full 2xl:w-1/2 mt-4 2xl:mt-0">
-                        <img
-                          src={subscription.assets.thumbnail}
-                          alt=""
-                          className="aspect-[400/255] object-cover rounded-[20px] w-full h-auto"
-                        />
+                        <div className="w-full 2xl:w-1/2 mt-4 2xl:mt-0">
+                          <img
+                            src={subscription.assets.thumbnail}
+                            alt=""
+                            className="aspect-[400/255] object-cover rounded-[20px] w-full h-auto"
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
             </div>
           )}
         </TabsContent>

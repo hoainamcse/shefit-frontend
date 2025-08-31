@@ -66,6 +66,7 @@ export type { CoursePayload }
 type CourseWeek = {
   id: number
   week_number: number
+  days: WeekDay[]
 }
 
 type WeekDay = {
@@ -92,7 +93,7 @@ type DayCircuit = {
   updated_at: string
 }
 
-type CourseWeekPayload = Omit<CourseWeek, 'id'>
+type CourseWeekPayload = Omit<CourseWeek, 'id' | 'days'>
 type WeekDayPayload = Omit<WeekDay, 'id'>
 type DayCircuitPayload = Omit<DayCircuit, 'id' | 'created_at' | 'updated_at'>
 

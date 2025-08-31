@@ -4,38 +4,31 @@ import type { Course } from '@/models/course'
 
 import { toast } from 'sonner'
 import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
 import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { addFavouriteCourse } from '@/network/client/user-favourites'
-import { checkUserAccessedResource, checkUserSavedResource } from '@/network/client/users'
+import { checkUserSavedResource } from '@/network/client/users'
 
 interface ActionButtonsProps {
   courseID: Course['id']
+  enableSave?: boolean
 }
 
-export function ActionButtons({ courseID }: ActionButtonsProps) {
+export function ActionButtons({ courseID, enableSave }: ActionButtonsProps) {
   const router = useRouter()
-  const pathname = usePathname()
   const searchParams = useSearchParams()
+  const query = searchParams ? searchParams.toString() : ''
   const { session } = useSession()
   const queryClient = useQueryClient()
   const [openLogin, setOpenLogin] = useState(false)
-  const [openBuyPackage, setOpenBuyPackage] = useState(false)
   const [showSaveDialog, setShowSaveDialog] = useState(false)
   const [saving, setSaving] = useState(false)
   const { redirectToLogin } = useAuthRedirect()
-
-  const accessQuery = useQuery({
-    queryKey: ['user-accessed-resources', session?.userId, 'course', courseID],
-    queryFn: () => checkUserAccessedResource(session!.userId, 'course', courseID),
-    enabled: !!session,
-  })
-  const isAccessed = accessQuery.data?.data || false
 
   // Check saved status
   const savedStatusQuery = useQuery({
@@ -54,7 +47,7 @@ export function ActionButtons({ courseID }: ActionButtonsProps) {
       // Invalidate favourite courses query to refresh the list
       queryClient.invalidateQueries({ queryKey: ['favourite-courses', session?.userId] })
 
-      toast.success('Đã thêm khóa học vào danh sách yêu thích!')
+      toast.success('Đã thêm khóa tập vào danh sách yêu thích!')
     },
     onError: (error) => {
       setSaving(false)
@@ -63,17 +56,7 @@ export function ActionButtons({ courseID }: ActionButtonsProps) {
   })
 
   const handleStartCourse = () => {
-    if (!session) {
-      setOpenLogin(true)
-      return
-    }
-
-    if (!isAccessed) {
-      setOpenBuyPackage(true)
-      return
-    }
-
-    router.push(`/courses/${courseID}/detail${searchParams ? `?${searchParams.toString()}` : ''}`)
+    router.push(`/courses/${courseID}/detail${query}`)
   }
 
   const handleShowSaveOptions = () => {
@@ -95,18 +78,13 @@ export function ActionButtons({ courseID }: ActionButtonsProps) {
     redirectToLogin()
   }
 
-  const handleBuyPackageClick = () => {
-    setOpenBuyPackage(false)
-    router.push(`/account/packages?redirect=${encodeURIComponent(pathname)}`)
-  }
-
   // Extract saved status
   const alreadySavedInFavorite = savedStatusQuery.data?.data?.in_favourite || false
 
   return (
     <>
       <div className="lg:gap-5 gap-3 w-2/3 mx-auto mb-10 flex justify-center md:mt-20 mt-12 max-lg:w-full max-lg:px-3">
-        <div className="w-1/2">
+        <div className={`w-${enableSave ? '1/2' : 'full'}`}>
           <Button
             className="w-full rounded-full text-lg bg-[#13D8A7] text-white hover:bg-[#11c296] h-14"
             onClick={handleStartCourse}
@@ -114,33 +92,18 @@ export function ActionButtons({ courseID }: ActionButtonsProps) {
             Bắt đầu
           </Button>
         </div>
-        <div className="w-1/2">
-          <Button
-            onClick={handleShowSaveOptions}
-            disabled={saving}
-            className="w-full rounded-full text-sm lg:text-lg h-14 border-2 bg-[#13D8A7] text-white hover:bg-[#11c296] border-[#13D8A7]"
-          >
-            {saving ? 'Đang lưu...' : 'Lưu'}
-          </Button>
-        </div>
-      </div>
-
-      {/* Buy Package Dialog */}
-      <Dialog open={openBuyPackage} onOpenChange={setOpenBuyPackage}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col items-center text-center gap-6">
-            <p className="text-base">MUA GÓI MEMBER ĐỂ TRUY CẬP KHOÁ HỌC</p>
-            <div className="w-full px-10">
-              <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleBuyPackageClick}>
-                Mua gói Member
-              </Button>
-            </div>
+        {enableSave && (
+          <div className="w-1/2">
+            <Button
+              onClick={handleShowSaveOptions}
+              disabled={saving}
+              className="w-full rounded-full text-sm lg:text-lg h-14 border-2 bg-[#13D8A7] text-white hover:bg-[#11c296] border-[#13D8A7]"
+            >
+              {saving ? 'Đang lưu...' : 'Lưu'}
+            </Button>
           </div>
-        </DialogContent>
-      </Dialog>
+        )}
+      </div>
 
       {/* Login Dialog */}
       <Dialog open={openLogin} onOpenChange={setOpenLogin}>
@@ -163,7 +126,7 @@ export function ActionButtons({ courseID }: ActionButtonsProps) {
       <Dialog open={showSaveDialog} onOpenChange={(open) => setShowSaveDialog(open)}>
         <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-center text-2xl font-bold text-[#13D8A7]">Lưu khóa học</DialogTitle>
+            <DialogTitle className="text-center text-2xl font-bold text-[#13D8A7]">Lưu khóa tập</DialogTitle>
           </DialogHeader>
 
           <div className="flex flex-col gap-4">

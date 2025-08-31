@@ -9,7 +9,7 @@ import { sortByKey } from '@/lib/helpers'
 import { redirect } from 'next/navigation'
 import { getSession } from '@/lib/session'
 import { getUserSubscriptions } from '@/network/server/users'
-import { BackIcon } from '@/components/icons/BackIcon'
+import { serializeSearchParams } from '@/utils/searchParams'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 
 export default async function MealPlanDetailPage({
@@ -17,15 +17,16 @@ export default async function MealPlanDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ back?: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const { id: mealPlanID } = await params
-  const { back = '' } = await searchParams
+  const _searchParams = await searchParams
+  const query = serializeSearchParams(_searchParams)
 
   const session = await getSession()
 
   if (!session) {
-    redirect(`/meal-plans/${mealPlanID}${back ? `?back=${encodeURIComponent(back)}` : ''}`)
+    redirect(`/meal-plans/${mealPlanID}${query}`)
   }
 
   try {
@@ -46,11 +47,11 @@ export default async function MealPlanDetailPage({
     })
 
     if (!hasAccess) {
-      redirect(`/meal-plans/${mealPlanID}${back ? `?back=${encodeURIComponent(back)}` : ''}`)
+      redirect(`/meal-plans/${mealPlanID}${query}`)
     }
   } catch (error) {
     console.error('Error checking meal plan access:', error)
-    redirect(`/meal-plans/${mealPlanID}${back ? `?back=${encodeURIComponent(back)}` : ''}`)
+    redirect(`/meal-plans/${mealPlanID}${query}`)
   }
 
   const { data: mealPlanByDay } = await getMealPlanDays(mealPlanID)
@@ -65,10 +66,7 @@ export default async function MealPlanDetailPage({
     <div>
       <div className="relative block md:hidden">
         <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto">
-          <Link
-            href={`/meal-plans/${mealPlanID}${back ? `?back=${encodeURIComponent(back)}` : ''}`}
-            className="flex items-center"
-          >
+          <Link href={`/meal-plans/${mealPlanID}${query}`} className="flex items-center">
             <Button className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black shadow-none font-medium">
               <BackIconBlack className="mb-1" /> Quay về
             </Button>

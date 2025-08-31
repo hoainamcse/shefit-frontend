@@ -5,15 +5,19 @@ import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { getMealPlan } from '@/network/server/meal-plans'
 import { ActionButtons } from './_components/action-buttons'
 import { HTMLRenderer } from '@/components/html-renderer'
+import { serializeSearchParams } from '@/utils/searchParams'
 
 export default async function MealPlanPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ back?: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const { back = '' } = await searchParams
+  const _searchParams = await searchParams
+  const query = serializeSearchParams(_searchParams)
+  const back = typeof _searchParams.back === 'string' ? _searchParams.back : ''
+
   try {
     const { id: mealPlanID } = await params
     const { data: mealPlan } = await getMealPlan(mealPlanID)
@@ -115,7 +119,7 @@ export default async function MealPlanPage({
                 </Carousel>
               </div>
             )}
-            <ActionButtons mealPlanID={mealPlan.id} />
+            <ActionButtons mealPlanID={mealPlan.id} query={query} />
           </div>
         </div>
       </div>

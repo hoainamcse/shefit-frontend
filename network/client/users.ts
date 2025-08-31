@@ -8,7 +8,6 @@ import { UserSubscriptionDetail } from '@/models/user-subscriptions'
 
 // Body Quiz APIs
 export const queryKeyUsers = 'users'
-export const queryKeyUserSubscriptions = 'user-subscriptions'
 
 export async function getUsers(query?: any): Promise<ListResponse<User>> {
   const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''

@@ -311,7 +311,7 @@ export function ChatBotButton() {
         icon={Star}
         text="HLV 24/7"
       />
-      <ChatBot isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      {isOpen && <ChatBot isOpen={isOpen} onClose={() => setIsOpen(false)} />}
     </>
   )
 }

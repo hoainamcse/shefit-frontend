@@ -6,7 +6,7 @@ import type { UserSubscriptionDetail } from '@/models/user-subscriptions'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { format } from 'date-fns'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -28,18 +28,20 @@ export default function ActionButtons({ dishID }: ActionButtonsProps) {
   const [showSaveOptionsDialog, setShowSaveOptionsDialog] = useState(false)
   const [saving, setSaving] = useState(false)
 
-  // Check saved status
-  const savedStatusQuery = useQuery({
-    queryKey: ['saved-resource-status', session?.userId, 'dish', dishID],
-    queryFn: () => checkUserSavedResource(session!.userId, 'dish', dishID),
-    enabled: !!session && showSaveOptionsDialog,
-  })
-
-  // Fetch user subscriptions
-  const subscriptionsQuery = useQuery({
-    queryKey: [queryKeyUserSubscriptions, session?.userId],
-    queryFn: () => getUserSubscriptions(session!.userId),
-    enabled: !!session && showSaveOptionsDialog,
+  // Use useQueries to combine multiple queries
+  const [savedStatusQuery, subscriptionsQuery] = useQueries({
+    queries: [
+      {
+        queryKey: ['saved-resource-status', session?.userId, 'dish', dishID],
+        queryFn: () => checkUserSavedResource(session!.userId, 'dish', dishID),
+        enabled: !!session && showSaveOptionsDialog,
+      },
+      {
+        queryKey: [queryKeyUserSubscriptions, session?.userId],
+        queryFn: () => getUserSubscriptions(session!.userId),
+        enabled: !!session && showSaveOptionsDialog,
+      },
+    ],
   })
 
   const favouriteMutation = useMutation({
@@ -222,7 +224,7 @@ export default function ActionButtons({ dishID }: ActionButtonsProps) {
                     <div className="space-y-2 max-h-[50vh] overflow-y-auto pr-1">
                       {/* Subscription options */}
                       {subscriptionsQuery.data.data
-                        .filter((dt) => isActiveSubscription(dt.status, dt.subscription_end_at))
+                        .filter((dt: UserSubscriptionDetail) => isActiveSubscription(dt.status, dt.subscription_end_at))
                         .map((us: UserSubscriptionDetail) => (
                           <div key={us.id} className="bg-white rounded-lg p-3 shadow-sm border border-gray-100">
                             <div className="flex items-center justify-between">
