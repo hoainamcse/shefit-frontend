@@ -4,7 +4,7 @@ import type { Course } from '@/models/course'
 
 import { toast } from 'sonner'
 import { useState } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
@@ -23,6 +23,7 @@ export function ActionButtons({ courseID }: ActionButtonsProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const { session } = useSession()
+  const queryClient = useQueryClient()
   const [openLogin, setOpenLogin] = useState(false)
   const [openBuyPackage, setOpenBuyPackage] = useState(false)
   const [showSaveDialog, setShowSaveDialog] = useState(false)
@@ -49,6 +50,10 @@ export function ActionButtons({ courseID }: ActionButtonsProps) {
       setSaving(false)
       setShowSaveDialog(false)
       savedStatusQuery.refetch()
+
+      // Invalidate favourite courses query to refresh the list
+      queryClient.invalidateQueries({ queryKey: ['favourite-courses', session?.userId] })
+
       toast.success('Đã thêm khóa học vào danh sách yêu thích!')
     },
     onError: (error) => {

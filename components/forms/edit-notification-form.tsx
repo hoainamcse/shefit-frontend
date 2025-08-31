@@ -5,11 +5,11 @@ import type { Notification } from '@/models/notification'
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 
-import { createNotification, updateNotification } from '@/network/client/notifications'
+import { createNotification, queryKeyNotifications, updateNotification } from '@/network/client/notifications'
 import { FormInputField, FormRichTextField, FormSwitchField } from './fields'
 import { MainButton } from '../buttons/main-button'
 import { Form } from '../ui/form'
@@ -29,6 +29,7 @@ interface EditNotificationFormProps {
 }
 
 export function EditNotificationForm({ data }: EditNotificationFormProps) {
+  const queryClient = useQueryClient()
   const router = useRouter()
   const isEdit = !!data
   const currentDate = new Date().toISOString().split('T')[0]
@@ -57,6 +58,7 @@ export function EditNotificationForm({ data }: EditNotificationFormProps) {
     onSettled(data, error) {
       if (data?.status === 'success') {
         toast.success(isEdit ? 'Cập nhật thông báo thành công' : 'Tạo thông báo thành công')
+        queryClient.invalidateQueries({ queryKey: [queryKeyNotifications, { pageIndex: 0, pageSize: 25 }] })
         router.push(`/admin/notifications`)
       } else {
         toast.error(error?.message || 'Đã có lỗi xảy ra')

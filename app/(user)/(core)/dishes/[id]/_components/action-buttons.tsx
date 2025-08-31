@@ -6,7 +6,7 @@ import type { UserSubscriptionDetail } from '@/models/user-subscriptions'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { format } from 'date-fns'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -23,6 +23,7 @@ interface ActionButtonsProps {
 export default function ActionButtons({ dishID }: ActionButtonsProps) {
   const { session } = useSession()
   const { redirectToLogin } = useAuthRedirect()
+  const queryClient = useQueryClient()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [showSaveOptionsDialog, setShowSaveOptionsDialog] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -47,6 +48,8 @@ export default function ActionButtons({ dishID }: ActionButtonsProps) {
       setSaving(false)
       setShowSaveOptionsDialog(false)
       savedStatusQuery.refetch()
+      // Invalidate favourite dishes query to refresh the list
+      queryClient.invalidateQueries({ queryKey: ['favourite-dishes', session?.userId] })
       toast.success('Đã thêm vào danh sách yêu thích!')
     },
     onError: (error) => {
@@ -58,10 +61,16 @@ export default function ActionButtons({ dishID }: ActionButtonsProps) {
   const subscriptionMutation = useMutation({
     mutationFn: ({ subscriptionId }: { subscriptionId: UserSubscriptionDetail['id'] }) =>
       addUserSubscriptionDish(session!.userId, subscriptionId, dishID),
-    onSuccess: () => {
+    onSuccess: (_, { subscriptionId }) => {
       setSaving(false)
       setShowSaveOptionsDialog(false)
       savedStatusQuery.refetch()
+
+      // Invalidate subscription dishes queries to refresh lists
+      queryClient.invalidateQueries({
+        queryKey: ['subscription-dishes', session?.userId, subscriptionId],
+      })
+
       toast.success('Đã thêm món ăn vào gói tập!')
     },
     onError: (error) => {

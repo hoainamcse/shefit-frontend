@@ -12,6 +12,8 @@ import { ProfileCardIcon } from '@/components/icons/profile-card-icon'
 import { QuizIcon } from '@/components/icons/quiz-icon'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useQuery } from '@tanstack/react-query'
+import { NotiIcon } from '@/components/icons/NotiIcon'
+
 const TABS = [
   { value: 'quizzes', label: 'Body Quiz', icon: <QuizIcon /> },
   {
@@ -35,7 +37,7 @@ const TABS = [
   {
     value: 'notifications',
     label: 'Thông báo',
-    icon: <ProfileCardIcon />,
+    icon: <NotiIcon />,
   }
 ]
 

@@ -47,22 +47,22 @@ export default function FavouriteContent() {
   const queries = useQueries({
     queries: [
       {
-        queryKey: ['favouriteExercises', session?.userId],
+        queryKey: ['favourite-exercises', session?.userId],
         queryFn: () => (session ? getFavouriteExercises(session.userId) : Promise.resolve(null)),
         enabled: !!session,
       },
       {
-        queryKey: ['favouriteCourses', session?.userId],
+        queryKey: ['favourite-courses', session?.userId],
         queryFn: () => (session ? getFavouriteCourses(session.userId) : Promise.resolve(null)),
         enabled: !!session,
       },
       {
-        queryKey: ['favouriteMealPlans', session?.userId],
+        queryKey: ['favourite-meal-plans', session?.userId],
         queryFn: () => (session ? getFavouriteMealPlans(session.userId) : Promise.resolve(null)),
         enabled: !!session,
       },
       {
-        queryKey: ['favouriteDishes', session?.userId],
+        queryKey: ['favourite-dishes', session?.userId],
         queryFn: () => (session ? getFavouriteDishes(session.userId) : Promise.resolve(null)),
         enabled: !!session,
       },

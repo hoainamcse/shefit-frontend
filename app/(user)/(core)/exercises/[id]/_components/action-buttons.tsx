@@ -6,7 +6,7 @@ import type { UserSubscriptionDetail } from '@/models/user-subscriptions'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { format } from 'date-fns'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -23,6 +23,7 @@ interface ActionButtonsProps {
 export default function ActionButtons({ exerciseID }: ActionButtonsProps) {
   const { session } = useSession()
   const { redirectToLogin } = useAuthRedirect()
+  const queryClient = useQueryClient()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [showSaveOptionsDialog, setShowSaveOptionsDialog] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -47,6 +48,10 @@ export default function ActionButtons({ exerciseID }: ActionButtonsProps) {
       setSaving(false)
       setShowSaveOptionsDialog(false)
       savedStatusQuery.refetch()
+
+      // Invalidate favourite exercises query to refresh the list
+      queryClient.invalidateQueries({ queryKey: ['favourite-exercises', session?.userId] })
+
       toast.success('Đã thêm vào danh sách yêu thích!')
     },
     onError: (error) => {
@@ -58,10 +63,16 @@ export default function ActionButtons({ exerciseID }: ActionButtonsProps) {
   const subscriptionMutation = useMutation({
     mutationFn: ({ subscriptionId }: { subscriptionId: UserSubscriptionDetail['id'] }) =>
       addUserSubscriptionExercise(session!.userId, subscriptionId, exerciseID),
-    onSuccess: () => {
+    onSuccess: (_, { subscriptionId }) => {
       setSaving(false)
       setShowSaveOptionsDialog(false)
       savedStatusQuery.refetch()
+
+      // Invalidate subscription exercises queries to refresh the list
+      queryClient.invalidateQueries({
+        queryKey: ['subscription-exercises', session?.userId, subscriptionId],
+      })
+
       toast.success('Đã thêm động tác vào gói tập!')
     },
     onError: (error) => {

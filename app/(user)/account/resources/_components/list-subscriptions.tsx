@@ -60,19 +60,43 @@ export default function ListSubscriptions() {
     })
   }, [userSubsResponse?.data])
 
-  // Set favorites as default
+  // Track if initial selection has been made
+  const [initialSelectionMade, setInitialSelectionMade] = useState(false)
+
+  // Set latest subscription as default only after data is fully loaded
   useEffect(() => {
+    // When loading, update the context loading state
     if (isLoading) {
       setContextLoading(true)
       return
     }
 
-    if (!selectedSubscription) {
-      // Always default to favorites
-      setSelectedSubscription(undefined)
-      setShowFavorites(true)
+    // Data is now loaded (not loading)
+    setContextLoading(false)
+
+    // Only make the selection once when loading is complete
+    if (!initialSelectionMade && userSubsResponse?.data !== undefined) {
+      if (userSubscriptions.length > 0) {
+        // Default to the latest subscription
+        const latestSubscription = userSubscriptions[0]
+        setSelectedSubscription(latestSubscription)
+        setShowFavorites(false)
+      } else {
+        // If no subscriptions, fall back to favorites
+        setSelectedSubscription(undefined)
+        setShowFavorites(true)
+      }
+      setInitialSelectionMade(true)
     }
-  }, [isLoading, selectedSubscription, setContextLoading, setSelectedSubscription, setShowFavorites])
+  }, [
+    isLoading,
+    userSubsResponse?.data,
+    userSubscriptions,
+    initialSelectionMade,
+    setContextLoading,
+    setSelectedSubscription,
+    setShowFavorites,
+  ])
 
   const handleSubscriptionChange = async (value: string) => {
     if (value === 'favorites') {

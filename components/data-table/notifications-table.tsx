@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
 import {
-  // deleteBulkNotification,
+  deleteBulkNotification,
   deleteNotification,
   getNotifications,
   queryKeyNotifications,
@@ -143,19 +143,16 @@ export function NotificationsTable() {
   }
 
   const onDeleteRows = async (selectedRows: Notification[]) => {
-    toast.warning('Tinh năng đang phát triển')
-    return
+    const deletePromise = () => deleteBulkNotification(selectedRows.map((row) => row.id))
 
-    // const deletePromise = () => deleteBulkNotification(selectedRows.map((row) => row.id))
-
-    // toast.promise(deletePromise, {
-    //   loading: 'Đang xoá...',
-    //   success: (_) => {
-    //     refetch()
-    //     return 'Xoá thông báo thành công'
-    //   },
-    //   error: 'Đã có lỗi xảy ra',
-    // })
+    toast.promise(deletePromise, {
+      loading: 'Đang xoá...',
+      success: (_) => {
+        refetch()
+        return 'Xoá thông báo thành công'
+      },
+      error: 'Đã có lỗi xảy ra',
+    })
   }
 
   if (isLoading) {

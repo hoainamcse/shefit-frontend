@@ -36,13 +36,13 @@ export async function deleteNotification(id: Notification['id']): Promise<ApiRes
   return response.json()
 }
 
-// export async function deleteBulkNotification(ids: Notification['id'][]): Promise<ApiResponse<string>> {
-//   const response = await fetchData('/v1/notifications/bulk', {
-//     method: 'POST',
-//     body: JSON.stringify(ids),
-//   })
-//   return response.json()
-// }
+export async function deleteBulkNotification(ids: Notification['id'][]): Promise<ApiResponse<string>> {
+  const response = await fetchData('/v1/notifications/bulk', {
+    method: 'DELETE',
+    body: JSON.stringify(ids),
+  })
+  return response.json()
+}
 
 export const queryKeyUserNotifications = 'user-notifications'
 
