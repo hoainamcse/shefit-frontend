@@ -109,8 +109,8 @@ export async function getSubAdminSubscriptions(query?: any): Promise<ListRespons
   return response.json()
 }
 
-export async function getSubAdminUsers(query?: any): Promise<ListResponse<User>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchData('/v1/sub_admin/user-subscriptions' + '?' + searchParams)
+export async function getUsersBySubAdmin(query?: any): Promise<ListResponse<User>> {
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData(`/v1/sub_admin/user-subscriptions${searchParams}`)
   return response.json()
 }

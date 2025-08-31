@@ -250,7 +250,7 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
           <div className="flex items-center gap-3">
             <div className="relative w-64">
               <Input
-                placeholder="Tìm kiếm động tác..."
+                placeholder="Nhập tên động tác"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pr-8"

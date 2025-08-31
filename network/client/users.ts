@@ -11,8 +11,8 @@ export const queryKeyUsers = 'users'
 export const queryKeyUserSubscriptions = 'user-subscriptions'
 
 export async function getUsers(query?: any): Promise<ListResponse<User>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchData(`/v1/users` + '?' + searchParams)
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData(`/v1/users${searchParams}`)
   return response.json()
 }
 

@@ -204,7 +204,7 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
           <div className="flex items-center gap-3">
             <div className="relative w-64">
               <Input
-                placeholder="Tìm kiếm món ăn..."
+                placeholder="Nhập tên món ăn"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pr-8"

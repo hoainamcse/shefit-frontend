@@ -3,7 +3,7 @@
 import type { ColumnDef, PaginationState } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
-import { Download } from 'lucide-react'
+import { Download, X } from 'lucide-react'
 import { useEffect, useMemo, useState, useTransition, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
@@ -11,6 +11,8 @@ import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
+import { Input } from '@/components/ui/input'
+import { useDebounce } from '@/hooks/use-debounce'
 
 import { MainButton } from '../buttons/main-button'
 import {
@@ -27,7 +29,7 @@ import { User } from '@/models/user'
 import { Switch } from '../ui/switch'
 import { Badge } from '../ui/badge'
 import { PROVINCES, roleLabel } from '@/lib/label'
-import { getSubAdminUsers, getSubscription } from '@/network/client/subscriptions'
+import { getUsersBySubAdmin, getSubscription } from '@/network/client/subscriptions'
 import { formatDateString, generatePassword, generateUsername, sortByKey } from '@/lib/helpers'
 import { AddButton } from '../buttons/add-button'
 import z from 'zod'
@@ -46,25 +48,31 @@ export function UsersTable() {
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 25,
+    pageSize: 50,
   })
+
+  const [searchQuery, setSearchQuery] = useState<string>('')
+  const debouncedSearchQuery = useDebounce(searchQuery, 500)
+
   // const [rowSelection, setRowSelection] = useState<User[]>([])
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [queryKeyUsers, pagination],
+    queryKey: [queryKeyUsers, { ...pagination, ...(debouncedSearchQuery ? { keyword: debouncedSearchQuery } : {}) }],
     queryFn: async () =>
       session?.role === 'sub_admin'
-        ? getSubAdminUsers({
+        ? getUsersBySubAdmin({
             page: pagination.pageIndex,
             per_page: pagination.pageSize,
             sort_by: 'created_at',
             sort_order: 'desc',
+            ...(debouncedSearchQuery ? { keyword: debouncedSearchQuery } : {}),
           })
         : getUsers({
             page: pagination.pageIndex,
             per_page: pagination.pageSize,
             sort_by: 'created_at',
             sort_order: 'desc',
+            ...(debouncedSearchQuery ? { keyword: debouncedSearchQuery } : {}),
           }),
     placeholderData: keepPreviousData,
     enabled: !!session,
@@ -292,6 +300,27 @@ export function UsersTable() {
       onDelete={onDeleteRows}
       onPaginationChange={setPagination}
       // onRowSelectionChange={setRowSelection}
+      leftSection={
+        <div className="flex items-center gap-3">
+          <div className="relative w-64">
+            <Input
+              placeholder="Nhập username hoặc SĐT"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pr-8"
+            />
+            {searchQuery && (
+              <button
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                onClick={() => setSearchQuery('')}
+              >
+                <X className="h-4 w-4" />
+                <span className="sr-only">Clear search</span>
+              </button>
+            )}
+          </div>
+        </div>
+      }
       rightSection={
         <>
           <CreateAccountDialog updateData={refetch}>
