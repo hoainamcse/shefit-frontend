@@ -1,14 +1,19 @@
 'use client'
 
+import * as z from 'zod'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { MainButton } from '@/components/buttons/main-button'
-import { getOauth2AuthUrl, generateToken, signIn } from '@/network/server/auth'
 import { toast } from 'sonner'
-import { CustomInput } from '../ui/custom-input'
+import { useForm } from 'react-hook-form'
+import { useSearchParams } from 'next/navigation'
+import { zodResolver } from '@hookform/resolvers/zod'
+
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { CustomInput } from '@/components/ui/custom-input'
+import { MainButton } from '@/components/buttons/main-button'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage, Form } from '@/components/ui/form'
+import { getOauth2AuthUrl, signIn } from '@/network/server/auth'
+import { generateToken } from '@/network/client/auth'
 
 function GoogleIcon() {
   return (
@@ -55,30 +60,30 @@ function GoogleIcon() {
   )
 }
 
-export default function LoginForm() {
+// Define the form schema
+const loginSchema = z.object({
+  username: z.string().min(1, { message: 'Vui lòng nhập tên đăng nhập' }),
+  password: z.string().min(1, { message: 'Vui lòng nhập mật khẩu' }),
+})
+
+type LoginFormValues = z.infer<typeof loginSchema>
+
+export function LoginForm() {
   const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || ''
 
-  const getRedirectUrl = () => {
-    const redirectUrl = searchParams?.get('redirect')
-    if (redirectUrl) {
-      return decodeURIComponent(redirectUrl)
-    }
-
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('redirectAfterLogin') || '/'
-    }
-
-    return '/'
-  }
+  // Initialize form with validation
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      username: '',
+      password: '',
+    },
+  })
 
   const handleGoogleSignIn = async () => {
     try {
-      const redirectUrl = getRedirectUrl()
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('redirectAfterLogin', redirectUrl)
-      }
-
-      const response = await getOauth2AuthUrl(encodeURIComponent(process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!))
+      const response = await getOauth2AuthUrl(encodeURIComponent(`${process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}`))
       window.location.href = response.data.url
     } catch (error) {
       console.error('Error during login:', error)
@@ -86,24 +91,17 @@ export default function LoginForm() {
     }
   }
 
-  async function handleSubmit(formData: FormData) {
-    const user = formData.get('username')?.toString() || ''
-    const pass = formData.get('password')?.toString() || ''
-
+  async function onSubmit(values: LoginFormValues) {
     try {
-      const res = await generateToken({ username: user, password: pass })
+      const res = await generateToken({ username: values.username, password: values.password })
       const { scope } = await signIn(res)
 
-      const redirectUrl = getRedirectUrl()
-
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('redirectAfterLogin')
-      }
-
-      if (scope === 'admin' || scope === 'sub_admin') {
+      if (redirectTo) {
+        window.location.href = redirectTo
+      } else if (scope === 'admin' || scope === 'sub_admin') {
         window.location.href = '/admin'
       } else {
-        window.location.href = redirectUrl
+        window.location.href = '/'
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Đăng nhập thất bại!'
@@ -112,34 +110,61 @@ export default function LoginForm() {
   }
 
   return (
-    <form action={handleSubmit} className="space-y-6">
-      <p className="text-ring">
-        Đăng ký tài khoản để xem +100 khóa tập, +1000 động tác, +30 thực đơn giúp bạn Độ Dáng tại bất kì đâu!
-      </p>
-      <div className="mx-auto space-y-2">
-        <Label htmlFor="username">Tên đăng nhập</Label>
-        <Input placeholder="Nhập tên đăng nhập của bạn" id="username" name="username" type="text" />
-      </div>
-      <div className="mx-auto space-y-2">
-        <Label htmlFor="password">Mật khẩu</Label>
-        <CustomInput placeholder="Nhập mật khẩu của bạn" id="password" name="password" type="password" />
-      </div>
-      <div className="w-full flex justify-end">
-        <Link href="/auth/forgot-password" className="text-text underline text-[#FF7873] text-sm">
-          Quên mật khẩu?
-        </Link>
-      </div>
-      <MainButton type="submit" className="w-full p-3 rounded-3xl" text="Đăng nhập" />
-      <Button variant="ghost" className="w-full p-3 rounded-3xl" asChild>
-        <Link href="/auth/register">Đăng ký</Link>
-      </Button>
-      <p className="text-sm text-center text-[#8E8E93]">Hoặc</p>
-      <Button type="button" variant="secondary" className="w-full p-3 rounded-3xl gap-2" onClick={handleGoogleSignIn}>
-        <GoogleIcon />
-        Đăng nhập bằng Google
-      </Button>
-    </form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <p className="text-ring">
+          Đăng ký tài khoản để xem +100 khóa tập, +1000 động tác, +30 thực đơn giúp bạn Độ Dáng tại bất kì đâu!
+        </p>
+
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem className="mx-auto space-y-2">
+              <FormLabel htmlFor="username">Tên đăng nhập</FormLabel>
+              <FormControl>
+                <Input placeholder="Nhập tên đăng nhập của bạn" id="username" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem className="mx-auto space-y-2">
+              <FormLabel htmlFor="password">Mật khẩu</FormLabel>
+              <FormControl>
+                <CustomInput placeholder="Nhập mật khẩu của bạn" id="password" type="password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="w-full flex justify-end">
+          <Link href="/auth/forgot-password" className="text-text underline text-[#FF7873] text-sm">
+            Quên mật khẩu?
+          </Link>
+        </div>
+
+        <MainButton type="submit" className="w-full p-3 rounded-3xl" text="Đăng nhập" />
+
+        <Button variant="ghost" className="w-full p-3 rounded-3xl" asChild>
+          <Link href="/auth/register">Đăng ký</Link>
+        </Button>
+
+        <p className="text-sm text-center text-[#8E8E93]">Hoặc</p>
+
+        <Button type="button" variant="secondary" className="w-full p-3 rounded-3xl gap-2" onClick={handleGoogleSignIn}>
+          <GoogleIcon />
+          Đăng nhập bằng Google
+        </Button>
+      </form>
+    </Form>
   )
 }
 
-export { LoginForm }
+export default LoginForm

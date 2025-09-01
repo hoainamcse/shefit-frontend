@@ -19,28 +19,20 @@ const ReactPlayer = dynamic(() => import('react-player/lazy'), {
   ),
 })
 
-export default function MuscleDetail({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ id: string }>
-  searchParams: Promise<{ muscle_group_id: string }>
-}) {
+export default function MuscleDetail({ params }: { params: Promise<{ id: string }> }) {
   const [exercise, setExercise] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [exerciseId, setExerciseId] = useState<string>('')
-  const [muscleGroupId, setMuscleGroupId] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
-  const _searchParams = useSearchParams()
-  const back = _searchParams.get('back') || ''
+  const searchParams = useSearchParams()
+  const muscleGroupId = searchParams?.get('muscle_group_id') || ''
+  const back = searchParams?.get('back') || ''
 
   useEffect(() => {
     const unwrapParams = async () => {
       try {
         const { id: exercise_id } = await params
-        const { muscle_group_id } = await searchParams
         setExerciseId(exercise_id)
-        setMuscleGroupId(muscle_group_id)
       } catch (err) {
         console.error('Error unwrapping params:', err)
         setError('Lỗi khi tải thông tin động tác')

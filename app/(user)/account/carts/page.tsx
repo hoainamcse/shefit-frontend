@@ -5,12 +5,13 @@ import CurrentCart from './_components/current-cart'
 import PurchasedOrder from './_components/purchased-order'
 import { useSession } from '@/hooks/use-session'
 import { Button } from '@/components/ui/button'
-import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
 export default function Cart() {
   const { session } = useSession()
-  const { redirectToLogin } = useAuthRedirect()
+  const router = useRouter()
+  const pathname = usePathname()
   const [isSessionReady, setIsSessionReady] = useState(false)
   const [activeTab, setActiveTab] = useState('current-cart')
 
@@ -35,7 +36,10 @@ export default function Cart() {
       <div className="flex flex-col items-center text-center gap-6">
         <p className="text-base">HÃY ĐĂNG NHẬP ĐỂ XEM GIỎ HÀNG</p>
         <div className="flex gap-4 justify-center w-full px-10">
-          <Button className="bg-[#13D8A7] rounded-full w-full text-base max-w-[200px]" onClick={redirectToLogin}>
+          <Button
+            className="bg-[#13D8A7] rounded-full w-full text-base max-w-[200px]"
+            onClick={() => router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)}
+          >
             Đăng nhập
           </Button>
         </div>

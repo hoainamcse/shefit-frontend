@@ -4,11 +4,10 @@ import Link from 'next/link'
 import { useSession } from '@/hooks/use-session'
 import { useSubscription } from './subscription-context'
 import { getCourses } from '@/network/client/courses'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Lock } from 'lucide-react'
-import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import {
   Dialog,
   DialogContent,
@@ -23,7 +22,7 @@ import { Button } from '@/components/ui/button'
 export function ListCourses() {
   const router = useRouter()
   const { session } = useSession()
-  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
+  const pathname = usePathname()
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [renewDialogOpen, setRenewDialogOpen] = useState(false)
@@ -34,13 +33,11 @@ export function ListCourses() {
   }, [selectedSubscription])
 
   const handleLoginClick = () => {
-    setDialogOpen(false)
-    redirectToLogin()
+    router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)
   }
 
   const handleBuyPackageClick = () => {
-    setDialogOpen(false)
-    redirectToAccount('packages')
+    router.push('/account/packages')
   }
 
   const subscriptionCourses = useMemo(() => {

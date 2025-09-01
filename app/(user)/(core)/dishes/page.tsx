@@ -6,11 +6,13 @@ import { BackIconBlack } from '@/components/icons/BackIconBlack'
 export default async function DietDishesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ diet_id: string; back?: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const { diet_id, back = '' } = await searchParams
-  const diet = await getDiet(Number(diet_id))
-  const dietDishes = await getDietDishes(Number(diet_id))
+  const _searchParams = await searchParams
+  const dietId = typeof _searchParams.diet_id === 'string' ? _searchParams.diet_id : ''
+  const back = typeof _searchParams.back === 'string' ? _searchParams.back : ''
+  const diet = await getDiet(Number(dietId))
+  const dietDishes = await getDietDishes(Number(dietId))
 
   if (!diet || !dietDishes.data) {
     return (
@@ -40,7 +42,7 @@ export default async function DietDishesPage({
         </div>
         <div className="grid grid-cols-3 sm:gap-5 gap-4">
           {dietDishes.data?.map((item, index) => (
-            <Link href={`/dishes/${item.id}?diet_id=${diet_id}`} key={index}>
+            <Link href={`/dishes/${item.id}?diet_id=${dietId}`} key={index}>
               <div key={`menu-${index}`} className="overflow-hidden">
                 <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                   <img

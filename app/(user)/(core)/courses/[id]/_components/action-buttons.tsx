@@ -4,13 +4,12 @@ import type { Course } from '@/models/course'
 
 import { toast } from 'sonner'
 import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
-import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { addFavouriteCourse } from '@/network/client/user-favourites'
 import { checkUserSavedResource } from '@/network/client/users'
 
@@ -22,13 +21,13 @@ interface ActionButtonsProps {
 export function ActionButtons({ courseID, enableSave }: ActionButtonsProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const query = searchParams ? searchParams.toString() : ''
+  const query = searchParams ? `?${searchParams.toString()}` : ''
   const { session } = useSession()
   const queryClient = useQueryClient()
   const [openLogin, setOpenLogin] = useState(false)
   const [showSaveDialog, setShowSaveDialog] = useState(false)
   const [saving, setSaving] = useState(false)
-  const { redirectToLogin } = useAuthRedirect()
+  const pathname = usePathname()
 
   // Check saved status
   const savedStatusQuery = useQuery({
@@ -74,8 +73,7 @@ export function ActionButtons({ courseID, enableSave }: ActionButtonsProps) {
   }
 
   const handleLoginClick = () => {
-    setOpenLogin(false)
-    redirectToLogin()
+    router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)
   }
 
   // Extract saved status

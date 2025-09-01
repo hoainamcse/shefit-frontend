@@ -17,8 +17,8 @@ import { HTMLRenderer } from '@/components/html-renderer'
 export default function PurchasePackage() {
   const { session } = useSession()
   const searchParams = useSearchParams()
-  const courseId = searchParams.get('course_id')
-  const mealPlansId = searchParams.get('meal_plans_id')
+  const courseId = searchParams?.get('course_id')
+  const mealPlansId = searchParams?.get('meal_plans_id')
 
   const [allSubscriptions, setAllSubscriptions] = useState<ListResponse<Subscription>>({
     status: '',

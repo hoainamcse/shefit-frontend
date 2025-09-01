@@ -11,7 +11,7 @@ import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
-import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { usePathname, useRouter } from 'next/navigation'
 import { addFavouriteDish } from '@/network/client/user-favourites'
 import { getUserSubscriptions, checkUserSavedResource } from '@/network/client/users'
 import { addUserSubscriptionDish, queryKeyUserSubscriptions } from '@/network/client/user-subscriptions'
@@ -22,7 +22,8 @@ interface ActionButtonsProps {
 
 export default function ActionButtons({ dishID }: ActionButtonsProps) {
   const { session } = useSession()
-  const { redirectToLogin } = useAuthRedirect()
+  const router = useRouter()
+  const pathname = usePathname()
   const queryClient = useQueryClient()
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [showSaveOptionsDialog, setShowSaveOptionsDialog] = useState(false)
@@ -101,8 +102,7 @@ export default function ActionButtons({ dishID }: ActionButtonsProps) {
   }
 
   const handleLoginClick = () => {
-    setShowLoginDialog(false)
-    redirectToLogin()
+    router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)
   }
 
   // Extract saved status

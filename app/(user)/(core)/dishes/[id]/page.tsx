@@ -16,28 +16,20 @@ const ReactPlayer = dynamic(() => import('react-player/lazy'), {
   ),
 })
 
-export default function MealDetail({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ id: string }>
-  searchParams: Promise<{ diet_id: string }>
-}) {
+export default function MealDetail({ params }: { params: Promise<{ id: string }> }) {
   const [dish, setDish] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [dishId, setDishId] = useState<string>('')
-  const [dietId, setDietId] = useState<string>('')
-  const _searchParams = useSearchParams()
-  const back = _searchParams.get('back') || ''
+  const searchParams = useSearchParams()
+  const dietId = searchParams?.get('diet_id') || ''
+  const back = searchParams?.get('back') || ''
 
   useEffect(() => {
     const unwrapParams = async () => {
       try {
         const { id: dish_id } = await params
-        const { diet_id } = await searchParams
         setDishId(dish_id)
-        setDietId(diet_id)
       } catch (err) {
         console.error('Error unwrapping params:', err)
         setError('Lỗi khi tải thông tin món ăn')

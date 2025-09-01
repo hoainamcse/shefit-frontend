@@ -19,7 +19,8 @@ export default function CoursePage() {
   const params = useParams()
   const courseID = params.id as unknown as Course['id']
   const searchParams = useSearchParams()
-  const back = searchParams.get('back') || ''
+  const query = searchParams ? `?${searchParams.toString()}` : ''
+  const back = searchParams?.get('back') || ''
   const { session } = useSession()
 
   // Use useQueries to fetch both course data and user subscriptions
@@ -111,7 +112,9 @@ export default function CoursePage() {
               Gói Member
             </div>
             <div className="text-[#737373] text-lg lg:text-xl">
-              Bạn cần mua một trong các Gói Member sau để truy cập khóa tập
+              {enableSave
+                ? 'Bạn cần mua hoặc gia hạn gói Member để truy cập khoá tập này.'
+                : 'Bạn có thể truy cập khoá tập này. Hãy tận hưởng và luyện tập chăm chỉ!'}
             </div>
             <div
               className="flex overflow-x-scroll gap-2 mt-4"
@@ -142,7 +145,13 @@ export default function CoursePage() {
                         }`}
                         asChild
                       >
-                        <Link href={`/packages/${subscription.id}`}>{subscription.name}</Link>
+                        <Link
+                          href={`/packages/${subscription.id}?back=${encodeURIComponent(
+                            `/courses/${courseID}${query}`
+                          )}`}
+                        >
+                          {subscription.name}
+                        </Link>
                       </Button>
                     )
                   })}

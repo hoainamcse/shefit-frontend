@@ -17,10 +17,9 @@ import {
 
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import { getUserSubscriptionDishes, removeUserSubscriptionDish } from '@/network/client/user-subscriptions'
-import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Lock } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
 import { toast } from 'sonner'
 
@@ -29,7 +28,7 @@ export default function ListDishes() {
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [renewDialogOpen, setRenewDialogOpen] = useState(false)
-  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
+  const pathname = usePathname()
   const router = useRouter()
   const queryClient = useQueryClient()
 
@@ -40,13 +39,11 @@ export default function ListDishes() {
   }, [selectedSubscription])
 
   const handleLoginClick = () => {
-    setDialogOpen(false)
-    redirectToLogin()
+    router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)
   }
 
   const handleBuyPackageClick = () => {
-    setDialogOpen(false)
-    redirectToAccount('packages')
+    router.push('/account/packages')
   }
 
   // Fetch subscription dishes with infinite query

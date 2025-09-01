@@ -23,24 +23,23 @@ import { Button } from '@/components/ui/button'
 import { getYouTubeThumbnail } from '@/lib/youtube'
 import { useQueries, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { usePathname, useRouter } from 'next/navigation'
 import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
 import { toast } from 'sonner'
 
 export default function FavouriteContent() {
   const { session } = useSession()
-  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
+  const pathname = usePathname()
+  const router = useRouter()
   const [dialogOpen, setDialogOpen] = useState(false)
   const queryClient = useQueryClient()
 
   const handleLoginClick = () => {
-    setDialogOpen(false)
-    redirectToLogin()
+    router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)
   }
 
   const handleBuyPackageClick = () => {
-    setDialogOpen(false)
-    redirectToAccount('packages')
+    router.push('/account/packages')
   }
 
   // Query for favourite data

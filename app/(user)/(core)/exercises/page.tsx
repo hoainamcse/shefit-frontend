@@ -9,11 +9,13 @@ import { BackIconBlack } from '@/components/icons/BackIconBlack'
 export default async function MuscleGroupExercises({
   searchParams,
 }: {
-  searchParams: Promise<{ muscle_group_id: string; back?: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const { muscle_group_id, back = '' } = await searchParams
-  const muscleGroup = await getMuscleGroup(muscle_group_id)
-  const muscleGroupExercises = await getMuscleGroupExercises(muscle_group_id)
+  const _searchParams = await searchParams
+  const muscleGroupId = typeof _searchParams.muscle_group_id === 'string' ? _searchParams.muscle_group_id : ''
+  const back = typeof _searchParams.back === 'string' ? _searchParams.back : ''
+  const muscleGroup = await getMuscleGroup(muscleGroupId)
+  const muscleGroupExercises = await getMuscleGroupExercises(muscleGroupId)
 
   if (!muscleGroup || !muscleGroupExercises.data) {
     return (
@@ -78,7 +80,7 @@ export default async function MuscleGroupExercises({
             <TabsContent value="all">
               <div className="grid grid-cols-3 sm:gap-5 gap-4">
                 {muscleGroupExercises.data?.map((exercise) => (
-                  <Link href={`/exercises/${exercise.id}?muscle_group_id=${muscle_group_id}`} key={exercise.id}>
+                  <Link href={`/exercises/${exercise.id}?muscle_group_id=${muscleGroupId}`} key={exercise.id}>
                     <div key={`menu-${exercise.id}`} className="text-lg overflow-hidden">
                       <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                         <img
@@ -102,10 +104,7 @@ export default async function MuscleGroupExercises({
                 {muscleGroupExercises.data
                   ?.filter((exercise) => exercise.equipments && exercise.equipments.length > 0)
                   .map((exercise) => (
-                    <Link
-                      href={`/exercises/${exercise.id}?muscle_group_id=${muscle_group_id}`}
-                      key={exercise.id}
-                    >
+                    <Link href={`/exercises/${exercise.id}?muscle_group_id=${muscleGroupId}`} key={exercise.id}>
                       <div key={`menu-${exercise.id}`} className="text-lg overflow-hidden">
                         <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                           <img
@@ -128,10 +127,7 @@ export default async function MuscleGroupExercises({
                 {muscleGroupExercises.data
                   ?.filter((exercise) => exercise.equipments?.some((equipment) => equipment.name === 'Tay Không'))
                   .map((exercise) => (
-                    <Link
-                      href={`/exercises/${exercise.id}?muscle_group_id=${muscle_group_id}`}
-                      key={exercise.id}
-                    >
+                    <Link href={`/exercises/${exercise.id}?muscle_group_id=${muscleGroupId}`} key={exercise.id}>
                       <div key={`menu-${exercise.id}`} className="text-lg overflow-hidden">
                         <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
                           <img

@@ -17,10 +17,9 @@ import {
 } from '@/components/ui/dialog'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
 import { getYouTubeThumbnail } from '@/lib/youtube'
-import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { getUserSubscriptionExercises, removeUserSubscriptionExercise } from '@/network/client/user-subscriptions'
 import { Lock } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
 import { toast } from 'sonner'
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -40,7 +39,7 @@ export default function ListExercises() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [renewDialogOpen, setRenewDialogOpen] = useState(false)
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null)
-  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
+  const pathname = usePathname()
   const router = useRouter()
   const queryClient = useQueryClient()
 
@@ -51,13 +50,11 @@ export default function ListExercises() {
   }, [selectedSubscription])
 
   const handleLoginClick = () => {
-    setDialogOpen(false)
-    redirectToLogin()
+    router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)
   }
 
   const handleBuyPackageClick = () => {
-    setDialogOpen(false)
-    redirectToAccount('packages')
+    router.push('/account/packages')
   }
 
   // Fetch subscription exercises with infinite query

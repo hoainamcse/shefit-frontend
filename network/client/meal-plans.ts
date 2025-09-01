@@ -14,8 +14,8 @@ import { fetchData } from '../helpers/fetch-data'
 export const queryKeyMealPlans = 'meal-plans'
 
 export async function getMealPlans(query?: any): Promise<ListResponse<MealPlan>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchData('/v1/meal-plans' + '?' + searchParams)
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData(`/v1/meal-plans` + searchParams)
   return response.json()
 }
 

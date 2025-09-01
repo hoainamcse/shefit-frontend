@@ -20,7 +20,7 @@ export default async function MealPlanPage({
 
   try {
     const { id: mealPlanID } = await params
-    const { data: mealPlan } = await getMealPlan(mealPlanID)
+    const { data: mealPlan } = await getMealPlan(Number(mealPlanID))
 
     if (!mealPlan) {
       return (

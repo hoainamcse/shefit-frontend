@@ -11,8 +11,8 @@ export async function getMealPlans(query?: any): Promise<ListResponse<MealPlan>>
   return response.json()
 }
 
-export async function getMealPlan(meal_plan_id: any): Promise<ApiResponse<MealPlan>> {
-  const response = await fetchDataServer(`/v1/meal-plans/${meal_plan_id}`)
+export async function getMealPlan(id: number): Promise<ApiResponse<MealPlan>> {
+  const response = await fetchDataServer(`/v1/meal-plans/${id}`)
   return response.json()
 }
 

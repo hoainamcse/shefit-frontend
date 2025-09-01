@@ -7,9 +7,8 @@ import { Input } from '@/components/ui/input'
 import { useSession } from '@/hooks/use-session'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { createUserSubscription } from '@/network/client/users'
-import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 
 import { useQRCode } from 'next-qrcode'
 import {
@@ -38,7 +37,8 @@ interface PackagePaymentProps {
 
 export function PackagePayment({ prices, defaultPrice, packageName }: PackagePaymentProps) {
   const { session } = useSession()
-  const { redirectToLogin } = useAuthRedirect()
+  const router = useRouter()
+  const pathname = usePathname()
   const { Canvas } = useQRCode()
   const params = useParams()
   const [selectedPriceId, setSelectedPriceId] = useState<number | null>(null)
@@ -58,8 +58,7 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
   useState<number | null>(null)
 
   const handleLoginClick = () => {
-    setIsLoginDialogOpen(false)
-    redirectToLogin()
+    router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)
   }
 
   const generateOrderId = () => {

@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { MainButton } from '@/components/buttons/main-button'
 import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 import { ExerciseYogaIcon } from '@/components/icons/ExerciseYogaIcon'
 import { FoodGrainsIcon } from '@/components/icons/FoodGrainsIcon'
 import { GymIcon } from '@/components/icons/GymIcon'
@@ -22,7 +23,6 @@ import { MemberShipIcon } from '@/components/icons/MemberShipIcon'
 import { FacebookIcon } from '@/components/icons/FacebookIcon'
 import { useSession } from '@/hooks/use-session'
 import { signOut } from '@/network/server/auth'
-import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { useState } from 'react'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { BusinessIcon } from '@/components/icons/BusinessIcon'
@@ -32,9 +32,10 @@ import { StarIcon } from '@/components/icons/StarIcon'
 const ChatBot = dynamic(() => import('@/components/chatbot/chatbot').then((mod) => mod.ChatBot), { ssr: false })
 
 export function Header() {
+  const pathname = usePathname()
   const [isChatOpen, setIsChatOpen] = useState(false)
   const { session } = useSession()
-  const { redirectToLogin } = useAuthRedirect()
+  const router = useRouter()
   const [isSheetOpen, setIsSheetOpen] = useState(false)
 
   const handleChatToggle = () => {
@@ -43,7 +44,7 @@ export function Header() {
 
   const handleSignOut = () => {
     // The signOut server action will handle the redirection
-    signOut()
+    signOut(encodeURIComponent(pathname))
   }
 
   const authButton = session ? (
@@ -57,10 +58,7 @@ export function Header() {
     <MainButton
       className="rounded-full w-32 lg:w-[132px] xl:w-[152px] lg:h-10"
       text="Đăng nhập"
-      onClick={() => {
-        redirectToLogin()
-        setIsSheetOpen(false)
-      }}
+      onClick={() => router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)}
     />
   )
 

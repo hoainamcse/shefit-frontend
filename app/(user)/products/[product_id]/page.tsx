@@ -12,7 +12,7 @@ import { getUserCarts, createUserCart } from '@/network/client/users'
 import { toast } from 'sonner'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import { useSession } from '@/hooks/use-session'
-import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { usePathname, useRouter } from 'next/navigation'
 import { Product } from '@/models/product'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import Link from 'next/link'
@@ -34,7 +34,8 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
   const [quantity, setQuantity] = useState(1)
   const [loginDialogOpen, setLoginDialogOpen] = useState(false)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
-  const { redirectToLogin } = useAuthRedirect()
+  const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     if (product && product.variants && product.variants.length > 0) {
@@ -240,17 +241,13 @@ export default function ProductPage({ params }: { params: Promise<{ product_id: 
   }
 
   const handleLoginClick = () => {
-    setLoginDialogOpen(false)
-    redirectToLogin()
+    router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)
   }
 
   return (
     <div className="flex flex-col lg:gap-10 gap-5">
       <div className="mb-20 lg:p-10 p-4 mt-4">
-        <Link
-          href="/products"
-          className="flex cursor-pointer items-center mb-5 lg:ml-8 ml-4 font-semibold gap-2"
-        >
+        <Link href="/products" className="flex cursor-pointer items-center mb-5 lg:ml-8 ml-4 font-semibold gap-2">
           <BackIconBlack /> <span className="ml-1 text-sm lg:text-lg">Quay về</span>
         </Link>
         <div className="xl:w-4/5 max-lg:w-full xl:flex justify-between max-lg:block">

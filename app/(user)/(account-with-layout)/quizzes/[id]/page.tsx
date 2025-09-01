@@ -11,7 +11,7 @@ import { getBodyQuiz } from '@/network/server/body-quizzes'
 import type { BodyQuiz } from '@/models/body-quiz'
 import { useState } from 'react'
 import { useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useSession } from '@/hooks/use-session'
 import {
   Dialog,
@@ -24,7 +24,6 @@ import {
 import { createBodyQuizByUser } from '@/network/server/body-quizzes'
 import { addUserSavedResource, getUser } from '@/network/client/users'
 import { toast } from 'sonner'
-import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { getConfiguration } from '@/network/client/configurations'
 import { calculateGoal, calculateCaloriePlan } from '@/lib/formula'
 import Link from 'next/link'
@@ -589,7 +588,7 @@ export default function BodyQuizPage() {
   const quiz_id = Number(params?.id)
   const router = useRouter()
   const { session } = useSession()
-  const { redirectToLogin } = useAuthRedirect()
+  const pathname = usePathname()
 
   const [bodyQuiz, setBodyQuiz] = useState<BodyQuiz | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -612,8 +611,7 @@ export default function BodyQuizPage() {
   const quizSubmission = useQuizSubmission(session, bodyQuiz, userInfo, quiz_id)
 
   const handleLoginClick = () => {
-    setShowLoginDialog(false)
-    redirectToLogin()
+    router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)
   }
 
   const handleSuccessDialogClose = () => {

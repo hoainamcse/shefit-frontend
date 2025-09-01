@@ -1,6 +1,7 @@
 'use server'
 
 import type { PasswordGrant, Register, TokenResponse } from '@/models/auth'
+import type { ApiResponse } from '@/models/response'
 
 import { decodeJwt } from 'jose'
 import { redirect } from 'next/navigation'
@@ -33,13 +34,13 @@ export const register = async (data: Register) => {
   return response.json()
 }
 
-export const getOauth2AuthUrl = async (redirect_uri: string) => {
+export const getOauth2AuthUrl = async (redirect_uri: string): Promise<ApiResponse<{ url: string }>> => {
   const response = await fetchDataServer(`/v1/auth/oauth2/google/auth-url?redirect_uri=${redirect_uri}`)
   return response.json()
 }
 
 export const handleGoogleCallback = async (params: string): Promise<any> => {
-  const response = await fetchDataServer(`/v1/auth/oauth2/google:handleCallback?provider=google&${params}`)
+  const response = await fetchDataServer(`/v1/auth/oauth2/google:handleCallback${params}`)
   return response.json()
 }
 
@@ -64,7 +65,7 @@ export async function signIn(data: any) {
   return { userId, scope: role }
 }
 
-export async function signOut() {
+export async function signOut(redirectTo = '') {
   await deleteSession()
-  redirect('/auth/login')
+  redirect(`/auth/login${redirectTo ? `?redirect=${redirectTo}` : ''}`)
 }

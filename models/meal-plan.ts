@@ -44,7 +44,7 @@ type MealPlanPayload = Omit<MealPlan, 'id' | 'diet' | 'calorie' | 'meal_plan_goa
   meal_plan_goal_id: Goal['id'] | null
 }
 
-type DishMealTime = 'breakfast' | 'lunch' | 'dinner' | 'snack'
+type DishMealTime = 'breakfast' | 'lunch' | 'snack' | 'dinner'
 
 type MealPlanDay = {
   id: number

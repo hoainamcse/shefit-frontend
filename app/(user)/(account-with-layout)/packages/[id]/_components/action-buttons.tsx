@@ -95,5 +95,12 @@ export default function ActionButtons({ subscription, query }: { subscription: S
     )
   }
 
-  return null
+  return (
+    <div className="lg:w-[570px] max-md:w-full w-full mx-auto">
+      <Button className="bg-[#13D8A7] h-[56px] rounded-full w-full px-5 text-base" disabled>
+        Gia hạn
+      </Button>
+      <p className="p-4 text-center text-muted-foreground">Không thể hạn gói tập miễn phí</p>
+    </div>
+  )
 }

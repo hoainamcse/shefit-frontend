@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { LayoutGrid, LogOut, User } from 'lucide-react'
 
 import { signOut } from '@/network/server/auth'
@@ -21,6 +22,7 @@ import { useSession } from '@/hooks/use-session'
 import { roleLabel } from '@/lib/label'
 
 export function UserNav() {
+  const pathname = usePathname()
   const { session } = useSession()
 
   if (!session) return null
@@ -67,7 +69,7 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="hover:cursor-pointer" onClick={signOut}>
+        <DropdownMenuItem className="hover:cursor-pointer" onClick={() => signOut(encodeURIComponent(pathname))}>
           <LogOut className="w-4 h-4 mr-3" />
           Đăng xuất
         </DropdownMenuItem>

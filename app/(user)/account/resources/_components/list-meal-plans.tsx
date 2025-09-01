@@ -14,12 +14,10 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { MealPlan } from '@/models/meal-plan'
 import { DeleteIcon } from '@/components/icons/DeleteIcon'
-import { useAuthRedirect } from '@/hooks/use-callback-redirect'
 import { getUserSubscriptionMealPlans, removeUserSubscriptionMealPlan } from '@/network/client/user-subscriptions'
 import { Lock } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
@@ -29,7 +27,7 @@ export default function ListMealPlans() {
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [renewDialogOpen, setRenewDialogOpen] = useState(false)
-  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
+  const pathname = usePathname()
   const router = useRouter()
   const queryClient = useQueryClient()
 
@@ -40,13 +38,11 @@ export default function ListMealPlans() {
   }, [selectedSubscription])
 
   const handleLoginClick = () => {
-    setDialogOpen(false)
-    redirectToLogin()
+    router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)
   }
 
   const handleBuyPackageClick = () => {
-    setDialogOpen(false)
-    redirectToAccount('packages')
+    router.push('/account/packages')
   }
 
   // Fetch subscription meal plans with infinite query

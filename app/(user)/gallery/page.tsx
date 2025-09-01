@@ -10,14 +10,15 @@ import { Diet } from '@/models/diet'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
-import { useAuthRedirect } from '@/hooks/use-callback-redirect'
+import { usePathname, useRouter } from 'next/navigation'
 import { getUserSubscriptions } from '@/network/client/users'
 
 export const dynamic = 'force-dynamic'
 
 export default function Gallery() {
   const { session } = useSession()
-  const { redirectToLogin, redirectToAccount } = useAuthRedirect()
+  const pathname = usePathname()
+  const router = useRouter()
   const [dialogOpen, setDialogOpen] = useState<string | false>(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isMuscleGroupsLoading, setIsMuscleGroupsLoading] = useState(true)
@@ -36,13 +37,11 @@ export default function Gallery() {
   })
 
   const handleLoginClick = () => {
-    setDialogOpen(false)
-    redirectToLogin()
+    router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)
   }
 
   const handleBuyPackageClick = () => {
-    setDialogOpen(false)
-    redirectToAccount('packages')
+    router.push('/account/packages')
   }
 
   useEffect(() => {

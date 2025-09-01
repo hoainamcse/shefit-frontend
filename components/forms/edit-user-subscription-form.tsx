@@ -21,7 +21,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '..
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../ui/select'
 import { MultiSelectOptionItem } from '../nyxb-ui/multi-select'
 import { Subscription } from '@/models/subscription'
-import { getMealPlans } from '@/network/client/meal-plans'
 import { MealPlan } from '@/models/meal-plan'
 import { getExercises } from '@/network/client/exercises'
 import { Exercise } from '@/models/exercise'
