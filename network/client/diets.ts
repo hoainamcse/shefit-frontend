@@ -11,6 +11,11 @@ export async function getDiets(query?: any): Promise<ListResponse<Diet>> {
   return response.json()
 }
 
+export async function getDiet(id: Diet['id']): Promise<ApiResponse<Diet>> {
+  const response = await fetchData(`/v1/diets/${id}`)
+  return response.json()
+}
+
 export async function createDiet(data: { diets: DietPayload[] }): Promise<ApiResponse<Diet[]>> {
   const response = await fetchData('/v1/diets:bulkCreate', {
     method: 'POST',

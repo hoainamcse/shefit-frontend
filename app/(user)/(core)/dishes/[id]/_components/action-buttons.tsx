@@ -11,7 +11,6 @@ import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
-import { usePathname, useRouter } from 'next/navigation'
 import { addFavouriteDish } from '@/network/client/user-favourites'
 import { getUserSubscriptions, checkUserSavedResource } from '@/network/client/users'
 import { addUserSubscriptionDish, queryKeyUserSubscriptions } from '@/network/client/user-subscriptions'
@@ -22,10 +21,7 @@ interface ActionButtonsProps {
 
 export default function ActionButtons({ dishID }: ActionButtonsProps) {
   const { session } = useSession()
-  const router = useRouter()
-  const pathname = usePathname()
   const queryClient = useQueryClient()
-  const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [showSaveOptionsDialog, setShowSaveOptionsDialog] = useState(false)
   const [saving, setSaving] = useState(false)
 
@@ -83,11 +79,6 @@ export default function ActionButtons({ dishID }: ActionButtonsProps) {
   })
 
   const handleShowSaveOptions = () => {
-    if (!session) {
-      setShowLoginDialog(true)
-      return
-    }
-
     setShowSaveOptionsDialog(true)
   }
 
@@ -99,10 +90,6 @@ export default function ActionButtons({ dishID }: ActionButtonsProps) {
   const handleAddToSubscription = (subscriptionId: UserSubscriptionDetail['id']) => {
     setSaving(true)
     subscriptionMutation.mutate({ subscriptionId })
-  }
-
-  const handleLoginClick = () => {
-    router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)
   }
 
   // Extract saved status
@@ -118,23 +105,6 @@ export default function ActionButtons({ dishID }: ActionButtonsProps) {
       >
         {saving ? 'Đang lưu...' : 'Lưu'}
       </Button>
-
-      {/* Login Dialog */}
-      <Dialog open={showLoginDialog} onOpenChange={(open) => setShowLoginDialog(open)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col items-center text-center gap-6">
-            <p className="text-lg lg:text-xl">ĐĂNG NHẬP ĐỂ LƯU MÓN ĂN</p>
-            <div className="flex gap-4 justify-center w-full px-10">
-              <Button className="bg-[#13D8A7] rounded-full w-full text-lg lg:text-xl" onClick={handleLoginClick}>
-                Đăng nhập
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Save Options Dialog */}
       <Dialog open={showSaveOptionsDialog} onOpenChange={(open) => setShowSaveOptionsDialog(open)}>

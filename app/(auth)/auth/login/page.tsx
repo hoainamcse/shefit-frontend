@@ -3,7 +3,7 @@ import { LoginForm } from '@/components/forms/login-form'
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<p>Đang tải...</p>}>
       <LoginForm />
     </Suspense>
   )

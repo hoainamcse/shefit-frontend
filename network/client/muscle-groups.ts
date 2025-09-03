@@ -11,6 +11,11 @@ export async function getMuscleGroups(query?: any): Promise<ListResponse<MuscleG
   return response.json()
 }
 
+export async function getMuscleGroup(id: MuscleGroup['id']): Promise<ApiResponse<MuscleGroup>> {
+  const response = await fetchData(`/v1/muscle-groups/${id}`)
+  return response.json()
+}
+
 export async function createMuscleGroup(data: MuscleGroupPayload): Promise<ApiResponse<MuscleGroup>> {
   const response = await fetchData('/v1/muscle-groups', {
     method: 'POST',

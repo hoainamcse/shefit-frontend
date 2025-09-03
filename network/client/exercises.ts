@@ -6,8 +6,8 @@ import { fetchData } from '../helpers/fetch-data'
 export const queryKeyExercises = 'exercises'
 
 export async function getExercises(query?: any): Promise<ListResponse<Exercise>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchData('/v1/exercises' + '?' + searchParams)
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData('/v1/exercises' + searchParams)
   return response.json()
 }
 
@@ -41,7 +41,7 @@ export async function deleteBulkExercise(ids: Exercise['id'][]): Promise<ApiResp
   })
   return response.json()
 }
-  
+
 
 export async function importExerciseExcel(file: File): Promise<ApiResponse<Exercise>> {
   const formData = new FormData()

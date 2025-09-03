@@ -6,8 +6,8 @@ import { fetchData } from '../helpers/fetch-data'
 export const queryKeyDishes = 'dishes'
 
 export async function getDishes(query?: any): Promise<ListResponse<Dish>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchData('/v1/dishes/' + '?' + searchParams)
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData('/v1/dishes/' + searchParams)
   return response.json()
 }
 
