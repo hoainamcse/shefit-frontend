@@ -1,13 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useSession } from '@/hooks/use-session'
-import { useSubscription } from './subscription-context'
-import { getCourses } from '@/network/client/courses'
-import { usePathname, useRouter } from 'next/navigation'
 import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Lock } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
+
 import {
   Dialog,
   DialogContent,
@@ -18,6 +15,10 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { CardCourse } from '@/components/cards/card-course'
+import { useSession } from '@/hooks/use-session'
+import { getCourses } from '@/network/client/courses'
+import { useSubscription } from './subscription-context'
 
 export function ListCourses() {
   const router = useRouter()
@@ -150,48 +151,13 @@ export function ListCourses() {
       </Dialog>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-base lg:text-lg">
         {courses.map((course) => (
-          <div key={course.id} className="group">
-            <Link
-              href={isSubscriptionExpired ? '#' : `/courses/${course.id}?back=%2Faccount%2Fresources`}
-              onClick={
-                isSubscriptionExpired
-                  ? (e) => {
-                      e.preventDefault()
-                      setRenewDialogOpen(true)
-                    }
-                  : undefined
-              }
-            >
-              <div>
-                <div className="relative group lg:max-w-[585px]">
-                  <div className="relative">
-                    <img
-                      src={course.assets.thumbnail}
-                      alt={course.course_name}
-                      className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
-                    />
-                    {isSubscriptionExpired && (
-                      <div className="absolute inset-0 bg-black/50 rounded-xl z-20 flex items-center justify-center">
-                        <Lock className="w-12 h-12 text-white" />
-                      </div>
-                    )}
-                    <div className="bg-[#00000033] group-hover:bg-[#00000055] absolute inset-0 transition-all duration-300 rounded-xl" />
-                  </div>
-                </div>
-                <div className="flex justify-between">
-                  <div className="flex flex-col text-sm lg:text-base">
-                    <p className="font-medium">{course.course_name}</p>
-                    <div className="flex gap-2">
-                      <p className="text-[#737373] text-sm lg:text-base">{course.trainer}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 justify-end flex-col items-end text-sm lg:text-base">
-                    {course.form_categories.map((cat) => cat.name).join(', ')}
-                  </div>
-                </div>
-              </div>
-            </Link>
-          </div>
+          <CardCourse
+            key={course.id}
+            data={course}
+            to={`/courses/${course.id}?back=%2Faccount%2Fresources`}
+            locked={isSubscriptionExpired}
+            onLockedClick={() => setRenewDialogOpen(true)}
+          />
         ))}
       </div>
     </div>

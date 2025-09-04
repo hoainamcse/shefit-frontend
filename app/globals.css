@@ -140,3 +140,18 @@
 .html-content {
   overflow-x: auto;
 }
+
+.html-content img,
+.html-content video,
+.html-content iframe {
+  max-width: 64rem;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  border-radius: var(--radius);
+}
+
+.html-content video,
+.html-content iframe {
+  aspect-ratio: 16 / 9;
+}

@@ -14,7 +14,7 @@ export function BottomNavbar() {
 
   return (
     <div className="bg-background sticky bottom-0 inset-x-0 z-50 lg:hidden">
-      <div className="flex items-center justify-between p-1 pt-2">
+      <div className="flex items-center justify-between p-1 pt-2 text-sm">
         <Link href="/courses">
           <div className="flex flex-col items-center gap-1 text-neutral-500">
             <ExerciseYogaIcon />

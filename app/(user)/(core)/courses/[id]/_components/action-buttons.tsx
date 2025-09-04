@@ -10,8 +10,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
-import { addFavouriteCourse } from '@/network/client/user-favourites'
 import { checkUserSavedResource } from '@/network/client/users'
+import { addFavouriteCourse, queryKeyFavouriteCourses } from '@/network/client/user-favourites'
 
 interface ActionButtonsProps {
   courseID: Course['id']
@@ -44,7 +44,7 @@ export function ActionButtons({ courseID, enableSave }: ActionButtonsProps) {
       savedStatusQuery.refetch()
 
       // Invalidate favourite courses query to refresh the list
-      queryClient.invalidateQueries({ queryKey: ['favourite-courses', session?.userId] })
+      queryClient.invalidateQueries({ queryKey: [queryKeyFavouriteCourses, session?.userId] })
 
       toast.success('Đã thêm khóa tập vào danh sách yêu thích!')
     },

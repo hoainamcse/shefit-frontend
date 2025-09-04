@@ -8,6 +8,8 @@ import type { ApiResponse, ListResponse } from '@/models/response'
 import { fetchData } from '../helpers/fetch-data'
 
 // Favourite Course
+export const queryKeyFavouriteCourses = 'favourite-courses'
+
 export async function getFavouriteCourses(user_id: User['id']): Promise<ListResponse<Course>> {
   const response = await fetchData(`/v1/users/${user_id}/favourite/courses`)
   return response.json()
@@ -32,6 +34,8 @@ export async function removeFavouriteCourse(
 }
 
 // Favourite Dish
+export const queryKeyFavouriteDishes = 'favourite-dishes'
+
 export async function getFavouriteDishes(user_id: User['id']): Promise<ListResponse<Dish>> {
   const response = await fetchData(`/v1/users/${user_id}/favourite/dishes`)
   return response.json()
@@ -53,6 +57,8 @@ export async function removeFavouriteDish(user_id: User['id'], dish_id: Dish['id
 }
 
 // Favourite Meal Plan
+export const queryKeyFavouriteMealPlans = 'favourite-meal-plans'
+
 export async function getFavouriteMealPlans(user_id: User['id']): Promise<ListResponse<MealPlan>> {
   const response = await fetchData(`/v1/users/${user_id}/favourite/meal-plans`)
   return response.json()
@@ -80,6 +86,8 @@ export async function removeFavouriteMealPlan(
 }
 
 // Favourite Exercise
+export const queryKeyFavouriteExercises = 'favourite-exercises'
+
 export async function getFavouriteExercises(user_id: User['id']): Promise<ListResponse<Exercise>> {
   const response = await fetchData(`/v1/users/${user_id}/favourite/exercises`)
   return response.json()

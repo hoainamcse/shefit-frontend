@@ -11,8 +11,8 @@ import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
-import { addFavouriteDish } from '@/network/client/user-favourites'
 import { getUserSubscriptions, checkUserSavedResource } from '@/network/client/users'
+import { addFavouriteDish, queryKeyFavouriteDishes } from '@/network/client/user-favourites'
 import { addUserSubscriptionDish, queryKeyUserSubscriptions } from '@/network/client/user-subscriptions'
 
 interface ActionButtonsProps {
@@ -48,7 +48,7 @@ export default function ActionButtons({ dishID }: ActionButtonsProps) {
       setShowSaveOptionsDialog(false)
       savedStatusQuery.refetch()
       // Invalidate favourite dishes query to refresh the list
-      queryClient.invalidateQueries({ queryKey: ['favourite-dishes', session?.userId] })
+      queryClient.invalidateQueries({ queryKey: [queryKeyFavouriteDishes, session?.userId] })
       toast.success('Đã thêm vào danh sách yêu thích!')
     },
     onError: (error) => {

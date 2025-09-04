@@ -6,12 +6,12 @@ import { useQueries } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
+import { CardExercise } from '@/components/cards/card-exercise'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
 import { cn } from '@/lib/utils'
-import { getYouTubeThumbnail } from '@/lib/youtube'
 import { getUserSubscriptions } from '@/network/client/users'
 import { getExercises, queryKeyExercises } from '@/network/client/exercises'
 import { queryKeyUserSubscriptions } from '@/network/client/user-subscriptions'
@@ -150,21 +150,7 @@ export default function MuscleGroupExercises() {
               <TabsContent value="all">
                 <div className="grid grid-cols-3 sm:gap-5 gap-4">
                   {exercises.map((exercise) => (
-                    <button key={exercise.id} onClick={() => handleStartExercise(exercise.id)}>
-                      <div key={`menu-${exercise.id}`} className="text-lg overflow-hidden">
-                        <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
-                          <img
-                            src={
-                              getYouTubeThumbnail(exercise.youtube_url) ||
-                              'https://placehold.co/400?text=shefit.vn&font=Oswald'
-                            }
-                            alt={exercise.name}
-                            className="object-cover rounded-[20px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                          />
-                        </div>
-                        <p className="font-medium lg:font-bold text-sm lg:text-lg">{exercise.name}</p>
-                      </div>
-                    </button>
+                    <CardExercise key={exercise.id} data={exercise} onClick={() => handleStartExercise(exercise.id)} />
                   ))}
                 </div>
               </TabsContent>
@@ -172,23 +158,13 @@ export default function MuscleGroupExercises() {
               <TabsContent value="with-equipment">
                 <div className="grid grid-cols-3 sm:gap-5 gap-4">
                   {exercises
-                    ?.filter((exercise) => exercise.equipments && exercise.equipments.length > 0)
+                    .filter((exercise) => exercise.equipments && exercise.equipments.length > 0)
                     .map((exercise) => (
-                      <button key={exercise.id} onClick={() => handleStartExercise(exercise.id)}>
-                        <div key={`menu-${exercise.id}`} className="text-lg overflow-hidden">
-                          <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
-                            <img
-                              src={
-                                getYouTubeThumbnail(exercise.youtube_url) ||
-                                'https://placehold.co/400?text=shefit.vn&font=Oswald'
-                              }
-                              alt={exercise.name}
-                              className="object-cover rounded-[20px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                            />
-                          </div>
-                          <p className="font-medium lg:font-bold text-sm lg:text-lg">{exercise.name}</p>
-                        </div>
-                      </button>
+                      <CardExercise
+                        key={exercise.id}
+                        data={exercise}
+                        onClick={() => handleStartExercise(exercise.id)}
+                      />
                     ))}
                 </div>
               </TabsContent>
@@ -197,23 +173,11 @@ export default function MuscleGroupExercises() {
                   {exercises
                     .filter((exercise) => exercise.equipments?.some((equipment) => equipment.name === 'Tay Không'))
                     .map((exercise) => (
-                      <button key={exercise.id} onClick={() => handleStartExercise(exercise.id)}>
-                        <div key={`menu-${exercise.id}`} className="text-lg overflow-hidden">
-                          <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
-                            <img
-                              src={
-                                getYouTubeThumbnail(exercise.youtube_url) ||
-                                'https://placehold.co/400?text=shefit.vn&font=Oswald'
-                              }
-                              alt={exercise.name}
-                              className="object-cover rounded-[20px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                              width={585}
-                              height={373}
-                            />
-                          </div>
-                          <p className="font-medium lg:font-bold text-sm lg:text-lg">{exercise.name}</p>
-                        </div>
-                      </button>
+                      <CardExercise
+                        key={exercise.id}
+                        data={exercise}
+                        onClick={() => handleStartExercise(exercise.id)}
+                      />
                     ))}
                 </div>
               </TabsContent>

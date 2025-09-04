@@ -6,6 +6,7 @@ import { useQueries } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
+import { CardDish } from '@/components/cards/card-dish'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
@@ -111,19 +112,8 @@ export default function DietDishesPage() {
             <p className="text-[#737373] text-sm lg:text-lg">{diet.description}</p>
           </div>
           <div className="grid grid-cols-3 sm:gap-5 gap-4">
-            {dietDishes.map((dish, index) => (
-              <button key={dish.id} onClick={() => handleStartDish(dish.id)}>
-                <div key={`menu-${index}`} className="overflow-hidden">
-                  <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[585/373]">
-                    <img
-                      src={dish.image}
-                      alt=""
-                      className="object-cover rounded-[20px] w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                    />
-                  </div>
-                  <p className="font-medium lg:font-bold text-sm lg:text-lg">{dish.name}</p>
-                </div>
-              </button>
+            {dietDishes.map((dish) => (
+              <CardDish key={dish.id} data={dish} onClick={() => handleStartDish(dish.id)} />
             ))}
           </div>
         </div>

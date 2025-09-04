@@ -1,5 +1,24 @@
 'use client'
 
+import type { User } from '@/models/user'
+import type { Dish } from '@/models/dish'
+import type { Course } from '@/models/course'
+import type { Exercise } from '@/models/exercise'
+import type { MealPlan } from '@/models/meal-plan'
+
+import Link from 'next/link'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { usePathname, useRouter } from 'next/navigation'
+import { useQueries, useMutation, useQueryClient } from '@tanstack/react-query'
+
+import { Button } from '@/components/ui/button'
+import { CardDish } from '@/components/cards/card-dish'
+import { CardCourse } from '@/components/cards/card-course'
+import { CardExercise } from '@/components/cards/card-exercise'
+import { CardMealPlan } from '@/components/cards/card-meal-plan'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { useSession } from '@/hooks/use-session'
 import {
   getFavouriteExercises,
   getFavouriteCourses,
@@ -9,23 +28,11 @@ import {
   removeFavouriteExercise,
   removeFavouriteMealPlan,
   removeFavouriteCourse,
+  queryKeyFavouriteDishes,
+  queryKeyFavouriteExercises,
+  queryKeyFavouriteCourses,
+  queryKeyFavouriteMealPlans,
 } from '@/network/client/user-favourites'
-import type { User } from '@/models/user'
-import type { MealPlan } from '@/models/meal-plan'
-import type { Dish } from '@/models/dish'
-import { Exercise } from '@/models/exercise'
-import { useSession } from '@/hooks/use-session'
-import { useState } from 'react'
-import Link from 'next/link'
-import { Course } from '@/models/course'
-import { DeleteIcon } from '@/components/icons/DeleteIcon'
-import { Button } from '@/components/ui/button'
-import { getYouTubeThumbnail } from '@/lib/youtube'
-import { useQueries, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { usePathname, useRouter } from 'next/navigation'
-import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
-import { toast } from 'sonner'
 
 export default function FavouriteContent() {
   const { session } = useSession()
@@ -46,22 +53,22 @@ export default function FavouriteContent() {
   const queries = useQueries({
     queries: [
       {
-        queryKey: ['favourite-exercises', session?.userId],
+        queryKey: [queryKeyFavouriteExercises, session?.userId],
         queryFn: () => (session ? getFavouriteExercises(session.userId) : Promise.resolve(null)),
         enabled: !!session,
       },
       {
-        queryKey: ['favourite-courses', session?.userId],
+        queryKey: [queryKeyFavouriteCourses, session?.userId],
         queryFn: () => (session ? getFavouriteCourses(session.userId) : Promise.resolve(null)),
         enabled: !!session,
       },
       {
-        queryKey: ['favourite-meal-plans', session?.userId],
+        queryKey: [queryKeyFavouriteMealPlans, session?.userId],
         queryFn: () => (session ? getFavouriteMealPlans(session.userId) : Promise.resolve(null)),
         enabled: !!session,
       },
       {
-        queryKey: ['favourite-dishes', session?.userId],
+        queryKey: [queryKeyFavouriteDishes, session?.userId],
         queryFn: () => (session ? getFavouriteDishes(session.userId) : Promise.resolve(null)),
         enabled: !!session,
       },
@@ -79,7 +86,7 @@ export default function FavouriteContent() {
   const deleteDishMutation = useMutation({
     mutationFn: ({ dishId, userId }: { dishId: Dish['id']; userId: User['id'] }) => removeFavouriteDish(userId, dishId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['favouriteDishes', session?.userId] })
+      queryClient.invalidateQueries({ queryKey: [queryKeyFavouriteDishes, session?.userId] })
     },
     onError: (error) => {
       console.error('Error deleting favourite dish:', error)
@@ -91,7 +98,7 @@ export default function FavouriteContent() {
     mutationFn: ({ exerciseId, userId }: { exerciseId: Exercise['id']; userId: User['id'] }) =>
       removeFavouriteExercise(userId, exerciseId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['favouriteExercises', session?.userId] })
+      queryClient.invalidateQueries({ queryKey: [queryKeyFavouriteExercises, session?.userId] })
     },
     onError: (error) => {
       console.error('Error deleting favourite exercise:', error)
@@ -103,7 +110,7 @@ export default function FavouriteContent() {
     mutationFn: ({ mealPlanId, userId }: { mealPlanId: MealPlan['id']; userId: User['id'] }) =>
       removeFavouriteMealPlan(userId, mealPlanId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['favouriteMealPlans', session?.userId] })
+      queryClient.invalidateQueries({ queryKey: [queryKeyFavouriteMealPlans, session?.userId] })
     },
     onError: (error) => {
       console.error('Error deleting favourite meal plan:', error)
@@ -115,7 +122,7 @@ export default function FavouriteContent() {
     mutationFn: ({ courseId, userId }: { courseId: Course['id']; userId: User['id'] }) =>
       removeFavouriteCourse(userId, courseId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['favouriteCourses', session?.userId] })
+      queryClient.invalidateQueries({ queryKey: [queryKeyFavouriteCourses, session?.userId] })
     },
     onError: (error) => {
       console.error('Error deleting favourite course:', error)
@@ -272,41 +279,12 @@ export default function FavouriteContent() {
             </div>
           ) : courses.length > 0 ? (
             courses.map((course) => (
-              <div key={course.id} className="group">
-                <Link href={`/courses/${course.id}?back=%2Faccount%2Fresources`}>
-                  <div>
-                    <div className="relative group lg:max-w-[585px]">
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          e.preventDefault()
-                          handleDeleteFavouriteCourse(course.id, course.course_name)
-                        }}
-                        className="absolute top-4 right-4 z-10"
-                      >
-                        <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
-                      </div>
-                      <img
-                        src={course.assets.thumbnail}
-                        alt={course.course_name}
-                        className="aspect-[5/3] object-cover rounded-xl mb-4 w-full"
-                      />
-                      <div className="bg-[#00000033] group-hover:bg-[#00000055] absolute inset-0 transition-all duration-300 rounded-xl" />
-                    </div>
-                    <div className="flex justify-between">
-                      <div>
-                        <p className="font-medium text-sm lg:text-lg">{course.course_name}</p>
-                        <div className="flex gap-2">
-                          <p className="text-[#737373] text-sm lg:text-lg">{course.trainer}</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2 justify-end flex-col items-end text-sm lg:text-lg">
-                        {course.form_categories?.map((cat) => cat.name).join(', ')}
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </div>
+              <CardCourse
+                data={course}
+                key={course.id}
+                to={`/courses/${course.id}?back=%2Faccount%2Fresources`}
+                onDelete={() => handleDeleteFavouriteCourse(course.id, course.course_name)}
+              />
             ))
           ) : (
             <div className="col-span-3 text-center text-gray-500 py-8 text-sm lg:text-lg">
@@ -338,30 +316,12 @@ export default function FavouriteContent() {
             </div>
           ) : mealPlans.length > 0 ? (
             mealPlans.map((meal_plan) => (
-              <Link href={`/meal-plans/${meal_plan.id}?back=%2Faccount%2Fresources`} key={meal_plan.id}>
-                <div className="relative group lg:max-w-[585px]">
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      e.preventDefault()
-                      handleDeleteFavouriteMealPlan(meal_plan.id, meal_plan.title)
-                    }}
-                    className="absolute top-4 right-4 z-10"
-                  >
-                    <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
-                  </div>
-                  <img
-                    src={meal_plan.assets.thumbnail}
-                    alt={meal_plan.title}
-                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                  />
-                </div>
-                <p className="font-medium text-sm lg:text-lg">{meal_plan.title}</p>
-                <p className="text-[#737373] text-sm lg:text-lg">{meal_plan.subtitle}</p>
-                <p className="text-[#737373] text-sm lg:text-lg">
-                  {meal_plan.chef_name} - {meal_plan.number_of_days} ngày
-                </p>
-              </Link>
+              <CardMealPlan
+                data={meal_plan}
+                key={meal_plan.id}
+                to={`/meal-plans/${meal_plan.id}?back=%2Faccount%2Fresources`}
+                onDelete={() => handleDeleteFavouriteMealPlan(meal_plan.id, meal_plan.title)}
+              />
             ))
           ) : (
             <div className="col-span-3 text-center text-gray-500 py-8 text-sm lg:text-lg">
@@ -383,55 +343,19 @@ export default function FavouriteContent() {
         <p className="text-base text-muted-foreground">
           Truy cập thư viện hơn 1000 động tác chia theo các nhóm cơ và lưu lại những động tác bạn muốn
         </p>
-        <div className="grid grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
           {exerciseQuery.isLoading ? (
             <div className="flex justify-center items-center h-40 col-span-3">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#13D8A7]"></div>
             </div>
           ) : exercises.length > 0 ? (
             exercises.map((exercise) => (
-              <Link
-                href={`/exercises/${exercise.id}?muscle_group_id=${
-                  exercise.muscle_groups?.[0]?.id || ''
-                }&back=%2Faccount%2Fresources`}
+              <CardExercise
                 key={exercise.id}
-              >
-                <div>
-                  <div className="relative group lg:max-w-[585px]">
-                    <div className="absolute lg:top-4 lg:right-4 z-10 top-2 right-2">
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          e.preventDefault()
-                          handleDeleteFavouriteExercise(exercise.id, exercise.name || '')
-                        }}
-                        className="lg:block hidden"
-                      >
-                        <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
-                      </div>
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          e.preventDefault()
-                          handleDeleteFavouriteExercise(exercise.id, exercise.name || '')
-                        }}
-                        className="lg:hidden block"
-                      >
-                        <DeleteIconMini className="text-white hover:text-red-500 transition-colors duration-300" />
-                      </div>
-                    </div>
-                    <img
-                      src={
-                        getYouTubeThumbnail(exercise.youtube_url) ||
-                        'https://placehold.co/400?text=shefit.vn&font=Oswald'
-                      }
-                      alt={exercise.name || ''}
-                      className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                    />
-                  </div>
-                  <p className="font-medium text-sm lg:text-lg">{exercise.name}</p>
-                </div>
-              </Link>
+                data={exercise}
+                to={`/exercises/${exercise.id}?back=%2Faccount%2Fresources`}
+                onDelete={() => handleDeleteFavouriteExercise(exercise.id, exercise.name)}
+              />
             ))
           ) : (
             <div className="col-span-3 text-center text-gray-500 py-8 text-sm lg:text-lg">
@@ -453,54 +377,19 @@ export default function FavouriteContent() {
         <p className="text-base text-muted-foreground">
           Truy cập thư viện hơn 200 món ăn chia theo các loại chế độ ăn và lưu lại những món ăn phù hợp
         </p>
-        <div className="grid grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
           {dishQuery.isLoading ? (
             <div className="flex justify-center items-center h-40 col-span-3">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#13D8A7]"></div>
             </div>
           ) : dishes.length > 0 ? (
             dishes.map((dish) => (
-              <Link
-                href={`/dishes/${dish.id}?diet_id=${dish.diet?.id || ''}&back=%2Faccount%2Fresources`}
+              <CardDish
                 key={dish.id}
-                onClick={(e) => {
-                  if (!dish.diet?.id) {
-                    e.preventDefault()
-                    alert('Diet information not available')
-                  }
-                }}
-              >
-                <div className="relative group lg:max-w-[585px]">
-                  <div className="absolute lg:top-4 lg:right-4 z-10 top-2 right-2">
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        e.preventDefault()
-                        handleDeleteFavouriteDish(dish.id, dish.name)
-                      }}
-                      className="lg:block hidden"
-                    >
-                      <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
-                    </div>
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        e.preventDefault()
-                        handleDeleteFavouriteDish(dish.id, dish.name)
-                      }}
-                      className="lg:hidden block"
-                    >
-                      <DeleteIconMini className="text-white hover:text-red-500 transition-colors duration-300" />
-                    </div>
-                  </div>
-                  <img
-                    src={dish.image}
-                    alt={dish.name}
-                    className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                  />
-                </div>
-                <p className="font-medium text-sm lg:text-lg">{dish.name}</p>
-              </Link>
+                data={dish}
+                to={`/dishes/${dish.id}?back=%2Faccount%2Fresources`}
+                onDelete={() => handleDeleteFavouriteDish(dish.id, dish.name)}
+              />
             ))
           ) : (
             <div className="col-span-3 text-center text-gray-500 py-8 text-sm lg:text-lg">Chưa có món ăn yêu thích</div>

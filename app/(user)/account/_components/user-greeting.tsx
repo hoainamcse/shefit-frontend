@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useSession } from '@/hooks/use-session'
 import { getUser } from '@/network/client/users'
 import { usePathname } from 'next/navigation'
@@ -15,12 +14,12 @@ import { useQuery } from '@tanstack/react-query'
 import { NotiIcon } from '@/components/icons/NotiIcon'
 
 const TABS = [
-  { value: 'quizzes', label: 'Body Quiz', icon: <QuizIcon /> },
   {
     value: 'resources',
     label: 'Độ dáng',
     icon: <BodyIcon size={20} />,
   },
+  { value: 'quizzes', label: 'Body Quiz', icon: <QuizIcon /> },
   {
     value: 'packages',
     label: 'Gói Member',
@@ -38,7 +37,7 @@ const TABS = [
     value: 'notifications',
     label: 'Thông báo',
     icon: <NotiIcon />,
-  }
+  },
 ]
 
 export default function UserGreeting() {

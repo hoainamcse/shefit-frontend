@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { useSubscription } from './subscription-context'
-import { useSession } from '@/hooks/use-session'
+import { toast } from 'sonner'
+import { useState, useMemo } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+
 import {
   Dialog,
   DialogContent,
@@ -14,13 +15,11 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { DeleteIcon } from '@/components/icons/DeleteIcon'
+import { Button } from '@/components/ui/button'
+import { CardMealPlan } from '@/components/cards/card-meal-plan'
+import { useSession } from '@/hooks/use-session'
 import { getUserSubscriptionMealPlans, removeUserSubscriptionMealPlan } from '@/network/client/user-subscriptions'
-import { Lock } from 'lucide-react'
-import { usePathname, useRouter } from 'next/navigation'
-import { toast } from 'sonner'
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
+import { useSubscription } from './subscription-context'
 
 export default function ListMealPlans() {
   const { session } = useSession()
@@ -66,7 +65,7 @@ export default function ListMealPlans() {
   const isLoading = status === 'pending'
 
   // Delete meal plan mutation
-  const { mutate: handleDeleteMealPlan } = useMutation({
+  const { mutate: handleDeleteUserSubscriptionMealPlan } = useMutation({
     mutationFn: async ({ mealPlanId, mealPlanTitle }: { mealPlanId: number; mealPlanTitle: string }) => {
       if (!session?.userId) throw new Error('User not authenticated')
       return await removeUserSubscriptionMealPlan(session.userId, selectedSubscription?.subscription.id!, mealPlanId)
@@ -180,61 +179,14 @@ export default function ListMealPlans() {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto mt-6 text-sm lg:text-lg">
         {combinedMealPlans.map((mealPlan) => (
-          <div key={mealPlan.id} className="group">
-            <Link
-              href={isSubscriptionExpired ? '#' : `/meal-plans/${mealPlan.id}?back=%2Faccount%2Fresources`}
-              onClick={
-                isSubscriptionExpired
-                  ? (e) => {
-                      e.preventDefault()
-                      setRenewDialogOpen(true)
-                    }
-                  : undefined
-              }
-            >
-              <div>
-                <div className="relative group lg:max-w-[585px]">
-                  {isSubscriptionExpired && (
-                    <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50 rounded-xl">
-                      <Lock className="text-white w-12 h-12" />
-                    </div>
-                  )}
-                  <div className="absolute lg:top-4 lg:right-4 z-10 top-2 right-2">
-                    <div
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        handleDeleteMealPlan({ mealPlanId: mealPlan.id, mealPlanTitle: mealPlan.title })
-                      }}
-                      className="lg:block hidden cursor-pointer"
-                    >
-                      <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
-                    </div>
-                    <div
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        handleDeleteMealPlan({ mealPlanId: mealPlan.id, mealPlanTitle: mealPlan.title })
-                      }}
-                      className="lg:hidden block cursor-pointer"
-                    >
-                      <DeleteIconMini className="text-white hover:text-red-500 transition-colors duration-300" />
-                    </div>
-                  </div>
-                  <img
-                    src={mealPlan.assets.thumbnail}
-                    alt={mealPlan.title}
-                    className="aspect-[5/3] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                  />
-                </div>
-                <p className="font-medium text-sm lg:text-base">{mealPlan.title}</p>
-                <p className="text-[#737373] text-sm lg:text-base">{mealPlan.subtitle}</p>
-                <p className="text-[#737373] text-sm lg:text-base">
-                  Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
-                </p>
-              </div>
-            </Link>
-          </div>
+          <CardMealPlan
+            key={mealPlan.id}
+            data={mealPlan}
+            to={`/meal-plans/${mealPlan.id}?back=%2Faccount%2Fresources`}
+            locked={isSubscriptionExpired}
+            onLockedClick={() => setRenewDialogOpen(true)}
+            onDelete={() => handleDeleteUserSubscriptionMealPlan({ mealPlanId: mealPlan.id, mealPlanTitle: mealPlan.title })}
+          />
         ))}
       </div>
       <div className="mt-6 flex flex-col gap-4">

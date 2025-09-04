@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { useSubscription } from './subscription-context'
-import { useSession } from '@/hooks/use-session'
+import { toast } from 'sonner'
+import { useState, useMemo } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+
 import {
   Dialog,
   DialogContent,
@@ -14,14 +15,11 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog'
-
-import { DeleteIcon } from '@/components/icons/DeleteIcon'
+import { Button } from '@/components/ui/button'
+import { CardDish } from '@/components/cards/card-dish'
+import { useSession } from '@/hooks/use-session'
 import { getUserSubscriptionDishes, removeUserSubscriptionDish } from '@/network/client/user-subscriptions'
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Lock } from 'lucide-react'
-import { usePathname, useRouter } from 'next/navigation'
-import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
-import { toast } from 'sonner'
+import { useSubscription } from './subscription-context'
 
 export default function ListDishes() {
   const { session } = useSession()
@@ -67,7 +65,7 @@ export default function ListDishes() {
   const isLoading = status === 'pending'
 
   // Delete dish mutation
-  const { mutate: handleDeleteFavouriteDish } = useMutation({
+  const { mutate: handleDeleteUserSubscriptionDish } = useMutation({
     mutationFn: async ({ dishId, dishTitle }: { dishId: number; dishTitle: string }) => {
       if (!session?.userId) throw new Error('User not authenticated')
       return await removeUserSubscriptionDish(session.userId, selectedSubscription?.subscription.id!, dishId)
@@ -180,63 +178,16 @@ export default function ListDishes() {
         </DialogContent>
       </Dialog>
 
-      <div className="grid grid-cols-3 lg:gap-6 gap-4 mx-auto mt-6 text-sm lg:text-lg">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:gap-6 gap-4 mx-auto mt-6 text-sm lg:text-lg">
         {combinedDishes.map((dish) => (
-          <div key={dish.id} className="group">
-            <Link
-              href={
-                isSubscriptionExpired
-                  ? '#'
-                  : `/dishes/${dish.id}?diet_id=${dish.diet?.id || ''}&back=%2Faccount%2Fresources`
-              }
-              onClick={
-                isSubscriptionExpired
-                  ? (e) => {
-                      e.preventDefault()
-                      setRenewDialogOpen(true)
-                    }
-                  : undefined
-              }
-            >
-              <div>
-                <div className="relative group lg:max-w-[585px]">
-                  {isSubscriptionExpired && (
-                    <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50 rounded-xl">
-                      <Lock className="text-white w-12 h-12" />
-                    </div>
-                  )}
-                  <div className="absolute lg:top-4 lg:right-4 z-10 top-2 right-2">
-                    <div
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        handleDeleteFavouriteDish({ dishId: dish.id, dishTitle: dish.name })
-                      }}
-                      className="lg:block hidden"
-                    >
-                      <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
-                    </div>
-                    <div
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        handleDeleteFavouriteDish({ dishId: dish.id, dishTitle: dish.name })
-                      }}
-                      className="lg:hidden block"
-                    >
-                      <DeleteIconMini className="text-white hover:text-red-500 transition-colors duration-300" />
-                    </div>
-                  </div>
-                  <img
-                    src={dish.image}
-                    alt={dish.name}
-                    className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                  />
-                </div>
-                <p className="font-medium text-sm lg:text-lg">{dish.name}</p>
-              </div>
-            </Link>
-          </div>
+          <CardDish
+            key={dish.id}
+            data={dish}
+            to={`/dishes/${dish.id}?back=%2Faccount%2Fresources`}
+            locked={isSubscriptionExpired}
+            onLockedClick={() => setRenewDialogOpen(true)}
+            onDelete={() => handleDeleteUserSubscriptionDish({ dishId: dish.id, dishTitle: dish.name })}
+          />
         ))}
       </div>
       <div className="mt-6 flex flex-col gap-4">

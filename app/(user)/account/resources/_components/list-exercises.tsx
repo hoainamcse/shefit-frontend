@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
-import { Button } from '@/components/ui/button'
-import { useSubscription } from './subscription-context'
-import { useSession } from '@/hooks/use-session'
+import { toast } from 'sonner'
+import { useState, useMemo } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+
 import {
   Dialog,
   DialogContent,
@@ -15,30 +15,17 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { DeleteIcon } from '@/components/icons/DeleteIcon'
-import { getYouTubeThumbnail } from '@/lib/youtube'
+import { Button } from '@/components/ui/button'
+import { CardExercise } from '@/components/cards/card-exercise'
+import { useSession } from '@/hooks/use-session'
 import { getUserSubscriptionExercises, removeUserSubscriptionExercise } from '@/network/client/user-subscriptions'
-import { Lock } from 'lucide-react'
-import { usePathname, useRouter } from 'next/navigation'
-import { DeleteIconMini } from '@/components/icons/DeleteIconMini'
-import { toast } from 'sonner'
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-
-const ReactPlayer = dynamic(() => import('react-player/lazy'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full aspect-video bg-gray-100 flex items-center justify-center">
-      <p className="text-gray-500">Đang tải video...</p>
-    </div>
-  ),
-})
+import { useSubscription } from './subscription-context'
 
 export default function ListExercises() {
   const { session } = useSession()
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [renewDialogOpen, setRenewDialogOpen] = useState(false)
-  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null)
   const pathname = usePathname()
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -78,7 +65,7 @@ export default function ListExercises() {
   const isLoading = status === 'pending'
 
   // Delete exercise mutation
-  const { mutate: handleDeleteFavouriteExercise } = useMutation({
+  const { mutate: handleDeleteUserSubscriptionExercise } = useMutation({
     mutationFn: async ({ exerciseId, exerciseTitle }: { exerciseId: number; exerciseTitle: string }) => {
       if (!session?.userId) throw new Error('User not authenticated')
       return await removeUserSubscriptionExercise(session.userId, selectedSubscription?.subscription.id!, exerciseId)
@@ -191,106 +178,18 @@ export default function ListExercises() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
-          {selectedVideoUrl && (
-            <ReactPlayer
-              url={selectedVideoUrl}
-              width="100%"
-              height="100%"
-              controls
-              config={{
-                youtube: {
-                  playerVars: {
-                    modestbranding: 1,
-                    rel: 0,
-                    showinfo: 0,
-                    origin: typeof window !== 'undefined' ? window.location.origin : '',
-                  },
-                },
-              }}
-              style={{
-                aspectRatio: '16/9',
-                width: '100%',
-                height: '100%',
-              }}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
-
-      <div className="grid grid-cols-3 lg:gap-6 gap-4 mx-auto mt-6 text-base lg:text-lg">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:gap-6 gap-4 mx-auto mt-6 text-base lg:text-lg">
         {combinedExercises.map((exercise) => (
-          <div key={exercise.id} className="group">
-            <Link
-              href={
-                isSubscriptionExpired
-                  ? '#'
-                  : `/exercises/${exercise.id}?muscle_group_id=${
-                      exercise.muscle_groups?.[0]?.id || ''
-                    }&back=%2Faccount%2Fresources`
-              }
-              onClick={
-                isSubscriptionExpired
-                  ? (e) => {
-                      e.preventDefault()
-                      setRenewDialogOpen(true)
-                    }
-                  : undefined
-              }
-            >
-              <div>
-                <div className="relative group lg:max-w-[585px]">
-                  {isSubscriptionExpired && (
-                    <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50 rounded-xl">
-                      <Lock className="text-white w-12 h-12" />
-                    </div>
-                  )}
-                  <div className="absolute lg:top-4 lg:right-4 z-10 top-2 right-2">
-                    <div
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        handleDeleteFavouriteExercise({ exerciseId: exercise.id, exerciseTitle: exercise.name })
-                      }}
-                      className="lg:block hidden"
-                    >
-                      <DeleteIcon className="text-white hover:text-red-500 transition-colors duration-300" />
-                    </div>
-                    <div
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        handleDeleteFavouriteExercise({ exerciseId: exercise.id, exerciseTitle: exercise.name })
-                      }}
-                      className="lg:hidden block"
-                    >
-                      <DeleteIconMini className="text-white hover:text-red-500 transition-colors duration-300" />
-                    </div>
-                  </div>
-                  <img
-                    src={
-                      getYouTubeThumbnail(exercise.youtube_url) || 'https://placehold.co/400?text=shefit.vn&font=Oswald'
-                    }
-                    alt={exercise.name}
-                    className="md:aspect-[585/373] aspect-square object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                  />
-                  {!isSubscriptionExpired && (
-                    <button
-                      className="absolute inset-0 m-auto w-16 h-16 flex items-center justify-center"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        setSelectedVideoUrl(exercise.youtube_url)
-                        setDialogOpen(true)
-                      }}
-                    ></button>
-                  )}
-                </div>
-                <p className="font-medium text-sm lg:text-lg">{exercise.name}</p>
-              </div>
-            </Link>
-          </div>
+          <CardExercise
+            key={exercise.id}
+            data={exercise}
+            to={`/exercises/${exercise.id}?back=%2Faccount%2Fresources`}
+            locked={isSubscriptionExpired}
+            onLockedClick={() => setRenewDialogOpen(true)}
+            onDelete={() =>
+              handleDeleteUserSubscriptionExercise({ exerciseId: exercise.id, exerciseTitle: exercise.name })
+            }
+          />
         ))}
       </div>
       <div className="mt-6 flex flex-col gap-4">
