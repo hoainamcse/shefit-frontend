@@ -14,6 +14,7 @@ import { useSession } from '@/hooks/use-session'
 import { getUserSubscriptions } from '@/network/client/users'
 import { HTMLRenderer } from '@/components/html-renderer'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
+import { ShoppingCart } from 'lucide-react'
 
 export default function CoursePage() {
   const params = useParams()
@@ -199,9 +200,14 @@ export default function CoursePage() {
         </div>
         {courseEquipments.length > 0 && (
           <div>
-            <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl mb-4">
-              Dụng cụ
-            </p>
+            <div className='flex items-center justify-between mb-4'>
+              <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl">
+                Dụng cụ
+              </p>
+              <Link className='flex gap-2 items-center text-primary' href="/products">
+                <ShoppingCart className='size-4' /> Mua dụng cụ
+              </Link>
+            </div>
             <ScrollArea className="w-screen-max-xl">
               <div className="flex w-max space-x-4 py-4">
                 {courseEquipments.map((equipment, index: number) => (

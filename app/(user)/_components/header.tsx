@@ -23,7 +23,7 @@ import { MemberShipIcon } from '@/components/icons/MemberShipIcon'
 import { FacebookIcon } from '@/components/icons/FacebookIcon'
 import { useSession } from '@/hooks/use-session'
 import { signOut } from '@/network/server/auth'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { BusinessIcon } from '@/components/icons/BusinessIcon'
 import dynamic from 'next/dynamic'
@@ -62,56 +62,59 @@ export function Header() {
     />
   )
 
-  const navItems = [
-    {
-      label: 'Gói Member',
-      icon: MemberShipIcon,
-      url: '/account/packages',
-      action: null,
-    },
-    {
-      label: 'Khoá tập',
-      icon: ExerciseYogaIcon,
-      url: '/courses',
-      action: null,
-    },
-    {
-      label: 'Thực đơn',
-      icon: FoodGrainsIcon,
-      url: '/meal-plans',
-      action: null,
-    },
-    {
-      label: 'Dụng cụ',
-      icon: GymIcon,
-      url: '/products',
-      action: null,
-    },
-    {
-      label: 'Thư viện',
-      icon: GalleryIcon,
-      url: '/gallery',
-      action: null,
-    },
-    {
-      label: 'HLV 24/7',
-      icon: StarIcon,
-      url: '#',
-      action: handleChatToggle,
-    },
-    {
-      label: 'Doanh Nghiệp & VIP',
-      icon: BusinessIcon,
-      url: '/business',
-      action: null,
-    },
-    {
-      label: 'Tài khoản',
-      icon: AccountIcon,
-      url: '/account',
-      action: null,
-    },
-  ]
+  const navItems = useMemo(
+    () => [
+      {
+        label: 'Gói Member',
+        icon: MemberShipIcon,
+        url: session ? '/account/packages' : '/packages',
+        action: null,
+      },
+      {
+        label: 'Khoá tập',
+        icon: ExerciseYogaIcon,
+        url: '/courses',
+        action: null,
+      },
+      {
+        label: 'Thực đơn',
+        icon: FoodGrainsIcon,
+        url: '/meal-plans',
+        action: null,
+      },
+      {
+        label: 'Dụng cụ',
+        icon: GymIcon,
+        url: '/products',
+        action: null,
+      },
+      {
+        label: 'Thư viện',
+        icon: GalleryIcon,
+        url: '/gallery',
+        action: null,
+      },
+      {
+        label: 'HLV 24/7',
+        icon: StarIcon,
+        url: '#',
+        action: handleChatToggle,
+      },
+      {
+        label: 'Doanh Nghiệp & VIP',
+        icon: BusinessIcon,
+        url: '/business',
+        action: null,
+      },
+      {
+        label: 'Tài khoản',
+        icon: AccountIcon,
+        url: '/account',
+        action: null,
+      },
+    ],
+    [handleChatToggle, session]
+  )
 
   return (
     <header className="bg-[#FF7873] sticky top-0 inset-x-0 z-50">
@@ -146,7 +149,10 @@ export function Header() {
         </div>
         <div className="justify-center items-center gap-4 text-background flex lg:hidden">
           {session ? null : (
-            <Link href="/auth/login" className="text-white ml-auto text-base block lg:hidden">
+            <Link
+              href={`/auth/login?redirect=${encodeURIComponent(pathname)}`}
+              className="text-white ml-auto text-base block lg:hidden"
+            >
               Đăng nhập
             </Link>
           )}

@@ -1,13 +1,12 @@
 'use client'
 
 import { MultiSelect } from '@/components/ui/select'
-import { ChevronRight } from 'lucide-react'
-import Link from 'next/link'
+import { CardCourse } from '@/components/cards/card-course'
 import React, { useState, useEffect } from 'react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { getCourses } from '@/network/client/courses'
 import { cn } from '@/lib/utils'
-import { courseLevelLabel, courseLevelOptions, courseFormOptions } from '@/lib/label'
+import { courseLevelOptions, courseFormOptions } from '@/lib/label'
 import type { Course } from '@/models/course'
 import { getSubscriptions } from '@/network/client/subscriptions'
 import { getUserSubscriptions } from '@/network/client/users'
@@ -45,14 +44,6 @@ function MultiSelectHero({
   )
 }
 
-const NextButton = ({ className }: { className?: string }) => {
-  return (
-    <button type="button" className={`bg-background p-2 rounded-3xl text-ring ${className}`}>
-      <ChevronRight className="w-4 h-4" />
-    </button>
-  )
-}
-
 export const fetchCache = 'default-no-store'
 
 export default function CoursesPage() {
@@ -63,7 +54,7 @@ export default function CoursesPage() {
   const [subscriptionId, setSubscriptionId] = useState<string[]>([])
   const [courses, setCourses] = useState<Course[]>([])
   const [coursesZoom, setCoursesZoom] = useState<Course[]>([])
-  const [activeTab, setActiveTab] = useState('video')
+  const [activeTab, setActiveTab] = useState('all')
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
   const [showAccessDialog, setShowAccessDialog] = useState(false)
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
@@ -172,7 +163,7 @@ export default function CoursesPage() {
   const filteredAllCourses = [...filteredCourses, ...filteredCoursesZoom]
 
   return (
-    <div className='p-4'>
+    <div className="p-4">
       <PopulatedCourses />
       <div className="mx-auto mt-8">
         <div className="mx-auto lg:my-12 my-0 flex flex-col gap-4">
@@ -216,7 +207,7 @@ export default function CoursesPage() {
             </div>
           </div>
           <div className="flex justify-center gap-4 mt-4">
-            <Tabs defaultValue="all" onValueChange={setActiveTab}>
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
               <div className="flex justify-center gap-4 mb-10">
                 <TabsList className="bg-white">
                   <TabsTrigger
@@ -258,16 +249,11 @@ export default function CoursesPage() {
                 {filteredCourses.length === 0 ? null : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
                     {filteredCourses.map((course) => (
-                      <div key={`video-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
-                        <div className="relative group">
-                          <img
-                            src={course.assets.thumbnail}
-                            alt={course.course_name}
-                            className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                          />
-                          <Link href={`/courses/${course.id}`}>
-                            <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
-                          </Link>
+                      <CardCourse
+                        key={`video-${course.id}`}
+                        data={course}
+                        to={`/courses/${course.id}`}
+                        extend={
                           <div className="absolute top-2 right-2 flex justify-end">
                             {course.is_free ? (
                               <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
@@ -281,26 +267,8 @@ export default function CoursesPage() {
                               </Button>
                             )}
                           </div>
-                        </div>
-                        <div className="flex justify-between">
-                          <div>
-                            <p className="font-medium text-sm lg:text-lg">{course.course_name}</p>
-                            <div className="flex gap-2">
-                              <p className="text-[#737373] text-sm lg:text-lg">
-                                {courseLevelLabel[course.difficulty_level]}
-                              </p>
-                              <p className="text-[#737373] text-sm lg:text-lg">-</p>
-                              <p className="text-[#737373] text-sm lg:text-lg">{course.course_format}</p>
-                            </div>
-                            <p className="text-[#737373] text-sm lg:text-xl">{course.trainer}</p>
-                          </div>
-                          <div className="flex flex-col justify-between">
-                            <div className="text-gray-500 flex justify-end text-sm lg:text-lg">
-                              {course.form_categories.map((cat) => cat.name).join(', ')}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                        }
+                      />
                     ))}
                   </div>
                 )}
@@ -310,16 +278,11 @@ export default function CoursesPage() {
                 {filteredCoursesZoom.length === 0 ? null : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
                     {filteredCoursesZoom.map((course) => (
-                      <div key={`zoom-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
-                        <div className="relative group">
-                          <img
-                            src={course.assets.thumbnail}
-                            alt={course.course_name}
-                            className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                          />
-                          <Link href={`/courses/${course.id}`}>
-                            <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
-                          </Link>
+                      <CardCourse
+                        key={`zoom-${course.id}`}
+                        data={course}
+                        to={`/courses/${course.id}`}
+                        extend={
                           <div className="absolute top-2 right-2 flex justify-end">
                             {course.is_free ? (
                               <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
@@ -333,26 +296,8 @@ export default function CoursesPage() {
                               </Button>
                             )}
                           </div>
-                        </div>
-                        <div className="flex justify-between">
-                          <div>
-                            <p className="font-medium text-sm lg:text-lg">{course.course_name}</p>
-                            <div className="flex gap-2">
-                              <p className="text-[#737373] text-sm lg:text-lg">
-                                {courseLevelLabel[course.difficulty_level]}
-                              </p>
-                              <p className="text-[#737373] text-sm lg:text-lg">-</p>
-                              <p className="text-[#737373] text-sm lg:text-lg">{course.course_format}</p>
-                            </div>
-                            <p className="text-[#737373] text-sm lg:text-lg">{course.trainer}</p>
-                          </div>
-                          <div className="flex flex-col justify-between">
-                            <div className="text-gray-500 flex justify-end text-sm lg:text-lg">
-                              {course.form_categories.map((cat) => cat.name).join(', ')}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                        }
+                      />
                     ))}
                   </div>
                 )}
@@ -362,16 +307,11 @@ export default function CoursesPage() {
                 {filteredFreeCourses.length === 0 ? null : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
                     {filteredFreeCourses.map((course) => (
-                      <div key={`free-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
-                        <div className="relative group">
-                          <img
-                            src={course.assets.thumbnail}
-                            alt={course.course_name}
-                            className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                          />
-                          <Link href={`/courses/${course.id}`}>
-                            <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
-                          </Link>
+                      <CardCourse
+                        key={`free-${course.id}`}
+                        data={course}
+                        to={`/courses/${course.id}`}
+                        extend={
                           <div className="absolute top-2 right-2 flex justify-end">
                             {course.is_free ? (
                               <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
@@ -385,26 +325,8 @@ export default function CoursesPage() {
                               </Button>
                             )}
                           </div>
-                        </div>
-                        <div className="flex justify-between">
-                          <div>
-                            <p className="font-medium text-sm lg:text-lg">{course.course_name}</p>
-                            <div className="flex gap-2">
-                              <p className="text-[#737373] text-sm lg:text-lg">
-                                {courseLevelLabel[course.difficulty_level]}
-                              </p>
-                              <p className="text-[#737373] text-sm lg:text-lg">-</p>
-                              <p className="text-[#737373] text-sm lg:text-lg">{course.course_format}</p>
-                            </div>
-                            <p className="text-[#737373] text-sm lg:text-lg">{course.trainer}</p>
-                          </div>
-                          <div className="flex flex-col justify-between">
-                            <div className="text-gray-500 flex justify-end text-sm lg:text-lg">
-                              {course.form_categories.map((cat) => cat.name).join(', ')}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                        }
+                      />
                     ))}
                   </div>
                 )}
@@ -414,16 +336,11 @@ export default function CoursesPage() {
                 {filteredAllCourses.length === 0 ? null : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
                     {filteredAllCourses.map((course) => (
-                      <div key={`all-${course.id}`} className="max-w-[585px] w-full overflow-hidden">
-                        <div className="relative group">
-                          <img
-                            src={course.assets.thumbnail}
-                            alt={course.course_name}
-                            className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                          />
-                          <Link href={`/courses/${course.id}`}>
-                            <NextButton className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1" />
-                          </Link>
+                      <CardCourse
+                        key={`all-${course.id}`}
+                        data={course}
+                        to={`/courses/${course.id}`}
+                        extend={
                           <div className="absolute top-2 right-2 flex justify-end">
                             {course.is_free ? (
                               <Button className="bg-[#DA1515] text-white w-[136px] rounded-full">Free</Button>
@@ -437,26 +354,8 @@ export default function CoursesPage() {
                               </Button>
                             )}
                           </div>
-                        </div>
-                        <div className="flex justify-between">
-                          <div>
-                            <p className="font-medium text-sm lg:text-lg">{course.course_name}</p>
-                            <div className="flex gap-2">
-                              <p className="text-[#737373] text-sm lg:text-lg">
-                                {courseLevelLabel[course.difficulty_level]}
-                              </p>
-                              <p className="text-[#737373] text-sm lg:text-lg">-</p>
-                              <p className="text-[#737373] text-sm lg:text-lg">{course.course_format}</p>
-                            </div>
-                            <p className="text-[#737373] text-sm lg:text-lg">{course.trainer}</p>
-                          </div>
-                          <div className="flex flex-col justify-between">
-                            <div className="text-gray-500 flex justify-end text-sm lg:text-lg">
-                              {course.form_categories.map((cat) => cat.name).join(', ')}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                        }
+                      />
                     ))}
                   </div>
                 )}

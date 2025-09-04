@@ -1,6 +1,7 @@
 import { getSubscription } from '@/network/server/subscriptions'
 import { getCourses } from '@/network/server/courses'
-import { courseLevelLabel, courseFormLabel } from '@/lib/label'
+import { CardCourse } from '@/components/cards/card-course'
+import { CardMealPlan } from '@/components/cards/card-meal-plan'
 import Link from 'next/link'
 import { getMealPlans } from '@/network/server/meal-plans'
 import ActionButtons from './_components/action-buttons'
@@ -66,37 +67,20 @@ export default async function PackageDetail({
               </div>
               <div>
                 <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#FF7873] text-2xl md:text-4xl mb-4">
-                  Khoá tập thuộc gói tập
+                  Khoá tập thuộc gói
                 </div>
                 <p className="mb-5">Các khóa tập bạn được truy cập khi mua gói member này</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                   {subscriptionData?.course_ids?.map((courseId: number) => {
                     const course = courses?.data?.find((course) => course.id === courseId)
-                    return course ? (
-                      <div key={`course-${course.id}`}>
-                        <div className="relative group">
-                          <img
-                            src={course.assets.thumbnail}
-                            alt={course.course_name || course.id.toString()}
-                            className="aspect-[5/3] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                          />
-                        </div>
-                        <div className="flex justify-between">
-                          <div>
-                            <p className="font-medium">{course.course_name}</p>
-                            <p className="text-[#737373]">{courseLevelLabel[course.difficulty_level]}</p>
-                            <p className="text-[#737373]">{course.trainer}</p>
-                          </div>
-                          <div>
-                            <div className="text-gray-500 flex justify-end max-w-[200px]">
-                              {Array.isArray(course.form_categories)
-                                ? course.form_categories.map((cat) => cat.name).join(', ')
-                                : courseFormLabel[course.form_categories]}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ) : null
+                    if (!course) return null
+                    return (
+                      <CardCourse
+                        data={course}
+                        key={course.id}
+                        to={`/courses/${course.id}?back=${encodeURIComponent('/packages/' + subscriptionId + query)}`}
+                      />
+                    )
                   })}
                 </div>
               </div>
@@ -112,26 +96,16 @@ export default async function PackageDetail({
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     {subscriptionData?.meal_plan_ids.map((mealPlanId: number) => {
                       const mealPlan = mealPlans?.data?.find((plan: any) => plan.id === mealPlanId)
-                      return mealPlan ? (
-                        <div key={`menu-${mealPlan.id}`}>
-                          <div className="relative group">
-                            <img
-                              src={mealPlan.assets.thumbnail}
-                              alt={mealPlan.title}
-                              className="aspect-[5/3] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                            />
-                          </div>
-                          <div className="relative">
-                            <div>
-                              <p className="font-medium">{mealPlan.title}</p>
-                              <p className="text-[#737373]">{mealPlan.subtitle}</p>
-                              <p className="text-[#737373]">
-                                Chef {mealPlan.chef_name} - {mealPlan.number_of_days} ngày
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      ) : null
+                      if (!mealPlan) return null
+                      return (
+                        <CardMealPlan
+                          data={mealPlan}
+                          key={mealPlan.id}
+                          to={`/meal-plans/${mealPlan.id}?back=${encodeURIComponent(
+                            '/packages/' + subscriptionId + query
+                          )}`}
+                        />
+                      )
                     })}
                   </div>
                 </div>

@@ -8,6 +8,7 @@ import ActionButtons from './_components/action-buttons'
 import Link from 'next/link'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { useSearchParams } from 'next/navigation'
+import { ShoppingCart } from 'lucide-react'
 
 // Dynamically import ReactPlayer with no SSR to avoid window is not defined errors
 const ReactPlayer = dynamic(() => import('react-player/lazy'), {
@@ -143,9 +144,14 @@ export default function MuscleDetail({ params }: { params: Promise<{ id: string 
 
       {exercise?.equipments?.length > 0 && (
         <div className="flex flex-col mb-6 sm:mb-8 lg:mb-[52px]">
-          <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl mb-5 sm:mb-3.5">
-            Dụng cụ
-          </p>
+          <div className="flex items-center justify-between mb-4">
+            <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl">
+              Dụng cụ
+            </p>
+            <Link className="flex gap-2 items-center text-primary" href="/products">
+              <ShoppingCart className="size-4" /> Mua dụng cụ
+            </Link>
+          </div>
           <ScrollArea className="w-screen-max-xl px-0 md:px-5 lg:px-0">
             <div className="flex space-x-5 w-full">
               {exercise.equipments.map((equipment: any, index: number) => (

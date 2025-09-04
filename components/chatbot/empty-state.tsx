@@ -1,9 +1,12 @@
+'use client'
+
 import React from 'react'
 import { Loader2, RefreshCcw } from 'lucide-react'
 import { Button } from '../ui/button'
 import Link from 'next/link'
 import { WorkoutForm } from './workout-form'
 import { MealForm } from './meal-form'
+import { usePathname } from 'next/navigation'
 
 interface EmptyStateProps {
   session: any
@@ -32,6 +35,8 @@ export function EmptyState({
   setShowForm,
   enableChatbotActions,
 }: EmptyStateProps) {
+  const pathname = usePathname()
+
   const handleActionClick = (actionType: string) => {
     if (actionType === 'workout' || actionType === 'meal') {
       setShowForm(actionType)
@@ -77,7 +82,11 @@ Sở thích ăn uống: ${data.foodPreferences}`
       <div className="flex-1 flex items-center justify-center">
         <div className="w-full text-center text-foreground">
           Bạn phải{' '}
-          <Link href="/auth/login" className="text-primary" onClick={onClose}>
+          <Link
+            href={`/auth/login?redirect=${encodeURIComponent(pathname)}`}
+            className="text-primary"
+            onClick={onClose}
+          >
             đăng nhập
           </Link>{' '}
           để sử dụng tính năng này

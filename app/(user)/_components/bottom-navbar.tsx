@@ -2,22 +2,19 @@
 
 import Link from 'next/link'
 
-import { ExerciseYogaIcon } from '@/components/icons/ExerciseYogaIcon'
-import { FoodGrainsIcon } from '@/components/icons/FoodGrainsIcon'
-import { AccountIconGray } from '@/components/icons/AccountIconGray'
-import { GymIcon } from '@/components/icons/GymIcon'
-import { StarIconGray } from '@/components/icons/StarIconGray'
-import { useState } from 'react'
-import dynamic from 'next/dynamic'
 import { GalleryIcon } from '@/components/icons/GalleryIcon'
-
-const ChatBot = dynamic(() => import('@/components/chatbot/chatbot').then((mod) => mod.ChatBot), { ssr: false })
+import { FoodGrainsIcon } from '@/components/icons/FoodGrainsIcon'
+import { MemberShipIcon } from '@/components/icons/MemberShipIcon'
+import { AccountIconGray } from '@/components/icons/AccountIconGray'
+import { ExerciseYogaIcon } from '@/components/icons/ExerciseYogaIcon'
+import { useSession } from '@/hooks/use-session'
 
 export function BottomNavbar() {
-  const [isChatOpen, setIsChatOpen] = useState(false)
+  const { session } = useSession()
+
   return (
     <div className="bg-background sticky bottom-0 inset-x-0 z-50 lg:hidden">
-      <div className="grid grid-cols-5 py-2">
+      <div className="flex items-center justify-between p-1 pt-2">
         <Link href="/courses">
           <div className="flex flex-col items-center gap-1 text-neutral-500">
             <ExerciseYogaIcon />
@@ -36,19 +33,12 @@ export function BottomNavbar() {
             <p>Thư viện</p>
           </div>
         </Link>
-        <Link
-          href="#"
-          onClick={(e) => {
-            e.preventDefault()
-            setIsChatOpen(!isChatOpen)
-          }}
-        >
+        <Link href={session ? '/account/packages' : '/packages'}>
           <div className="flex flex-col items-center gap-1 text-neutral-500">
-            <StarIconGray />
-            <p>HLV 24/7</p>
+            <MemberShipIcon />
+            <p>Gói Member</p>
           </div>
         </Link>
-        {isChatOpen && <ChatBot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />}
         <Link href="/account">
           <div className="flex flex-col items-center gap-1 text-neutral-500">
             <AccountIconGray />

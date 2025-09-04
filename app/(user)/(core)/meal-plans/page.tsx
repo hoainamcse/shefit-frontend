@@ -1,8 +1,6 @@
 'use client'
 
-import Link from 'next/link'
 import { useState } from 'react'
-import { ChevronRight } from 'lucide-react'
 import { useQueries } from '@tanstack/react-query'
 
 import {
@@ -16,6 +14,7 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { CardMealPlan } from '@/components/cards/card-meal-plan'
 import { getGoals } from '@/network/client/goals'
 import { getCalories } from '@/network/client/calories'
 import { getMealPlans, queryKeyMealPlans } from '@/network/client/meal-plans'
@@ -64,16 +63,6 @@ function SingleSelectHero({
         )}
       </SelectContent>
     </Select>
-  )
-}
-
-const NextButton = ({ href, className }: { href: string; className?: string }) => {
-  return (
-    <Link href={href}>
-      <button type="button" className={`bg-background p-2 rounded-3xl text-ring ${className}`}>
-        <ChevronRight className="w-4 h-4" />
-      </button>
-    </Link>
   )
 }
 
@@ -220,28 +209,7 @@ export default function MealPlansPage() {
             <p className="text-red-500">Failed to load blogs. Please try again.</p>
           </div>
         ) : mealPlans.length > 0 ? (
-          mealPlans.map((mealPlan, index) => (
-            <div key={`menu-${mealPlan.id}`} className="w-full max-w-full overflow-hidden">
-              <div className="relative group">
-                <img
-                  src={mealPlan.assets.thumbnail}
-                  alt={mealPlan.title}
-                  className="aspect-[585/373] object-cover rounded-xl mb-4 w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
-                />
-                <NextButton
-                  className="absolute bottom-6 right-4 transform transition-transform duration-300 group-hover:translate-x-1"
-                  href={`/meal-plans/${mealPlan.id}`}
-                />
-              </div>
-              <div className="relative">
-                <div>
-                  <p className="font-medium">{mealPlan.title}</p>
-                  <p className="text-[#737373]">{mealPlan.subtitle}</p>
-                  <p className="text-[#737373]">Chef {mealPlan.chef_name}</p>
-                </div>
-              </div>
-            </div>
-          ))
+          mealPlans.map((mealPlan, index) => <CardMealPlan key={mealPlan.id} data={mealPlan} />)
         ) : (
           <div className="col-span-full flex justify-center items-center py-12">
             <p className="text-gray-500 text-center">Không tìm thấy thực đơn phù hợp</p>

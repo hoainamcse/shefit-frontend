@@ -1,17 +1,23 @@
 'use client'
 
+import type { Subscription } from '@/models/subscription'
+
+import Link from 'next/link'
 import { toast } from 'sonner'
+import { useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { useMutation, useQuery } from '@tanstack/react-query'
+
 import { Button } from '@/components/ui/button'
-import { Subscription } from '@/models/subscription'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
 import { createUserSubscription, getUserSubscriptions } from '@/network/client/users'
-import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
-import Link from 'next/link'
 
 export default function ActionButtons({ subscription, query }: { subscription: Subscription; query: string }) {
   const { session } = useSession()
+  const pathname = usePathname()
+  const router = useRouter()
+  const [openLogin, setOpenLogin] = useState(false)
   const isFreeSubscription = subscription.prices.length > 0 && subscription.prices.every((price) => price.price === 0)
 
   const { data, isLoading, refetch } = useQuery({
@@ -36,9 +42,10 @@ export default function ActionButtons({ subscription, query }: { subscription: S
 
   const handleChargeFree = async () => {
     if (!session) {
-      toast.error('Bạn cần đăng nhập để thực hiện hành động này.')
+      setOpenLogin(true)
       return
     }
+
     const now = new Date()
     const duration = subscription.prices[0].duration || 7
     const endDate = new Date(now.getTime() + duration * 24 * 60 * 60 * 1000)
@@ -53,6 +60,11 @@ export default function ActionButtons({ subscription, query }: { subscription: S
       order_number: `ORDER-${Date.now()}`,
       total_price: 0,
     })
+  }
+
+  // Navigate to login page
+  const handleLoginClick = () => {
+    router.push(`/auth/login?redirect=${encodeURIComponent(pathname + query)}`)
   }
 
   if (isLoading) {
@@ -85,13 +97,31 @@ export default function ActionButtons({ subscription, query }: { subscription: S
 
   if (isFreeSubscription && !isSubscribed) {
     return (
-      <Button
-        className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] max-md:w-full w-full px-5 mx-auto text-base"
-        onClick={handleChargeFree}
-        disabled={isPending}
-      >
-        {isPending ? 'Đang xử lý...' : 'Đăng ký miễn phí'}
-      </Button>
+      <>
+        <Button
+          className="bg-[#13D8A7] h-[56px] rounded-full lg:w-[570px] max-md:w-full w-full px-5 mx-auto text-base"
+          onClick={handleChargeFree}
+          disabled={isPending}
+        >
+          {isPending ? 'Đang xử lý...' : 'Đăng ký miễn phí'}
+        </Button>
+        {/* Login Dialog */}
+        <Dialog open={openLogin} onOpenChange={setOpenLogin}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="text-center text-xl font-bold"></DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col items-center text-center gap-6">
+              <p className="text-base">ĐĂNG NHẬP ĐỂ ĐĂNG KÝ MIỄN PHÍ</p>
+              <div className="flex gap-4 justify-center w-full px-10">
+                <Button className="bg-[#13D8A7] rounded-full w-full text-base" onClick={handleLoginClick}>
+                  Đăng nhập
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </>
     )
   }
 

@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { CloseIcon } from '@/components/icons/CloseIcon'
 import { formatDuration } from '@/lib/helpers'
+import { Download } from 'lucide-react'
 
 interface Price {
   id: number
@@ -264,6 +265,124 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
     setTotalPrice(price)
   }
 
+  const handleDownloadQR = () => {
+    if (!qrData?.qrCode) return
+
+    // Create a canvas element for the complete payment info
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    // Set up dimensions for the full image
+    const padding = 30
+    const qrSize = 300
+    const width = qrSize + padding * 2
+    const lineHeight = 30
+
+    // Calculate height based on payment info
+    const infoLines = 6 // Number of information lines (bank, account, name, amount, order ID, content)
+    const titleHeight = 60
+    const headerHeight = titleHeight + padding
+    const infoHeight = infoLines * lineHeight + padding * 2
+    const height = headerHeight + qrSize + infoHeight + padding
+
+    // Set canvas dimensions
+    canvas.width = width
+    canvas.height = height
+
+    // Fill background
+    ctx.fillStyle = 'white'
+    ctx.fillRect(0, 0, width, height)
+
+    // Draw header with title
+    ctx.fillStyle = '#FFADAF'
+    ctx.fillRect(0, 0, width, titleHeight)
+
+    // Add title text
+    ctx.font = 'bold 20px Helvetica'
+    ctx.fillStyle = 'white'
+    ctx.textAlign = 'center'
+    ctx.fillText('Thanh toán đơn hàng', width / 2, titleHeight / 2 + 8)
+
+    // Load logo for watermark
+    const logo = new Image()
+    logo.src = '/logo-vertical-dark.png'
+
+    // Load QR code image
+    const qrImage = new Image()
+
+    // Wait for both images to load
+    Promise.all([
+      new Promise((resolve) => {
+        logo.onload = resolve
+        logo.onerror = () => {
+          console.error('Failed to load logo')
+          resolve(null)
+        }
+      }),
+      new Promise((resolve) => {
+        const qrCanvas = document.querySelector('canvas')
+        if (qrCanvas) {
+          qrImage.onload = resolve
+          qrImage.src = qrCanvas.toDataURL('image/png')
+        } else {
+          resolve(null)
+        }
+      }),
+    ]).then(() => {
+      // Draw the QR code
+      ctx.drawImage(qrImage, padding, headerHeight, qrSize, qrSize)
+
+      // Draw the logo as a watermark
+      const logoWidth = 120
+      const logoHeight = 120
+      const logoX = width - logoWidth - 10
+      const logoY = height - logoHeight - 10
+
+      // Apply watermark with transparency
+      ctx.globalAlpha = 0.3
+      ctx.drawImage(logo, logoX, logoY, logoWidth, logoHeight)
+      ctx.globalAlpha = 1.0
+
+      // Draw payment information
+      ctx.font = '16px Arial'
+      ctx.fillStyle = '#333'
+      ctx.textAlign = 'left'
+
+      const infoStartY = headerHeight + qrSize + padding
+
+      // Helper function to draw a label-value pair
+      const drawInfoLine = (label: string, value: string, lineNumber: number) => {
+        const y = infoStartY + lineNumber * lineHeight
+        ctx.fillStyle = '#737373'
+        ctx.fillText(label, padding, y)
+
+        ctx.fillStyle = '#000'
+        ctx.font = 'bold 16px Helvetica'
+        ctx.textAlign = 'right'
+        ctx.fillText(value, width - padding, y)
+
+        ctx.textAlign = 'left'
+        ctx.font = '16px Helvetica'
+      }
+
+      // Draw payment details
+      drawInfoLine('Ngân hàng:', qrData.bankName || 'N/A', 0)
+      drawInfoLine('Số tài khoản:', qrData.bankAccount || 'N/A', 1)
+      drawInfoLine('Chủ tài khoản:', qrData.userBankName || 'N/A', 2)
+      drawInfoLine('Số tiền:', `${Number(qrData.amount).toLocaleString()} VNĐ`, 3)
+      drawInfoLine('Mã đơn hàng:', qrData.orderId || 'N/A', 4)
+      drawInfoLine('Nội dung:', qrData.content || 'N/A', 5)
+
+      // Convert canvas to data URL and download
+      const dataURL = canvas.toDataURL('image/png')
+      const link = document.createElement('a')
+      link.download = `qr-payment-${orderId}.png`
+      link.href = dataURL
+      link.click()
+    })
+  }
+
   return (
     <>
       <div className="mb-8">
@@ -341,17 +460,26 @@ export function PackagePayment({ prices, defaultPrice, packageName }: PackagePay
                 <AlertDialogTitle className="text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-2xl">
                   Thanh toán đơn hàng
                 </AlertDialogTitle>
-                <div className="border rounded-md p-4 w-full flex justify-center">
+                <div className="border rounded-md p-4 w-full flex flex-col items-center justify-center">
                   {qrData.qrCode ? (
-                    <Canvas
-                      text={qrData.qrCode}
-                      options={{
-                        errorCorrectionLevel: 'M',
-                        margin: 3,
-                        scale: 4,
-                        width: 300,
-                      }}
-                    />
+                    <>
+                      <Canvas
+                        text={qrData.qrCode}
+                        options={{
+                          errorCorrectionLevel: 'M',
+                          margin: 3,
+                          scale: 4,
+                          width: 300,
+                        }}
+                      />
+                      <Button
+                        onClick={handleDownloadQR}
+                        className="mt-3 flex items-center gap-2 bg-[#13D8A7] hover:bg-[#11c296] text-white"
+                      >
+                        <Download size={16} />
+                        Tải mã QR
+                      </Button>
+                    </>
                   ) : (
                     <div className="p-8 text-center text-gray-500">QR code không khả dụng</div>
                   )}
