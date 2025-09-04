@@ -6,8 +6,8 @@ import { fetchData } from '../helpers/fetch-data'
 export const queryKeyDiets = 'diets'
 
 export async function getDiets(query?: any): Promise<ListResponse<Diet>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchData('/v1/diets/' + '?' + searchParams)
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData('/v1/diets' + searchParams)
   return response.json()
 }
 
@@ -39,4 +39,3 @@ export async function deleteDiet(ids: Diet['id'][]): Promise<ApiResponse<string>
   })
   return response.json()
 }
-

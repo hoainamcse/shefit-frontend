@@ -14,6 +14,7 @@ import { MainButton } from '@/components/buttons/main-button'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage, Form } from '@/components/ui/form'
 import { getOauth2AuthUrl, signIn } from '@/network/server/auth'
 import { generateToken } from '@/network/client/auth'
+import { BackIconBlack } from '../icons/BackIconBlack'
 
 function GoogleIcon() {
   return (
@@ -81,6 +82,14 @@ export function LoginForm() {
     },
   })
 
+  const handleClose = () => {
+    if (redirectTo) {
+      window.location.href = redirectTo
+    } else {
+      window.location.href = '/'
+    }
+  }
+
   const handleGoogleSignIn = async () => {
     try {
       const response = await getOauth2AuthUrl(encodeURIComponent(`${process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}`))
@@ -111,6 +120,15 @@ export function LoginForm() {
 
   return (
     <Form {...form}>
+      <Link
+        href={redirectTo || `/`}
+        className="flex cursor-pointer items-center gap-2.5 font-semibold lg:hidden md:mb-7 mb-2"
+      >
+        <div className="w-6 h-6 pt-1 flex justify-center">
+          <BackIconBlack />
+        </div>
+        Quay về
+      </Link>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <p className="text-ring">
           Đăng ký tài khoản để xem +100 khóa tập, +1000 động tác, +30 thực đơn giúp bạn Độ Dáng tại bất kì đâu!

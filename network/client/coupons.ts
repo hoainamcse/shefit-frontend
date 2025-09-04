@@ -5,13 +5,14 @@ import { fetchData } from '../helpers/fetch-data'
 
 export const queryKeyCoupons = 'coupons'
 
-export async function getCoupons(): Promise<ListResponse<Coupon>> {
-  const response = await fetchData('/v1/coupons/')
+export async function getCoupons(query?: any): Promise<ListResponse<Coupon>> {
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData('/v1/coupons' + searchParams)
   return response.json()
 }
 
 export async function createCoupon(data: any): Promise<ApiResponse<Coupon>> {
-  const response = await fetchData('/v1/coupons/', {
+  const response = await fetchData('/v1/coupons', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

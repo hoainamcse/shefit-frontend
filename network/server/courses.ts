@@ -6,8 +6,8 @@ import type { ApiResponse, ListResponse } from '@/models/response'
 import { fetchDataServer } from '../helpers/fetch-data-server'
 
 export async function getCourses(query?: any): Promise<ListResponse<Course>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchDataServer('/v1/courses/' + '?' + searchParams)
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchDataServer('/v1/courses' + searchParams)
   return response.json()
 }
 
@@ -17,8 +17,8 @@ export async function getCourse(course_id: Course['id']): Promise<ApiResponse<Co
 }
 
 export async function getCourseWeeks(course_id: Course['id'], query?: any): Promise<ListResponse<CourseWeek>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchDataServer(`/v1/courses/${course_id}/video-classes/weeks/` + '?' + searchParams)
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchDataServer(`/v1/courses/${course_id}/video-classes/weeks` + searchParams)
   return response.json()
 }
 

@@ -60,13 +60,13 @@ export default async function PackageDetail({
               </div>
               <div>
                 <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#FF7873] text-2xl md:text-4xl mb-4">
-                  Thông tin khóa
+                  Thông tin gói tập
                 </div>
                 <HTMLRenderer className="whitespace-pre-line" content={subscriptionData?.description_2 || ''} />
               </div>
               <div>
                 <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-[#FF7873] text-2xl md:text-4xl mb-4">
-                  Khóa Tập Thuộc Gói
+                  Khoá tập thuộc gói tập
                 </div>
                 <p className="mb-5">Các khóa tập bạn được truy cập khi mua gói member này</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">

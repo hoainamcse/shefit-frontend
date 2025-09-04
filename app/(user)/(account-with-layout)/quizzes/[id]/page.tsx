@@ -302,7 +302,7 @@ const SuccessDialog = ({ open, onClose }: SuccessDialogProps) => (
           onClick={onClose}
           className="bg-[#13D8A7] hover:bg-[#13d8a7d0] rounded-full w-full h-[45px] text-sm lg:text-lg font-semibold"
         >
-          Trở về
+          Quay về
         </Button>
       </DialogFooter>
     </DialogContent>

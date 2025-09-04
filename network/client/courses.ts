@@ -20,8 +20,8 @@ import { fetchData } from '../helpers/fetch-data'
 export const queryKeyCourses = 'courses'
 
 export async function getCourses(query?: any): Promise<ListResponse<Course>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchData('/v1/courses/' + '?' + searchParams)
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData('/v1/courses' + searchParams)
   return response.json()
 }
 
@@ -68,7 +68,10 @@ export async function duplicateCourse(id: Course['id']): Promise<ApiResponse<Cou
   return response.json()
 }
 
-export async function updateCourseDisplayOrder(course_id: Course['id'], display_order: number): Promise<ApiResponse<string>> {
+export async function updateCourseDisplayOrder(
+  course_id: Course['id'],
+  display_order: number
+): Promise<ApiResponse<string>> {
   const response = await fetchData(`/v1/courses/${course_id}/update-display-order`, {
     method: 'PUT',
     body: JSON.stringify({ display_order }),
@@ -80,8 +83,8 @@ export async function updateCourseDisplayOrder(course_id: Course['id'], display_
 export const queryKeyCourseWeeks = 'course-weeks'
 
 export async function getCourseWeeks(course_id: Course['id'], query?: any): Promise<ListResponse<CourseWeek>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchData(`/v1/courses/${course_id}/video-classes/weeks/` + '?' + searchParams)
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData(`/v1/courses/${course_id}/video-classes/weeks` + searchParams)
   return response.json()
 }
 
@@ -89,7 +92,7 @@ export async function createCourseWeek(
   course_id: Course['id'],
   data: CourseWeekPayload
 ): Promise<ApiResponse<CourseWeek>> {
-  const response = await fetchData(`/v1/courses/${course_id}/video-classes/weeks/`, {
+  const response = await fetchData(`/v1/courses/${course_id}/video-classes/weeks`, {
     method: 'POST',
     body: JSON.stringify(data),
   })
@@ -232,16 +235,13 @@ export async function deleteDayCircuit(
 export const queryKeyLiveDays = 'live-days'
 
 export async function getLiveDays(course_id: Course['id'], query?: any): Promise<ListResponse<LiveDay>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchData(`/v1/courses/${course_id}/live-classes/` + '?' + searchParams)
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData(`/v1/courses/${course_id}/live-classes` + searchParams)
   return response.json()
 }
 
-export async function createLiveDay(
-  course_id: Course['id'],
-  data: LiveDayPayload
-): Promise<ApiResponse<LiveDay>> {
-  const response = await fetchData(`/v1/courses/${course_id}/live-classes/`, {
+export async function createLiveDay(course_id: Course['id'], data: LiveDayPayload): Promise<ApiResponse<LiveDay>> {
+  const response = await fetchData(`/v1/courses/${course_id}/live-classes`, {
     method: 'POST',
     body: JSON.stringify(data),
   })
@@ -260,10 +260,7 @@ export async function updateLiveDay(
   return response.json()
 }
 
-export async function deleteLiveDay(
-  course_id: Course['id'],
-  class_id: LiveDay['id']
-): Promise<ApiResponse<string>> {
+export async function deleteLiveDay(course_id: Course['id'], class_id: LiveDay['id']): Promise<ApiResponse<string>> {
   const response = await fetchData(`/v1/courses/${course_id}/live-classes/${class_id}`, {
     method: 'DELETE',
   })
@@ -314,14 +311,20 @@ export const queryKeyImportStatus = 'import-status'
 export async function importVideoCourseExcel(course_id: Course['id'], file: File): Promise<ApiResponse<Course>> {
   const formData = new FormData()
   formData.append('file', file, file.name)
-  const response = await fetchData(`/v1/courses/import-excel/${course_id}`, {
-    method: 'POST',
-    body: formData,
-  }, false)
+  const response = await fetchData(
+    `/v1/courses/import-excel/${course_id}`,
+    {
+      method: 'POST',
+      body: formData,
+    },
+    false
+  )
   return await response.json()
 }
 
-export async function importVideoCourseStatus(course_id: Course['id']): Promise<{course_id: Course['id'], status: string}> {
+export async function importVideoCourseStatus(
+  course_id: Course['id']
+): Promise<{ course_id: Course['id']; status: string }> {
   const response = await fetchData(`/v1/courses/import-status/${course_id}`, {
     method: 'GET',
   })

@@ -7,8 +7,8 @@ import { Category, Color, Size } from '@/models/category'
 export const queryKeyProducts = 'products'
 
 export async function getProducts(query?: any): Promise<ListResponse<Product>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchData('/v1/products/' + '?' + searchParams)
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData('/v1/products' + searchParams)
   return response.json()
 }
 
@@ -18,7 +18,7 @@ export async function getProduct(product_id: string): Promise<ApiResponse<Produc
 }
 
 export async function createProduct(data: any): Promise<ApiResponse<Product>> {
-  const response = await fetchData('/v1/products/', {
+  const response = await fetchData('/v1/products', {
     method: 'POST',
     body: JSON.stringify(data),
   })

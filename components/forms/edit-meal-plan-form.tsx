@@ -22,7 +22,7 @@ import { MainButton } from '../buttons/main-button'
 import { EditDialog } from '../data-table/edit-dialog'
 import { DietsTable } from '../data-table/diets-table'
 import { CaloriesTable } from '../data-table/calories-table'
-import { FormImageSelectField, FormInputField, FormNumberField, FormSwitchField, FormTextareaField } from './fields'
+import { FormImageSelectField, FormInputField, FormNumberField, FormRichTextField, FormSwitchField, FormTextareaField } from './fields'
 
 // ! Follow MealPlanPayload model in models/meal-plan.ts
 const formSchema = z.object({
@@ -152,7 +152,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
           </div>
 
           <FormTextareaField form={form} name="subtitle" label="Tóm tắt" placeholder="Nhập tóm tắt" />
-          <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
+          <FormRichTextField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
           <FormTextareaField
             form={form}
             name="description_homepage_1"

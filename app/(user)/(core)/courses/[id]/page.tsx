@@ -190,7 +190,7 @@ export default function CoursePage() {
 
         <div>
           <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl mb-4">
-            Thông tin khóa
+            Thông tin khóa tập
           </p>
           <HTMLRenderer
             content={course.description}

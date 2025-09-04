@@ -29,6 +29,7 @@ import {
   FormInputField,
   FormNumberField,
   FormRadioField,
+  FormRichTextField,
   FormSwitchField,
   FormTextareaField,
 } from './fields'
@@ -172,7 +173,7 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
             <FormInputField form={form} name="trainer" label="Tên HLV" placeholder="Nhập tên HLV" />
           </div>
           <FormTextareaField form={form} name="summary" label="Tóm tắt" placeholder="Nhập tóm tắt" />
-          <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
+          <FormRichTextField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
           <FormTextareaField
             form={form}
             name="description_homepage_1"

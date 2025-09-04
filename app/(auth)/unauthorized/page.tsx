@@ -31,7 +31,7 @@ export default function UnauthorizedPage() {
             href="/"
             className="text-sm font-medium text-emerald-400 hover:text-emerald-300 transition-colors duration-200"
           >
-            Trở về trang chủ
+            Quay về trang chủ
           </Link>
         </div>
       </div>

@@ -6,8 +6,9 @@ import { Diet } from '@/models/diet'
 
 import { fetchDataServer } from '../helpers/fetch-data-server'
 
-export async function getDishes(): Promise<ListResponse<Dish>> {
-  const response = await fetchDataServer('/v1/dishes')
+export async function getDishes(query?: any): Promise<ListResponse<Dish>> {
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchDataServer('/v1/dishes' + searchParams)
   return response.json()
 }
 

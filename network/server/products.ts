@@ -11,7 +11,7 @@ export async function getProduct(product_id: string): Promise<Product> {
 }
 
 export async function getProducts(query?: any): Promise<ListResponse<Product>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchDataServer('/v1/products/' + '?' + searchParams)
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchDataServer('/v1/products' + searchParams)
   return response.json()
 }
