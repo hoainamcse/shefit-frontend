@@ -303,7 +303,8 @@ export function ChatBotButton() {
   return (
     <>
       <MainButton
-        className={`hidden lg:flex lg:fixed lg:z-50 lg:bottom-4 lg:right-4 rounded-full`}
+        // className={`hidden lg:flex lg:fixed lg:z-50 lg:bottom-4 lg:right-4 rounded-full`}
+        className={`fixed z-50 bottom-[4.5rem] lg:bottom-4 right-4 rounded-full`}
         style={{
           background: 'linear-gradient(45deg,rgba(255, 174, 176, 1) 40%, rgba(19, 216, 167, 1) 90%)',
         }}

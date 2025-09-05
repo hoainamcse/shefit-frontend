@@ -11,8 +11,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
 import { cn } from '@/lib/utils'
+import { sortByKey } from '@/lib/helpers'
 import { checkUserAccessedResource } from '@/network/client/users'
 import { getLiveDays, queryKeyLiveDays } from '@/network/client/courses'
+
+const dayOrder: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 export function LiveCourseDetail({ courseID, query }: { courseID: Course['id']; query: string }) {
   const router = useRouter()
@@ -93,15 +96,24 @@ export function LiveCourseDetail({ courseID, query }: { courseID: Course['id']; 
     router.push(`/packages?course_id=${courseID}&redirect=${encodeURIComponent(`/courses/${courseID}/detail${query}`)}`)
   }
 
+  // Find the tab for today
+  const findTodayTab = () => {
+    const now = new Date()
+    const currentDayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    const todayName = currentDayNames[now.getDay()]
+
+    const todayTab = liveDays.find((day) => day.day_of_week === todayName)
+    return todayTab ? todayTab.id.toString() : liveDays && liveDays.length > 0 ? liveDays[0].id.toString() : undefined
+  }
+
+  const daysData = sortByKey(liveDays, 'day_of_week', { transform: (day) => dayOrder.indexOf(day) })
+
   // Render course weeks and days accordion
   return (
     <div className="flex flex-col gap-10 lg:mt-10 mt-2">
-      <Tabs
-        defaultValue={liveDays && liveDays.length > 0 ? liveDays[0].id.toString() : undefined}
-        className="[state=active]:bg-[#91EBD5] data-[state=active]:shadow-none"
-      >
+      <Tabs defaultValue={findTodayTab()} className="[state=active]:bg-[#91EBD5] data-[state=active]:shadow-none">
         <TabsList className="bg-transparent flex-wrap h-auto md:justify-start justify-between md:gap-5 gap-0 w-full">
-          {liveDays.map((day) => (
+          {daysData.map((day) => (
             <TabsTrigger
               key={day.id}
               value={day.id.toString()}
@@ -133,7 +145,7 @@ export function LiveCourseDetail({ courseID, query }: { courseID: Course['id']; 
           ))}
         </TabsList>
 
-        {liveDays.map((day) => (
+        {daysData.map((day) => (
           <TabsContent key={day.id} value={day.id.toString()} className="ml-2 mt-10">
             <div className="space-y-2 text-xs leading-7 text-gray-600 dark:text-gray-500 flex flex-col gap-5">
               {day.sessions.map((session) => (
