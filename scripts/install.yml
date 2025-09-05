@@ -19,6 +19,11 @@
 
 .install-prod:
   script:
+    # Update package and install certificate first
+    - apt-get update -y
+    - apt-get install -y --no-install-recommends ca-certificates apt-transport-https
+    # Change http -> https (if needed, ignore error if file doesn't exist)
+    - sed -i 's|http://|https://|g' /etc/apt/sources.list /etc/apt/sources.list.d/*.list || true
     - apt-get update -qq && apt-get install -qq curl
     - which ssh-agent || apt-get install -qq openssh-client
     - eval $(ssh-agent -s)
