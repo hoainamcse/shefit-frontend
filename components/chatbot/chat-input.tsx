@@ -1,7 +1,7 @@
 import React from 'react'
 import { ArrowRight, MenuIcon } from 'lucide-react'
 import { Button } from '../ui/button'
-import { Input } from '../ui/custom-input-chatbot'
+import { Input } from './custom-input-chatbot'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import PromptSuggestions from './prompt-suggestions'

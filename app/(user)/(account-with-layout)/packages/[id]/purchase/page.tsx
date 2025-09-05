@@ -4,32 +4,434 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { BackIcon } from '@/components/icons/BackIcon'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogCancel,
+  AlertDialogTrigger,
+  AlertDialogFooter,
+} from '@/components/ui/alert-dialog'
+import { CloseIcon } from '@/components/icons/CloseIcon'
+import { Download } from 'lucide-react'
+import { useQRCode } from 'next-qrcode'
 
-import { PackagePayment } from '../_components/package-payment'
 import Link from 'next/link'
 import ShefitLogo from '@/public/logo-vertical-dark.png'
 import { formatDuration } from '@/lib/helpers'
-import { getSubscription } from '@/network/client/subscriptions'
+import { getSubscription, queryKeySubscriptions } from '@/network/client/subscriptions'
+import { createUserSubscription } from '@/network/client/users'
 import { HTMLRenderer } from '@/components/html-renderer'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useSession } from '@/hooks/use-session'
+import { useQuery, useMutation } from '@tanstack/react-query'
 
-export default function PackageDetail({ params }: { params: Promise<{ id: string }> }) {
+export default function PurchasePage() {
   const { id } = useParams<{ id: string }>()
   const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+  const { session } = useSession()
+  const { Canvas } = useQRCode()
   const query = searchParams ? `?${searchParams.toString()}` : ''
+
+  // Fetch subscription data with React Query with error handling and retry
+  const {
+    data: subscription,
+    isLoading: isDataLoading,
+    error: subscriptionError,
+  } = useQuery({
+    queryKey: [queryKeySubscriptions, id],
+    queryFn: async () => getSubscription(Number(id)),
+    retry: 2, // Retry failed requests twice
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+  })
+
+  // State for handling gift selection, pricing, and payment flow
   const [selectedGiftId, setSelectedGiftId] = useState<number | null>(null)
-  const [subscription, setSubscription] = useState<any>(null)
+  const [selectedPriceId, setSelectedPriceId] = useState<number | null>(null)
+  const [totalPrice, setTotalPrice] = useState<number>(0)
+  const [qrData, setQrData] = useState<any>(null)
+  const [orderId, setOrderId] = useState<string>('')
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false)
+  const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false)
+  const [purchaseSuccess, setPurchaseSuccess] = useState(false)
 
+  // Set default price when subscription data loads
   useEffect(() => {
-    const fetchData = async () => {
-      const slug = (await params).id
-      const data = await getSubscription(Number(slug))
-      setSubscription(data)
-    }
-    fetchData()
-  }, [params])
+    if (subscription?.data) {
+      // Set default price if available
+      if (subscription.data.price) {
+        setTotalPrice(subscription.data.price)
+      }
 
-  return subscription?.data ? (
+      // Set the first price option as selected if available
+      if (subscription.data.prices && subscription.data.prices.length > 0) {
+        const firstPrice = subscription.data.prices[0]
+        setSelectedPriceId(firstPrice.id)
+        setTotalPrice(firstPrice.price)
+      }
+    }
+  }, [subscription])
+
+  // Handler for login button
+  const handleLoginClick = () => {
+    router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)
+  }
+
+  // Generate a random order ID
+  const generateOrderId = () => {
+    return Math.floor(Math.random() * 900 + 100).toString()
+  }
+
+  // Handler for price selection
+  const handlePriceSelect = (priceId: number, price: number) => {
+    if (selectedPriceId === priceId) return
+    setSelectedPriceId(priceId)
+    setTotalPrice(price)
+  }
+
+  /**
+   * Payment Processing Flow:
+   * 1. Generate QR Token - Get authentication token for VietQR API
+   * 2. Create QR Code - Generate QR code with payment info
+   * 3. Generate Transaction Token - Get token for payment verification
+   * 4. Check Payment Status - Poll for payment completion
+   * 5. Create Subscription - Add subscription to user account
+   */
+
+  // 1. Generate QR token mutation
+  const generateTokenMutation = useMutation({
+    mutationFn: async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/v1/vietqr/generate-qr-token`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Basic ${process.env.NEXT_PUBLIC_VIETQR_BASIC_AUTH}`,
+          },
+        })
+
+        if (!response.ok) {
+          throw new Error(`Failed to generate QR token: ${response.status} ${response.statusText}`)
+        }
+
+        const tokenData = await response.json()
+        return tokenData.access_token
+      } catch (error) {
+        console.error('QR token generation error:', error)
+        throw new Error('Không thể kết nối đến cổng thanh toán. Vui lòng thử lại sau.')
+      }
+    },
+  })
+
+  // 2. Create QR Code mutation
+  const createQrCodeMutation = useMutation({
+    mutationFn: async ({ token, providedOrderId }: { token: string; providedOrderId: string }) => {
+      const username = session?.userId || 'guest'
+      const content = `${username} ${providedOrderId}`
+
+      const directQrResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/v1/vietqr/create-qr`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          amount: totalPrice,
+          content: content,
+          order_id: providedOrderId,
+        }),
+      })
+
+      if (!directQrResponse.ok) {
+        throw new Error(`Failed to create QR: ${directQrResponse.status} ${directQrResponse.statusText}`)
+      }
+
+      const qrResponse = await directQrResponse.json()
+      const responseData = qrResponse.data || qrResponse
+
+      return {
+        ...responseData,
+        qrCode: responseData.qrCode || null,
+      }
+    },
+    onSuccess: (data) => {
+      setQrData(data)
+
+      // Proceed with transaction token generation if QR code exists
+      if (data.qrCode) {
+        transactionTokenMutation.mutate(data.qrCode)
+      }
+    },
+  })
+
+  // 3. Generate transaction token for verification
+  const transactionTokenMutation = useMutation({
+    mutationFn: async (qrCode: string) => {
+      const credentials = 'shefit-vietqr:IlhtYFpFkh1ztl2hkJXuRgTpr+Ef9BZbL9Z9oYXk'
+      const encodedCredentials =
+        typeof window !== 'undefined' ? btoa(credentials) : Buffer.from(credentials).toString('base64')
+
+      const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/v1/vietqr/api/token_generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Basic ${encodedCredentials}`,
+        },
+        body: JSON.stringify({ qrToken: qrCode }),
+      })
+
+      if (!tokenResponse.ok) {
+        throw new Error('Failed to generate transaction token')
+      }
+
+      const tokenData = await tokenResponse.json()
+      return tokenData.access_token || tokenData.data?.access_token
+    },
+    onSuccess: (syncToken, qrCode) => {
+      // Wait before checking payment status
+      setTimeout(() => {
+        checkPaymentStatusMutation.mutate({
+          syncToken,
+          providedOrderId: orderId,
+          attemptCount: 0,
+        })
+      }, 5000)
+    },
+  })
+
+  // 4. Check payment transaction status
+  const checkPaymentStatusMutation = useMutation({
+    mutationFn: async ({
+      syncToken,
+      providedOrderId,
+      attemptCount,
+    }: {
+      syncToken: string
+      providedOrderId: string
+      attemptCount: number
+    }) => {
+      const paymentResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/v1/payments/order-number/${providedOrderId}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${syncToken}`,
+          },
+        }
+      )
+
+      if (!paymentResponse.ok) {
+        console.warn('Payment check warning:', await paymentResponse.text())
+        return { success: false, retry: true, attemptCount }
+      }
+
+      const paymentData = await paymentResponse.json()
+
+      if (paymentData.status === 'success' && paymentData.data && paymentData.data.order_number === providedOrderId) {
+        return { success: true, retry: false, attemptCount }
+      } else {
+        return { success: false, retry: true, attemptCount }
+      }
+    },
+    onSuccess: (result, variables) => {
+      if (result.success) {
+        // If payment is successful, create subscription
+        createSubscriptionMutation.mutate()
+      } else if (result.retry && result.attemptCount < 10) {
+        // If still need to retry and haven't exceeded max attempts
+        setTimeout(() => {
+          checkPaymentStatusMutation.mutate({
+            syncToken: variables.syncToken,
+            providedOrderId: variables.providedOrderId,
+            attemptCount: result.attemptCount + 1,
+          })
+        }, 5000)
+      }
+    },
+  })
+
+  // 5. Create subscription after successful payment
+  const createSubscriptionMutation = useMutation({
+    mutationFn: async () => {
+      if (!session?.userId) {
+        throw new Error('User ID is not available')
+      }
+
+      const now = new Date()
+      const endDate = new Date(now)
+      endDate.setDate(
+        endDate.getDate() + (subscription?.data.prices.find((p: any) => p.id === selectedPriceId)?.duration || 1)
+      )
+
+      const subscriptionData = {
+        user_id: session.userId,
+        subscription_id: Number(id),
+        course_format: 'video',
+        coupon_code: '',
+        status: 'active',
+        subscription_start_at: now.toISOString(),
+        subscription_end_at: endDate.toISOString(),
+        order_number: `ORDER-${Date.now()}`,
+        total_price: totalPrice,
+      }
+
+      await createUserSubscription(subscriptionData, session.userId)
+      return true
+    },
+    onSuccess: () => {
+      setPurchaseSuccess(true)
+    },
+  })
+
+  // Combined loading state for all mutations
+  const isProcessing =
+    generateTokenMutation.isPending ||
+    createQrCodeMutation.isPending ||
+    transactionTokenMutation.isPending ||
+    checkPaymentStatusMutation.isPending ||
+    createSubscriptionMutation.isPending
+
+  // Combined error state
+  const errorMessage =
+    generateTokenMutation.error?.message ||
+    createQrCodeMutation.error?.message ||
+    transactionTokenMutation.error?.message ||
+    checkPaymentStatusMutation.error?.message ||
+    createSubscriptionMutation.error?.message
+
+  const handleBuyNow = () => {
+    if (!session) {
+      setIsLoginDialogOpen(true)
+      return
+    }
+
+    if (!selectedPriceId) {
+      return
+    }
+
+    setIsPaymentDialogOpen(true)
+    setQrData(null)
+    setPurchaseSuccess(false)
+
+    // For free subscriptions (total price <= 0), skip payment steps and go directly to subscription creation
+    if (totalPrice <= 0) {
+      console.log('Free subscription detected, skipping payment steps')
+      createSubscriptionMutation.mutate()
+      return
+    }
+
+    const generatedOrderId = generateOrderId()
+    setOrderId(generatedOrderId)
+
+    // Start the payment flow by generating QR token
+    generateTokenMutation.mutate(undefined, {
+      onSuccess: (token) => {
+        createQrCodeMutation.mutate({ token, providedOrderId: generatedOrderId })
+      },
+    })
+  }
+
+  // Loading state with skeleton
+  if (isDataLoading) {
+    return (
+      <div className="flex flex-col px-4 py-10 md:px-10 xl:p-[60px] space-y-8 animate-pulse">
+        {/* Skeleton for back button */}
+        <div className="h-8 w-24 bg-gray-200 rounded"></div>
+
+        {/* Skeleton for title */}
+        <div className="h-12 w-3/4 bg-gray-200 rounded-lg"></div>
+
+        {/* Skeleton for description */}
+        <div className="space-y-2">
+          <div className="h-4 w-full bg-gray-200 rounded"></div>
+          <div className="h-4 w-5/6 bg-gray-200 rounded"></div>
+          <div className="h-4 w-4/6 bg-gray-200 rounded"></div>
+        </div>
+
+        {/* Skeleton for checkboxes */}
+        <div className="space-y-4">
+          <div className="h-8 w-1/3 bg-gray-200 rounded"></div>
+          <div className="flex space-x-4">
+            <div className="h-8 w-8 bg-gray-200 rounded"></div>
+            <div className="h-8 w-24 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+
+        {/* Skeleton for price options */}
+        <div className="space-y-4">
+          <div className="h-8 w-1/3 bg-gray-200 rounded"></div>
+          <div className="flex space-x-4">
+            <div className="h-8 w-8 bg-gray-200 rounded"></div>
+            <div className="h-8 w-24 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+
+        {/* Skeleton for total price */}
+        <div className="flex justify-between">
+          <div className="h-8 w-24 bg-gray-200 rounded"></div>
+          <div className="h-8 w-32 bg-gray-200 rounded"></div>
+        </div>
+
+        {/* Skeleton for button */}
+        <div className="h-12 w-full bg-gray-200 rounded-full"></div>
+      </div>
+    )
+  }
+
+  // Session check with user-friendly message
+  if (!session) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen gap-6">
+        <div className="text-lg text-center">Vui lòng đăng nhập để mua gói</div>
+        <Button
+          onClick={() => router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)}
+          className="bg-[#13D8A7] hover:bg-[#11c296] text-white rounded-full px-8"
+        >
+          Đăng nhập
+        </Button>
+      </div>
+    )
+  }
+
+  // Error handling with retry option
+  if (subscriptionError) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen gap-4">
+        <div className="text-red-500 text-lg text-center">
+          Đã xảy ra lỗi khi tải thông tin gói.
+          <div className="text-sm mt-2 text-gray-600">{(subscriptionError as Error).message}</div>
+        </div>
+        <Button
+          onClick={() => router.refresh()}
+          className="bg-[#13D8A7] hover:bg-[#11c296] text-white rounded-full px-8"
+        >
+          Thử lại
+        </Button>
+      </div>
+    )
+  }
+
+  // Check if subscription exists
+  if (!subscription) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen gap-4">
+        <div className="text-red-500 text-lg text-center">Gói không tồn tại hoặc đã bị xóa.</div>
+        <Link href="/packages">
+          <Button className="bg-[#13D8A7] hover:bg-[#11c296] text-white rounded-full px-8">Xem các gói khác</Button>
+        </Link>
+      </div>
+    )
+  }
+
+  return (
     <div className="flex">
       <div className="lg:py-16 py-4 px-4 md:py-16 md:px-10 xl:p-[60px] flex-1 max-w-[832px]">
         <Link href={`/packages/${id}${query}`} className="flex items-center gap-2 mb-4 md:mb-16 cursor-pointer">
@@ -68,11 +470,181 @@ export default function PackageDetail({ params }: { params: Promise<{ id: string
           </div>
         </div>
 
-        <PackagePayment
-          prices={subscription.data.prices}
-          defaultPrice={subscription.data.price}
-          packageName={subscription.data.name}
-        />
+        {/* Package Payment Section - Integrated from package-payment.tsx */}
+        <div className="mb-8">
+          <div className="font-semibold text-[#000000] text-xl md:text-2xl mb-3">Thời gian</div>
+          <div className="flex items-center flex-wrap gap-y-[30px] gap-x-[52px]">
+            {subscription.data.prices.map((price: any) => (
+              <div className="flex items-center gap-[14px]" key={price.id}>
+                <Checkbox
+                  className="w-8 h-8 border-[#737373]"
+                  checked={selectedPriceId === price.id}
+                  onCheckedChange={() => handlePriceSelect(price.id, price.price)}
+                />
+                <div className="text-base md:text-xl text-[#737373]">{formatDuration(price.duration)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mb-8">
+          <div className="font-semibold text-[#000000] text-xl md:text-2xl mb-2.5">Code khuyến mãi</div>
+          <Input placeholder="Nhập code của bạn" className="h-[54px] text-base md:text-[18px] border-[#E2E2E2]" />
+        </div>
+
+        <div className="flex items-center justify-between mb-8">
+          <div className="font-semibold text-[#000000] text-xl md:text-2xl">Tổng tiền</div>
+          <div className="text-[#00C7BE] font-semibold text-2xl">{(totalPrice || 0).toLocaleString()} vnđ</div>
+        </div>
+
+        <div className="w-full flex gap-3 justify-center mb-10">
+          <AlertDialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="text-lg w-full rounded-full bg-[#13D8A7] hover:bg-[#11c296] text-white hover:text-white"
+                onClick={(e) => {
+                  if (!session) {
+                    e.preventDefault()
+                    setIsLoginDialogOpen(true)
+                    return
+                  }
+                  handleBuyNow()
+                }}
+                disabled={!selectedPriceId || isProcessing}
+              >
+                {isProcessing ? 'Đang xử lý...' : 'Mua gói'}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="max-w-lg overflow-y-auto max-h-[90vh]">
+              {purchaseSuccess ? (
+                <div className="flex flex-col items-center py-6">
+                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-3xl mb-4">
+                    ĐÃ MUA GÓI THÀNH CÔNG
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center text-lg">
+                    Hãy vào trang tài khoản của bạn để bắt đầu làm bảng khảo sát số đo, các khóa tập & thực đơn
+                  </AlertDialogDescription>
+                  <Link href="/account/resources">
+                    <Button
+                      onClick={() => {
+                        setIsPaymentDialogOpen(false)
+                      }}
+                      className="mt-6 bg-[#13D8A7] hover:bg-[#11c296] text-white rounded-full px-8 text-lg"
+                    >
+                      Tài khoản
+                    </Button>
+                  </Link>
+                </div>
+              ) : errorMessage ? (
+                <div className="flex flex-col items-center py-6">
+                  <AlertDialogTitle className="text-red-500 font-semibold text-xl mb-4">Đã xảy ra lỗi</AlertDialogTitle>
+                  <AlertDialogDescription className="text-center text-lg text-red-500">
+                    {errorMessage}
+                  </AlertDialogDescription>
+                  <Button
+                    onClick={() => {
+                      setIsPaymentDialogOpen(false)
+                    }}
+                    className="mt-6 bg-gray-200 text-gray-800 hover:bg-gray-300 rounded-full px-8 text-lg"
+                  >
+                    Đóng
+                  </Button>
+                </div>
+              ) : qrData ? (
+                <div className="flex flex-col items-center gap-4">
+                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-2xl">
+                    Thanh toán đơn hàng
+                  </AlertDialogTitle>
+                  <div className="border rounded-md p-4 w-full flex flex-col items-center justify-center">
+                    {qrData.qrCode ? (
+                      <Canvas
+                        text={qrData.qrCode}
+                        options={{
+                          errorCorrectionLevel: 'M',
+                          margin: 0,
+                          scale: 4,
+                          width: 256,
+                        }}
+                      />
+                    ) : (
+                      <div className="p-8 text-center text-gray-500">QR code không khả dụng</div>
+                    )}
+                  </div>
+                  <div className="w-full space-y-3 text-left">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Ngân hàng:</span>
+                      <span className="font-medium">{qrData.bankName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Số tài khoản:</span>
+                      <span className="font-medium">{qrData.bankAccount}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Chủ tài khoản:</span>
+                      <span className="font-medium">{qrData.userBankName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Số tiền:</span>
+                      <span className="font-medium text-[#00C7BE]">{Number(qrData.amount).toLocaleString()} VNĐ</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Mã đơn hàng:</span>
+                      <span className="font-medium">{qrData.orderId}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Nội dung:</span>
+                      <span className="font-medium">{qrData.content}</span>
+                    </div>
+                  </div>
+                  <div className="text-center text-sm text-amber-500">
+                    Mã thanh toán có hiệu lực trong 15 phút. Sau khi thanh toán thành công Shefit sẽ kích hoạt toàn
+                    khoản cho bạn.
+                  </div>
+                  <AlertDialogFooter className="flex flex-row items-center gap-2">
+                    <AlertDialogCancel className="mt-0">Huỷ thanh toán</AlertDialogCancel>
+                    {qrData.qrCode && (
+                      <Button
+                        onClick={() => handleDownloadQR(qrData)}
+                        className="flex items-center gap-2 bg-[#13D8A7] hover:bg-[#11c296] text-white"
+                      >
+                        <Download size={16} />
+                        Tải mã QR
+                      </Button>
+                    )}
+                  </AlertDialogFooter>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center py-6">
+                  <AlertDialogTitle className="text-ring font-[family-name:var(--font-roboto-condensed] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-xl">
+                    Đang tạo đơn hàng
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center mt-4">
+                    Vui lòng đợi trong giây lát...
+                  </AlertDialogDescription>
+                </div>
+              )}
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+
+        <Dialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="text-center text-2xl font-bold"></DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col items-center text-center gap-6">
+              <p className="text-lg">HÃY ĐĂNG NHẬP ĐỂ MUA GÓI</p>
+              <div className="flex gap-4 justify-center w-full px-10">
+                <div className="flex-1">
+                  <Button className="bg-[#13D8A7] rounded-full w-full text-lg" onClick={handleLoginClick}>
+                    Đăng nhập
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <div>
           {subscription.data.relationships.gifts?.length > 0 && (
@@ -151,9 +723,124 @@ export default function PackageDetail({ params }: { params: Promise<{ id: string
         </div>
       </div>
     </div>
-  ) : (
-    <div className="flex justify-center items-center h-screen">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#13D8A7]"></div>
-    </div>
   )
+}
+
+// Function to handle QR code download
+const handleDownloadQR = (qrData: any | null) => {
+  if (!qrData?.qrCode) return
+
+  // Create a canvas element for the complete payment info
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  // Set up dimensions for the full image
+  const padding = 30
+  const qrSize = 300
+  const width = qrSize + padding * 2
+  const lineHeight = 30
+
+  // Calculate height based on payment info
+  const infoLines = 6 // Number of information lines (bank, account, name, amount, order ID, content)
+  const titleHeight = 60
+  const headerHeight = titleHeight + padding
+  const infoHeight = infoLines * lineHeight + padding * 2
+  const height = headerHeight + qrSize + infoHeight + padding
+
+  // Set canvas dimensions
+  canvas.width = width
+  canvas.height = height
+
+  // Fill background
+  ctx.fillStyle = 'white'
+  ctx.fillRect(0, 0, width, height)
+
+  // Draw header with title
+  ctx.fillStyle = '#FFADAF'
+  ctx.fillRect(0, 0, width, titleHeight)
+
+  // Add title text
+  ctx.font = 'bold 20px Helvetica'
+  ctx.fillStyle = 'white'
+  ctx.textAlign = 'center'
+  ctx.fillText('Thanh toán đơn hàng', width / 2, titleHeight / 2 + 8)
+
+  // Load logo for watermark
+  const logo = new window.Image()
+  logo.src = '/logo-vertical-dark.png'
+
+  // Load QR code image
+  const qrImage = new window.Image()
+
+  // Wait for both images to load
+  Promise.all([
+    new Promise((resolve) => {
+      logo.onload = resolve
+      logo.onerror = () => {
+        console.error('Failed to load logo')
+        resolve(null)
+      }
+    }),
+    new Promise((resolve) => {
+      const qrCanvas = document.querySelector('canvas')
+      if (qrCanvas) {
+        qrImage.onload = resolve
+        qrImage.src = qrCanvas.toDataURL('image/png')
+      } else {
+        resolve(null)
+      }
+    }),
+  ]).then(() => {
+    // Draw the QR code
+    ctx.drawImage(qrImage, padding, headerHeight, qrSize, qrSize)
+
+    // Draw the logo as a watermark
+    const logoWidth = 120
+    const logoHeight = 120
+    const logoX = width - logoWidth - 10
+    const logoY = height - logoHeight - 10
+
+    // Apply watermark with transparency
+    ctx.globalAlpha = 0.3
+    ctx.drawImage(logo, logoX, logoY, logoWidth, logoHeight)
+    ctx.globalAlpha = 1.0
+
+    // Draw payment information
+    ctx.font = '16px Arial'
+    ctx.fillStyle = '#333'
+    ctx.textAlign = 'left'
+
+    const infoStartY = headerHeight + qrSize + padding
+
+    // Helper function to draw a label-value pair
+    const drawInfoLine = (label: string, value: string, lineNumber: number) => {
+      const y = infoStartY + lineNumber * lineHeight
+      ctx.fillStyle = '#737373'
+      ctx.fillText(label, padding, y)
+
+      ctx.fillStyle = '#000'
+      ctx.font = 'bold 16px Helvetica'
+      ctx.textAlign = 'right'
+      ctx.fillText(value, width - padding, y)
+
+      ctx.textAlign = 'left'
+      ctx.font = '16px Helvetica'
+    }
+
+    // Draw payment details
+    drawInfoLine('Ngân hàng:', qrData.bankName || 'N/A', 0)
+    drawInfoLine('Số tài khoản:', qrData.bankAccount || 'N/A', 1)
+    drawInfoLine('Chủ tài khoản:', qrData.userBankName || 'N/A', 2)
+    drawInfoLine('Số tiền:', `${Number(qrData.amount).toLocaleString()} VNĐ`, 3)
+    drawInfoLine('Mã đơn hàng:', qrData.orderId || 'N/A', 4)
+    drawInfoLine('Nội dung:', qrData.content || 'N/A', 5)
+
+    // Convert canvas to data URL and download
+    const dataURL = canvas.toDataURL('image/png')
+    const link = document.createElement('a')
+    link.download = `qr-payment-${qrData.orderId}.png`
+    link.href = dataURL
+    link.click()
+  })
 }
