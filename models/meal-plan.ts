@@ -54,7 +54,7 @@ type MealPlanDay = {
 
 type MealPlanDayPayload = Omit<MealPlanDay, 'id'>
 
-type MealPlanDish = Omit<Dish, 'diet' | 'image'> & {
+type MealPlanDish = Omit<Dish, 'diet' | 'image' | 'youtube_url'> & {
   meal_time: DishMealTime
 }
 

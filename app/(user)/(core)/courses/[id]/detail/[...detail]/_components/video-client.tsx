@@ -73,7 +73,7 @@ export function CircuitItem({ circuit, cIdx, course_id }: { circuit: DayCircuit;
                       <div className="relative group cursor-pointer mb-4">
                         <img
                           src={
-                            getYouTubeThumbnail(exercise.youtube_url) ||
+                            getYouTubeThumbnail(exercise.youtube_url, 'sddefault') ||
                             'https://placehold.co/400?text=shefit.vn&font=Oswald'
                           }
                           alt={exercise.circuit_exercise_title}
@@ -105,7 +105,7 @@ export function CircuitItem({ circuit, cIdx, course_id }: { circuit: DayCircuit;
                         <div className="relative group cursor-pointer w-1/3 flex-shrink-0">
                           <img
                             src={
-                              getYouTubeThumbnail(exercise.youtube_url) ||
+                              getYouTubeThumbnail(exercise.youtube_url, 'sddefault') ||
                               'https://placehold.co/400?text=shefit.vn&font=Oswald'
                             }
                             alt={exercise.circuit_exercise_title}

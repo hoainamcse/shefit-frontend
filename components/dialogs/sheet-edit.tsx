@@ -3,17 +3,17 @@ import type { PropsWithChildren } from 'react'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { ScrollArea } from '../ui/scroll-area'
 
-interface EditSheetProps extends PropsWithChildren {
+interface SheetEditProps extends PropsWithChildren {
   title?: string
   description?: string
   open?: boolean
   onOpenChange?: (open: boolean) => void
 }
 
-export function EditSheet({ children, title, description, open, onOpenChange }: EditSheetProps) {
+export function SheetEdit({ children, title, description, open, onOpenChange }: SheetEditProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="p-0 sm:max-w-md">
+      <SheetContent className="p-0 sm:max-w-3xl">
         <div className="flex h-full w-full flex-col gap-0">
           <SheetHeader className="flex-none border-b border-dashed p-4 text-left">
             <SheetTitle>{title ?? 'Chỉnh sửa'}</SheetTitle>

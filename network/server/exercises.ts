@@ -10,7 +10,7 @@ export async function getExercises(): Promise<ListResponse<Exercise>> {
   return response.json()
 }
 
-export async function getExerciseById(id: string): Promise<ApiResponse<Exercise>> {
+export async function getExercise(id: string): Promise<ApiResponse<Exercise>> {
   const response = await fetchDataServer(`/v1/exercises/${id}`)
   return response.json()
 }

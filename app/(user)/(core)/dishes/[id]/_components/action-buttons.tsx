@@ -19,7 +19,7 @@ interface ActionButtonsProps {
   dishID: Dish['id']
 }
 
-export default function ActionButtons({ dishID }: ActionButtonsProps) {
+export function ActionButtons({ dishID }: ActionButtonsProps) {
   const { session } = useSession()
   const queryClient = useQueryClient()
   const [showSaveOptionsDialog, setShowSaveOptionsDialog] = useState(false)
@@ -253,6 +253,8 @@ export default function ActionButtons({ dishID }: ActionButtonsProps) {
     </div>
   )
 }
+
+export default ActionButtons
 
 function isActiveSubscription(status: string, endDate: string) {
   const now = new Date()

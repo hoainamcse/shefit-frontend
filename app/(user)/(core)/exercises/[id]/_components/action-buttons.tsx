@@ -19,7 +19,7 @@ interface ActionButtonsProps {
   exerciseID: Exercise['id']
 }
 
-export default function ActionButtons({ exerciseID }: ActionButtonsProps) {
+export function ActionButtons({ exerciseID }: ActionButtonsProps) {
   const { session } = useSession()
   const queryClient = useQueryClient()
   const [showSaveOptionsDialog, setShowSaveOptionsDialog] = useState(false)
@@ -255,6 +255,8 @@ export default function ActionButtons({ exerciseID }: ActionButtonsProps) {
     </div>
   )
 }
+
+export default ActionButtons
 
 function isActiveSubscription(status: string, endDate: string) {
   const now = new Date()

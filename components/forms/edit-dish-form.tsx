@@ -6,19 +6,18 @@ import z from 'zod'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createDish, updateDish } from '@/network/client/dishes'
 import { MainButton } from '@/components/buttons/main-button'
 import { Form } from '@/components/ui/form'
 
-import { FormInputField, FormTextareaField } from './fields'
+import { FormImageSelectField, FormInputField, FormTextareaField } from './fields'
 import { DietsTable } from '../data-table/diets-table'
-import { EditDialog } from '../data-table/edit-dialog'
+import { DialogEdit } from '../dialogs/dialog-edit'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
-import { CoverMediaSelector } from './cover-media-selector'
 
 // ! Follow DishPayload model in models/dish.ts
 export const formSchema = z.object({
@@ -26,7 +25,7 @@ export const formSchema = z.object({
   description: z.string(),
   diet_id: z.coerce.number().nullable(),
   image: z.string().url(),
-  youtube_url: z.string().url().optional(),
+  youtube_url: z.string().url(),
   nutrients: z.string(),
 })
 
@@ -38,7 +37,6 @@ type EditDishFormProps = {
 }
 
 const defaultImageUrl = 'https://placehold.co/400?text=shefit.vn&font=Oswald'
-const defaultYoutubeUrl = 'https://www.youtube.com/'
 
 export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
   const isEdit = !!data
@@ -47,30 +45,23 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
     description: '',
     diet_id: null,
     image: defaultImageUrl,
-    youtube_url: defaultYoutubeUrl,
+    youtube_url: '',
     nutrients: '',
   } as FormValue
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: isEdit
-      ? (() => {
-          const isYoutube = typeof data.image === 'string' && data.image.includes('youtube.com')
-          return {
-            name: data.name,
-            description: data.description,
-            diet_id: data.diet?.id || null,
-            image: isYoutube ? defaultImageUrl : data.image,
-            youtube_url: isYoutube ? data.image : defaultYoutubeUrl,
-            nutrients: data.nutrients,
-          }
-        })()
+      ? {
+          name: data.name,
+          description: data.description,
+          diet_id: data.diet?.id || null,
+          image: data.image,
+          youtube_url: data.youtube_url,
+          nutrients: data.nutrients,
+        }
       : defaultValue,
   })
-
-  const [showYoutubeUrlInput, setShowYoutubeUrlInput] = useState(
-    isEdit && data?.image?.includes('youtube.com') ? true : false
-  )
 
   const dishMutation = useMutation({
     mutationFn: (values: FormValue) => (isEdit ? updateDish(data.id, values) : createDish(values)),
@@ -85,12 +76,7 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
   })
 
   const onSubmit = (values: FormValue) => {
-    if (showYoutubeUrlInput && values.youtube_url) {
-      const { youtube_url, ...submitValues } = values
-      dishMutation.mutate({ ...submitValues, image: youtube_url })
-    } else {
-      dishMutation.mutate(values)
-    }
+    dishMutation.mutate(values)
   }
 
   const [openDietsTable, setOpenDietsTable] = useState(false)
@@ -111,12 +97,14 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
               readOnly
             />
           </div>
-          <CoverMediaSelector
+          <FormImageSelectField control={form.control} name="image" label="Hình ảnh" />
+          <FormInputField
             form={form}
-            showYoutubeUrlInput={showYoutubeUrlInput}
-            setShowYoutubeUrlInput={setShowYoutubeUrlInput}
-            coverImageName="image"
-            youtubeUrlName="youtube_url"
+            name="youtube_url"
+            label="Video thay thế hình ảnh"
+            placeholder="Nhập URL video YouTube"
+            // defaultValue={DEFAULT_YOUTUBE_URL}
+            description="Hình ảnh sẽ được sử dụng nếu không đặt"
           />
           <FormTextareaField form={form} name="nutrients" label="Dinh dưỡng" placeholder="Nhập dinh dưỡng" />
           <div className="flex justify-end">
@@ -126,7 +114,7 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
           </div>
         </form>
       </Form>
-      <EditDialog
+      <DialogEdit
         title="Chọn Chế độ ăn"
         description="Chọn một chế độ ăn đã có hoặc tạo mới để liên kết với món ăn này."
         open={openDietsTable}
@@ -144,7 +132,7 @@ export function EditDishForm({ data, onSuccess }: EditDishFormProps) {
             setOpenDietsTable(false)
           }}
         />
-      </EditDialog>
+      </DialogEdit>
     </>
   )
 }

@@ -17,9 +17,9 @@ import { Input } from '../ui/input'
 import { Separator } from '../ui/separator'
 import { AddButton } from '../buttons/add-button'
 import { GoalTable } from '../data-table/goal-table'
-import { EditSheet } from '../data-table/edit-sheet'
+import { SheetEdit } from '../dialogs/sheet-edit'
 import { MainButton } from '../buttons/main-button'
-import { EditDialog } from '../data-table/edit-dialog'
+import { DialogEdit } from '../dialogs/dialog-edit'
 import { DietsTable } from '../data-table/diets-table'
 import { CaloriesTable } from '../data-table/calories-table'
 import { FormImageSelectField, FormInputField, FormNumberField, FormRichTextField, FormSwitchField, FormTextareaField } from './fields'
@@ -258,7 +258,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
           </div>
         </form>
       </Form>
-      <EditDialog
+      <DialogEdit
         title="Chọn Chế độ ăn"
         description="Chọn một chế độ ăn đã có hoặc tạo mới để liên kết với thực đơn này."
         open={openDietsTable}
@@ -276,8 +276,8 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
             setOpenDietsTable(false)
           }}
         />
-      </EditDialog>
-      <EditDialog
+      </DialogEdit>
+      <DialogEdit
         title="Chọn Calorie"
         description="Chọn một calorie đã có hoặc tạo mới để liên kết với thực đơn này."
         open={openCaloriesTable}
@@ -295,8 +295,8 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
             setOpenCaloriesTable(false)
           }}
         />
-      </EditDialog>
-      <EditDialog
+      </DialogEdit>
+      <DialogEdit
         title="Chọn Mục tiêu"
         description="Chọn một mục tiêu đã có hoặc tạo mới để liên kết với thực đơn này."
         open={openGoalsTable}
@@ -314,7 +314,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
             setOpenGoalsTable(false)
           }}
         />
-      </EditDialog>
+      </DialogEdit>
     </>
   )
 }
@@ -324,7 +324,7 @@ function EditMealPlanAssets({ form }: { form: ReturnType<typeof useForm<FormValu
   return (
     <>
       <MainButton text="Assets của thực đơn" variant="outline" type="button" onClick={() => setOpenEditSheet(true)} />
-      <EditSheet
+      <SheetEdit
         open={openEditSheet}
         onOpenChange={setOpenEditSheet}
         title="Chỉnh sửa thực đơn"
@@ -355,7 +355,7 @@ function EditMealPlanAssets({ form }: { form: ReturnType<typeof useForm<FormValu
             description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
           />
         </div>
-      </EditSheet>
+      </SheetEdit>
     </>
   )
 }

@@ -49,16 +49,15 @@ import { sortByKey } from '@/lib/helpers'
 import { Badge } from '@/components/ui/badge'
 import { transformExercise } from '@/lib/xlsx'
 import { Button } from '@/components/ui/button'
-import { ExcelReader } from '@/components/excel-reader'
 import { AddButton } from '@/components/buttons/add-button'
 import { MainButton } from '@/components/buttons/main-button'
-import { EditSheet } from '@/components/data-table/edit-sheet'
+import { SheetEdit } from '@/components/dialogs/sheet-edit'
 import { EditWeekDayForm } from '@/components/forms/edit-week-day-form'
 import { EditCourseWeekForm } from '@/components/forms/edit-course-week-form'
 import { EditDayCircuitForm } from '@/components/forms/edit-day-circuit-form'
 import { EditCircuitExerciseForm } from '@/components/forms/edit-circuit-exercise-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ExcelImportDialog } from '@/components/excel-import-dialog'
+import { DialogExcelImport } from '@/components/dialogs/dialog-excel-import'
 
 export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null)
@@ -229,7 +228,7 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
       <div className="flex flex-col gap-4 w-80 p-4">
         <div className="flex items-center justify-between">
           {/* <ImportDialog courseID={courseID} onSuccess={() => weeksRefetch()} /> */}
-          <ExcelImportDialog
+          <DialogExcelImport
             title="Khoá tập"
             handleSubmit={async (file: File) => {
               await importVideoCourseExcel(courseID, file)
@@ -565,7 +564,7 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
       </div>
 
       {/* Sheets and Forms */}
-      <EditSheet
+      <SheetEdit
         title={editingItem ? 'Chỉnh sửa tuần' : 'Thêm tuần'}
         description="Make changes to your profile here. Click save when you're done."
         open={showWeekForm}
@@ -581,9 +580,9 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
             // queryClient.invalidateQueries({ queryKey: ['weeks'] })
           }}
         />
-      </EditSheet>
+      </SheetEdit>
 
-      <EditSheet
+      <SheetEdit
         title={editingItem ? 'Chỉnh sửa ngày' : 'Thêm ngày'}
         description="Make changes to your profile here. Click save when you're done."
         open={showDayForm}
@@ -600,9 +599,9 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
             // queryClient.invalidateQueries({ queryKey: ['days', selectedWeek] })
           }}
         />
-      </EditSheet>
+      </SheetEdit>
 
-      <EditSheet
+      <SheetEdit
         title={editingItem ? 'Chỉnh sửa circuit' : 'Thêm circuit'}
         description="Make changes to your profile here. Click save when you're done."
         open={showCircuitForm}
@@ -620,9 +619,9 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
             // queryClient.invalidateQueries({ queryKey: ["circuits", selectedDay] })
           }}
         />
-      </EditSheet>
+      </SheetEdit>
 
-      <EditSheet
+      <SheetEdit
         title={selectedExercise ? 'Chỉnh sửa động tác' : 'Thêm động tác'}
         description="Make changes to your profile here. Click save when you're done."
         open={showExerciseForm}
@@ -641,7 +640,7 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
             // queryClient.invalidateQueries({ queryKey: ["circuits", selectedDay] })
           }}
         />
-      </EditSheet>
+      </SheetEdit>
 
       {/* <DeleteConfirmDialog
         open={!!deleteItem}

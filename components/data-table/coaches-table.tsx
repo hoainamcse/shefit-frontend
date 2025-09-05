@@ -16,7 +16,7 @@ import { Spinner } from '@/components/spinner'
 import { EditCoachForm } from '../forms/edit-coach-form'
 import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
-import { EditSheet } from './edit-sheet'
+import { SheetEdit } from '../dialogs/sheet-edit'
 
 interface CoachesTableProps {
   onConfirmRowSelection?: (selectedRows: Coach[]) => void
@@ -187,14 +187,14 @@ export function CoachesTable({ onConfirmRowSelection }: CoachesTableProps) {
           </>
         }
       />
-      <EditSheet
+      <SheetEdit
         title={isEdit ? 'Chỉnh sửa HLV' : 'Thêm HLV'}
         description="Make changes to your profile here. Click save when you're done."
         open={isEditSheetOpen}
         onOpenChange={setIsEditSheetOpen}
       >
         <EditCoachForm data={selectedRow} onSuccess={onEditSuccess} />
-      </EditSheet>
+      </SheetEdit>
     </>
   )
 }

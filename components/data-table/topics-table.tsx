@@ -13,7 +13,7 @@ import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
 import { AddButton } from '../buttons/add-button'
-import { EditSheet } from './edit-sheet'
+import { SheetEdit } from '../dialogs/sheet-edit'
 import { EditTopicForm } from '../forms/edit-topic-form'
 
 export function TopicsTable() {
@@ -142,14 +142,14 @@ export function TopicsTable() {
         onPaginationChange={setPagination}
         rightSection={<AddButton text="Thêm chủ đề" onClick={onAddRow} />}
       />
-      <EditSheet
+      <SheetEdit
         title={isEdit ? 'Chỉnh sửa chủ đề' : 'Thêm chủ đề'}
         description="Make changes to your profile here. Click save when you're done."
         open={isEditSheetOpen}
         onOpenChange={setIsEditSheetOpen}
       >
         <EditTopicForm data={selectedRow} onSuccess={onEditSuccess} />
-      </EditSheet>
+      </SheetEdit>
     </>
   )
 }

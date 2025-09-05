@@ -17,8 +17,8 @@ import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { Separator } from '../ui/separator'
 import { MainButton } from '../buttons/main-button'
-import { EditSheet } from '../data-table/edit-sheet'
-import { EditDialog } from '../data-table/edit-dialog'
+import { SheetEdit } from '../dialogs/sheet-edit'
+import { DialogEdit } from '../dialogs/dialog-edit'
 import { EquipmentsTable } from '../data-table/equipments-table'
 import { FormCategoryTable } from '../data-table/form-category-table'
 import { MuscleGroupsTable } from '../data-table/muscle-groups-table'
@@ -264,7 +264,7 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
           </div>
         </form>
       </Form>
-      <EditDialog
+      <DialogEdit
         title="Chọn Nhóm cơ"
         description="Chọn một hoặc nhiều nhóm cơ đã có hoặc tạo mới để liên kết với khoá tập này."
         open={openMuscleGroupsTable}
@@ -282,8 +282,8 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
             setOpenMuscleGroupsTable(false)
           }}
         />
-      </EditDialog>
-      <EditDialog
+      </DialogEdit>
+      <DialogEdit
         title="Chọn Dụng cụ"
         description="Chọn một hoặc nhiều dụng cụ đã có hoặc tạo mới để liên kết với khoá tập này."
         open={openEquipmentsTable}
@@ -301,8 +301,8 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
             setOpenEquipmentsTable(false)
           }}
         />
-      </EditDialog>
-      <EditDialog
+      </DialogEdit>
+      <DialogEdit
         title="Chọn Gói tập"
         description="Chọn một hoặc nhiều gói tập đã có hoặc tạo mới để liên kết với khoá tập này."
         open={openSubscriptionsTable}
@@ -320,8 +320,8 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
             setOpenSubscriptionsTable(false)
           }}
         />
-      </EditDialog>
-      <EditDialog
+      </DialogEdit>
+      <DialogEdit
         title="Chọn Phom dáng"
         description="Chọn một hoặc nhiều dụng cụ đã có hoặc tạo mới để liên kết với khoá tập này."
         open={openFormCategoryTable}
@@ -339,8 +339,8 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
             setOpenFormCategoryTable(false)
           }}
         />
-      </EditDialog>
-      <EditDialog
+      </DialogEdit>
+      <DialogEdit
         title="Chọn loại hình tập luyện"
         description="Chọn một hoặc nhiều dụng cụ đã có hoặc tạo mới để liên kết với khoá tập này."
         open={openWorkoutMethodsTable}
@@ -358,7 +358,7 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
             setOpenWorkoutMethodsTable(false)
           }}
         />
-      </EditDialog>
+      </DialogEdit>
     </>
   )
 }
@@ -368,7 +368,7 @@ function EditCourseAssets({ form }: { form: ReturnType<typeof useForm<FormValue>
   return (
     <>
       <MainButton text="Assets của khoá tập" variant="outline" type="button" onClick={() => setOpenEditSheet(true)} />
-      <EditSheet
+      <SheetEdit
         open={openEditSheet}
         onOpenChange={setOpenEditSheet}
         title="Chỉnh sửa khoá tập"
@@ -399,7 +399,7 @@ function EditCourseAssets({ form }: { form: ReturnType<typeof useForm<FormValue>
             description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
           />
         </div>
-      </EditSheet>
+      </SheetEdit>
     </>
   )
 }

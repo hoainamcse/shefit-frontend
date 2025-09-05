@@ -15,7 +15,7 @@ import { Spinner } from '@/components/spinner'
 
 import { EditDietForm } from '../forms/edit-diet-form'
 import { AddButton } from '../buttons/add-button'
-import { EditSheet } from './edit-sheet'
+import { SheetEdit } from '../dialogs/sheet-edit'
 import { MainButton } from '../buttons/main-button'
 
 interface DietsTableProps {
@@ -174,14 +174,14 @@ export function DietsTable({ onConfirmRowSelection }: DietsTableProps) {
           </>
         }
       />
-      <EditSheet
+      <SheetEdit
         title={isEdit ? 'Chỉnh sửa chế độ ăn' : 'Thêm chế độ ăn'}
         description="Make changes to your profile here. Click save when you're done."
         open={isEditSheetOpen}
         onOpenChange={setIsEditSheetOpen}
       >
         <EditDietForm data={selectedRow} onSuccess={onEditSuccess} />
-      </EditSheet>
+      </SheetEdit>
     </>
   )
 }

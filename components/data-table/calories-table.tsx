@@ -16,7 +16,7 @@ import { Spinner } from '@/components/spinner'
 import { EditCalorieForm } from '../forms/edit-calorie-form'
 import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
-import { EditSheet } from './edit-sheet'
+import { SheetEdit } from '../dialogs/sheet-edit'
 
 interface CaloriesTableProps {
   onConfirmRowSelection?: (selectedRows: Calorie[]) => void
@@ -172,14 +172,14 @@ export function CaloriesTable({ onConfirmRowSelection }: CaloriesTableProps) {
           </>
         }
       />
-      <EditSheet
+      <SheetEdit
         title={isEdit ? 'Chỉnh sửa calorie' : 'Thêm calorie'}
         description="Make changes to your profile here. Click save when you're done."
         open={isEditSheetOpen}
         onOpenChange={setIsEditSheetOpen}
       >
         <EditCalorieForm data={selectedRow} onSuccess={onEditSuccess} />
-      </EditSheet>
+      </SheetEdit>
     </>
   )
 }

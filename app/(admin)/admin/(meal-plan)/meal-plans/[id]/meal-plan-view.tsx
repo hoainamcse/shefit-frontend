@@ -9,7 +9,7 @@ import { Sprout, Trash2 } from 'lucide-react'
 
 import { EditMealPlanDishForm } from '@/components/forms/edit-meal-plan-dish-form'
 import { EditMealPlanDayForm } from '@/components/forms/edit-meal-plan-day-form'
-import { EditSheet } from '@/components/data-table/edit-sheet'
+import { SheetEdit } from '@/components/dialogs/sheet-edit'
 import { MainButton } from '@/components/buttons/main-button'
 import { EditButton } from '@/components/buttons/edit-button'
 import { AddButton } from '@/components/buttons/add-button'
@@ -25,7 +25,7 @@ import {
   queryKeyMealPlanDays,
   queryKeyMealPlanDishes,
 } from '@/network/client/meal-plans'
-import { ExcelImportDialog } from '@/components/excel-import-dialog'
+import { DialogExcelImport } from '@/components/dialogs/dialog-excel-import'
 
 interface MealPlanViewProps {
   mealPlanID: MealPlan['id']
@@ -153,7 +153,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <ExcelImportDialog
+        <DialogExcelImport
           title="Thực đơn"
           handleSubmit={async (file: File) => {
             await importMealPlanExcel(mealPlanID, file)
@@ -257,7 +257,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
         </div>
       )}
 
-      <EditSheet
+      <SheetEdit
         title={!isAddingDay ? 'Chỉnh sửa ngày' : 'Thêm ngày'}
         description="Make changes to your profile here. Click save when you're done."
         open={isEditDayOpen}
@@ -271,9 +271,9 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
           data={!isAddingDay ? selectedDay : null}
           onSuccess={onEditDaySuccess}
         />
-      </EditSheet>
+      </SheetEdit>
 
-      <EditSheet
+      <SheetEdit
         title={isEditDish ? 'Chỉnh sửa món ăn' : 'Thêm món ăn'}
         description="Make changes to your profile here. Click save when you're done."
         open={isEditDishOpen}
@@ -285,7 +285,7 @@ export function MealPlanView({ mealPlanID }: MealPlanViewProps) {
           data={selectedDish}
           onSuccess={onEditDishSuccess}
         />
-      </EditSheet>
+      </SheetEdit>
     </div>
   )
 }

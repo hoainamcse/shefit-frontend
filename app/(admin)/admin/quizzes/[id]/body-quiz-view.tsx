@@ -25,7 +25,7 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { AddButton } from '@/components/buttons/add-button'
 import { MainButton } from '@/components/buttons/main-button'
-import { EditSheet } from '@/components/data-table/edit-sheet'
+import { SheetEdit } from '@/components/dialogs/sheet-edit'
 import { EditQuestionForm } from '@/components/forms/edit-question-form'
 import { EditBodyQuizForm } from '@/components/forms/edit-body-quiz-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -241,7 +241,7 @@ export function BodyQuizView({ quizID }: { quizID: BodyQuiz['id'] }) {
       )}
 
       {/* Sheets and Forms */}
-      <EditSheet
+      <SheetEdit
         title="Chỉnh sửa quiz"
         description="Make changes to your profile here. Click save when you're done."
         open={showQuizForm}
@@ -256,9 +256,9 @@ export function BodyQuizView({ quizID }: { quizID: BodyQuiz['id'] }) {
             // queryClient.invalidateQueries({ queryKey: ['quizzes'] })
           }}
         />
-      </EditSheet>
+      </SheetEdit>
 
-      <EditSheet
+      <SheetEdit
         title={editingQuestion ? 'Chỉnh sửa câu hỏi' : 'Thêm câu hỏi'}
         description="Make changes to your profile here. Click save when you're done."
         open={showQuestionForm}
@@ -280,7 +280,7 @@ export function BodyQuizView({ quizID }: { quizID: BodyQuiz['id'] }) {
             // queryClient.invalidateQueries({ queryKey: ['quiz', quizID] })
           }}
         />
-      </EditSheet>
+      </SheetEdit>
 
       {/* <DeleteConfirmDialog
         open={!!deleteQuestion}

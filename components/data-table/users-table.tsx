@@ -41,7 +41,7 @@ import { FormInputField, FormSelectField } from '../forms/fields'
 import { Form } from '../ui/form'
 import { Button } from '../ui/button'
 import { useSession } from '@/hooks/use-session'
-import { ExcelImportDialog } from '../excel-import-dialog'
+import { DialogExcelImport } from '../dialogs/dialog-excel-import'
 
 export function UsersTable() {
   const { session, isLoading: isPending } = useSession()
@@ -327,7 +327,7 @@ export function UsersTable() {
             <AddButton text="Thêm tài khoản" />
           </CreateAccountDialog>
           <ExportDialog data={data?.data} onSuccess={() => toast.success('Đã xuất danh sách tài khoản thành công')} />
-          <ExcelImportDialog
+          <DialogExcelImport
             title="Tài khoản"
             handleSubmit={async (file: File) => {
               await importUsersExcel(file)

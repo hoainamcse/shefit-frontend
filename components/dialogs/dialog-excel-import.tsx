@@ -4,23 +4,23 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { ImportIcon } from 'lucide-react'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
-import { MainButton } from './buttons/main-button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import { MainButton } from '../buttons/main-button'
 import { ExcelReader } from './excel-reader'
 
-interface ExcelImportDialogProps {
+interface DialogExcelImportProps {
   title: string
   handleSubmit: (file: File) => Promise<any>
   specificHeaders?: string[]
   disabled?: boolean
 }
 
-export function ExcelImportDialog({
+export function DialogExcelImport({
   title,
   handleSubmit,
   specificHeaders = [],
   disabled = false,
-}: ExcelImportDialogProps) {
+}: DialogExcelImportProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -49,7 +49,7 @@ export function ExcelImportDialog({
       <DialogTrigger asChild>
         <MainButton text={`Nhập ${title}`} icon={ImportIcon} variant="outline" disabled={disabled} />
       </DialogTrigger>
-      <DialogContent className="max-w-screen-lg" onInteractOutside={(e) => e.preventDefault()}>
+      <DialogContent className="max-w-5xl" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{`Nhập ${title}`}</DialogTitle>
           <DialogDescription>Chức năng này sẽ cho phép nhập danh sách {title} từ tệp Excel</DialogDescription>

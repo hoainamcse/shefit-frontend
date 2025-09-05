@@ -1,87 +1,26 @@
-'use client'
-
-import { useState, useEffect } from 'react'
-import dynamic from 'next/dynamic'
-import { getDish } from '@/network/server/dishes'
-import ActionButtons from './_components/action-buttons'
 import Link from 'next/link'
+import { PlayCircle } from 'lucide-react'
+
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
-import { useSearchParams } from 'next/navigation'
-const ReactPlayer = dynamic(() => import('react-player/lazy'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full aspect-video bg-gray-100 flex items-center justify-center">
-      <p className="text-gray-500">Đang tải video...</p>
-    </div>
-  ),
-})
+import { DialogVideoPlayer } from '@/components/dialogs/dialog-video-player'
+import { getYouTubeThumbnail } from '@/lib/youtube'
+import { getDish } from '@/network/server/dishes'
+import { ActionButtons } from './_components/action-buttons'
 
-export default function MealDetail({ params }: { params: Promise<{ id: string }> }) {
-  const [dish, setDish] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [dishId, setDishId] = useState<string>('')
-  const searchParams = useSearchParams()
-  const dietId = searchParams?.get('diet_id') || ''
-  const back = searchParams?.get('back') || ''
+export default async function DishPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const { id } = await params
+  const _searchParams = await searchParams
+  const dietId = typeof _searchParams?.diet_id === 'string' ? _searchParams.diet_id : ''
+  const back = typeof _searchParams?.back === 'string' ? _searchParams.back : ''
 
-  useEffect(() => {
-    const unwrapParams = async () => {
-      try {
-        const { id: dish_id } = await params
-        setDishId(dish_id)
-      } catch (err) {
-        console.error('Error unwrapping params:', err)
-        setError('Lỗi khi tải thông tin món ăn')
-        setLoading(false)
-      }
-    }
+  const { data: dish } = await getDish(id)
 
-    unwrapParams()
-  }, [params])
-
-  useEffect(() => {
-    if (!dishId) return
-
-    const fetchDish = async () => {
-      try {
-        const response = await getDish(dishId)
-        setDish(response.data)
-      } catch (err) {
-        console.error('Error fetching dish:', err)
-        setError('Không thể tải thông tin món ăn')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchDish()
-  }, [dishId])
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-10">
-        <p className="text-red-500">{error}</p>
-      </div>
-    )
-  }
-
-  if (!dish) {
-    return (
-      <div className="text-center py-10">
-        <p>Không tìm thấy thông tin món ăn</p>
-      </div>
-    )
-  }
-  console.log(dish)
   return (
     <div className="flex flex-col p-4 md:pt-10 lg:pt-[69px]">
       <Link
@@ -95,46 +34,34 @@ export default function MealDetail({ params }: { params: Promise<{ id: string }>
       </Link>
 
       <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl mb-4 sm:mb-10 lg:mb-[87px] md:text-center">
-        {dish?.name}
+        {dish.name}
       </div>
 
-      {dish?.youtube_url ? (
-        <div className="w-full aspect-square lg:aspect-[1800/681] bg-black rounded-[20px] overflow-hidden mb-5">
-          <div className="w-full h-full">
-            <ReactPlayer
-              url={dish.youtube_url}
-              width="100%"
-              height="100%"
-              controls
-              config={{
-                youtube: {
-                  playerVars: {
-                    modestbranding: 1,
-                    rel: 0,
-                    showinfo: 0,
-                    origin: typeof window !== 'undefined' ? window.location.origin : '',
-                  },
-                },
-              }}
-              style={{
-                aspectRatio: '16/9',
-                width: '100%',
-                height: '100%',
-              }}
+      {dish.youtube_url ? (
+        <DialogVideoPlayer videoUrl={dish.youtube_url} title={dish.name}>
+          <div className="relative group cursor-pointer mb-4">
+            <img
+              src={
+                getYouTubeThumbnail(dish.youtube_url, 'sddefault') ||
+                'https://placehold.co/400?text=shefit.vn&font=Oswald'
+              }
+              alt={dish.name}
+              className="aspect-[3/2] lg:aspect-[3/1] object-cover rounded-xl w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
             />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <PlayCircle className="w-16 h-16 text-white opacity-70 group-hover:opacity-100 transition-opacity" />
+            </div>
           </div>
+        </DialogVideoPlayer>
+      ) : dish.image ? (
+        <div className="w-full bg-black rounded-2xl overflow-hidden mb-5 aspect-square lg:aspect-[3/1]">
+          <img src={dish.image} alt="" className="object-cover rounded-2xl w-full h-full" />
         </div>
-      ) : dish?.image ? (
-        <div className="w-full bg-black rounded-[20px] overflow-hidden mb-5 aspect-square sm:aspect-[1800/681]">
-          <img src={dish.image} alt="" className="object-cover rounded-[20px] w-full h-full" />
-        </div>
-      ) : (
-        <></>
-      )}
+      ) : null}
 
       <div className="flex flex-col gap-5">
         <div>
-          <div className="font-medium text-sm lg:text-lg">{dish?.name}</div>
+          <div className="font-medium text-sm lg:text-lg">{dish.name}</div>
           <div className="text-[#737373] text-sm lg:text-lg">
             <div className="flex flex-wrap gap-4">
               <p>Dinh dưỡng: {dish.nutrients}</p>
@@ -142,13 +69,13 @@ export default function MealDetail({ params }: { params: Promise<{ id: string }>
           </div>
         </div>
 
-        {dish?.description && (
+        {dish.description && (
           <div>
             <h3 className="font-semibold text-sm lg:text-lg">Mô tả:</h3>
             <p className="text-[#737373] text-sm lg:text-lg whitespace-pre-line">{dish.description}</p>
           </div>
         )}
-        <ActionButtons dishID={dish.id} />
+        <ActionButtons dishID={Number(id)} />
       </div>
     </div>
   )

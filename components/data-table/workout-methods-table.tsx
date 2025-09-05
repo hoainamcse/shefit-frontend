@@ -21,7 +21,7 @@ import { Spinner } from '@/components/spinner'
 import { EditFormCategoryForm } from '../forms/edit-form-category-form'
 import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
-import { EditSheet } from './edit-sheet'
+import { SheetEdit } from '../dialogs/sheet-edit'
 import { WorkoutMethod } from '@/models/workout-method'
 import {
   deleteBulkWorkoutMethod,
@@ -180,14 +180,14 @@ export function WorkoutMethodsTable({ onConfirmRowSelection }: WorkoutMethodsTab
           </>
         }
       />
-      <EditSheet
+      <SheetEdit
         title={isEdit ? 'Chỉnh sửa loại hình tập luyện' : 'Thêm loại hình tập luyện'}
         description="Make changes to your profile here. Click save when you're done."
         open={isEditSheetOpen}
         onOpenChange={setIsEditSheetOpen}
       >
         <EditWorkoutMethodForm data={selectedRow} onSuccess={onEditSuccess} />
-      </EditSheet>
+      </SheetEdit>
     </>
   )
 }

@@ -33,10 +33,10 @@ import { Spinner } from '@/components/spinner'
 import { useDebounce } from '@/hooks/use-debounce'
 import { EditExerciseForm } from '../forms/edit-exercise-form'
 import { AddButton } from '../buttons/add-button'
-import { EditSheet } from './edit-sheet'
+import { SheetEdit } from '../dialogs/sheet-edit'
 import { Badge } from '../ui/badge'
 import { MainButton } from '../buttons/main-button'
-import { ExcelImportDialog } from '../excel-import-dialog'
+import { DialogExcelImport } from '../dialogs/dialog-excel-import'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 
@@ -316,7 +316,7 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
               />
             )}
             <AddButton text="Thêm động tác" onClick={onAddRow} />
-            <ExcelImportDialog
+            <DialogExcelImport
               title="Động tác"
               handleSubmit={async (file: File) => {
                 await importExerciseExcel(file)
@@ -326,14 +326,14 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
           </>
         }
       />
-      <EditSheet
+      <SheetEdit
         title={isEdit ? 'Chỉnh sửa động tác' : 'Thêm động tác'}
         description="Make changes to your profile here. Click save when you're done."
         open={isEditSheetOpen}
         onOpenChange={setIsEditSheetOpen}
       >
         <EditExerciseForm data={selectedRow} onSuccess={onEditSuccess} />
-      </EditSheet>
+      </SheetEdit>
     </>
   )
 }

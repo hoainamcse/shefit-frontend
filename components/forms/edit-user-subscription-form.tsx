@@ -28,7 +28,7 @@ import { getDishes } from '@/network/client/dishes'
 import { Dish } from '@/models/dish'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
-import { EditDialog } from '../data-table/edit-dialog'
+import { DialogEdit } from '../dialogs/dialog-edit'
 import { useState } from 'react'
 import { MealPlansTable } from '../data-table/meal-plans-table'
 import { ExercisesTable } from '../data-table/exercises-table'
@@ -384,7 +384,7 @@ export function EditUserSubscriptionForm({
           </div>
         </form>
       </Form>
-      <EditDialog
+      <DialogEdit
         title="Chọn Bữa ăn"
         description="Chọn một hoặc nhiều bữa ăn đã có hoặc tạo mới để liên kết với gói thành viên này."
         open={openMealPlansTable}
@@ -402,8 +402,8 @@ export function EditUserSubscriptionForm({
             setOpenMealPlansTable(false)
           }}
         />
-      </EditDialog>
-      <EditDialog
+      </DialogEdit>
+      <DialogEdit
         title="Chọn Động tác"
         description="Chọn một hoặc nhiều động tác đã có hoặc tạo mới để liên kết với gói thành viên này."
         open={openExercisesTable}
@@ -421,9 +421,9 @@ export function EditUserSubscriptionForm({
             setOpenExercisesTable(false)
           }}
         />
-      </EditDialog>
+      </DialogEdit>
 
-      <EditDialog
+      <DialogEdit
         title="Chọn Món ăn"
         description="Chọn một hoặc nhiều món ăn đã có hoặc tạo mới để liên kết với gói thành viên này."
         open={openDishesTable}
@@ -441,7 +441,7 @@ export function EditUserSubscriptionForm({
             setOpenDishesTable(false)
           }}
         />
-      </EditDialog>
+      </DialogEdit>
     </>
   )
 }

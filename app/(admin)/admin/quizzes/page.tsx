@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { deleteBodyQuiz, getBodyQuizzes, queryKeyBodyQuizzes } from '@/network/client/body-quizzes'
 import { EditBodyQuizForm } from '@/components/forms/edit-body-quiz-form'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
-import { EditSheet } from '@/components/data-table/edit-sheet'
+import { SheetEdit } from '@/components/dialogs/sheet-edit'
 // import { DeleteConfirmDialog } from "./delete-confirm-dialog"
 import { MainButton } from '@/components/buttons/main-button'
 import { AddButton } from '@/components/buttons/add-button'
@@ -145,7 +145,7 @@ export default function BodyQuizzesPage() {
       </div>
 
       {/* Sheets and Forms */}
-      <EditSheet
+      <SheetEdit
         title={editingQuiz ? 'Chỉnh sửa quiz' : 'Thêm quiz'}
         description="Make changes to your profile here. Click save when you're done."
         open={showQuizForm}
@@ -160,7 +160,7 @@ export default function BodyQuizzesPage() {
             // queryClient.invalidateQueries({ queryKey: ['quizzes'] })
           }}
         />
-      </EditSheet>
+      </SheetEdit>
 
       {/* <DeleteConfirmDialog
           open={!!deleteQuiz}

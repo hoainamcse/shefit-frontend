@@ -29,9 +29,9 @@ import {
 import { EditDishForm } from '../forms/edit-dish-form'
 import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
-import { ExcelImportDialog } from '../excel-import-dialog'
+import { DialogExcelImport } from '../dialogs/dialog-excel-import'
 import { Button } from '../ui/button'
-import { EditSheet } from './edit-sheet'
+import { SheetEdit } from '../dialogs/sheet-edit'
 import { getYouTubeThumbnail } from '@/lib/youtube'
 
 interface DishesTableProps {
@@ -267,7 +267,7 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
               />
             )}
             <AddButton text="Thêm món ăn" onClick={onAddRow} />
-            <ExcelImportDialog
+            <DialogExcelImport
               title="Món ăn"
               handleSubmit={async (file: File) => {
                 await importDishExcel(file)
@@ -277,14 +277,14 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
           </>
         }
       />
-      <EditSheet
+      <SheetEdit
         title={isEdit ? 'Chỉnh sửa món ăn' : 'Thêm món ăn'}
         description="Make changes to your profile here. Click save when you're done."
         open={isEditSheetOpen}
         onOpenChange={setIsEditSheetOpen}
       >
         <EditDishForm data={selectedRow} onSuccess={onEditSuccess} />
-      </EditSheet>
+      </SheetEdit>
     </>
   )
 }

@@ -12,11 +12,11 @@ import { Spinner } from '@/components/spinner'
 
 import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
-import { EditSheet } from './edit-sheet'
+import { SheetEdit } from '../dialogs/sheet-edit'
 import { EditAIHubForm } from '../forms/edit-ai-hub-form'
 import { Greeting } from '@/models/chatbot'
 import { deleteBulkGreeting, deleteGreeting, getListGreeting, importGreetingExcel, queryKeyGreetings } from '@/network/client/chatbot'
-import { ExcelImportDialog } from '../excel-import-dialog'
+import { DialogExcelImport } from '../dialogs/dialog-excel-import'
 
 interface AIHubTableProps {
   onConfirmRowSelection?: (selectedRows: Greeting[]) => void
@@ -176,7 +176,7 @@ export function AIHubTable({ onConfirmRowSelection }: AIHubTableProps) {
               />
             )}
             <AddButton text="Thêm câu hỏi" onClick={onAddRow} />
-            <ExcelImportDialog
+            <DialogExcelImport
               title="Messages"
               handleSubmit={async (file: File) => {
                 await importGreetingExcel(file)
@@ -186,14 +186,14 @@ export function AIHubTable({ onConfirmRowSelection }: AIHubTableProps) {
           </>
         }
       />
-      <EditSheet
+      <SheetEdit
         title={isEdit ? 'Chỉnh sửa câu hỏi' : 'Thêm câu hỏi'}
         description="Make changes to your profile here. Click save when you're done."
         open={isEditSheetOpen}
         onOpenChange={setIsEditSheetOpen}
       >
         <EditAIHubForm data={selectedRow} onSuccess={onEditSuccess} />
-      </EditSheet>
+      </SheetEdit>
     </>
   )
 }

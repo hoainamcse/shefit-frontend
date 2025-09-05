@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { AddButton } from '@/components/buttons/add-button'
 import { MainButton } from '@/components/buttons/main-button'
-import { EditSheet } from '@/components/data-table/edit-sheet'
+import { SheetEdit } from '@/components/dialogs/sheet-edit'
 import { deleteDaySession, deleteLiveDay, getLiveDays, queryKeyLiveDays } from '@/network/client/courses'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { EditUserSubscriptionForm } from '@/components/forms/edit-user-subscription-form'
@@ -318,7 +318,7 @@ export function UserSubscriptionView({ userID, userRole }: { userID: User['id'];
       )}
 
       {/* Sheets and Forms */}
-      <EditSheet
+      <SheetEdit
         title={editingUserSubscription ? 'Chỉnh sửa gói tập' : 'Thêm gói tập'}
         description="Make changes to your profile here. Click save when you're done."
         open={showUserSubscriptionForm}
@@ -337,7 +337,7 @@ export function UserSubscriptionView({ userID, userRole }: { userID: User['id'];
             // queryClient.invalidateQueries({ queryKey: ['liveDays'] })
           }}
         />
-      </EditSheet>
+      </SheetEdit>
     </div>
   )
 }

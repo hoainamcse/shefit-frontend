@@ -1,90 +1,26 @@
-'use client'
-
-import { useState, useEffect } from 'react'
-import dynamic from 'next/dynamic'
-import { getExerciseById } from '@/network/server/exercises'
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import ActionButtons from './_components/action-buttons'
 import Link from 'next/link'
+import { PlayCircle, ShoppingCart } from 'lucide-react'
+
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
-import { useSearchParams } from 'next/navigation'
-import { ShoppingCart } from 'lucide-react'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { DialogVideoPlayer } from '@/components/dialogs/dialog-video-player'
+import { getYouTubeThumbnail } from '@/lib/youtube'
+import { getExercise } from '@/network/server/exercises'
+import { ActionButtons } from './_components/action-buttons'
 
-// Dynamically import ReactPlayer with no SSR to avoid window is not defined errors
-const ReactPlayer = dynamic(() => import('react-player/lazy'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full aspect-video bg-gray-100 flex items-center justify-center">
-      <p className="text-gray-500">Đang tải video...</p>
-    </div>
-  ),
-})
+export default async function ExercisePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const { id } = await params
+  const _searchParams = await searchParams
+  const muscleGroupId = typeof _searchParams?.muscle_group_id === 'string' ? _searchParams.muscle_group_id : ''
+  const back = typeof _searchParams?.back === 'string' ? _searchParams.back : ''
 
-export default function MuscleDetail({ params }: { params: Promise<{ id: string }> }) {
-  const [exercise, setExercise] = useState<any>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [exerciseId, setExerciseId] = useState<string>('')
-  const [isLoading, setIsLoading] = useState(true)
-  const searchParams = useSearchParams()
-  const muscleGroupId = searchParams?.get('muscle_group_id') || ''
-  const back = searchParams?.get('back') || ''
-
-  useEffect(() => {
-    const unwrapParams = async () => {
-      try {
-        const { id: exercise_id } = await params
-        setExerciseId(exercise_id)
-      } catch (err) {
-        console.error('Error unwrapping params:', err)
-        setError('Lỗi khi tải thông tin động tác')
-        setIsLoading(false)
-      }
-    }
-
-    unwrapParams()
-  }, [params])
-
-  useEffect(() => {
-    if (!exerciseId) return
-
-    const fetchExercise = async () => {
-      try {
-        const response = await getExerciseById(exerciseId)
-        setExercise(response.data)
-      } catch (err) {
-        console.error('Error fetching exercise:', err)
-        setError('Không thể tải thông tin động tác')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchExercise()
-  }, [exerciseId])
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-10">
-        <p className="text-red-500">{error}</p>
-      </div>
-    )
-  }
-
-  if (!exercise) {
-    return (
-      <div className="text-center py-10">
-        <p>Không tìm thấy thông tin động tác</p>
-      </div>
-    )
-  }
+  const { data: exercise } = await getExercise(id)
 
   return (
     <div className="flex flex-col md:pt-10 p-4 xl:pt-[53px]">
@@ -100,31 +36,22 @@ export default function MuscleDetail({ params }: { params: Promise<{ id: string 
           : 'Quay về'}
       </Link>
 
-      {exercise?.youtube_url && (
-        <div className="w-full aspect-[400/255] lg:aspect-[1800/681] bg-black rounded-[20px] overflow-hidden mb-4 sm:mb-10 lg:mb-16">
-          <div className="w-full h-full">
-            <ReactPlayer
-              url={exercise.youtube_url}
-              width="100%"
-              height="100%"
-              controls
-              config={{
-                youtube: {
-                  playerVars: {
-                    modestbranding: 1,
-                    rel: 0,
-                    showinfo: 0,
-                    origin: typeof window !== 'undefined' ? window.location.origin : '',
-                  },
-                },
-              }}
-              style={{
-                width: '100%',
-                height: '100%',
-              }}
+      {exercise.youtube_url && (
+        <DialogVideoPlayer videoUrl={exercise.youtube_url} title={exercise.name}>
+          <div className="relative group cursor-pointer mb-4">
+            <img
+              src={
+                getYouTubeThumbnail(exercise.youtube_url, 'sddefault') ||
+                'https://placehold.co/400?text=shefit.vn&font=Oswald'
+              }
+              alt={exercise.name}
+              className="aspect-[3/2] lg:aspect-[3/1] object-cover rounded-xl w-full brightness-100 group-hover:brightness-110 transition-all duration-300"
             />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <PlayCircle className="w-16 h-16 text-white opacity-70 group-hover:opacity-100 transition-opacity" />
+            </div>
           </div>
-        </div>
+        </DialogVideoPlayer>
       )}
 
       <div className="flex flex-col">
@@ -201,7 +128,7 @@ export default function MuscleDetail({ params }: { params: Promise<{ id: string 
         </div>
       )}
 
-      <ActionButtons exerciseID={exercise?.id.toString()} />
+      <ActionButtons exerciseID={Number(id)} />
     </div>
   )
 }

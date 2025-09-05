@@ -20,7 +20,7 @@ import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { ProductsTable } from '@/components/data-table/products-table'
 import { CoachesTable } from '@/components/data-table/coaches-table'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { EditDialog } from '@/components/data-table/edit-dialog'
+import { DialogEdit } from '@/components/dialogs/dialog-edit'
 import { MainButton } from '@/components/buttons/main-button'
 import { Spinner } from '@/components/spinner'
 import { Form } from '@/components/ui/form'
@@ -274,7 +274,7 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
           </form>
         </Form>
       </Tabs>
-      <EditDialog
+      <DialogEdit
         title="Chọn Gói tập"
         description="Chọn một hoặc nhiều gói tập đã có hoặc tạo mới để liên kết với cấu hình này."
         open={openSubscriptionsTable}
@@ -292,8 +292,8 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
             setOpenSubscriptionsTable(false)
           }}
         />
-      </EditDialog>
-      <EditDialog
+      </DialogEdit>
+      <DialogEdit
         title="Chọn Thực đơn"
         description="Chọn một hoặc nhiều thực đơn đã có hoặc tạo mới để liên kết với cấu hình này."
         open={openMealPlansTable}
@@ -311,8 +311,8 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
             setOpenMealPlansTable(false)
           }}
         />
-      </EditDialog>
-      <EditDialog
+      </DialogEdit>
+      <DialogEdit
         title="Chọn Sản phẩm"
         description="Chọn một hoặc nhiều sản phẩm đã có hoặc tạo mới để liên kết với cấu hình này."
         open={openProductsTable}
@@ -330,8 +330,8 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
             setOpenProductsTable(false)
           }}
         />
-      </EditDialog>
-      <EditDialog
+      </DialogEdit>
+      <DialogEdit
         title="Chọn HLV"
         description="Chọn một hoặc nhiều HLV đã có hoặc tạo mới để liên kết với cấu hình này."
         open={openCoachesTable}
@@ -349,8 +349,8 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
             setOpenCoachesTable(false)
           }}
         />
-      </EditDialog>
-      <EditDialog
+      </DialogEdit>
+      <DialogEdit
         title="Chọn Loại hình tập luyện"
         description="Chọn một hoặc nhiều loại hình tập luyện đã có hoặc tạo mới để liên kết với cấu hình này."
         open={openWorkoutMethodsTable}
@@ -370,8 +370,8 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
             setOpenWorkoutMethodsTable(false)
           }}
         />
-      </EditDialog>
-      <EditDialog
+      </DialogEdit>
+      <DialogEdit
         title="Chọn Khoá tập Video"
         description="Chọn một hoặc nhiều khoá tập video đã có hoặc tạo mới để liên kết với cấu hình này."
         open={openVideoCourseTable}
@@ -390,8 +390,8 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
             setOpenVideoCourseTable(false)
           }}
         />
-      </EditDialog>
-      <EditDialog
+      </DialogEdit>
+      <DialogEdit
         title="Chọn Khoá tập Zoom"
         description="Chọn một hoặc nhiều khoá tập zoom đã có hoặc tạo mới để liên kết với cấu hình này."
         open={openZoomCourseTable}
@@ -410,7 +410,7 @@ function EditHomepageForm({ data, onSuccess }: EditHomepageFormProps) {
             setOpenZoomCourseTable(false)
           }}
         />
-      </EditDialog>
+      </DialogEdit>
     </>
   )
 }

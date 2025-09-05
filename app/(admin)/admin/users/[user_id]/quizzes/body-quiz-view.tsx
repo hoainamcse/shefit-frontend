@@ -13,7 +13,7 @@ import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import { getUserBodyQuizzes, queryKeyUserBodyQuizzes, updateUserBodyQuiz } from '@/network/client/body-quizzes'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
-import { EditSheet } from '@/components/data-table/edit-sheet'
+import { SheetEdit } from '@/components/dialogs/sheet-edit'
 import { FormRichTextField } from '@/components/forms/fields'
 import { MainButton } from '@/components/buttons/main-button'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -163,14 +163,14 @@ export function UserBodyQuizzesTable({ userID }: BodyQuizViewProps) {
         rowCount={data?.paging.total}
         onPaginationChange={setPagination}
       />
-      <EditSheet
+      <SheetEdit
         title="Chỉnh sửa kết quả quiz"
         description="Make changes to your profile here. Click save when you're done."
         open={isEditSheetOpen}
         onOpenChange={setIsEditSheetOpen}
       >
         {selectedRow && <EditUserBodyQuizForm data={selectedRow} onSuccess={onEditSuccess} />}
-      </EditSheet>
+      </SheetEdit>
     </>
   )
 }

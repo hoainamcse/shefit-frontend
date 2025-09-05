@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { AddButton } from '@/components/buttons/add-button'
 import { MainButton } from '@/components/buttons/main-button'
-import { EditSheet } from '@/components/data-table/edit-sheet'
+import { SheetEdit } from '@/components/dialogs/sheet-edit'
 import { EditLiveDayForm } from '@/components/forms/edit-live-day-form'
 import { EditDaySessionForm } from '@/components/forms/edit-day-session-form'
 import { deleteDaySession, deleteLiveDay, getLiveDays, queryKeyLiveDays } from '@/network/client/courses'
@@ -201,7 +201,7 @@ export function CourseLiveView({ courseID }: { courseID: Course['id'] }) {
       )}
 
       {/* Sheets and Forms */}
-      <EditSheet
+      <SheetEdit
         title={editingDay ? 'Chỉnh sửa ngày' : 'Thêm ngày'}
         description="Make changes to your profile here. Click save when you're done."
         open={showDayForm}
@@ -217,9 +217,9 @@ export function CourseLiveView({ courseID }: { courseID: Course['id'] }) {
             // queryClient.invalidateQueries({ queryKey: ['liveDays'] })
           }}
         />
-      </EditSheet>
+      </SheetEdit>
 
-      <EditSheet
+      <SheetEdit
         title={editingSession ? 'Chỉnh sửa session' : 'Thêm session'}
         description="Make changes to your profile here. Click save when you're done."
         open={showSessionForm}
@@ -237,7 +237,7 @@ export function CourseLiveView({ courseID }: { courseID: Course['id'] }) {
             // queryClient.invalidateQueries({ queryKey: ['liveDays'] })
           }}
         />
-      </EditSheet>
+      </SheetEdit>
 
       {/* <DeleteConfirmDialog
         open={!!deleteItem}

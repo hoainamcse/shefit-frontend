@@ -26,7 +26,7 @@ import { getBodyQuizzes, queryKeyBodyQuizzes } from '@/network/client/body-quizz
 import type { Configuration } from '@/models/configuration'
 import type { BodyQuiz } from '@/models/body-quiz'
 import { MealPlansTable } from '@/components/data-table/meal-plans-table'
-import { EditDialog } from '@/components/data-table/edit-dialog'
+import { DialogEdit } from '@/components/dialogs/dialog-edit'
 import { MealPlan } from '@/models/meal-plan'
 
 type Goal = 'Giảm cân' | 'Tăng cơ giảm mỡ' | 'Tăng cân tăng cơ'
@@ -658,7 +658,7 @@ function EditMealPlanConfigForm({ data, onSuccess }: EditMealPlanConfigFormProps
           </div>
         </form>
       </Form>
-      <EditDialog
+      <DialogEdit
         title="Chọn Thực đơn"
         description="Chọn một hoặc nhiều thực đơn đã có hoặc tạo mới để liên kết với cấu hình này."
         open={openMealPlansTable}
@@ -670,7 +670,7 @@ function EditMealPlanConfigForm({ data, onSuccess }: EditMealPlanConfigFormProps
             setOpenMealPlansTable(false)
           }}
         />
-      </EditDialog>
+      </DialogEdit>
     </>
   )
 }

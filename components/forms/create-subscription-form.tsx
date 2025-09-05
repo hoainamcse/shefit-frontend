@@ -21,11 +21,11 @@ import { createSubscription, updateSubscription, updateSubscriptionPrices } from
 import { createGift, updateGift } from '@/network/client/subscriptions'
 import { giftTypeOptions } from '@/lib/label'
 import { Label } from '../ui/label'
-import { EditDialog } from '../data-table/edit-dialog'
+import { DialogEdit } from '../dialogs/dialog-edit'
 import { CoursesTable } from '../data-table/courses-table'
 import { MealPlansTable } from '../data-table/meal-plans-table'
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
-import { EditSheet } from '../data-table/edit-sheet'
+import { SheetEdit } from '../dialogs/sheet-edit'
 import { Separator } from '../ui/separator'
 import { Switch } from '../ui/switch'
 
@@ -698,7 +698,7 @@ export function CreateSubscriptionForm({ isEdit, data }: CreateSubscriptionFormP
           </Form>
         </CardContent>
       </Card>
-      <EditDialog
+      <DialogEdit
         title="Chọn Khoá tập"
         description="Chọn một hoặc nhiều khoá tập đã có hoặc tạo mới để liên kết với gói tập này."
         open={openCoursesTable}
@@ -717,8 +717,8 @@ export function CreateSubscriptionForm({ isEdit, data }: CreateSubscriptionFormP
             setOpenCoursesTable(false)
           }}
         />
-      </EditDialog>
-      <EditDialog
+      </DialogEdit>
+      <DialogEdit
         title="Chọn Bữa ăn"
         description="Chọn một hoặc nhiều bữa ăn đã có hoặc tạo mới để liên kết với gói thành viên này."
         open={openMealPlansTable}
@@ -736,7 +736,7 @@ export function CreateSubscriptionForm({ isEdit, data }: CreateSubscriptionFormP
             setOpenMealPlansTable(false)
           }}
         />
-      </EditDialog>
+      </DialogEdit>
     </div>
   )
 }
@@ -746,7 +746,7 @@ function EditSubscriptionAssets({ form }: { form: ReturnType<typeof useForm<Form
   return (
     <>
       <MainButton text="Assets của gói tập" variant="outline" type="button" onClick={() => setOpenEditSheet(true)} />
-      <EditSheet
+      <SheetEdit
         open={openEditSheet}
         onOpenChange={setOpenEditSheet}
         title="Chỉnh sửa gói tập"
@@ -777,7 +777,7 @@ function EditSubscriptionAssets({ form }: { form: ReturnType<typeof useForm<Form
             description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
           />
         </div>
-      </EditSheet>
+      </SheetEdit>
     </>
   )
 }

@@ -7,7 +7,7 @@ import { X, Image as ImageIcon, Upload } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { EditDialog } from '@/components/data-table/edit-dialog'
+import { DialogEdit } from '@/components/dialogs/dialog-edit'
 import { ImageManager, type ImageItem } from '@/components/image-manager'
 
 export interface FormImageSelectFieldProps<
@@ -166,14 +166,14 @@ export function FormImageSelectField<
       {error?.message && <p className="text-sm font-medium text-destructive">{error.message}</p>}
 
       {/* Image selection dialog */}
-      <EditDialog
+      <DialogEdit
         title={`Chọn hình ảnh${maxImages > 0 ? ` (tối đa ${maxImages})` : ''}`}
         description="Chọn từ hình đã tải lên hoặc tải hình mới"
         open={isOpen}
         onOpenChange={setIsOpen}
       >
         <ImageManager maxSelect={maxImages} onConfirmSelectedImages={handleImagesSelected} />
-      </EditDialog>
+      </DialogEdit>
     </div>
   )
 }

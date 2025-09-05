@@ -14,7 +14,7 @@ import { createExercise, updateExercise } from '@/network/client/exercises'
 import { MuscleGroupsTable } from '../data-table/muscle-groups-table'
 import { EquipmentsTable } from '../data-table/equipments-table'
 import { FormInputField, FormTextareaField } from './fields'
-import { EditDialog } from '../data-table/edit-dialog'
+import { DialogEdit } from '../dialogs/dialog-edit'
 import { MainButton } from '../buttons/main-button'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
@@ -112,7 +112,7 @@ export function EditExerciseForm({ data, onSuccess }: EditExerciseFormProps) {
           </div>
         </form>
       </Form>
-      <EditDialog
+      <DialogEdit
         title="Chọn Nhóm Cơ"
         description="Chọn một hoặc nhiều nhóm cơ đã có hoặc tạo mới để liên kết với động tác này."
         open={openMuscleGroupsTable}
@@ -130,8 +130,8 @@ export function EditExerciseForm({ data, onSuccess }: EditExerciseFormProps) {
             setOpenMuscleGroupsTable(false)
           }}
         />
-      </EditDialog>
-      <EditDialog
+      </DialogEdit>
+      <DialogEdit
         title="Chọn Dụng Cụ"
         description="Chọn một hoặc nhiều dụng cụ đã có hoặc tạo mới để liên kết với động tác này."
         open={openEquipmentsTable}
@@ -149,7 +149,7 @@ export function EditExerciseForm({ data, onSuccess }: EditExerciseFormProps) {
             setOpenEquipmentsTable(false)
           }}
         />
-      </EditDialog>
+      </DialogEdit>
     </>
   )
 }

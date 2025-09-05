@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
-import { EditDialog } from '@/components/data-table/edit-dialog'
+import { DialogEdit } from '@/components/dialogs/dialog-edit'
 import { CoursesTable } from '@/components/data-table/courses-table'
 
 import { getCourses, queryKeyCourses } from '@/network/client/courses'
@@ -81,7 +81,7 @@ function WorkoutMethodTab({
         </div>
       </TabsContent>
 
-      <EditDialog
+      <DialogEdit
         title="Chọn Khoá tập"
         description="Chọn một hoặc nhiều khoá tập đã có hoặc tạo mới để liên kết với cấu hình này."
         open={openDialogWorkoutMethodId === w.id.toString()}
@@ -99,7 +99,7 @@ function WorkoutMethodTab({
             setOpenDialogWorkoutMethodId(null)
           }}
         />
-      </EditDialog>
+      </DialogEdit>
     </div>
   )
 }

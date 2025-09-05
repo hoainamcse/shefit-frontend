@@ -27,7 +27,7 @@ export function CardExercise({
     <div className="text-lg overflow-hidden">
       <div className="relative group mb-2 md:mb-3 lg:mb-5 aspect-square md:aspect-[3/2]">
         <img
-          src={getYouTubeThumbnail(data.youtube_url) || 'https://placehold.co/400?text=shefit.vn&font=Oswald'}
+          src={getYouTubeThumbnail(data.youtube_url, "sddefault") || 'https://placehold.co/400?text=shefit.vn&font=Oswald'}
           alt={data.name}
           className="object-cover rounded-xl w-full h-full brightness-100 group-hover:brightness-110 transition-all duration-300"
         />

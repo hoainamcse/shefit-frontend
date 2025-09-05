@@ -17,7 +17,7 @@ import { Spinner } from '@/components/spinner'
 import { EditEquipmentForm } from '../forms/edit-equipment-form'
 import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
-import { EditSheet } from './edit-sheet'
+import { SheetEdit } from '../dialogs/sheet-edit'
 
 interface EquipmentsTableProps {
   onConfirmRowSelection?: (selectedRows: Equipment[]) => void
@@ -195,14 +195,14 @@ export function EquipmentsTable({ onConfirmRowSelection }: EquipmentsTableProps)
           </>
         }
       />
-      <EditSheet
+      <SheetEdit
         title={isEdit ? 'Chỉnh sửa dụng cụ' : 'Thêm dụng cụ'}
         description="Make changes to your profile here. Click save when you're done."
         open={isEditSheetOpen}
         onOpenChange={setIsEditSheetOpen}
       >
         <EditEquipmentForm data={selectedRow} onSuccess={onEditSuccess} />
-      </EditSheet>
+      </SheetEdit>
     </>
   )
 }
