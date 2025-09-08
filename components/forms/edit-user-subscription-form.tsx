@@ -219,7 +219,7 @@ export function EditUserSubscriptionForm({
             data={data?.coupon ? [{ value: data.coupon.id.toString(), label: data.coupon.code }] : []}
             placeholder="Chọn mã khuyến mãi"
             disabled
-            description="Read-only: Mã khuyến mãi hiện không thể thay đổi"
+            description="Mã khuyến mãi chỉ được chọn bởi khách hàng khi mua gói tập"
           />
 
           {/* gift_id */}
@@ -227,10 +227,22 @@ export function EditUserSubscriptionForm({
             form={form}
             name="gift_id"
             label="Quà tặng"
-            data={data?.gift ? [{ value: data.gift.id.toString(), label: data.gift.name }] : []}
+            data={
+              data?.gift
+                ? [
+                    {
+                      value: data.gift.id.toString(),
+                      label:
+                        data.gift.type === 'item'
+                          ? `Item: ${data.gift.name}`
+                          : `Membership Plan: ${data.gift.duration} ngày`,
+                    },
+                  ]
+                : []
+            }
             placeholder="Chọn quà tặng"
             disabled
-            description="Read-only: Quà tặng hiện không thể thay đổi"
+            description="Quà tặng chỉ được chọn bởi khách hàng khi mua gói tập"
           />
 
           {userRole !== 'sub_admin' && (

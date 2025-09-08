@@ -1,41 +1,39 @@
 'use client'
 
 import type { ColumnDef, PaginationState } from '@tanstack/react-table'
-import type { Goal } from '@/models/goal'
+import type { Coupon } from '@/models/coupon'
 
 import { toast } from 'sonner'
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { deleteBulkGoal, deleteGoal, getGoals, queryKeyGoals } from '@/network/client/goals'
+import { deleteBulkCoupon, deleteCoupon, getCoupons, queryKeyCoupons } from '@/network/client/coupons'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
 
-import { EditGoalForm } from '../forms/edit-goal-form'
-import { MainButton } from '../buttons/main-button'
+import { CreateCouponForm } from '../forms/create-coupon-form'
 import { AddButton } from '../buttons/add-button'
 import { SheetEdit } from '../dialogs/sheet-edit'
 
-interface GoalTableProps {
-  onConfirmRowSelection?: (selectedRows: Goal[]) => void
+interface CouponsTableProps {
+  couponType?: 'subscription' | 'ecommerce'
 }
 
-export function GoalTable({ onConfirmRowSelection }: GoalTableProps) {
+export function CouponsTable({ couponType = 'subscription' }: CouponsTableProps) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 25,
   })
-  const [rowSelection, setRowSelection] = useState<Goal[]>([])
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [queryKeyGoals, pagination],
-    queryFn: () => getGoals({ page: pagination.pageIndex, per_page: pagination.pageSize }),
+    queryKey: [queryKeyCoupons, { ...pagination, coupon_type: couponType }],
+    queryFn: () => getCoupons({ page: pagination.pageIndex, per_page: pagination.pageSize, coupon_type: couponType }),
     placeholderData: keepPreviousData,
   })
 
-  const columns = useMemo<ColumnDef<Goal>[]>(
+  const columns = useMemo<ColumnDef<Coupon>[]>(
     () => [
       {
         id: 'select',
@@ -58,10 +56,54 @@ export function GoalTable({ onConfirmRowSelection }: GoalTableProps) {
         enableHiding: false,
       },
       {
-        header: 'Tên mục tiêu',
-        accessorKey: 'name',
-        cell: ({ row }: { row: any }) => <div className="font-medium">{row.getValue('name')}</div>,
+        header: 'Mã khuyến mãi',
+        accessorKey: 'code',
+        cell: ({ row }: { row: any }) => <div className="font-medium">{row.getValue('code')}</div>,
         size: 180,
+        enableHiding: false,
+      },
+      {
+        header: 'Loại khuyến mãi',
+        accessorKey: 'discount_type',
+        cell: ({ row }: { row: any }) => (
+          <div>
+            {row.getValue('discount_type') === 'percentage'
+              ? 'Tỷ lệ phần trăm'
+              : row.getValue('discount_type') === 'fixed_amount'
+              ? 'Số tiền cố định'
+              : 'Số ngày dùng thử'}
+          </div>
+        ),
+        size: 150,
+        enableHiding: false,
+      },
+      {
+        header: 'Giá trị',
+        accessorKey: 'discount_value',
+        cell: ({ row }: { row: any }) => (
+          <div>
+            {row.getValue('discount_type') === 'percentage'
+              ? `${row.getValue('discount_value')} (%)`
+              : row.getValue('discount_type') === 'fixed_amount'
+              ? `${(row.getValue('discount_value') as number).toLocaleString()} (đ)`
+              : `${row.getValue('discount_value')} (ngày)`}
+          </div>
+        ),
+        size: 150,
+        enableHiding: false,
+      },
+      {
+        header: 'Số lần đã dùng',
+        accessorKey: 'usage_count',
+        cell: ({ row }: { row: any }) => <div>{row.getValue('usage_count')}</div>,
+        size: 120,
+        enableHiding: false,
+      },
+      {
+        header: 'Số lần sử dụng tối đa',
+        accessorKey: 'max_usage',
+        cell: ({ row }: { row: any }) => <div>{row.getValue('max_usage') ?? 'Không giới hạn'}</div>,
+        size: 150,
         enableHiding: false,
       },
       {
@@ -75,7 +117,7 @@ export function GoalTable({ onConfirmRowSelection }: GoalTableProps) {
     []
   )
 
-  const [selectedRow, setSelectedRow] = useState<Goal | null>(null)
+  const [selectedRow, setSelectedRow] = useState<Coupon | null>(null)
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false)
 
   const onAddRow = () => {
@@ -83,32 +125,32 @@ export function GoalTable({ onConfirmRowSelection }: GoalTableProps) {
     setIsEditSheetOpen(true)
   }
 
-  const onEditRow = (row: Goal) => {
+  const onEditRow = (row: Coupon) => {
     setSelectedRow(row)
     setIsEditSheetOpen(true)
   }
 
-  const onDeleteRow = async (row: Goal) => {
-    const deletePromise = () => deleteGoal(row.id)
+  const onDeleteRow = async (row: Coupon) => {
+    const deletePromise = () => deleteCoupon(row.id)
 
     toast.promise(deletePromise, {
       loading: 'Đang xoá...',
       success: (_) => {
         refetch()
-        return 'Xoá mục tiêu thành công'
+        return 'Xoá khuyến mãi thành công'
       },
       error: 'Đã có lỗi xảy ra',
     })
   }
 
-  const onDeleteRows = async (selectedRows: Goal[]) => {
-    const deletePromise = () => deleteBulkGoal(selectedRows.map((row) => row.id))
+  const onDeleteRows = async (selectedRows: Coupon[]) => {
+    const deletePromise = () => deleteBulkCoupon(selectedRows.map((row) => row.id))
 
     toast.promise(deletePromise, {
       loading: 'Đang xoá...',
       success: (_) => {
         refetch()
-        return 'Xoá mục tiêu thành công'
+        return 'Xoá khuyến mãi thành công'
       },
       error: 'Đã có lỗi xảy ra',
     })
@@ -147,33 +189,15 @@ export function GoalTable({ onConfirmRowSelection }: GoalTableProps) {
         rowCount={data?.paging.total}
         onDelete={onDeleteRows}
         onPaginationChange={setPagination}
-        onRowSelectionChange={setRowSelection}
-        rightSection={
-          <>
-            {onConfirmRowSelection && (
-              <MainButton
-                variant="outline"
-                text={`Chọn ${rowSelection.length} mục tiêu`}
-                onClick={() => {
-                  if (rowSelection.length === 0) {
-                    toast.error('Vui lòng chọn ít nhất một mục tiêu')
-                    return
-                  }
-                  onConfirmRowSelection(rowSelection)
-                }}
-              />
-            )}
-            <AddButton text="Thêm mục tiêu" onClick={onAddRow} />
-          </>
-        }
+        rightSection={<AddButton text="Thêm khuyến mãi" onClick={onAddRow} />}
       />
       <SheetEdit
-        title={isEdit ? 'Chỉnh sửa mục tiêu' : 'Thêm mục tiêu'}
+        title={isEdit ? 'Chỉnh sửa khuyến mãi' : 'Thêm khuyến mãi'}
         description="Make changes to your profile here. Click save when you're done."
         open={isEditSheetOpen}
         onOpenChange={setIsEditSheetOpen}
       >
-        <EditGoalForm data={selectedRow} onSuccess={onEditSuccess} />
+        <CreateCouponForm data={selectedRow} onSuccess={onEditSuccess} type={couponType} />
       </SheetEdit>
     </>
   )

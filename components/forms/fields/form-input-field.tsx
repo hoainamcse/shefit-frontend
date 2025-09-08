@@ -37,14 +37,14 @@ function FormInputField<
         <FormItem>
           {label && (
             <FormLabel>
-              {label} {withAsterisk && <span className='text-destructive'>*</span>}
+              {label} {withAsterisk && <span className="text-destructive">*</span>}
             </FormLabel>
           )}
           <FormControl>
             {inputProps.type === 'password' ? (
-              <CustomInput {...inputProps} {...field} />
+              <CustomInput {...field} {...inputProps} />
             ) : (
-              <Input {...inputProps} {...field} />
+              <Input {...field} {...inputProps} />
             )}
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}

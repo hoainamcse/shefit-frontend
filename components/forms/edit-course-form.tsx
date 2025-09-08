@@ -20,7 +20,7 @@ import { MainButton } from '../buttons/main-button'
 import { SheetEdit } from '../dialogs/sheet-edit'
 import { DialogEdit } from '../dialogs/dialog-edit'
 import { EquipmentsTable } from '../data-table/equipments-table'
-import { FormCategoryTable } from '../data-table/form-category-table'
+import { FormCategoriesTable } from '../data-table/form-categories-table'
 import { MuscleGroupsTable } from '../data-table/muscle-groups-table'
 import { SubscriptionsTable } from '../data-table/subscriptions-table'
 import { WorkoutMethodsTable } from '../data-table/workout-methods-table'
@@ -327,7 +327,7 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
         open={openFormCategoryTable}
         onOpenChange={setOpenFormCategoryTable}
       >
-        <FormCategoryTable
+        <FormCategoriesTable
           onConfirmRowSelection={(row) => {
             setSelectedFormCategory(row)
             form.setValue(

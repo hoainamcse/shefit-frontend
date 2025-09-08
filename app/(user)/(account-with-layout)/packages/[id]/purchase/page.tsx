@@ -1,7 +1,23 @@
 'use client'
 
+// React and hooks
 import { useState, useEffect } from 'react'
+
+// Next.js
 import Image from 'next/image'
+import Link from 'next/link'
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
+
+// Third-party libraries
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQRCode } from 'next-qrcode'
+import { Download } from 'lucide-react'
+
+// Custom hooks
+import { useSession } from '@/hooks/use-session'
+
+// UI Components
+import { CloseIcon } from '@/components/icons/CloseIcon'
 import { BackIcon } from '@/components/icons/BackIcon'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -17,20 +33,18 @@ import {
   AlertDialogTrigger,
   AlertDialogFooter,
 } from '@/components/ui/alert-dialog'
-import { CloseIcon } from '@/components/icons/CloseIcon'
-import { Download } from 'lucide-react'
-import { useQRCode } from 'next-qrcode'
+import { HTMLRenderer } from '@/components/html-renderer'
 
-import Link from 'next/link'
-import ShefitLogo from '@/public/logo-vertical-dark.png'
-import { formatDuration } from '@/lib/helpers'
+// Network and Models
 import { getSubscription, queryKeySubscriptions } from '@/network/client/subscriptions'
 import { createUserSubscription } from '@/network/client/users'
-import { HTMLRenderer } from '@/components/html-renderer'
-import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useSession } from '@/hooks/use-session'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { checkCoupon } from '@/network/client/coupons'
 import { UserSubscriptionPayload } from '@/models/user-subscriptions'
+import { queryKeyUserSubscriptions } from '@/network/client/user-subscriptions'
+
+// Assets
+import ShefitLogo from '@/public/logo-vertical-dark.png'
+import { formatDuration } from '@/lib/helpers'
 
 export default function PurchasePage() {
   const { id } = useParams<{ id: string }>()
@@ -40,6 +54,7 @@ export default function PurchasePage() {
   const { session } = useSession()
   const { Canvas } = useQRCode()
   const query = searchParams ? `?${searchParams.toString()}` : ''
+  const queryClient = useQueryClient()
 
   // Fetch subscription data with React Query with error handling and retry
   const {
@@ -57,11 +72,25 @@ export default function PurchasePage() {
   const [selectedGiftId, setSelectedGiftId] = useState<number | null>(null)
   const [selectedPriceId, setSelectedPriceId] = useState<number | null>(null)
   const [totalPrice, setTotalPrice] = useState<number>(0)
+  const [originalPrice, setOriginalPrice] = useState<number>(0)
   const [qrData, setQrData] = useState<any>(null)
   const [orderId, setOrderId] = useState<string>('')
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false)
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false)
   const [purchaseSuccess, setPurchaseSuccess] = useState(false)
+
+  // State for coupon handling
+  const [couponCode, setCouponCode] = useState<string>('')
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    id: number
+    discount_type: 'fixed_amount' | 'percentage' | 'membership_plan'
+    discount_value: number
+    max_usage?: number | null
+    usage_count?: number | null
+  } | null>(null)
+  const [isCheckingCoupon, setIsCheckingCoupon] = useState(false)
+  const [isMembershipPlan, setIsMembershipPlan] = useState(false)
+  const [couponError, setCouponError] = useState<string | null>(null)
 
   // Set default price when subscription data loads
   useEffect(() => {
@@ -69,6 +98,7 @@ export default function PurchasePage() {
       // Set default price if available
       if (subscription.data.price) {
         setTotalPrice(subscription.data.price)
+        setOriginalPrice(subscription.data.price)
       }
 
       // Set the first price option as selected if available
@@ -76,6 +106,7 @@ export default function PurchasePage() {
         const firstPrice = subscription.data.prices[0]
         setSelectedPriceId(firstPrice.id)
         setTotalPrice(firstPrice.price)
+        setOriginalPrice(firstPrice.price)
       }
     }
   }, [subscription])
@@ -92,9 +123,112 @@ export default function PurchasePage() {
 
   // Handler for price selection
   const handlePriceSelect = (priceId: number, price: number) => {
-    if (selectedPriceId === priceId) return
+    if (selectedPriceId === priceId || isMembershipPlan) return
     setSelectedPriceId(priceId)
-    setTotalPrice(price)
+    setOriginalPrice(price)
+
+    // Recalculate total price based on applied coupon if any
+    if (appliedCoupon) {
+      applyDiscountToPrice(price)
+    } else {
+      setTotalPrice(price)
+    }
+  }
+
+  /**
+   * Applies the discount from the coupon to the original price
+   * @param basePrice The original price before discount
+   */
+  const applyDiscountToPrice = (basePrice: number) => {
+    if (!appliedCoupon) {
+      setTotalPrice(basePrice)
+      return
+    }
+
+    const { discount_type, discount_value } = appliedCoupon
+
+    if (discount_type === 'fixed_amount') {
+      // Apply fixed amount discount
+      const discounted = Math.max(0, basePrice - discount_value)
+      setTotalPrice(discounted)
+    } else if (discount_type === 'percentage') {
+      // Apply percentage discount
+      const discounted = basePrice * (1 - discount_value / 100)
+      setTotalPrice(Math.round(discounted))
+    } else if (discount_type === 'membership_plan') {
+      // For membership plan, price becomes 0
+      setTotalPrice(0)
+      setIsMembershipPlan(true)
+    }
+  }
+
+  // Removed duplicate declaration of couponError state
+
+  // Handle coupon verification
+  const handleCheckCoupon = async () => {
+    if (!couponCode.trim()) return
+
+    setCouponError(null)
+    setIsCheckingCoupon(true)
+
+    try {
+      // Ensure the code is uppercase and has no spaces
+      const formattedCode = couponCode.replace(/\s/g, '').toUpperCase()
+      const response = await checkCoupon(formattedCode)
+      const coupon = response.data
+
+      // Check if coupon has reached max usage
+      if (typeof coupon.max_usage === 'number' && coupon.usage_count >= coupon.max_usage) {
+        setCouponError('Mã khuyến mãi đã hết lượt sử dụng. Vui lòng thử mã khác.')
+        setAppliedCoupon(null)
+      } else {
+        // If we already have an applied coupon, remove it first
+        if (appliedCoupon) {
+          // If it was a membership plan, reset options
+          if (appliedCoupon.discount_type === 'membership_plan') {
+            setIsMembershipPlan(false)
+          }
+        }
+
+        // Apply the new coupon and update the price immediately
+        const currentPrice = originalPrice
+        setAppliedCoupon(coupon)
+
+        // Apply discount based on the coupon type
+        if (coupon.discount_type === 'fixed_amount') {
+          setTotalPrice(Math.max(0, currentPrice - coupon.discount_value))
+        } else if (coupon.discount_type === 'percentage') {
+          setTotalPrice(Math.round(currentPrice * (1 - coupon.discount_value / 100)))
+        } else if (coupon.discount_type === 'membership_plan') {
+          setTotalPrice(0)
+          setIsMembershipPlan(true)
+        }
+
+        // If it's a membership plan, disable price selection
+        if (coupon.discount_type === 'membership_plan') {
+          setIsMembershipPlan(true)
+        }
+      }
+    } catch (error) {
+      setCouponError('Mã khuyến mãi không hợp lệ. Vui lòng kiểm tra lại.')
+      setAppliedCoupon(null)
+    } finally {
+      setIsCheckingCoupon(false)
+    }
+  }
+
+  /**
+   * Removes the currently applied coupon and resets prices
+   */
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null)
+    setCouponCode('')
+    setTotalPrice(originalPrice)
+
+    // Reset membership plan status if applicable
+    if (isMembershipPlan) {
+      setIsMembershipPlan(false)
+    }
   }
 
   /**
@@ -268,9 +402,26 @@ export default function PurchasePage() {
 
       const now = new Date()
       const endDate = new Date(now)
-      endDate.setDate(
-        endDate.getDate() + (subscription?.data.prices.find((p: any) => p.id === selectedPriceId)?.duration || 1)
-      )
+
+      // Find the selected gift if any
+      const selectedGift = selectedGiftId
+        ? subscription?.data.relationships.gifts?.find((g: any) => g.id === selectedGiftId)
+        : null
+
+      // Check if selected gift is a membership plan
+      const giftDuration = selectedGift?.type === 'membership_plan' ? selectedGift.duration || 0 : 0
+
+      // Calculate end date based on coupon type and gift
+      if (isMembershipPlan && appliedCoupon?.discount_type === 'membership_plan') {
+        // For membership plan, the discount_value is the total number of days
+        // Add any additional days from a membership gift
+        endDate.setDate(endDate.getDate() + appliedCoupon.discount_value + giftDuration)
+      } else {
+        // For regular subscriptions, use the selected price duration
+        const subscriptionDuration = subscription?.data.prices.find((p: any) => p.id === selectedPriceId)?.duration || 1
+        // Add any additional days from a membership gift
+        endDate.setDate(endDate.getDate() + subscriptionDuration + giftDuration)
+      }
 
       const subscriptionData = {
         user_id: session.userId,
@@ -280,7 +431,7 @@ export default function PurchasePage() {
         subscription_end_at: endDate.toISOString(),
         order_number: `HD${new Date().getTime()}`,
         total_price: totalPrice,
-        coupon_id: null,
+        coupon_id: appliedCoupon?.id || null,
         gift_id: selectedGiftId,
         subscription_id: Number(id),
         exercise_ids: [],
@@ -293,6 +444,7 @@ export default function PurchasePage() {
     },
     onSuccess: () => {
       setPurchaseSuccess(true)
+      queryClient.invalidateQueries({ queryKey: [queryKeyUserSubscriptions, session?.userId] })
     },
   })
 
@@ -301,7 +453,7 @@ export default function PurchasePage() {
     generateTokenMutation.isPending ||
     createQrCodeMutation.isPending ||
     transactionTokenMutation.isPending ||
-    checkPaymentStatusMutation.isPending ||
+    // checkPaymentStatusMutation.isPending ||
     createSubscriptionMutation.isPending
 
   // Combined error state
@@ -309,9 +461,13 @@ export default function PurchasePage() {
     generateTokenMutation.error?.message ||
     createQrCodeMutation.error?.message ||
     transactionTokenMutation.error?.message ||
-    checkPaymentStatusMutation.error?.message ||
+    // checkPaymentStatusMutation.error?.message ||
     createSubscriptionMutation.error?.message
 
+  /**
+   * Handles the purchase flow when user clicks "Buy Now" button
+   * Checks for login, initiates payment process or directly creates subscription for free items
+   */
   const handleBuyNow = () => {
     if (!session) {
       setIsLoginDialogOpen(true)
@@ -485,8 +641,11 @@ export default function PurchasePage() {
                   className="w-8 h-8 border-[#737373]"
                   checked={selectedPriceId === price.id}
                   onCheckedChange={() => handlePriceSelect(price.id, price.price)}
+                  disabled={isMembershipPlan}
                 />
-                <div className="text-base md:text-xl text-[#737373]">{formatDuration(price.duration)}</div>
+                <div className={`text-base md:text-xl ${isMembershipPlan ? 'text-gray-400' : 'text-[#737373]'}`}>
+                  {formatDuration(price.duration)}
+                </div>
               </div>
             ))}
           </div>
@@ -494,7 +653,54 @@ export default function PurchasePage() {
 
         <div className="mb-8">
           <div className="font-semibold text-[#000000] text-xl md:text-2xl mb-2.5">Code khuyến mãi</div>
-          <Input placeholder="Nhập code của bạn" className="h-[54px] text-base md:text-[18px] border-[#E2E2E2]" />
+          {!appliedCoupon ? (
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Nhập code của bạn"
+                  className={`h-[54px] text-base md:text-[18px] ${couponError ? 'border-red-500' : 'border-[#E2E2E2]'}`}
+                  value={couponCode}
+                  onChange={(e) => {
+                    // Remove spaces and convert to uppercase
+                    const formattedValue = e.target.value.replace(/\s/g, '').toUpperCase()
+                    setCouponCode(formattedValue)
+                    if (couponError) setCouponError(null)
+                  }}
+                />
+                <Button
+                  className="h-[54px] bg-[#13D8A7] hover:bg-[#11c296] text-white"
+                  onClick={handleCheckCoupon}
+                  disabled={isCheckingCoupon || !couponCode.trim()}
+                >
+                  {isCheckingCoupon ? 'Đang kiểm tra...' : 'Áp dụng'}
+                </Button>
+              </div>
+              {couponError && <div className="text-red-500 text-sm mt-1">{couponError}</div>}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between p-4 bg-[#F8F8F8] rounded-md">
+                <div className="flex flex-col">
+                  <span className="font-semibold">{couponCode}</span>
+                  <span className="text-green-600">
+                    {appliedCoupon.discount_type === 'fixed_amount'
+                      ? `Giảm ${appliedCoupon.discount_value.toLocaleString()} VNĐ`
+                      : appliedCoupon.discount_type === 'percentage'
+                      ? `Giảm ${appliedCoupon.discount_value}%`
+                      : `Gói thành viên (${appliedCoupon.discount_value} ngày)`}
+                  </span>
+                </div>
+                <Button variant="ghost" className="text-gray-500 hover:text-red-500 p-2" onClick={handleRemoveCoupon}>
+                  <CloseIcon />
+                </Button>
+              </div>
+              {isMembershipPlan && appliedCoupon && (
+                <div className="text-amber-600 text-sm">
+                  Gói thành viên đã được áp dụng. Thời hạn sử dụng là {appliedCoupon.discount_value} ngày.
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center justify-between mb-8">
@@ -731,7 +937,11 @@ export default function PurchasePage() {
   )
 }
 
-// Function to handle QR code download
+/**
+ * Function to handle QR code download
+ * Creates a custom image with QR code and payment information
+ * @param qrData The QR code data containing payment information
+ */
 const handleDownloadQR = (qrData: any | null) => {
   if (!qrData?.qrCode) return
 

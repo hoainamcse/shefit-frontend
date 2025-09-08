@@ -220,14 +220,27 @@ export function UsersTable() {
       },
       {
         accessorFn: (row) => {
-          const couponCodes = sortByKey(row.subscriptions, 'subscription_start_at', {
+          const sortedSubs = sortByKey(row.subscriptions, 'subscription_start_at', {
             transform: (val) => new Date(val).getTime(),
             direction: 'desc',
           })
-            .flatMap((s) => s.coupon?.code)
+
+          // Use Set to track unique coupon IDs
+          const uniqueCouponIds = new Set<number>()
+          const uniqueCoupons = sortedSubs
+            .filter((s) => s.coupon)
+            .filter((s) => {
+              // Only include coupons we haven't seen before
+              if (s.coupon && !uniqueCouponIds.has(s.coupon.id)) {
+                uniqueCouponIds.add(s.coupon.id)
+                return true
+              }
+              return false
+            })
+            .map((s) => s.coupon?.code)
             .filter(Boolean)
-          if (couponCodes.length === 0) return '-'
-          return couponCodes.join('; ')
+
+          return uniqueCoupons.length > 0 ? uniqueCoupons.join('; ') : '-'
         },
         header: 'Coupon dùng',
         size: 120,

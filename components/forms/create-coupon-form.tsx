@@ -29,11 +29,11 @@ type CouponFormValue = z.infer<typeof formSchema>
 interface CreateCouponFormProps {
   type: 'subscription' | 'ecommerce'
   onSuccess?: () => void
-  isEdit?: boolean
-  data?: Coupon
+  data: Coupon | null
 }
 
-export function CreateCouponForm({ type, onSuccess, isEdit = false, data }: CreateCouponFormProps) {
+export function CreateCouponForm({ type, onSuccess, data }: CreateCouponFormProps) {
+  const isEdit = !!data
   const [isPending, startTransition] = useTransition()
 
   const form = useForm<CouponFormValue>({
@@ -67,16 +67,14 @@ export function CreateCouponForm({ type, onSuccess, isEdit = false, data }: Crea
             onSuccess?.()
           }
         } else {
-          if (data?.id) {
-            const couponResult = await updateCoupon(values, data.id.toString())
-            if (couponResult.status === 'success') {
-              toast.success('Cập nhật khuyến mãi thành công')
-              onSuccess?.()
-            }
+          const couponResult = await updateCoupon(values, data.id.toString())
+          if (couponResult.status === 'success') {
+            toast.success('Cập nhật khuyến mãi thành công')
+            onSuccess?.()
           }
         }
-      } catch (error) {
-        toast.error('Tạo khuyến mãi thất bại')
+      } catch (error: any) {
+        toast.error(error.message || 'Tạo khuyến mãi thất bại')
       }
     })
   }
@@ -103,7 +101,18 @@ export function CreateCouponForm({ type, onSuccess, isEdit = false, data }: Crea
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormInputField form={form} name="code" label="Mã khuyến mãi" withAsterisk placeholder="Nhập mã khuyến mãi" />
+        <FormInputField
+          form={form}
+          name="code"
+          label="Mã khuyến mãi"
+          withAsterisk
+          placeholder="Nhập mã khuyến mãi"
+          onChange={(e) => {
+            const input = e.target as HTMLInputElement
+            const formattedValue = input.value.replace(/\s+/g, '').toUpperCase()
+            form.setValue('code', formattedValue)
+          }}
+        />
 
         <FormSelectField
           form={form}

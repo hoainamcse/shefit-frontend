@@ -173,9 +173,19 @@ export function getMenuList(pathname: string): Group[] {
           ],
         },
         {
-          href: '/admin/subscriptions',
+          href: '',
           label: 'Gói tập',
           icon: CreditCardIcon,
+          submenus: [
+            {
+              href: '/admin/subscriptions',
+              label: 'Danh sách',
+            },
+            {
+              href: '/admin/coupons',
+              label: 'Khuyến mãi',
+            },
+          ]
         },
         {
           href: '/admin/coaches',

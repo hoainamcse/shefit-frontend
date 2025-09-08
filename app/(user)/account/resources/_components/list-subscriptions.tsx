@@ -8,6 +8,7 @@ import { useSession } from '@/hooks/use-session'
 import { useState, useEffect, useMemo } from 'react'
 import { useSubscription } from './subscription-context'
 import { useQuery } from '@tanstack/react-query'
+import { queryKeyUserSubscriptions } from '@/network/client/user-subscriptions'
 
 export default function ListSubscriptions() {
   const { session } = useSession()
@@ -26,7 +27,7 @@ export default function ListSubscriptions() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['user-subscriptions', session?.userId],
+    queryKey: [queryKeyUserSubscriptions, session?.userId],
     queryFn: () => getUserSubscriptions(session!.userId),
     enabled: !!session,
     staleTime: 5 * 60 * 1000, // 5 minutes

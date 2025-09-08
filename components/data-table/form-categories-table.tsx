@@ -23,11 +23,11 @@ import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
 import { SheetEdit } from '../dialogs/sheet-edit'
 
-interface FormCategoryTableProps {
+interface FormCategoriesTableProps {
   onConfirmRowSelection?: (selectedRows: FormCategory[]) => void
 }
 
-export function FormCategoryTable({ onConfirmRowSelection }: FormCategoryTableProps) {
+export function FormCategoriesTable({ onConfirmRowSelection }: FormCategoriesTableProps) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 25,

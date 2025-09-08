@@ -45,7 +45,11 @@ export function FormNumberField<
               type="number"
               min={0}
               {...field}
-              onChange={(event) => field.onChange(+event.target.value)}
+              onChange={(event) => {
+                const value = event.target.value
+                // Only convert to number if not empty, otherwise pass empty string
+                field.onChange(value === '' ? value : +value)
+              }}
             />
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}

@@ -1,5 +1,5 @@
 import { FlameIcon, SaladIcon, TargetIcon } from 'lucide-react'
-import { GoalTable } from '@/components/data-table/goal-table'
+import { GoalsTable } from '@/components/data-table/goals-table'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
@@ -45,7 +45,7 @@ export default function DietsCaloriesPage() {
           <CaloriesTable />
         </TabsContent>
         <TabsContent value="tab-3">
-          <GoalTable />
+          <GoalsTable />
         </TabsContent>
       </Tabs>
     </ContentLayout>

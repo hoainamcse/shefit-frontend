@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EquipmentsTable } from '@/components/data-table/equipments-table'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { FormCategoryTable } from '@/components/data-table/form-category-table'
+import { FormCategoriesTable } from '@/components/data-table/form-categories-table'
 import { WorkoutMethodsTable } from '@/components/data-table/workout-methods-table'
 
 export default function MuscleGroupsEquipmentsPage() {
@@ -53,7 +53,7 @@ export default function MuscleGroupsEquipmentsPage() {
           <EquipmentsTable />
         </TabsContent>
         <TabsContent value="tab-3">
-          <FormCategoryTable />
+          <FormCategoriesTable />
         </TabsContent>
         <TabsContent value="tab-4">
           <WorkoutMethodsTable />

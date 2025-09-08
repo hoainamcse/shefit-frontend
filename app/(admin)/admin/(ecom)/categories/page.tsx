@@ -44,7 +44,7 @@ export default function CategoriesPage() {
   // Coupon state
   const [coupons, setCoupons] = useState<Coupon[]>([])
   const [openCouponModal, setOpenCouponModal] = useState(false)
-  const [editingCoupon, setEditingCoupon] = useState<Coupon>()
+  const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null)
 
   // Loading state
   const [loading, setLoading] = useState(false)
@@ -65,9 +65,8 @@ export default function CategoriesPage() {
   }
 
   const fetchCoupons = async () => {
-    const response = await getCoupons()
-    const subscriptionCoupons = (response.data || []).filter((coupon) => coupon.coupon_type === 'ecommerce')
-    setCoupons(subscriptionCoupons)
+    const { data } = await getCoupons({ coupon_type: 'ecommerce' })
+    setCoupons(data)
   }
 
   useEffect(() => {
@@ -249,7 +248,7 @@ export default function CategoriesPage() {
   // Coupon CRUD handlers
   const handleDeleteCoupon = async (id: number) => {
     try {
-      const response = await deleteCoupon(id.toString())
+      const response = await deleteCoupon(id)
       if (response.status === 'success') {
         toast.success('Xoá khuyến mãi thành công')
         fetchCoupons()
@@ -494,14 +493,14 @@ export default function CategoriesPage() {
       isEdit={!!editingCoupon}
       data={editingCoupon}
       onClose={() => {
-        setEditingCoupon(undefined)
+        setEditingCoupon(null)
         setOpenCouponModal(false)
       }}
     >
       <AddButton
         text="Thêm khuyến mãi"
         onClick={() => {
-          setEditingCoupon(undefined)
+          setEditingCoupon(null)
           setOpenCouponModal(true)
         }}
       />
@@ -512,11 +511,27 @@ export default function CategoriesPage() {
   const couponColumns: ColumnDef<Coupon>[] = [
     { accessorKey: 'code', header: 'Mã khuyến mãi' },
     {
+      accessorKey: 'discount_type',
+      header: 'Loại khuyến mãi',
+      render: ({ row }) => (row.discount_type === 'percentage' ? 'Tỷ lệ phần trăm' : 'Số tiền cố định'),
+    },
+    {
       accessorKey: 'discount_value',
       header: 'Giá trị',
       render: ({ row }) => {
-        return row.discount_type === 'percentage' ? `${row.discount_value}%` : `${row.discount_value.toLocaleString()}đ`
+        return row.discount_type === 'percentage'
+          ? `${row.discount_value} (%)`
+          : `${row.discount_value.toLocaleString()} (đ)`
       },
+    },
+    {
+      accessorKey: 'usage_count',
+      header: 'Số lần đã dùng',
+    },
+    {
+      accessorKey: 'max_usage',
+      header: 'Số lần sử dụng tối đa',
+      render: ({ row }) => (row.max_usage ? `${row.max_usage}` : 'Không giới hạn'),
     },
     {
       accessorKey: 'actions',
@@ -615,7 +630,7 @@ interface CreateCouponDialogProps {
   open: boolean
   setOpen: (open: boolean) => void
   isEdit: boolean
-  data?: Coupon
+  data: Coupon | null
   onClose: () => void
 }
 
@@ -628,7 +643,6 @@ function CreateCouponDialog({ children, updateData, open, setOpen, isEdit, data,
           <DialogTitle>{isEdit ? 'Cập nhật khuyến mãi' : 'Thêm khuyến mãi'}</DialogTitle>
         </DialogHeader>
         <CreateCouponForm
-          isEdit={isEdit}
           data={data}
           onSuccess={() => {
             setOpen(false)
