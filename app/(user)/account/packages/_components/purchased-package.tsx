@@ -7,10 +7,10 @@ import { useSession } from '@/hooks/use-session'
 import { getUserSubscriptions } from '@/network/client/users'
 import { getSubscription } from '@/network/client/subscriptions'
 import { useEffect, useState } from 'react'
-import { UserSubscriptionDetail } from '@/models/user-subscriptions'
+import { UserSubscription } from '@/models/user-subscriptions'
 import { Subscription } from '@/models/subscription'
 
-type EnhancedSubscription = UserSubscriptionDetail & {
+type EnhancedSubscription = UserSubscription & {
   subscriptionDetails?: Subscription
   isValid?: boolean
 }

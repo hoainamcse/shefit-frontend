@@ -29,7 +29,7 @@ export default async function PackagesPage({
 
       {data.length === 0 ? (
         <div className="text-center text-[#737373] py-8">
-          {courseId ? 'Không có gói nào phù hợp với khóa học này' : 'Không có gói nào khả dụng'}
+          {courseId ? 'Không có gói nào phù hợp với khoá tập này' : 'Không có gói nào khả dụng'}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 lg:px-12">

@@ -19,7 +19,7 @@ import { EditUserSubscriptionForm } from '@/components/forms/edit-user-subscript
 import { User } from '@/models/user'
 import { deleteUserSubscription, getUserSubscriptions } from '@/network/client/users'
 import { queryKeyUserSubscriptions } from '@/network/client/user-subscriptions'
-import { UserSubscription, UserSubscriptionDetail } from '@/models/user-subscriptions'
+import { UserSubscription } from '@/models/user-subscriptions'
 import { useSession } from '@/hooks/use-session'
 import { getSubAdminSubscriptions, getSubscriptions, queryKeySubscriptions } from '@/network/client/subscriptions'
 import { MultiSelectOptionItem } from '@/components/nyxb-ui/multi-select'
@@ -27,7 +27,7 @@ import { MultiSelectOptionItem } from '@/components/nyxb-ui/multi-select'
 export function UserSubscriptionView({ userID, userRole }: { userID: User['id']; userRole: User['role'] }) {
   // Form states
   const [showUserSubscriptionForm, setShowUserSubscriptionForm] = useState(false)
-  const [editingUserSubscription, setEditingUserSubscription] = useState<UserSubscriptionDetail | null>(null)
+  const [editingUserSubscription, setEditingUserSubscription] = useState<UserSubscription | null>(null)
 
   // const queryClient = useQueryClient()
 
@@ -52,12 +52,12 @@ export function UserSubscriptionView({ userID, userRole }: { userID: User['id'];
     setShowUserSubscriptionForm(true)
   }
 
-  const handleEditUserSubscription = (userSubscription: UserSubscriptionDetail) => {
+  const handleEditUserSubscription = (userSubscription: UserSubscription) => {
     setEditingUserSubscription(userSubscription)
     setShowUserSubscriptionForm(true)
   }
 
-  const handleDeleteUserSubscription = (userSubscription: UserSubscriptionDetail) => {
+  const handleDeleteUserSubscription = (userSubscription: UserSubscription) => {
     // setDeleteItem({ type: 'day', item: day })
     const deletePromise = () => deleteUserSubscription(userID, userSubscription.subscription.id.toString())
 

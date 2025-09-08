@@ -3,7 +3,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { getUserSubscriptions } from '@/network/client/users'
-import { UserSubscriptionDetail } from '@/models/user-subscriptions'
+import { UserSubscription } from '@/models/user-subscriptions'
 import { useSession } from '@/hooks/use-session'
 import { useState, useEffect, useMemo } from 'react'
 import { useSubscription } from './subscription-context'
@@ -43,11 +43,11 @@ export default function ListSubscriptions() {
   }, [isLoading, isError, setContextLoading])
 
   // Process and sort subscriptions
-  const userSubscriptions = useMemo<UserSubscriptionDetail[]>(() => {
+  const userSubscriptions = useMemo<UserSubscription[]>(() => {
     if (!userSubsResponse?.data?.length) return []
 
     const currentDate = new Date()
-    return [...userSubsResponse.data].sort((a: UserSubscriptionDetail, b: UserSubscriptionDetail) => {
+    return [...userSubsResponse.data].sort((a: UserSubscription, b: UserSubscription) => {
       const aEndDate = new Date(a.subscription_end_at)
       const bEndDate = new Date(b.subscription_end_at)
       const aIsActive = currentDate <= aEndDate
@@ -107,7 +107,7 @@ export default function ListSubscriptions() {
     setShowFavorites(false)
 
     const subscriptionId = parseInt(value)
-    const subscription = userSubscriptions.find((sub: UserSubscriptionDetail) => sub.id === subscriptionId)
+    const subscription = userSubscriptions.find((sub: UserSubscription) => sub.id === subscriptionId)
     if (subscription) {
       setSelectedSubscription(subscription)
     }
@@ -128,7 +128,7 @@ export default function ListSubscriptions() {
             <SelectValue placeholder={contextLoading ? 'Đang tải...' : 'Gói member của bạn'} />
           </SelectTrigger>
           <SelectContent className="w-full max-h-[300px] overflow-y-auto">
-            {userSubscriptions.map((subscription: UserSubscriptionDetail) => {
+            {userSubscriptions.map((subscription: UserSubscription) => {
               const subscriptionId = subscription.id.toString()
 
               return (

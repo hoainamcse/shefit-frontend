@@ -1,4 +1,5 @@
 export * from './form-checkbox-field'
+export * from './form-date-picker-field'
 export * from './form-image-select-field'
 export * from './form-input-field'
 export * from './form-multi-select-field'

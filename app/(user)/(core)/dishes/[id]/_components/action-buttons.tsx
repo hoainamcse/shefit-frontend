@@ -1,7 +1,7 @@
 'use client'
 
 import type { Dish } from '@/models/dish'
-import type { UserSubscriptionDetail } from '@/models/user-subscriptions'
+import type { UserSubscription } from '@/models/user-subscriptions'
 
 import { toast } from 'sonner'
 import { useState } from 'react'
@@ -58,7 +58,7 @@ export function ActionButtons({ dishID }: ActionButtonsProps) {
   })
 
   const subscriptionMutation = useMutation({
-    mutationFn: ({ subscriptionId }: { subscriptionId: UserSubscriptionDetail['id'] }) =>
+    mutationFn: ({ subscriptionId }: { subscriptionId: UserSubscription['id'] }) =>
       addUserSubscriptionDish(session!.userId, subscriptionId, dishID),
     onSuccess: (_, { subscriptionId }) => {
       setSaving(false)
@@ -87,7 +87,7 @@ export function ActionButtons({ dishID }: ActionButtonsProps) {
     favouriteMutation.mutate()
   }
 
-  const handleAddToSubscription = (subscriptionId: UserSubscriptionDetail['id']) => {
+  const handleAddToSubscription = (subscriptionId: UserSubscription['id']) => {
     setSaving(true)
     subscriptionMutation.mutate({ subscriptionId })
   }
@@ -194,8 +194,8 @@ export function ActionButtons({ dishID }: ActionButtonsProps) {
                     <div className="space-y-2 max-h-[50vh] overflow-y-auto pr-1">
                       {/* Subscription options */}
                       {subscriptionsQuery.data.data
-                        .filter((dt: UserSubscriptionDetail) => isActiveSubscription(dt.status, dt.subscription_end_at))
-                        .map((us: UserSubscriptionDetail) => (
+                        .filter((dt: UserSubscription) => isActiveSubscription(dt.status, dt.subscription_end_at))
+                        .map((us: UserSubscription) => (
                           <div key={us.id} className="bg-white rounded-lg p-3 shadow-sm border border-gray-100">
                             <div className="flex items-center justify-between">
                               <div className="flex flex-col">

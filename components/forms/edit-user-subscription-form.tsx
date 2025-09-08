@@ -2,11 +2,11 @@
 
 import type { User } from '@/models/user'
 import type { Subscription } from '@/models/subscription'
-import type { UserSubscriptionDetail } from '@/models/user-subscriptions'
+import type { UserSubscription } from '@/models/user-subscriptions'
 
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -22,40 +22,34 @@ import { MealPlansTable } from '../data-table/meal-plans-table'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../ui/select'
+import { FormDatePickerField, FormSelectField } from './fields'
 
 // ! Follow UserSubscriptionPayload model in models/user-subscriptions.ts
 const formSchema = z.object({
-  id: z.coerce.number().optional(),
-  user_id: z.coerce.number().min(1, { message: 'User is required' }),
-  subscription_id: z.coerce.number().min(1, { message: 'Subscription is required' }),
-  course_format: z.string(),
-  coupon_id: z.number().nullable(),
-  status: z.string(),
-  subscription_start_at: z.string().nonempty({ message: 'Start date is required' }),
-  subscription_end_at: z.string().nonempty({ message: 'End date is required' }),
-  gift_id: z.number().nullable(),
+  user_id: z.number().min(1),
+  course_format: z.enum(['both', 'video', 'live']),
+  status: z.enum(['active', 'expired', 'canceled', 'pending']),
+  subscription_start_at: z.string().min(1, 'Ngày bắt đầu không được để trống'),
+  subscription_end_at: z.string().min(1, 'Ngày kết thúc không được để trống'),
   order_number: z.string(),
-  total_price: z.coerce.number(),
-  meal_plan_ids: z.array(z.coerce.number()).default([]),
-  dish_ids: z.array(z.coerce.number()).default([]),
-  exercise_ids: z.array(z.coerce.number()).default([]),
+  total_price: z.number().min(0, 'Tổng tiền không được nhỏ hơn 0'),
+  coupon_id: z.number().nullable(),
+  gift_id: z.number().nullable(),
+  subscription_id: z.string().min(1, 'Gói tập không được để trống'),
+  exercise_ids: z.array(z.number()),
+  meal_plan_ids: z.array(z.number()),
+  dish_ids: z.array(z.number()),
 })
 
 type FormValue = z.infer<typeof formSchema>
 
 interface EditUserSubscriptionFormProps {
-  data: UserSubscriptionDetail | null
+  data: UserSubscription | null
   userID: User['id']
   userRole: User['role']
   subscriptions: Subscription[]
-  userSubscriptions: UserSubscriptionDetail[]
+  userSubscriptions: UserSubscription[]
   onSuccess?: () => void
-}
-
-const formatDate = (date: Date | string): string => {
-  if (!date) return ''
-  const d = date instanceof Date ? date : new Date(date)
-  return d.toISOString().split('T')[0]
 }
 
 export function EditUserSubscriptionForm({
@@ -66,52 +60,54 @@ export function EditUserSubscriptionForm({
   userSubscriptions,
   onSuccess,
 }: EditUserSubscriptionFormProps) {
+  const availableSubscriptions = subscriptions.filter((m) => {
+    return !userSubscriptions.some((s) => s.subscription.id === m.id) || (data && m.id === data.subscription.id)
+  })
+
   const isEdit = !!data
   const defaultValue = {
     user_id: userID,
-    subscription_id: 0,
-    course_format: 'video',
+    course_format: 'both',
+    status: 'active',
+    subscription_start_at: new Date().toISOString(),
+    subscription_end_at: '',
+    order_number: `HD${new Date().getTime()}`,
+    total_price: 0,
     coupon_id: null,
     gift_id: null,
-    status: 'active',
-    subscription_start_at: formatDate(new Date()),
-    subscription_end_at: '',
-    order_number: '',
-    total_price: 0,
+    subscription_id: availableSubscriptions.length > 0 ? `${availableSubscriptions[0].id}` : '',
+    exercise_ids: [],
     meal_plan_ids: [],
     dish_ids: [],
-    exercise_ids: [],
   } as FormValue
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: isEdit
       ? {
-          user_id: data.user_id,
-          subscription_id: data.subscription.id,
+          user_id: userID,
           course_format: data.course_format,
-          coupon_id: data.coupon?.id || null,
-          gift_id: data.gift?.id || null,
           status: data.status,
-          subscription_start_at: data.subscription_start_at ? formatDate(data.subscription_start_at) : '',
-          subscription_end_at: data.subscription_end_at ? formatDate(data.subscription_end_at) : '',
+          subscription_start_at: data.subscription_start_at,
+          subscription_end_at: data.subscription_end_at,
           order_number: data.order_number,
           total_price: data.total_price,
-          meal_plan_ids: data.meal_plans.map((meal_plan) => meal_plan.id),
-          dish_ids: data.dishes.map((dish) => dish.id),
-          exercise_ids: data.exercises.map((exercise) => exercise.id),
+          coupon_id: data.coupon?.id || null,
+          gift_id: data.gift?.id || null,
+          subscription_id: data.subscription.id.toString(),
+          exercise_ids: data.exercises?.map((m) => m.id) || [],
+          meal_plan_ids: data.meal_plans?.map((m) => m.id) || [],
+          dish_ids: data.dishes?.map((m) => m.id) || [],
         }
       : defaultValue,
   })
 
   const userSubscriptionMutation = useMutation({
-    mutationFn: (values: FormValue) =>
-      isEdit && data?.id
-        ? updateUserSubscription(userID, data?.subscription.id.toString(), values)
-        : createUserSubscription(values, userID),
+    mutationFn: (values: any) =>
+      isEdit ? updateUserSubscription(userID, data.subscription.id, values) : createUserSubscription(userID, values),
     onSettled(data, error) {
-      if (data?.status === 'success') {
-        toast.success(isEdit ? 'Cập nhật ngày thành công' : 'Tạo ngày thành công')
+      if (data) {
+        toast.success(isEdit ? 'Cập nhật gói tập người dùng thành công' : 'Tạo gói tập người dùng thành công')
         onSuccess?.()
       } else {
         toast.error(error?.message || 'Đã có lỗi xảy ra')
@@ -120,7 +116,8 @@ export function EditUserSubscriptionForm({
   })
 
   const onSubmit = (values: FormValue) => {
-    userSubscriptionMutation.mutate(values)
+    // console.log('values', values)
+    userSubscriptionMutation.mutate({ ...values, subscription_id: Number(values.subscription_id) })
   }
 
   const [openMealPlansTable, setOpenMealPlansTable] = useState(false)
@@ -131,174 +128,109 @@ export function EditUserSubscriptionForm({
   const [selectedExercises, setSelectedExercises] = useState(data?.exercises || [])
   const [selectedDishes, setSelectedDishes] = useState(data?.dishes || [])
 
-  const isExistingRecord = Boolean(data?.id) && data?.id! > 0
-  const selectedSubscriptionId = form.watch('subscription_id')
-  const subs = subscriptions.find((m) => m.id === selectedSubscriptionId)
-  const gifts = subs?.gifts ?? []
+  const subscriptionId = form.watch('subscription_id')
+  const subscriptionStartAt = form.watch('subscription_start_at')
+  const subs = subscriptions.find((s) => s.id === Number(subscriptionId))
+  const isFreeSubscription = subs ? subs.prices.length > 0 && subs.prices.every((price) => price.price === 0) : false
+  const gifts = subs ? subs.gifts : []
+
+  useEffect(() => {
+    if (!subscriptionId || !subs) return
+
+    // Handle free subscription: set end date based on duration
+    if (isFreeSubscription) {
+      const startDate = new Date(subscriptionStartAt)
+      startDate.setHours(0, 0, 0, 0)
+      const duration = subs.prices[0]?.duration || 7
+      const endDate = new Date(startDate.getTime() + duration * 24 * 60 * 60 * 1000)
+      form.setValue('subscription_end_at', endDate.toISOString())
+    }
+  }, [subscriptionId, isFreeSubscription, subs, form, subscriptionStartAt])
+
+  useEffect(() => {
+    if (!subscriptionStartAt) return
+
+    const startDate = new Date(subscriptionStartAt)
+    startDate.setHours(0, 0, 0, 0)
+
+    // Validate end date is after start date
+    const endDateStr = form.getValues('subscription_end_at')
+    if (endDateStr) {
+      const endDate = new Date(endDateStr)
+      endDate.setHours(0, 0, 0, 0)
+
+      if (endDate <= startDate) {
+        form.setValue('subscription_end_at', '')
+      }
+    }
+  }, [subscriptionStartAt, form])
 
   return (
     <>
       <Form {...form}>
         <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
           {/* subscription_id */}
-          <FormField
-            control={form.control}
+          <FormSelectField
+            form={form}
             name="subscription_id"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Tên gói tập</FormLabel>
-
-                <Select
-                  disabled={isExistingRecord}
-                  value={field.value ? String(field.value) : ''}
-                  onValueChange={(value) => {
-                    field.onChange(Number(value))
-                    const courseFormat = subscriptions.find((m) => m.id == Number(value))?.course_format ?? ''
-                    form.setValue('course_format', courseFormat)
-                    form.setValue('subscription_end_at', '')
-                    form.setValue('gift_id', null)
-                  }}
-                >
-                  <FormControl>
-                    <SelectTrigger className={isExistingRecord ? 'cursor-not-allowed opacity-70' : ''}>
-                      <SelectValue placeholder="Chọn gói tập" />
-                    </SelectTrigger>
-                  </FormControl>
-
-                  <SelectContent>
-                    {subscriptions.map((m) => {
-                      const taken = userSubscriptions.some((s) => s.subscription.id === Number(m.id))
-                      return (
-                        <SelectItem key={m.id} value={m.id.toString()} disabled={taken}>
-                          {m.name}
-                        </SelectItem>
-                      )
-                    })}
-                  </SelectContent>
-                </Select>
-
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Gói tập"
+            data={availableSubscriptions.map((m) => ({ label: m.name, value: m.id.toString() }))}
+            placeholder="Chọn gói tập"
+            withAsterisk
           />
 
           {/* subscription_start_at */}
-          <FormField
+          <FormDatePickerField
             control={form.control}
             name="subscription_start_at"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Ngày bắt đầu</FormLabel>
-                <FormControl>
-                  <input
-                    type="date"
-                    required
-                    className="flex h-9 w-full rounded-md border border-input px-3 py-1 text-sm"
-                    {...field}
-                    onChange={(e) => {
-                      const newStart = e.target.value
-                      field.onChange(newStart)
-                      // keep end-date valid
-
-                      const endVal = form.getValues('subscription_end_at')
-                      if (endVal && new Date(endVal) <= new Date(newStart)) {
-                        form.setValue('subscription_end_at', '')
-                      }
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Ngày bắt đầu"
+            required
+            disabled={!subscriptionId}
+            calendarDisabled={(date) => {
+              const today = new Date()
+              today.setHours(0, 0, 0, 0)
+              return date < today
+            }}
           />
 
           {/* subscription_end_at */}
-          <FormField
+          <FormDatePickerField
             control={form.control}
             name="subscription_end_at"
-            render={({ field }) => {
-              const start = form.watch('subscription_start_at')
-              const minDate = start
-                ? new Date(new Date(start).getTime() + 86400000).toISOString().split('T')[0]
-                : undefined
-              return (
-                <FormItem className="space-y-2">
-                  <FormLabel>Ngày kết thúc</FormLabel>
-                  <FormControl>
-                    <input
-                      type="date"
-                      min={minDate}
-                      className="flex h-9 w-full rounded-md border border-input px-3 py-1 text-sm"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )
+            label="Ngày kết thúc"
+            required
+            disabled={!subscriptionId || isFreeSubscription}
+            calendarDisabled={(date) => {
+              const startDate = form.getValues('subscription_start_at')
+              if (!startDate) return true
+              const start = new Date(startDate)
+              start.setHours(0, 0, 0, 0)
+              const dateToCompare = new Date(date)
+              dateToCompare.setHours(0, 0, 0, 0)
+              return dateToCompare <= start
             }}
           />
 
           {/* gift_id */}
-          <FormField
-            control={form.control}
+          <FormSelectField
+            form={form}
+            name="coupon_id"
+            label="Mã khuyến mãi"
+            data={data?.coupon ? [{ value: data.coupon.id.toString(), label: data.coupon.code }] : []}
+            placeholder="Chọn mã khuyến mãi"
+            disabled
+            description="Read-only: Mã khuyến mãi hiện không thể thay đổi"
+          />
+
+          {/* gift_id */}
+          <FormSelectField
+            form={form}
             name="gift_id"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Quà tặng</FormLabel>
-
-                <Select
-                  disabled={!selectedSubscriptionId}
-                  value={field.value ? String(field.value) : ''}
-                  onValueChange={(val) => {
-                    field.onChange(val ? Number(val) : undefined)
-
-                    // adjust end-date when gift changes
-                    const baseEnd = form.getValues('subscription_end_at')
-                    const prevGift = gifts.find((g) => g.id === Number(field.value))
-                    const newGift = gifts.find((g) => g.id === Number(val))
-
-                    let baseDate = baseEnd ? new Date(baseEnd) : null
-                    if (baseDate && prevGift?.type === 'membership_plan')
-                      baseDate.setDate(baseDate.getDate() - (prevGift.duration ?? 0))
-                    if (baseDate && newGift?.type === 'membership_plan')
-                      baseDate.setDate(baseDate.getDate() + (newGift.duration ?? 0))
-
-                    form.setValue('subscription_end_at', baseDate ? baseDate.toISOString().split('T')[0] : '')
-                  }}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn quà tặng" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Vật dụng</SelectLabel>
-                      {gifts
-                        .filter((g) => g.type === 'item')
-                        .map((g) => (
-                          <SelectItem key={g.id} value={g.id.toString()}>
-                            {g.name}
-                          </SelectItem>
-                        ))}
-                    </SelectGroup>
-
-                    <SelectGroup>
-                      <SelectLabel>Thời gian</SelectLabel>
-                      {gifts
-                        .filter((g) => g.type === 'membership_plan')
-                        .map((g) => (
-                          <SelectItem key={g.id} value={g.id.toString()}>
-                            {g.duration % 35 === 0 ? `${g.duration / 35} tháng` : `${g.duration} ngày`}
-                          </SelectItem>
-                        ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Quà tặng"
+            data={data?.gift ? [{ value: data.gift.id.toString(), label: data.gift.name }] : []}
+            placeholder="Chọn quà tặng"
+            disabled
+            description="Read-only: Quà tặng hiện không thể thay đổi"
           />
 
           {userRole !== 'sub_admin' && (
@@ -306,7 +238,7 @@ export function EditUserSubscriptionForm({
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="assigned-items">
                   <AccordionTrigger className="font-medium py-2">
-                    Gán khóa học, thực đơn cho gói tập này
+                    Gán khoá tập, thực đơn cho gói tập này
                   </AccordionTrigger>
 
                   <AccordionContent>

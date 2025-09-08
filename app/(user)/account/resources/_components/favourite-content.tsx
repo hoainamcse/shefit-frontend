@@ -126,7 +126,7 @@ export default function FavouriteContent() {
     },
     onError: (error) => {
       console.error('Error deleting favourite course:', error)
-      toast.error('Có lỗi xảy ra khi xóa khóa học')
+      toast.error('Có lỗi xảy ra khi xóa khoá tập')
     },
   })
 

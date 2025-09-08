@@ -30,6 +30,7 @@ import { HTMLRenderer } from '@/components/html-renderer'
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useSession } from '@/hooks/use-session'
 import { useQuery, useMutation } from '@tanstack/react-query'
+import { UserSubscriptionPayload } from '@/models/user-subscriptions'
 
 export default function PurchasePage() {
   const { id } = useParams<{ id: string }>()
@@ -273,17 +274,21 @@ export default function PurchasePage() {
 
       const subscriptionData = {
         user_id: session.userId,
-        subscription_id: Number(id),
-        course_format: 'video',
-        coupon_id: null,
+        course_format: subscription?.data.course_format || 'both',
         status: 'active',
         subscription_start_at: now.toISOString(),
         subscription_end_at: endDate.toISOString(),
-        order_number: `ORDER-${Date.now()}`,
+        order_number: `HD${new Date().getTime()}`,
         total_price: totalPrice,
-      }
+        coupon_id: null,
+        gift_id: selectedGiftId,
+        subscription_id: Number(id),
+        exercise_ids: [],
+        meal_plan_ids: [],
+        dish_ids: [],
+      } as UserSubscriptionPayload
 
-      await createUserSubscription(subscriptionData, session.userId)
+      await createUserSubscription(session.userId, subscriptionData)
       return true
     },
     onSuccess: () => {

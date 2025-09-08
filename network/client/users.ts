@@ -1,10 +1,11 @@
 import type { User } from '@/models/user'
 import type { ApiResponse, ListResponse } from '@/models/response'
+import type { UserCart } from '@/models/user-cart'
+import type { UserCourse } from '@/models/user-courses'
+import type { Subscription } from '@/models/subscription'
+import type { UserSubscription, UserSubscriptionPayload } from '@/models/user-subscriptions'
 
 import { fetchData } from '../helpers/fetch-data'
-import { UserCart } from '@/models/user-cart'
-import { UserCourse } from '@/models/user-courses'
-import { UserSubscriptionDetail } from '@/models/user-subscriptions'
 
 // Body Quiz APIs
 export const queryKeyUsers = 'users'
@@ -53,14 +54,17 @@ export async function updatePassword(data: any): Promise<ApiResponse<any>> {
   return response.json()
 }
 
-
 export async function importUsersExcel(file: File): Promise<ApiResponse<any>> {
   const formData = new FormData()
   formData.append('file', file, file.name)
-  const response = await fetchData('/v1/users/import-excel', {
-    method: 'POST',
-    body: formData,
-  }, false)
+  const response = await fetchData(
+    '/v1/users/import-excel',
+    {
+      method: 'POST',
+      body: formData,
+    },
+    false
+  )
   return await response.json()
 }
 
@@ -96,14 +100,17 @@ export async function createUserCourse(data: any, id: User['id']): Promise<ApiRe
 }
 
 // User Subscription
-export async function getUserSubscriptions(id: User['id'], query?: any): Promise<ListResponse<UserSubscriptionDetail>> {
+export async function getUserSubscriptions(id: User['id'], query?: any): Promise<ListResponse<UserSubscription>> {
   const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
   const response = await fetchData(`/v1/users/${id}/subscriptions${searchParams}`)
   return response.json()
 }
 
-export async function createUserSubscription(data: any, id: User['id']): Promise<ApiResponse<UserSubscriptionDetail>> {
-  const response = await fetchData(`/v1/users/${id}/subscriptions`, {
+export async function createUserSubscription(
+  userId: User['id'],
+  data: UserSubscriptionPayload
+): Promise<ApiResponse<UserSubscription>> {
+  const response = await fetchData(`/v1/users/${userId}/subscriptions`, {
     method: 'POST',
     body: JSON.stringify(data),
   })
@@ -111,11 +118,11 @@ export async function createUserSubscription(data: any, id: User['id']): Promise
 }
 
 export async function updateUserSubscription(
-  userID: User['id'],
-  subscriptionID: string,
-  data: any
-): Promise<ApiResponse<UserSubscriptionDetail>> {
-  const response = await fetchData(`/v1/users/${userID}/subscriptions/${subscriptionID}`, {
+  userId: User['id'],
+  subscriptionId: Subscription['id'],
+  data: UserSubscriptionPayload
+): Promise<ApiResponse<UserSubscription>> {
+  const response = await fetchData(`/v1/users/${userId}/subscriptions/${subscriptionId}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   })

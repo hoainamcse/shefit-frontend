@@ -150,7 +150,7 @@ export default function PurchasePackage() {
           {filteredSubscriptions.length === 0 ? (
             <div className="text-center text-[#737373] py-8">
               {courseId
-                ? 'Không có gói nào phù hợp với khóa học này'
+                ? 'Không có gói nào phù hợp với khoá tập này'
                 : mealPlansId
                 ? 'Không có gói nào phù hợp với thực đơn này'
                 : 'Không có gói nào khả dụng'}

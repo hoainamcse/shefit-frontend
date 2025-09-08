@@ -23,7 +23,7 @@ type Subscription = {
   original_subscription_end_at?: string;
   id: number
   name: string
-  course_format: string
+  course_format: 'video' | 'live' | 'both'
   duration: number
   price: number
   prices: {

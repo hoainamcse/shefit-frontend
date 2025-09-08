@@ -1,11 +1,11 @@
 'use client'
 
-import { UserSubscriptionDetail } from '@/models/user-subscriptions'
+import { UserSubscription } from '@/models/user-subscriptions'
 import React, { createContext, useContext, ReactNode, useState } from 'react'
 
 interface SubscriptionContextType {
-  selectedSubscription: UserSubscriptionDetail | null
-  setSelectedSubscription: (subscription: UserSubscriptionDetail | null) => void
+  selectedSubscription: UserSubscription | null
+  setSelectedSubscription: (subscription: UserSubscription | null) => void
   showFavorites: boolean
   setShowFavorites: (show: boolean) => void
   isLoading: boolean
@@ -15,7 +15,7 @@ interface SubscriptionContextType {
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined)
 
 export function SubscriptionProvider({ children }: { children: ReactNode }) {
-  const [selectedSubscription, setSelectedSubscription] = useState<UserSubscriptionDetail | null>(null)
+  const [selectedSubscription, setSelectedSubscription] = useState<UserSubscription | null>(null)
   const [showFavorites, setShowFavorites] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const contextValue = React.useMemo(

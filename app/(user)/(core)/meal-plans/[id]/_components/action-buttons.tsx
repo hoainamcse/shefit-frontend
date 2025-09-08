@@ -1,7 +1,7 @@
 'use client'
 
 import type { MealPlan } from '@/models/meal-plan'
-import type { UserSubscriptionDetail } from '@/models/user-subscriptions'
+import type { UserSubscription } from '@/models/user-subscriptions'
 
 import { toast } from 'sonner'
 import { useState } from 'react'
@@ -79,7 +79,7 @@ export function ActionButtons({ mealPlanID, query }: ActionButtonsProps) {
   })
 
   const subscriptionMutation = useMutation({
-    mutationFn: ({ subscriptionId }: { subscriptionId: UserSubscriptionDetail['id'] }) =>
+    mutationFn: ({ subscriptionId }: { subscriptionId: UserSubscription['id'] }) =>
       addUserSubscriptionMealPlan(session!.userId, subscriptionId, mealPlanID),
     onSuccess: (_, { subscriptionId }) => {
       setSaving(false)
@@ -127,7 +127,7 @@ export function ActionButtons({ mealPlanID, query }: ActionButtonsProps) {
     favouriteMutation.mutate()
   }
 
-  const handleAddToSubscription = (subscriptionId: UserSubscriptionDetail['id']) => {
+  const handleAddToSubscription = (subscriptionId: UserSubscription['id']) => {
     setSaving(true)
     subscriptionMutation.mutate({ subscriptionId })
   }
@@ -291,7 +291,7 @@ export function ActionButtons({ mealPlanID, query }: ActionButtonsProps) {
                       {/* Subscription options */}
                       {subscriptionsQuery.data.data
                         .filter((dt) => isActiveSubscription(dt.status, dt.subscription_end_at))
-                        .map((us: UserSubscriptionDetail) => (
+                        .map((us: UserSubscription) => (
                           <div key={us.id} className="bg-white rounded-lg p-3 shadow-sm border border-gray-100">
                             <div className="flex items-center justify-between">
                               <div className="flex flex-col">

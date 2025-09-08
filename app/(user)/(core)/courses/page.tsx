@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useRouter } from 'next/navigation'
 import { useSession } from '@/hooks/use-session'
-import { UserSubscriptionDetail } from '@/models/user-subscriptions'
+import { UserSubscription } from '@/models/user-subscriptions'
 
 function MultiSelectHero({
   placeholder,
@@ -86,7 +86,7 @@ export default function CoursesPage() {
     fetchCourses()
   }, [])
 
-  const checkCourseAccess = (courseId: number, userSubscriptions: UserSubscriptionDetail[]): boolean => {
+  const checkCourseAccess = (courseId: number, userSubscriptions: UserSubscription[]): boolean => {
     const isSubscriptionValid = (subscriptionEndAt: string): boolean => {
       if (!subscriptionEndAt) return false
       const endDate = new Date(subscriptionEndAt)

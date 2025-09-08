@@ -206,7 +206,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-8">Chưa có khoá học video</div>
+                  <div className="text-center py-8">Chưa có khoá tập video</div>
                 )}
               </TabsContent>
 
@@ -279,7 +279,7 @@ export function SectionFive({ data }: { data: DataType['section_5'] }) {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-8">Chưa có khoá học zoom</div>
+                  <div className="text-center py-8">Chưa có khoá tập zoom</div>
                 )}
               </TabsContent>
             </Tabs>
@@ -516,7 +516,7 @@ export function SectionSix({ data }: { data: DataType['section_6'] }) {
                   {feature.courses?.length ? (
                     <CarouselComponent feature={feature} methodIndex={methodIndex} />
                   ) : (
-                    <div className="text-center py-8">Chưa có khoá học cho phương pháp này</div>
+                    <div className="text-center py-8">Chưa có khoá tập cho phương pháp này</div>
                   )}
                 </TabsContent>
               ))}

@@ -1,6 +1,7 @@
 'use client'
 
 import type { Subscription } from '@/models/subscription'
+import type { UserSubscriptionPayload } from '@/models/user-subscriptions'
 
 import { toast } from 'sonner'
 import { useState } from 'react'
@@ -35,7 +36,7 @@ export default function ActionButtons({ subscription, query }: { subscription: S
 
   // Mutation for creating subscriptions
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: any) => createUserSubscription(data, data.user_id),
+    mutationFn: (data: UserSubscriptionPayload) => createUserSubscription(data.user_id, data),
     onSuccess: () => {
       refetch()
       toast.success('Kích hoạt thành công!')
@@ -72,14 +73,18 @@ export default function ActionButtons({ subscription, query }: { subscription: S
 
     mutate({
       user_id: session.userId,
-      subscription_id: subscription.id,
       course_format: subscription.course_format,
-      coupon_id: null,
       status: 'active',
       subscription_start_at: now.toISOString(),
       subscription_end_at: endDate.toISOString(),
-      order_number: `ORDER-${Date.now()}`,
+      order_number: `HD${new Date().getTime()}`,
       total_price: 0,
+      coupon_id: null,
+      gift_id: null,
+      subscription_id: subscription.id,
+      exercise_ids: [],
+      meal_plan_ids: [],
+      dish_ids: [],
     })
   }
 

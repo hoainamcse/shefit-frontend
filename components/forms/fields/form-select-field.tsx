@@ -16,6 +16,7 @@ interface FormSelectFieldProps {
   description?: string
   withAsterisk?: boolean
   placeholder?: string
+  disabled?: boolean
 }
 
 function FormSelectField({
@@ -25,6 +26,7 @@ function FormSelectField({
   withAsterisk = false,
   placeholder,
   description,
+  disabled = false,
   data = [],
 }: FormSelectFieldProps) {
   return (
@@ -40,7 +42,7 @@ function FormSelectField({
           )}
           <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
             <FormControl>
-              <SelectTrigger className="h-10">
+              <SelectTrigger className="h-10" disabled={disabled}>
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
             </FormControl>
