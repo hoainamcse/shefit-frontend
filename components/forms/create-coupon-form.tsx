@@ -1,29 +1,27 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { Button } from '@/components/ui/button'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Plus } from 'lucide-react'
+import { Form } from '@/components/ui/form'
 import { MainButton } from '../buttons/main-button'
-import { FormInputField, FormSelectField } from './fields'
+import { FormInputField, FormNumberField, FormSelectField } from './fields'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
 import { createCoupon, updateCoupon } from '@/network/client/coupons'
 import { Coupon } from '@/models/coupon'
 
 const AVAILABLE_DISCOUNT_TYPE = [
-  { value: 'percentage', label: 'Phần trăm' },
-  { value: 'fixed_amount', label: 'Tiền mặt' },
+  { value: 'percentage', label: 'Tỷ lệ phần trăm' },
+  { value: 'fixed_amount', label: 'Số tiền cố định' },
+  { value: 'membership_plan', label: 'Số ngày dùng thử' },
 ]
 
 // Define the form schema
 const formSchema = z.object({
   code: z.string().min(1, 'Mã không được để trống'),
-  discount_type: z.enum(['percentage', 'fixed_amount']),
-  discount_value: z.coerce.number().min(1, 'Giá trị không được để trống'),
+  discount_type: z.enum(['percentage', 'fixed_amount', 'membership_plan']),
+  discount_value: z.number().min(1, 'Giá trị không được để trống'),
   coupon_type: z.enum(['subscription', 'ecommerce']),
+  max_usage: z.number().min(1).nullable(),
 })
 
 type CouponFormValue = z.infer<typeof formSchema>
@@ -46,14 +44,18 @@ export function CreateCouponForm({ type, onSuccess, isEdit = false, data }: Crea
           discount_type: (data.discount_type as 'percentage' | 'fixed_amount') || 'percentage',
           discount_value: data.discount_value ?? 0,
           coupon_type: (data.coupon_type as 'subscription' | 'ecommerce') || type,
+          max_usage: data.max_usage,
         }
       : {
           code: '',
           discount_type: 'percentage',
           discount_value: 0,
           coupon_type: type,
+          max_usage: null,
         },
   })
+
+  const discountType = form.watch('discount_type')
 
   function onSubmit(values: CouponFormValue) {
     startTransition(async () => {
@@ -79,6 +81,25 @@ export function CreateCouponForm({ type, onSuccess, isEdit = false, data }: Crea
     })
   }
 
+  const getDiscountValueDescription = () => {
+    if (discountType === 'percentage') {
+      return 'Đơn vị: %'
+    } else if (discountType === 'fixed_amount') {
+      return 'Đơn vị: đồng'
+    } else if (discountType === 'membership_plan') {
+      return 'Đơn vị: ngày'
+    }
+    return ''
+  }
+
+  const getAvailableDiscountType = () => {
+    if (type === 'subscription') {
+      return AVAILABLE_DISCOUNT_TYPE
+    } else {
+      return AVAILABLE_DISCOUNT_TYPE.filter((item) => item.value !== 'membership_plan')
+    }
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -89,17 +110,25 @@ export function CreateCouponForm({ type, onSuccess, isEdit = false, data }: Crea
           name="discount_type"
           label="Loại khuyến mãi"
           withAsterisk
-          data={AVAILABLE_DISCOUNT_TYPE}
+          data={getAvailableDiscountType()}
           placeholder="Chọn loại khuyến mãi"
         />
 
-        <FormInputField
+        <FormNumberField
           form={form}
           name="discount_value"
           label="Giá trị"
           withAsterisk
           placeholder="Nhập giá trị"
-          description={form.getValues('discount_type') === 'percentage' ? 'Phần trăm (%)' : 'VNĐ'}
+          description={getDiscountValueDescription()}
+        />
+
+        <FormNumberField
+          form={form}
+          name="max_usage"
+          label="Số lần sử dụng tối đa"
+          placeholder="Nhập số lần sử dụng tối đa"
+          description="Để trống nếu không giới hạn số lần sử dụng"
         />
 
         <MainButton

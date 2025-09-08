@@ -224,7 +224,7 @@ export function UsersTable() {
             transform: (val) => new Date(val).getTime(),
             direction: 'desc',
           })
-            .flatMap((s) => s.coupon_code)
+            .flatMap((s) => s.coupon?.code)
             .filter(Boolean)
           if (couponCodes.length === 0) return '-'
           return couponCodes.join('; ')
@@ -569,7 +569,7 @@ function ExportDialog({ data, onSuccess }: { data?: User[]; onSuccess?: () => vo
                 subName,
                 startDate,
                 endDate,
-                sub.coupon_code || '',
+                sub.coupon?.code || '',
                 courseNames,
                 mealPlanNames,
                 exerciseNames,

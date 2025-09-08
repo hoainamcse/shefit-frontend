@@ -1,3 +1,5 @@
+import type { Coupon } from "./coupon"
+
 type User = {
   id: number
   username: string
@@ -15,7 +17,7 @@ type User = {
   created_at: string
   updated_at: string
   subscriptions: Array<{
-    coupon_code: string
+    coupon?: Coupon
     status: 'active' | 'expired' | 'canceled' | 'pending'
     subscription_start_at: string
     subscription_end_at: string

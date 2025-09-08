@@ -51,11 +51,34 @@ export default function SubscriptionsPage() {
       header: 'Mã khuyến mãi',
     },
     {
+      accessorKey: 'discount_type',
+      header: 'Loại khuyến mãi',
+      render: ({ row }) =>
+        row.discount_type === 'percentage'
+          ? 'Tỷ lệ phần trăm'
+          : row.discount_type === 'fixed_amount'
+          ? 'Số tiền cố định'
+          : 'Số ngày dùng thử',
+    },
+    {
       accessorKey: 'discount_value',
       header: 'Giá trị',
       render: ({ row }) => {
-        return row.discount_type === 'percentage' ? `${row.discount_value}%` : `${row.discount_value.toLocaleString()}đ`
+        return row.discount_type === 'percentage'
+          ? `${row.discount_value} (%)`
+          : row.discount_type === 'fixed_amount'
+          ? `${row.discount_value} (đ)`
+          : `${row.discount_value} (ngày)`
       },
+    },
+    {
+      accessorKey: 'usage_count',
+      header: 'Số lần đã dùng',
+    },
+    {
+      accessorKey: 'max_usage',
+      header: 'Số lần sử dụng tối đa',
+      render: ({ row }) => row.max_usage ? `${row.max_usage}` : 'Không giới hạn',
     },
     {
       accessorKey: 'actions',

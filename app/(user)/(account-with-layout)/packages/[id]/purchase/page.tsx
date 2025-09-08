@@ -275,7 +275,7 @@ export default function PurchasePage() {
         user_id: session.userId,
         subscription_id: Number(id),
         course_format: 'video',
-        coupon_code: '',
+        coupon_id: null,
         status: 'active',
         subscription_start_at: now.toISOString(),
         subscription_end_at: endDate.toISOString(),

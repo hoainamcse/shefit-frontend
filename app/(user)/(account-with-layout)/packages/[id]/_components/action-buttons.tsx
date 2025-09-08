@@ -74,7 +74,7 @@ export default function ActionButtons({ subscription, query }: { subscription: S
       user_id: session.userId,
       subscription_id: subscription.id,
       course_format: subscription.course_format,
-      coupon_code: '',
+      coupon_id: null,
       status: 'active',
       subscription_start_at: now.toISOString(),
       subscription_end_at: endDate.toISOString(),

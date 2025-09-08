@@ -29,11 +29,11 @@ const formSchema = z.object({
   user_id: z.coerce.number().min(1, { message: 'User is required' }),
   subscription_id: z.coerce.number().min(1, { message: 'Subscription is required' }),
   course_format: z.string(),
-  coupon_code: z.string(),
+  coupon_id: z.number().nullable(),
   status: z.string(),
   subscription_start_at: z.string().nonempty({ message: 'Start date is required' }),
   subscription_end_at: z.string().nonempty({ message: 'End date is required' }),
-  gift_id: z.coerce.number().optional(),
+  gift_id: z.number().nullable(),
   order_number: z.string(),
   total_price: z.coerce.number(),
   meal_plan_ids: z.array(z.coerce.number()).default([]),
@@ -71,7 +71,8 @@ export function EditUserSubscriptionForm({
     user_id: userID,
     subscription_id: 0,
     course_format: 'video',
-    coupon_code: '',
+    coupon_id: null,
+    gift_id: null,
     status: 'active',
     subscription_start_at: formatDate(new Date()),
     subscription_end_at: '',
@@ -89,7 +90,8 @@ export function EditUserSubscriptionForm({
           user_id: data.user_id,
           subscription_id: data.subscription.id,
           course_format: data.course_format,
-          coupon_code: data.coupon_code,
+          coupon_id: data.coupon?.id || null,
+          gift_id: data.gift?.id || null,
           status: data.status,
           subscription_start_at: data.subscription_start_at ? formatDate(data.subscription_start_at) : '',
           subscription_end_at: data.subscription_end_at ? formatDate(data.subscription_end_at) : '',
@@ -98,7 +100,6 @@ export function EditUserSubscriptionForm({
           meal_plan_ids: data.meal_plans.map((meal_plan) => meal_plan.id),
           dish_ids: data.dishes.map((dish) => dish.id),
           exercise_ids: data.exercises.map((exercise) => exercise.id),
-          gift_id: data.gifts?.id,
         }
       : defaultValue,
   })
@@ -155,7 +156,7 @@ export function EditUserSubscriptionForm({
                     const courseFormat = subscriptions.find((m) => m.id == Number(value))?.course_format ?? ''
                     form.setValue('course_format', courseFormat)
                     form.setValue('subscription_end_at', '')
-                    form.setValue('gift_id', undefined)
+                    form.setValue('gift_id', null)
                   }}
                 >
                   <FormControl>
@@ -235,26 +236,6 @@ export function EditUserSubscriptionForm({
                 </FormItem>
               )
             }}
-          />
-
-          {/* coupon_code */}
-          <FormField
-            control={form.control}
-            name="coupon_code"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Code khuyến mãi</FormLabel>
-                <FormControl>
-                  <input
-                    type="text"
-                    placeholder="Nhập code"
-                    className="flex h-9 w-full rounded-md border border-input px-3 py-1 text-sm"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
           />
 
           {/* gift_id */}

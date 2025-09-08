@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { SessionPayload } from '@/models/auth'
 
 interface UseSessionReturn {
@@ -10,57 +10,61 @@ interface UseSessionReturn {
   clearSession: () => Promise<void>
 }
 
+// Query keys
+const SESSION_QUERY_KEY = ['session']
+
 /**
- * Client-side hook for session management
+ * Client-side hook for session management using React Query
  * Fetches session data from the server and provides methods to refresh/clear session
- * Also provides a fetchData function that automatically handles token refresh
+ * Leverages React Query for caching, retrying, and automatic refetching
  */
 export function useSession(): UseSessionReturn {
-  const [session, setSession] = useState<SessionPayload | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const queryClient = useQueryClient()
 
-  const fetchSession = useCallback(async () => {
-    try {
-      setIsLoading(true)
+  // Fetch session query
+  const { data: session, isLoading } = useQuery({
+    queryKey: SESSION_QUERY_KEY,
+    queryFn: async () => {
       const response = await fetch('/api/session')
 
-      if (response.ok) {
-        const sessionData = await response.json()
-        setSession(sessionData)
-      } else {
-        setSession(null)
+      if (!response.ok) {
+        return null
       }
-    } catch (error) {
-      console.error('Failed to fetch session:', error)
-      setSession(null)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
 
-  const refreshSession = useCallback(async () => {
-    await fetchSession()
-  }, [fetchSession])
+      return response.json() as Promise<SessionPayload>
+    },
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    retry: false, // Don't retry if session fetch fails
+  })
 
-  const clearSession = useCallback(async () => {
-    try {
+  // Refresh session mutation
+  const refreshSessionMutation = useMutation({
+    mutationFn: async () => {
+      // Invalidate the session query to force a refetch
+      await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY })
+    },
+  })
+
+  // Clear session mutation
+  const clearSessionMutation = useMutation({
+    mutationFn: async () => {
       await fetch('/api/session', { method: 'DELETE' })
-      setSession(null)
-    } catch (error) {
+    },
+    onSuccess: () => {
+      // Set session data to null in the query cache
+      queryClient.setQueryData(SESSION_QUERY_KEY, null)
+    },
+    onError: (error) => {
       console.error('Failed to clear session:', error)
       // Clear local state even if API call fails
-      setSession(null)
-    }
-  }, [])
-
-  useEffect(() => {
-    fetchSession()
-  }, [fetchSession])
+      queryClient.setQueryData(SESSION_QUERY_KEY, null)
+    },
+  })
 
   return {
-    session,
+    session: session || null,
     isLoading,
-    refreshSession,
-    clearSession,
+    refreshSession: refreshSessionMutation.mutateAsync,
+    clearSession: clearSessionMutation.mutateAsync,
   }
 }

@@ -35,10 +35,10 @@ export default async function SubscriptionInfo({ subscriptionId }: { subscriptio
         <span>Ngày kết thúc:</span>
         <span>{formatDate(userSubscription.subscription_end_at)}</span>
       </div>
-      {userSubscription.coupon_code && (
+      {userSubscription.coupon && (
         <div className="flex gap-2 items-center mb-2 text-[#737373] text-sm lg:text-lg">
           <span>Promocode:</span>
-          <span>{userSubscription.coupon_code}</span>
+          <span>{userSubscription.coupon.code}</span>
         </div>
       )}
     </div>

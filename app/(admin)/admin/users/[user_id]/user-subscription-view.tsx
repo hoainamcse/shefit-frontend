@@ -144,9 +144,9 @@ export function UserSubscriptionView({ userID, userRole }: { userID: User['id'];
                       <div className="bg-muted/50 p-3 rounded-lg">
                         <p className="text-xs text-muted-foreground mb-1">Coupon</p>
                         <div className="flex items-center gap-2">
-                          {userSubscription.coupon_code ? (
+                          {userSubscription.coupon ? (
                             <Badge variant="secondary" className="text-xs">
-                              {userSubscription.coupon_code}
+                              {userSubscription.coupon.code}
                             </Badge>
                           ) : (
                             <p className="text-sm text-muted-foreground italic">No coupon applied</p>
@@ -156,16 +156,16 @@ export function UserSubscriptionView({ userID, userRole }: { userID: User['id'];
 
                       <div className="bg-muted/50 p-3 rounded-lg">
                         <p className="text-xs text-muted-foreground mb-1">Gift</p>
-                        {userSubscription.gifts ? (
+                        {userSubscription.gift ? (
                           <div className="bg-card/50 rounded-md p-3 border border-border">
                             <div className="flex items-start gap-3">
-                              {userSubscription.gifts.type === 'item' ? (
+                              {userSubscription.gift.type === 'item' ? (
                                 <>
                                   <div className="h-12 w-12 rounded-md overflow-hidden flex-shrink-0 flex items-center justify-center">
-                                    {userSubscription.gifts.image ? (
+                                    {userSubscription.gift.image ? (
                                       <img
-                                        src={userSubscription.gifts.image}
-                                        alt={userSubscription.gifts.name || 'Gift item'}
+                                        src={userSubscription.gift.image}
+                                        alt={userSubscription.gift.name || 'Gift item'}
                                         className="h-full w-full object-cover"
                                       />
                                     ) : (
@@ -182,11 +182,11 @@ export function UserSubscriptionView({ userID, userRole }: { userID: User['id'];
                                       Item
                                     </Badge>
                                     <h4 className="font-medium text-sm">
-                                      {userSubscription.gifts.name || 'Unnamed gift'}
+                                      {userSubscription.gift.name || 'Unnamed gift'}
                                     </h4>
                                   </div>
                                 </>
-                              ) : userSubscription.gifts.type === 'membership_plan' ? (
+                              ) : userSubscription.gift.type === 'membership_plan' ? (
                                 <>
                                   <div className="h-12 w-12 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
                                     <Gift className="h-6 w-6 text-primary" />
@@ -196,9 +196,9 @@ export function UserSubscriptionView({ userID, userRole }: { userID: User['id'];
                                       Membership Plan
                                     </Badge>
                                     <h4 className="font-medium text-sm">
-                                      {userSubscription.gifts.duration % 35 === 0
-                                        ? `${userSubscription.gifts.duration / 35} tháng`
-                                        : `${userSubscription.gifts.duration} ngày`}
+                                      {userSubscription.gift.duration % 35 === 0
+                                        ? `${userSubscription.gift.duration / 35} tháng`
+                                        : `${userSubscription.gift.duration} ngày`}
                                     </h4>
                                   </div>
                                 </>

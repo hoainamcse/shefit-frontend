@@ -4,8 +4,8 @@ import { UserSubscriptionDetail } from '@/models/user-subscriptions'
 import React, { createContext, useContext, ReactNode, useState } from 'react'
 
 interface SubscriptionContextType {
-  selectedSubscription: UserSubscriptionDetail | null | undefined
-  setSelectedSubscription: (subscription: UserSubscriptionDetail | undefined) => void
+  selectedSubscription: UserSubscriptionDetail | null
+  setSelectedSubscription: (subscription: UserSubscriptionDetail | null) => void
   showFavorites: boolean
   setShowFavorites: (show: boolean) => void
   isLoading: boolean
@@ -15,7 +15,7 @@ interface SubscriptionContextType {
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined)
 
 export function SubscriptionProvider({ children }: { children: ReactNode }) {
-  const [selectedSubscription, setSelectedSubscription] = useState<UserSubscriptionDetail | undefined>(undefined)
+  const [selectedSubscription, setSelectedSubscription] = useState<UserSubscriptionDetail | null>(null)
   const [showFavorites, setShowFavorites] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const contextValue = React.useMemo(

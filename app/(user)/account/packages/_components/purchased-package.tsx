@@ -150,10 +150,10 @@ export default function PurchasedPackage() {
                         <div>Ngày kết thúc:</div>
                         <div>{formatDate(subscription.subscription_end_at)}</div>
                       </div>
-                      {subscription.coupon_code && (
+                      {subscription.coupon && (
                         <div className="flex text-[#737373] text-sm lg:text-lg gap-2">
                           <div>Promocode:</div>
-                          <div>{subscription.coupon_code}</div>
+                          <div>{subscription.coupon.code}</div>
                         </div>
                       )}
                     </div>

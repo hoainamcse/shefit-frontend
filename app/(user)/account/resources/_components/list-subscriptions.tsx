@@ -83,7 +83,7 @@ export default function ListSubscriptions() {
         setShowFavorites(false)
       } else {
         // If no subscriptions, fall back to favorites
-        setSelectedSubscription(undefined)
+        setSelectedSubscription(null)
         setShowFavorites(true)
       }
       setInitialSelectionMade(true)
@@ -175,10 +175,10 @@ export default function ListSubscriptions() {
                 </span>
               </div>
             </div>
-            {selectedSubscription?.coupon_code && (
+            {selectedSubscription?.coupon && (
               <div className="flex gap-2">
                 <div>Promocode:</div>
-                <span>{selectedSubscription?.coupon_code}</span>
+                <span>{selectedSubscription?.coupon.code}</span>
               </div>
             )}
           </div>
