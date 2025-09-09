@@ -90,20 +90,27 @@ export function CouponsTable({ couponType }: CouponsTableProps) {
               : `${row.getValue('discount_value')} (ngày)`}
           </div>
         ),
-        size: 150,
+        size: 120,
         enableHiding: false,
       },
       {
-        header: 'Số lần đã dùng',
+        header: 'Lượt đã dùng',
         accessorKey: 'usage_count',
         cell: ({ row }: { row: any }) => <div>{row.getValue('usage_count')}</div>,
         size: 120,
         enableHiding: false,
       },
       {
-        header: 'Số lần sử dụng tối đa',
+        header: 'Dùng tối đa',
         accessorKey: 'max_usage',
-        cell: ({ row }: { row: any }) => <div>{row.getValue('max_usage') ?? 'Không giới hạn'}</div>,
+        cell: ({ row }: { row: any }) => <div>{row.getValue('max_usage') ?? 'Unlimited'}</div>,
+        size: 150,
+        enableHiding: false,
+      },
+      {
+        header: 'Dùng tối đa/người',
+        accessorKey: 'max_usage_per_user',
+        cell: ({ row }: { row: any }) => <div>{row.getValue('max_usage_per_user') ?? 'Unlimited'}</div>,
         size: 150,
         enableHiding: false,
       },

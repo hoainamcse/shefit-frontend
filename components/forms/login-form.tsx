@@ -7,14 +7,13 @@ import { useForm } from 'react-hook-form'
 import { useSearchParams } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { Input } from '@/components/ui/input'
+import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { CustomInput } from '@/components/ui/custom-input'
 import { MainButton } from '@/components/buttons/main-button'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage, Form } from '@/components/ui/form'
 import { getOauth2AuthUrl, signIn } from '@/network/server/auth'
 import { generateToken } from '@/network/client/auth'
 import { BackIconBlack } from '../icons/BackIconBlack'
+import { FormInputField, FormPasswordField } from './fields'
 
 function GoogleIcon() {
   return (
@@ -134,32 +133,22 @@ export function LoginForm() {
           Đăng ký tài khoản để xem +100 khóa tập, +1000 động tác, +30 thực đơn giúp bạn Độ Dáng tại bất kì đâu!
         </p>
 
-        <FormField
-          control={form.control}
+        <FormInputField
+          form={form}
           name="username"
-          render={({ field }) => (
-            <FormItem className="mx-auto space-y-2">
-              <FormLabel htmlFor="username">Tên đăng nhập</FormLabel>
-              <FormControl>
-                <Input placeholder="Nhập tên đăng nhập của bạn" id="username" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Tên đăng nhập"
+          placeholder="Nhập tên đăng nhập của bạn"
+          id="username"
+          withAsterisk
         />
 
-        <FormField
-          control={form.control}
+        <FormPasswordField
+          form={form}
           name="password"
-          render={({ field }) => (
-            <FormItem className="mx-auto space-y-2">
-              <FormLabel htmlFor="password">Mật khẩu</FormLabel>
-              <FormControl>
-                <CustomInput placeholder="Nhập mật khẩu của bạn" id="password" type="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Mật khẩu"
+          placeholder="Nhập mật khẩu của bạn"
+          id="password"
+          withAsterisk
         />
 
         <div className="w-full flex justify-end">

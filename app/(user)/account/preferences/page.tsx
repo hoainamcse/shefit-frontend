@@ -3,7 +3,7 @@
 import * as z from 'zod'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -11,7 +11,7 @@ import { toast } from 'sonner'
 
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FormInputField, FormSelectField } from '@/components/forms/fields'
+import { FormInputField, FormPasswordField, FormSelectField } from '@/components/forms/fields'
 
 import { getUser, updateUser, updatePassword } from '@/network/client/users'
 import { PROVINCES } from '@/lib/label'
@@ -137,21 +137,9 @@ function PasswordUpdateForm({ user }: { user: User }) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormInputField
-          form={form}
-          name="password"
-          label="Mật khẩu cũ"
-          placeholder="Nhập mật khẩu cũ"
-          type="password"
-        />
+        <FormPasswordField form={form} name="password" label="Mật khẩu cũ" placeholder="Nhập mật khẩu cũ" />
 
-        <FormInputField
-          form={form}
-          name="new_password"
-          label="Mật khẩu mới"
-          placeholder="Nhập mật khẩu mới"
-          type="password"
-        />
+        <FormPasswordField form={form} name="new_password" label="Mật khẩu mới" placeholder="Nhập mật khẩu mới" />
 
         <Button
           type="submit"

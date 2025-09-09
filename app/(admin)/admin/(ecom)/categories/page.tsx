@@ -526,12 +526,17 @@ export default function CategoriesPage() {
     },
     {
       accessorKey: 'usage_count',
-      header: 'Số lần đã dùng',
+      header: 'Lượt đã dùng',
     },
     {
       accessorKey: 'max_usage',
-      header: 'Số lần sử dụng tối đa',
-      render: ({ row }) => (row.max_usage ? `${row.max_usage}` : 'Không giới hạn'),
+      header: 'Dùng tối đa',
+      render: ({ row }) => (row.max_usage ? `${row.max_usage}` : 'Unlimited'),
+    },
+    {
+      accessorKey: 'max_usage_per_user',
+      header: 'Dùng tối đa/người',
+      render: ({ row }) => (row.max_usage_per_user ? `${row.max_usage_per_user}` : 'Unlimited'),
     },
     {
       accessorKey: 'actions',

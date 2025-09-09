@@ -32,6 +32,7 @@ const formSchema = z.object({
   discount_value: z.number().min(1, 'Giá trị không được để trống'),
   coupon_type: z.enum(['subscription', 'ecommerce']),
   max_usage: z.number().min(1).nullable(),
+  max_usage_per_user: z.number().min(1).nullable(),
   subscription_ids: z.array(z.string()),
 })
 
@@ -51,6 +52,7 @@ export function EditCouponForm({ couponType, onSuccess, data }: EditCouponFormPr
     discount_value: 0,
     coupon_type: couponType,
     max_usage: null,
+    max_usage_per_user: null,
     subscription_ids: [],
   } as FormValue
 
@@ -63,6 +65,7 @@ export function EditCouponForm({ couponType, onSuccess, data }: EditCouponFormPr
           discount_value: data.discount_value ?? 0,
           coupon_type: (data.coupon_type as 'subscription' | 'ecommerce') || couponType,
           max_usage: data.max_usage,
+          max_usage_per_user: data.max_usage_per_user,
           subscription_ids: data.subscriptions.map((s) => s.id.toString()) || [],
         }
       : defaultValue,
@@ -121,7 +124,7 @@ export function EditCouponForm({ couponType, onSuccess, data }: EditCouponFormPr
             onChange={(e) => {
               const input = e.target as HTMLInputElement
               const formattedValue = input.value.replace(/\s+/g, '').toUpperCase()
-              form.setValue('code', formattedValue)
+              form.setValue('code', formattedValue, { shouldDirty: true })
             }}
           />
 
@@ -149,6 +152,14 @@ export function EditCouponForm({ couponType, onSuccess, data }: EditCouponFormPr
             label="Số lần sử dụng tối đa"
             placeholder="Nhập số lần sử dụng tối đa"
             description="Để trống nếu không giới hạn số lần sử dụng"
+          />
+
+          <FormNumberField
+            form={form}
+            name="max_usage_per_user"
+            label="Số lần sử dụng tối đa cho mỗi người dùng"
+            placeholder="Nhập số lần sử dụng tối đa cho mỗi người dùng"
+            description="Để trống nếu không giới hạn số lần sử dụng cho mỗi người dùng"
           />
 
           <div className="space-y-2">

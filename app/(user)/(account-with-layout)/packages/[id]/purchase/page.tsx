@@ -174,7 +174,7 @@ export default function PurchasePage() {
     try {
       // Ensure the code is uppercase and has no spaces
       const formattedCode = couponCode.replace(/\s/g, '').toUpperCase()
-      const response = await checkCoupon(formattedCode, { subscription_id: Number(id) })
+      const response = await checkCoupon(formattedCode, { subscription_id: Number(id), user_id: session?.userId })
       const coupon = response.data
 
       // Check if coupon has reached max usage
@@ -213,6 +213,8 @@ export default function PurchasePage() {
       setCouponError(
         error.message === 'INVALID_FOR_SUBSCRIPTION'
           ? 'Mã khuyến mãi không áp dụng cho gói này. Vui lòng thử mã khác.'
+          : error.message === 'USER_LIMIT_EXCEEDED'
+          ? 'Bạn đã sử dụng mã này quá số lần cho phép. Vui lòng thử mã khác.'
           : 'Mã khuyến mãi không hợp lệ. Vui lòng thử mã khác.'
       )
       setAppliedCoupon(null)

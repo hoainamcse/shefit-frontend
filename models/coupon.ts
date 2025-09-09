@@ -8,6 +8,7 @@ type Coupon = {
   coupon_type: 'subscription' | 'ecommerce'
   usage_count: number
   max_usage: number | null
+  max_usage_per_user: number | null
   subscriptions: Array<Pick<Subscription, 'id' | 'name'>>
 }
 
