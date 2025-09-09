@@ -149,17 +149,17 @@ export function EditCouponForm({ couponType, onSuccess, data }: EditCouponFormPr
           <FormNumberField
             form={form}
             name="max_usage"
-            label="Số lần sử dụng tối đa"
-            placeholder="Nhập số lần sử dụng tối đa"
-            description="Để trống nếu không giới hạn số lần sử dụng"
+            label="Lượt dùng tối đa"
+            placeholder="Nhập lượt dùng tối đa"
+            description="Để trống nếu không giới hạn lượt dùng"
           />
 
           <FormNumberField
             form={form}
             name="max_usage_per_user"
-            label="Số lần sử dụng tối đa cho mỗi người dùng"
-            placeholder="Nhập số lần sử dụng tối đa cho mỗi người dùng"
-            description="Để trống nếu không giới hạn số lần sử dụng cho mỗi người dùng"
+            label="Lượt dùng tối đa mỗi người"
+            placeholder="Nhập lượt dùng tối đa mỗi người"
+            description="Để trống nếu không giới hạn lượt dùng mỗi người"
           />
 
           <div className="space-y-2">

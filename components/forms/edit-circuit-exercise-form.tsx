@@ -20,7 +20,7 @@ const formSchema = z.object({
   circuit_exercise_title: z.string().min(1, 'Tiêu đề động tác không được để trống'),
   circuit_exercise_description: z.string(),
   youtube_url: z.string().url('Link Youtube không hợp lệ'),
-  no: z.number().min(0),
+  no: z.number().min(1),
 })
 
 type FormValue = z.infer<typeof formSchema>
@@ -51,7 +51,7 @@ export function EditCircuitExerciseForm({
     circuit_exercise_title: '',
     circuit_exercise_description: '',
     youtube_url: '',
-    no: 0,
+    no: 1,
   } as FormValue
 
   const exerciseIndex = data.circuit_exercises.findIndex((exercise) => exercise.id === exerciseID)
@@ -98,7 +98,7 @@ export function EditCircuitExerciseForm({
         />
         <FormTextareaField form={form} name="circuit_exercise_description" label="Mô tả" placeholder="Nhập mô tả" />
         <FormInputField form={form} name="youtube_url" label="Link Youtube" placeholder="Nhập tên youtube" />
-        <FormNumberField form={form} name="no" label="Số lần phát lại" placeholder="Nhập số lần phát lại" />
+        <FormNumberField form={form} name="no" label="Số lần phát" placeholder="Nhập số lần phát" />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
             <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={dayCircuitMutation.isPending} />

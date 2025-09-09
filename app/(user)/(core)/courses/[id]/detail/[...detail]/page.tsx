@@ -32,7 +32,7 @@ export default async function Video({
       notFound()
     }
 
-    const circuits = await getDayCircuits(courseID, currentWeek.id, currentDay.id)
+    const { data } = await getDayCircuits(courseID, currentWeek.id, currentDay.id)
 
     return (
       <div className="flex flex-col">
@@ -43,7 +43,7 @@ export default async function Video({
           <BackIconBlack className="w-5 h-5" />
           <span>Quay về</span>
         </Link>
-        <VideoClient circuits={circuits} />
+        <VideoClient data={data} />
       </div>
     )
   } catch (error) {

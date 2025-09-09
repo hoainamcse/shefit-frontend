@@ -18,7 +18,7 @@ import { Form } from '../ui/form'
 const formSchema = z.object({
   name: z.string().min(1, 'Tên circuit không được để trống'),
   description: z.string(),
-  auto_replay_count: z.number().min(0),
+  auto_replay_count: z.number().min(1),
   circuit_exercises: z.array(z.any()),
 })
 
@@ -34,7 +34,7 @@ interface EditDayCircuitFormProps {
 
 export function EditDayCircuitForm({ data, onSuccess, courseID, weekID, dayID }: EditDayCircuitFormProps) {
   const isEdit = !!data
-  const defaultValue = { name: '', description: '', auto_replay_count: 0, circuit_exercises: [] } as FormValue
+  const defaultValue = { name: '', description: '', auto_replay_count: 1, circuit_exercises: [] } as FormValue
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),
@@ -80,8 +80,8 @@ export function EditDayCircuitForm({ data, onSuccess, courseID, weekID, dayID }:
         <FormNumberField
           form={form}
           name="auto_replay_count"
-          label="Số lần phát lại"
-          placeholder="Nhập số lần phát lại"
+          label="Số lần phát"
+          placeholder="Nhập số lần phát"
         />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (

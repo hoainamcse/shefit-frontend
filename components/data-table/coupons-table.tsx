@@ -101,14 +101,14 @@ export function CouponsTable({ couponType }: CouponsTableProps) {
         enableHiding: false,
       },
       {
-        header: 'Dùng tối đa',
+        header: 'Lượt dùng tối đa',
         accessorKey: 'max_usage',
         cell: ({ row }: { row: any }) => <div>{row.getValue('max_usage') ?? 'Unlimited'}</div>,
         size: 150,
         enableHiding: false,
       },
       {
-        header: 'Dùng tối đa/người',
+        header: 'Lượt dùng tối đa mỗi người',
         accessorKey: 'max_usage_per_user',
         cell: ({ row }: { row: any }) => <div>{row.getValue('max_usage_per_user') ?? 'Unlimited'}</div>,
         size: 150,

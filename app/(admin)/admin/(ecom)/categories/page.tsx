@@ -530,12 +530,12 @@ export default function CategoriesPage() {
     },
     {
       accessorKey: 'max_usage',
-      header: 'Dùng tối đa',
+      header: 'Lượt dùng tối đa',
       render: ({ row }) => (row.max_usage ? `${row.max_usage}` : 'Unlimited'),
     },
     {
       accessorKey: 'max_usage_per_user',
-      header: 'Dùng tối đa/người',
+      header: 'Lượt dùng tối đa mỗi người',
       render: ({ row }) => (row.max_usage_per_user ? `${row.max_usage_per_user}` : 'Unlimited'),
     },
     {
