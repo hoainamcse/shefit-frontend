@@ -174,7 +174,7 @@ export default function PurchasePage() {
     try {
       // Ensure the code is uppercase and has no spaces
       const formattedCode = couponCode.replace(/\s/g, '').toUpperCase()
-      const response = await checkCoupon(formattedCode)
+      const response = await checkCoupon(formattedCode, { subscription_id: Number(id) })
       const coupon = response.data
 
       // Check if coupon has reached max usage
@@ -209,8 +209,12 @@ export default function PurchasePage() {
           setIsMembershipPlan(true)
         }
       }
-    } catch (error) {
-      setCouponError('Mã khuyến mãi không hợp lệ. Vui lòng kiểm tra lại.')
+    } catch (error: any) {
+      setCouponError(
+        error.message === 'INVALID_FOR_SUBSCRIPTION'
+          ? 'Mã khuyến mãi không áp dụng cho gói này. Vui lòng thử mã khác.'
+          : 'Mã khuyến mãi không hợp lệ. Vui lòng thử mã khác.'
+      )
       setAppliedCoupon(null)
     } finally {
       setIsCheckingCoupon(false)
@@ -687,7 +691,7 @@ export default function PurchasePage() {
                       ? `Giảm ${appliedCoupon.discount_value.toLocaleString()} VNĐ`
                       : appliedCoupon.discount_type === 'percentage'
                       ? `Giảm ${appliedCoupon.discount_value}%`
-                      : `Gói thành viên (${appliedCoupon.discount_value} ngày)`}
+                      : `Ngày miễn phí (${appliedCoupon.discount_value} ngày)`}
                   </span>
                 </div>
                 <Button variant="ghost" className="text-gray-500 hover:text-red-500 p-2" onClick={handleRemoveCoupon}>
@@ -696,7 +700,7 @@ export default function PurchasePage() {
               </div>
               {isMembershipPlan && appliedCoupon && (
                 <div className="text-amber-600 text-sm">
-                  Gói thành viên đã được áp dụng. Thời hạn sử dụng là {appliedCoupon.discount_value} ngày.
+                  Ngày miễn phí đã được áp dụng. Thời hạn sử dụng là {appliedCoupon.discount_value} ngày.
                 </div>
               )}
             </div>
@@ -724,7 +728,7 @@ export default function PurchasePage() {
                 }}
                 disabled={!selectedPriceId || isProcessing}
               >
-                {isProcessing ? 'Đang xử lý...' : 'Mua gói'}
+                {isProcessing ? 'Đang xử lý...' : totalPrice <= 0 ? 'Kích hoạt gói' : 'Mua gói'}
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent className="max-w-lg overflow-y-auto max-h-[90vh]">

@@ -6,6 +6,7 @@ import type { Topic } from '@/models/topic'
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
+import { useRouter } from 'next/navigation'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -14,7 +15,6 @@ import { createBlog, updateBlog } from '@/network/client/blogs'
 import { FormImageSelectField, FormInputField, FormMultiSelectField, FormRichTextField } from './fields'
 import { MainButton } from '../buttons/main-button'
 import { Form } from '../ui/form'
-import { useRouter } from 'next/navigation'
 
 // ! Follow BlogPayload model in models/blog.ts
 const formSchema = z.object({

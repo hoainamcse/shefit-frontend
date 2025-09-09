@@ -12,16 +12,17 @@ import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
+import { Badge } from '@/components/ui/badge'
 
-import { CreateCouponForm } from '../forms/create-coupon-form'
+import { EditCouponForm } from '../forms/edit-coupon-form'
 import { AddButton } from '../buttons/add-button'
 import { SheetEdit } from '../dialogs/sheet-edit'
 
 interface CouponsTableProps {
-  couponType?: 'subscription' | 'ecommerce'
+  couponType: 'subscription' | 'ecommerce'
 }
 
-export function CouponsTable({ couponType = 'subscription' }: CouponsTableProps) {
+export function CouponsTable({ couponType }: CouponsTableProps) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 25,
@@ -71,7 +72,7 @@ export function CouponsTable({ couponType = 'subscription' }: CouponsTableProps)
               ? 'Tỷ lệ phần trăm'
               : row.getValue('discount_type') === 'fixed_amount'
               ? 'Số tiền cố định'
-              : 'Số ngày dùng thử'}
+              : 'Số ngày miễn phí'}
           </div>
         ),
         size: 150,
@@ -106,6 +107,26 @@ export function CouponsTable({ couponType = 'subscription' }: CouponsTableProps)
         size: 150,
         enableHiding: false,
       },
+      ...(couponType === 'subscription'
+        ? [
+            {
+              header: 'Gói tập áp dụng',
+              accessorKey: 'subscriptions',
+              cell: ({ row }: { row: any }) => (
+                <div className="flex flex-wrap gap-2">
+                  {row.original.subscriptions.map((c: { id: string; name: string }) => (
+                    <Badge key={c.id} variant="outline">
+                      {c.name}
+                    </Badge>
+                  ))}
+                  {row.original.subscriptions.length === 0 && <span>Tất cả</span>}
+                </div>
+              ),
+              size: 150,
+              enableSorting: false,
+            },
+          ]
+        : []),
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
@@ -114,7 +135,7 @@ export function CouponsTable({ couponType = 'subscription' }: CouponsTableProps)
         enableHiding: false,
       },
     ],
-    []
+    [couponType]
   )
 
   const [selectedRow, setSelectedRow] = useState<Coupon | null>(null)
@@ -197,7 +218,7 @@ export function CouponsTable({ couponType = 'subscription' }: CouponsTableProps)
         open={isEditSheetOpen}
         onOpenChange={setIsEditSheetOpen}
       >
-        <CreateCouponForm data={selectedRow} onSuccess={onEditSuccess} type={couponType} />
+        <EditCouponForm data={selectedRow} onSuccess={onEditSuccess} couponType={couponType} />
       </SheetEdit>
     </>
   )

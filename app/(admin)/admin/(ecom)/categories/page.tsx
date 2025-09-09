@@ -6,7 +6,7 @@ import { AddButton } from '@/components/buttons/add-button'
 import { ColumnDef, DataTable } from '@/components/data-table'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { CreateCouponForm } from '@/components/forms/create-coupon-form'
+import { EditCouponForm } from '@/components/forms/edit-coupon-form'
 import { Edit, Pencil, Save, Trash2, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Category, Color, Size } from '@/models/category'
@@ -642,14 +642,14 @@ function CreateCouponDialog({ children, updateData, open, setOpen, isEdit, data,
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Cập nhật khuyến mãi' : 'Thêm khuyến mãi'}</DialogTitle>
         </DialogHeader>
-        <CreateCouponForm
+        <EditCouponForm
           data={data}
           onSuccess={() => {
             setOpen(false)
             updateData?.()
             onClose()
           }}
-          type="ecommerce"
+          couponType="ecommerce"
         />
       </DialogContent>
     </Dialog>

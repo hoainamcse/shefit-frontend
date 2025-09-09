@@ -1,5 +1,5 @@
 import type { ApiResponse, ListResponse } from '@/models/response'
-import type { Coupon } from '@/models/coupon'
+import type { Coupon, CouponPayload } from '@/models/coupon'
 
 import { fetchData } from '../helpers/fetch-data'
 
@@ -11,7 +11,7 @@ export async function getCoupons(query?: any): Promise<ListResponse<Coupon>> {
   return response.json()
 }
 
-export async function createCoupon(data: any): Promise<ApiResponse<Coupon>> {
+export async function createCoupon(data: CouponPayload): Promise<ApiResponse<Coupon>> {
   const response = await fetchData('/v1/coupons', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -19,8 +19,8 @@ export async function createCoupon(data: any): Promise<ApiResponse<Coupon>> {
   return response.json()
 }
 
-export async function updateCoupon(data: any, couponId: string): Promise<ApiResponse<Coupon>> {
-  const response = await fetchData(`/v1/coupons/${couponId}`, {
+export async function updateCoupon(id: number, data: CouponPayload): Promise<ApiResponse<Coupon>> {
+  const response = await fetchData(`/v1/coupons/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   })
