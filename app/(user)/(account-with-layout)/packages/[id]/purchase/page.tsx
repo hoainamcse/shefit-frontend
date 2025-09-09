@@ -1,7 +1,7 @@
 'use client'
 
 // React and hooks
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // Next.js
 import Image from 'next/image'
@@ -56,6 +56,13 @@ export default function PurchasePage() {
   const query = searchParams ? `?${searchParams.toString()}` : ''
   const queryClient = useQueryClient()
 
+  // Format time function for the countdown display
+  const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
+  }
+
   // Fetch subscription data with React Query with error handling and retry
   const {
     data: subscription,
@@ -78,6 +85,9 @@ export default function PurchasePage() {
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false)
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false)
   const [purchaseSuccess, setPurchaseSuccess] = useState(false)
+  const [timeRemaining, setTimeRemaining] = useState<number>(15 * 60) // 15 minutes in seconds
+  const [isTimerActive, setIsTimerActive] = useState<boolean>(false)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   // State for coupon handling
   const [couponCode, setCouponCode] = useState<string>('')
@@ -110,6 +120,44 @@ export default function PurchasePage() {
       }
     }
   }, [subscription])
+
+  // Effect for handling the countdown timer
+  useEffect(() => {
+    if (isTimerActive && timeRemaining > 0) {
+      timerRef.current = setInterval(() => {
+        setTimeRemaining((prevTime) => {
+          if (prevTime <= 1) {
+            // Timer expired
+            clearInterval(timerRef.current as NodeJS.Timeout)
+            setIsTimerActive(false)
+            // Set QR code as expired
+            setQrData((prevData: any) => (prevData ? { ...prevData, expired: true } : null))
+            return 0
+          }
+          return prevTime - 1
+        })
+      }, 1000)
+    } else if (timeRemaining === 0) {
+      // Handle timer expiration
+      setIsTimerActive(false)
+      // Set QR code as expired
+      setQrData((prevData: any) => (prevData ? { ...prevData, expired: true } : null))
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+    }
+  }, [isTimerActive, timeRemaining])
+
+  // Effect to handle dialog close - cleanup timer
+  useEffect(() => {
+    if (!isPaymentDialogOpen && timerRef.current) {
+      clearInterval(timerRef.current)
+      setIsTimerActive(false)
+    }
+  }, [isPaymentDialogOpen])
 
   // Handler for login button
   const handleLoginClick = () => {
@@ -213,8 +261,10 @@ export default function PurchasePage() {
       setCouponError(
         error.message === 'INVALID_FOR_SUBSCRIPTION'
           ? 'Mã khuyến mãi không áp dụng cho gói này. Vui lòng thử mã khác.'
-          : error.message === 'USER_LIMIT_EXCEEDED'
+          : error.message === 'USAGE_LIMIT_EXCEEDED'
           ? 'Bạn đã sử dụng mã này quá số lần cho phép. Vui lòng thử mã khác.'
+          : error.message === 'COUPON_USAGE_LIMIT_REACHED'
+          ? 'Mã khuyến mãi đã hết lượt sử dụng. Vui lòng thử mã khác.'
           : 'Mã khuyến mãi không hợp lệ. Vui lòng thử mã khác.'
       )
       setAppliedCoupon(null)
@@ -304,6 +354,10 @@ export default function PurchasePage() {
     },
     onSuccess: (data) => {
       setQrData(data)
+
+      // Start the countdown timer when QR code is generated
+      setTimeRemaining(15 * 60) // Reset to 15 minutes (in seconds)
+      setIsTimerActive(true)
 
       // Proceed with transaction token generation if QR code exists
       if (data.qrCode) {
@@ -487,6 +541,9 @@ export default function PurchasePage() {
     setIsPaymentDialogOpen(true)
     setQrData(null)
     setPurchaseSuccess(false)
+    // Reset timer state when starting a new payment
+    setTimeRemaining(15 * 60)
+    setIsTimerActive(false)
 
     // For free subscriptions (total price <= 0), skip payment steps and go directly to subscription creation
     if (totalPrice <= 0) {
@@ -774,7 +831,27 @@ export default function PurchasePage() {
                     Thanh toán đơn hàng
                   </AlertDialogTitle>
                   <div className="border rounded-md p-4 w-full flex flex-col items-center justify-center">
-                    {qrData.qrCode ? (
+                    {qrData.expired ? (
+                      <div className="p-8 text-center text-red-500 flex flex-col items-center gap-4">
+                        <div className="font-bold text-lg">Mã QR đã hết hạn</div>
+                        <div className="text-base text-gray-700">Mã QR chỉ có hiệu lực trong 15 phút</div>
+                        <Button
+                          className="bg-[#13D8A7] hover:bg-[#11c296] text-white mt-2"
+                          onClick={() => {
+                            // Generate new QR code
+                            const newOrderId = generateOrderId()
+                            setOrderId(newOrderId)
+                            generateTokenMutation.mutate(undefined, {
+                              onSuccess: (token) => {
+                                createQrCodeMutation.mutate({ token, providedOrderId: newOrderId })
+                              },
+                            })
+                          }}
+                        >
+                          Tạo mã QR mới
+                        </Button>
+                      </div>
+                    ) : qrData.qrCode ? (
                       <Canvas
                         text={qrData.qrCode}
                         options={{
@@ -814,13 +891,26 @@ export default function PurchasePage() {
                       <span className="font-medium">{qrData.content}</span>
                     </div>
                   </div>
-                  <div className="text-center text-sm text-amber-500">
-                    Mã thanh toán có hiệu lực trong 15 phút. Sau khi thanh toán thành công Shefit sẽ kích hoạt toàn
-                    khoản cho bạn.
+                  <div className="text-center text-sm space-y-1">
+                    <div className="font-semibold">
+                      Thời gian còn lại:{' '}
+                      <span className={`${timeRemaining < 60 ? 'text-red-600 font-bold' : 'text-red-500'}`}>
+                        {formatTime(timeRemaining)}
+                      </span>
+                    </div>
+                    <div className="text-amber-500">
+                      Mã thanh toán có hiệu lực trong 15 phút. Sau khi thanh toán thành công Shefit sẽ kích hoạt toàn
+                      khoản cho bạn.
+                    </div>
+                    {timeRemaining < 60 && (
+                      <div className="text-red-500 font-medium mt-1">
+                        Sắp hết thời gian! Vui lòng hoàn tất thanh toán hoặc tạo mã QR mới.
+                      </div>
+                    )}
                   </div>
                   <AlertDialogFooter className="flex flex-row items-center gap-2">
                     <AlertDialogCancel className="mt-0">Huỷ thanh toán</AlertDialogCancel>
-                    {qrData.qrCode && (
+                    {qrData.qrCode && !qrData.expired && (
                       <Button
                         onClick={() => handleDownloadQR(qrData)}
                         className="flex items-center gap-2 bg-[#13D8A7] hover:bg-[#11c296] text-white"
