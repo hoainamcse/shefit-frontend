@@ -11,9 +11,17 @@ interface DialogVideoPlayerProps {
   videoUrl?: string | string[]
   title?: string
   children?: React.ReactNode
+  playCount?: number // Total number of times to play the entire playlist
 }
 
-export const DialogVideoPlayer = ({ open, onOpenChange, videoUrl, title, children }: DialogVideoPlayerProps) => {
+export const DialogVideoPlayer = ({
+  open,
+  onOpenChange,
+  videoUrl,
+  title,
+  children,
+  playCount,
+}: DialogVideoPlayerProps) => {
   const playerRef = useRef<ReactPlayer>(null)
   const [playIndex, setPlayIndex] = React.useState(0)
   const [playing, setPlaying] = React.useState(true)
@@ -26,16 +34,38 @@ export const DialogVideoPlayer = ({ open, onOpenChange, videoUrl, title, childre
     }
   }, [open])
 
-  // Reset playIndex when videoUrl changes
+  // Reset playIndex and currentCycle when videoUrl changes
   useEffect(() => {
     setPlayIndex(0)
+    setCurrentCycle(0)
   }, [videoUrl])
 
   const videoArray = Array.isArray(videoUrl) ? videoUrl : videoUrl ? [videoUrl] : []
   const hasMultipleVideos = videoArray.length > 1
 
+  // Track the current play cycle (0-based)
+  const [currentCycle, setCurrentCycle] = React.useState(0)
+
   const nextVideo = () => {
-    if (!hasMultipleVideos || playIndex >= videoArray.length - 1) return
+    // If we're at the end of the playlist
+    if (playIndex >= videoArray.length - 1) {
+      // If we have a playCount and haven't reached the limit yet
+      if (playCount && playCount > 0 && currentCycle < playCount - 1) {
+        setPlayIndex(0) // Start from the beginning
+        setCurrentCycle((prev) => prev + 1) // Increment cycle counter
+
+        setPlaying(false)
+        setTimeout(() => {
+          setPlaying(true)
+        }, 50)
+        return
+      }
+
+      // Otherwise, we're done
+      return
+    }
+
+    // Normal case: move to the next video in the playlist
     setPlayIndex((prev) => prev + 1)
     setPlaying(false) // First stop the current video
 
@@ -86,6 +116,13 @@ export const DialogVideoPlayer = ({ open, onOpenChange, videoUrl, title, childre
                   }`}
                 />
               ))}
+            </div>
+          )}
+
+          {/* Round indicator */}
+          {playCount && playCount > 1 && (
+            <div className="absolute top-2 right-2 bg-black/50 text-white px-3 py-1 rounded-full text-xs font-medium z-10">
+              Vòng {currentCycle + 1}/{playCount}
             </div>
           )}
         </div>

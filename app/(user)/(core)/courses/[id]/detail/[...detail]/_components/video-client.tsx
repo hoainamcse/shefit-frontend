@@ -15,6 +15,7 @@ export function VideoClient({ data: circuits }: { data: DayCircuit[] }) {
   const [videoUrl, setVideoUrl] = useState<string[]>([])
   const [openDialog, setOpenDialog] = useState(false)
   const [checkedExercises, setCheckedExercises] = useState<Record<string, boolean>>({})
+  const [playCount, setPlayCount] = useState(1)
 
   // Initialize all exercises as unchecked by default
   useEffect(() => {
@@ -41,28 +42,33 @@ export function VideoClient({ data: circuits }: { data: DayCircuit[] }) {
     // If none are checked, use all valid exercises
     const exercisesToPlay = selectedExercises.length > 0 ? selectedExercises : validExercises
 
-    // Extract the YouTube URLs
-    const videosToPlay = exercisesToPlay.map((exercise) => exercise.youtube_url)
-
     // Avoid processing empty circuits
-    if (videosToPlay.length === 0) return
+    if (exercisesToPlay.length === 0) return
+
+    // Create an array for each exercise, repeating according to its 'no' property
+    const allVideos = exercisesToPlay.flatMap((exercise) => {
+      // Ensure exercise.no is at least 1
+      const repeatCount = Math.max(1, exercise.no || 1)
+      return Array(repeatCount).fill(exercise.youtube_url)
+    })
 
     // Set the title with dynamic information
-    setTitle(`${circuit.name} (${videosToPlay.length} động tác, thực hiện ${circuit.auto_replay_count} vòng)`)
+    setTitle(`${circuit.name} (${exercisesToPlay.length} động tác, thực hiện ${circuit.auto_replay_count} vòng)`)
 
-    // Create playlist by repeating videos according to auto_replay_count (ensure it's at least 1)
-    const replayCount = Math.max(1, circuit.auto_replay_count || 1)
+    // Just use the videos with exercises repeated according to their 'no' property
+    setVideoUrl(allVideos)
 
-    // More efficient way to create repeated array
-    const replayedVideos = Array.from({ length: replayCount }, () => videosToPlay).flat()
-
-    setVideoUrl(replayedVideos)
+    // Pass the auto_replay_count to DialogVideoPlayer as the playCount prop
+    setPlayCount(Math.max(1, circuit.auto_replay_count || 1))
     setOpenDialog(true)
   }
 
   const handlePlayExercise = (exercise: CircuitExercise) => {
-    setTitle(`${exercise.circuit_exercise_title} (thực hiện ${exercise.no} lần)`)
-    setVideoUrl(Array(exercise.no).fill(exercise.youtube_url))
+    setTitle(`${exercise.circuit_exercise_title}`)
+    // Just play the exercise once when clicking directly on it
+    setVideoUrl([exercise.youtube_url])
+    // Reset play count to 1 for individual exercises
+    setPlayCount(1)
     setOpenDialog(true)
   }
 
@@ -181,7 +187,13 @@ export function VideoClient({ data: circuits }: { data: DayCircuit[] }) {
           ))}
         </div>
       </div>
-      <DialogVideoPlayer title={title} videoUrl={videoUrl} open={openDialog} onOpenChange={setOpenDialog} />
+      <DialogVideoPlayer
+        title={title}
+        videoUrl={videoUrl}
+        open={openDialog}
+        onOpenChange={setOpenDialog}
+        playCount={playCount}
+      />
     </>
   )
 }
