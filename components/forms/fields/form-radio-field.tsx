@@ -15,9 +15,18 @@ interface FormRadioFieldProps {
   label?: string
   description?: string
   withAsterisk?: boolean
+  direction?: 'vertical' | 'horizontal' // Layout direction for the radio group
 }
 
-function FormRadioField({ form, data: items, name, label, description, withAsterisk = false }: FormRadioFieldProps) {
+function FormRadioField({
+  form,
+  data: items,
+  name,
+  label,
+  description,
+  withAsterisk = false,
+  direction = 'vertical',
+}: FormRadioFieldProps) {
   return (
     <FormField
       control={form.control}
@@ -33,7 +42,11 @@ function FormRadioField({ form, data: items, name, label, description, withAster
             {description && <FormDescription>{description}</FormDescription>}
           </div>
           <FormControl>
-            <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-col space-y-1">
+            <RadioGroup
+              onValueChange={field.onChange}
+              defaultValue={field.value}
+              className={`flex ${direction === 'vertical' ? 'flex-col space-y-1' : 'flex-row flex-wrap gap-4'}`}
+            >
               {items.map((item) => (
                 <FormItem key={item.value} className="flex items-center space-x-3 space-y-0">
                   <FormControl>

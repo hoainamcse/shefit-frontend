@@ -1,12 +1,12 @@
-import React from 'react'
+'use client'
+
+import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+import { Form } from '@/components/ui/form'
+import { FormNumberField, FormSelectField, FormTextareaField } from '../forms/fields'
 import styles from './chatbot.module.css'
 
 const mealFormSchema = z.object({
@@ -52,103 +52,30 @@ export function MealForm({ onSubmit, onCancel }: MealFormProps) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <FormField
-              control={form.control}
-              name="age"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tuổi</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="25"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="height"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Chiều cao (cm)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="160"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <FormNumberField name="age" form={form} label="Tuổi" placeholder="25" min={1} />
+            <FormNumberField name="height" form={form} label="Chiều cao (cm)" placeholder="160" min={1} />
           </div>
 
-          <FormField
-            control={form.control}
-            name="weight"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Cân nặng (kg)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="55"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <FormNumberField name="weight" form={form} label="Cân nặng (kg)" placeholder="55" min={1} />
 
-          <FormField
-            control={form.control}
+          <FormSelectField
             name="goal"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Mục tiêu</FormLabel>
-                <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn mục tiêu của bạn" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Giảm Cân">Giảm Cân</SelectItem>
-                      <SelectItem value="Giữ Cân">Giữ Cân</SelectItem>
-                      <SelectItem value="Tăng Cân">Tăng Cân</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            form={form}
+            label="Mục tiêu"
+            placeholder="Chọn mục tiêu của bạn"
+            data={[
+              { value: 'Giảm Cân', label: 'Giảm Cân' },
+              { value: 'Giữ Cân', label: 'Giữ Cân' },
+              { value: 'Tăng Cân', label: 'Tăng Cân' },
+            ]}
           />
 
-          <FormField
-            control={form.control}
+          <FormTextareaField
             name="foodPreferences"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Thích ăn gì</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Mô tả sở thích ăn uống, món ăn yêu thích, thực phẩm không thích hoặc dị ứng..."
-                    {...field}
-                    rows={4}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            form={form}
+            label="Thích ăn gì"
+            placeholder="Mô tả sở thích ăn uống, món ăn yêu thích, thực phẩm không thích hoặc dị ứng..."
+            rows={4}
           />
 
           <div className="flex gap-3 pt-4">

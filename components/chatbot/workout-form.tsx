@@ -1,14 +1,12 @@
-import React from 'react'
+'use client'
+
+import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { Form } from '@/components/ui/form'
+import { FormInputField, FormNumberField, FormRadioField, FormSelectField, FormTextareaField } from '../forms/fields'
 import styles from './chatbot.module.css'
 
 const workoutFormSchema = z.object({
@@ -17,7 +15,7 @@ const workoutFormSchema = z.object({
   weight: z.number().min(1, 'Cân nặng phải lớn hơn 0'),
   measurements: z.string().min(1, 'Vui lòng nhập số đo 3 vòng'),
   bellyMeasurement: z.number().min(1, 'Số đo bụng dưới phải lớn hơn 0'),
-  isExperienced: z.boolean(),
+  isExperienced: z.enum(['true', 'false']),
   injuries: z.string(),
   weeklyDays: z.number().min(1, 'Ít nhất 1 ngày').max(7, 'Tối đa 7 ngày'),
 })
@@ -25,7 +23,7 @@ const workoutFormSchema = z.object({
 type WorkoutFormValues = z.infer<typeof workoutFormSchema>
 
 interface WorkoutFormProps {
-  onSubmit: (data: WorkoutFormValues) => void
+  onSubmit: (data: any) => void
   onCancel: () => void
 }
 
@@ -38,14 +36,14 @@ export function WorkoutForm({ onSubmit, onCancel }: WorkoutFormProps) {
       weight: 0,
       measurements: '',
       bellyMeasurement: 0,
-      isExperienced: false,
+      isExperienced: 'false',
       injuries: '',
       weeklyDays: 3,
     },
   })
 
   const handleSubmit = (data: WorkoutFormValues) => {
-    onSubmit(data)
+    onSubmit({ ...data, isExperienced: data.isExperienced === 'true' })
   }
 
   return (
@@ -58,163 +56,57 @@ export function WorkoutForm({ onSubmit, onCancel }: WorkoutFormProps) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <FormField
-              control={form.control}
-              name="age"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tuổi</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="25"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="height"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Chiều cao (cm)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="160"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <FormNumberField name="age" form={form} label="Tuổi" placeholder="25" min={1} />
+            <FormNumberField name="height" form={form} label="Chiều cao (cm)" placeholder="160" min={1} />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <FormField
-              control={form.control}
-              name="weight"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cân nặng (kg)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="55"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <FormNumberField name="weight" form={form} label="Cân nặng (kg)" placeholder="55" min={1} />
 
-            <FormField
-              control={form.control}
+            <FormNumberField
               name="bellyMeasurement"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Số đo bụng dưới (cm)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="70"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              form={form}
+              label="Số đo bụng dưới (cm)"
+              min={1}
+              placeholder="70"
             />
           </div>
 
-          <FormField
-            control={form.control}
-            name="measurements"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Số đo 3 vòng</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ví dụ: 90-70-95" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <FormInputField name="measurements" form={form} placeholder="Ví dụ: 90-70-95" label="Số đo 3 vòng" />
 
-          <FormField
-            control={form.control}
+          <FormRadioField
             name="isExperienced"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Chị đã biết tập chưa hay người mới?</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={(value) => field.onChange(value === 'true')}
-                    value={field.value ? 'true' : 'false'}
-                    className="flex flex-row space-x-6"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="true" id="experienced" />
-                      <Label htmlFor="experienced">Đã biết tập</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="false" id="beginner" />
-                      <Label htmlFor="beginner">Người mới</Label>
-                    </div>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            form={form}
+            label="Chị đã biết tập chưa hay người mới?"
+            data={[
+              { value: 'true', label: 'Đã biết tập' },
+              { value: 'false', label: 'Người mới' },
+            ]}
+            direction="horizontal"
           />
 
-          <FormField
-            control={form.control}
+          <FormTextareaField
             name="injuries"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Chị có bị chấn thương hay đau vùng nào không?</FormLabel>
-                <FormControl>
-                  <Textarea placeholder="Mô tả tình trạng sức khỏe hoặc chấn thương (nếu có)" {...field} rows={4} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            form={form}
+            label="Chị có bị chấn thương hay đau vùng nào không?"
+            placeholder="Mô tả tình trạng sức khỏe hoặc chấn thương (nếu có)"
+            rows={4}
           />
 
-          <FormField
-            control={form.control}
+          <FormSelectField
             name="weeklyDays"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Một tuần muốn tập mấy ngày?</FormLabel>
-                <FormControl>
-                  <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value.toString()}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn số ngày" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[1, 2, 3, 4, 5, 6, 7].map((day) => (
-                        <SelectItem key={day} value={day.toString()}>
-                          {day} ngày
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            form={form}
+            label="Một tuần muốn tập mấy ngày?"
+            placeholder="Chọn số ngày"
+            data={[
+              { value: '1', label: '1 ngày' },
+              { value: '2', label: '2 ngày' },
+              { value: '3', label: '3 ngày' },
+              { value: '4', label: '4 ngày' },
+              { value: '5', label: '5 ngày' },
+              { value: '6', label: '6 ngày' },
+              { value: '7', label: '7 ngày' },
+            ]}
           />
 
           <div className="flex gap-3 pt-4">
