@@ -24,13 +24,12 @@ export default function BotMessage({
   const [currentMessage, setCurrentMessage] = useState<Message>(message)
 
   const removeOptionsFromMessage = (text: string) => {
+    // Find lines containing options wrapped in << >>
     const lines = text.split('\n')
-    const optionLines = lines.filter((line) => line.startsWith('- '))
+    const optionIndex = lines.findIndex((line) => /<<.+>>/.test(line))
 
-    if (optionLines.length > 0) {
-      // Find the first option line and remove everything from that line onwards
-      const firstOptionIndex = lines.findIndex((line) => line.startsWith('- '))
-      return lines.slice(0, firstOptionIndex).join('\n').trim()
+    if (optionIndex !== -1) {
+      return lines.slice(0, optionIndex).join('\n').trim()
     }
 
     return text
@@ -64,7 +63,8 @@ export default function BotMessage({
 
   useEffect(() => {
     if (isNewestMessage && onFollowUpOptionsChange) {
-      const options = message.content.split('\n').filter((line) => line.startsWith('- '))
+      // Check if there are any lines containing << >> (potential options)
+      const options = message.content.split('\n').filter((line) => /<<.+>>/.test(line))
       onFollowUpOptionsChange(options.length > 0)
     }
   }, [isNewestMessage, message.content, onFollowUpOptionsChange])
@@ -129,13 +129,12 @@ const FollowUpOptions = ({
   const extractOptions = (text: string) => {
     return text
       .split('\n')
-      .filter((line) => line.startsWith('- '))
+      .filter((line) => /<<.+>>/.test(line))
       .map((line) => {
-        const trimmedLine = line.slice(2).trim()
-        // Check if the entire line is wrapped in << and >> markers
-        const regex = /^<<(.+?)>>$/
-        const match = regex.exec(trimmedLine)
-        return match ? match[1] : trimmedLine
+        // Extract content between << and >>
+        const regex = /<<(.+?)>>/
+        const match = regex.exec(line)
+        return match ? match[1] : line
       })
   }
 
@@ -150,7 +149,7 @@ const FollowUpOptions = ({
           key={`option-${option}`}
           className="whitespace-normal justify-start h-fit py-1.5 px-3 rounded-lg"
           variant="outline"
-          onClick={() => sendMessage(option, true, false)}
+          onClick={() => sendMessage(`<<${option}>>`, true, false)}
         >
           {option}
         </Button>

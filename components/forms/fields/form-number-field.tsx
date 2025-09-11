@@ -44,11 +44,36 @@ export function FormNumberField<
               {...inputProps}
               type="number"
               min={0}
-              {...field}
+              // Apply field props but ensure our custom handlers take precedence
+              value={field.value}
+              name={field.name}
+              ref={field.ref}
+              onBlur={field.onBlur}
+              // Improved key down handler to prevent negative numbers
+              onKeyDown={(event) => {
+                // Prevent typing the minus sign, 'e', or any non-numeric keys except allowed control keys
+                if (event.key === '-' || event.key === 'e' || event.key === '+') {
+                  event.preventDefault()
+                }
+
+                // Allow input props onKeyDown to still work if provided
+                inputProps.onKeyDown?.(event)
+              }}
+              // Improved onChange handler with stricter validation
               onChange={(event) => {
-                const value = event.target.value
-                // Only convert to number if not empty, otherwise pass empty string
-                field.onChange(value === '' ? value : +value)
+                let value = event.target.value
+
+                // Remove any minus signs that might have been entered through pasting
+                value = value.replace(/-/g, '')
+
+                // Ensure we have a valid number or empty string
+                const numericValue = value === '' ? value : Math.max(0, parseFloat(value))
+
+                // Update the field value
+                field.onChange(numericValue)
+
+                // Also call any onChange from inputProps if it exists
+                inputProps.onChange?.(event)
               }}
             />
           </FormControl>

@@ -90,7 +90,7 @@ export default function PromptSuggestions({
   const createFormMessage = (type: 'workout' | 'meal', data: any) => {
     if (type === 'workout') {
       return `Lên khoá tập
-Thông tin của tôi như sau:
+---------------
 Tuổi: ${data.age}
 Chiều cao: ${data.height}cm
 Cân nặng: ${data.weight}kg
@@ -102,7 +102,7 @@ Số ngày tập trong tuần: ${data.weeklyDays} ngày`
     }
 
     return `Lên thực đơn
-Thông tin của tôi như sau:
+---------------
 Tuổi: ${data.age}
 Chiều cao: ${data.height}cm
 Cân nặng: ${data.weight}kg

@@ -47,7 +47,7 @@ export function EmptyState({
 
   const handleWorkoutFormSubmit = (data: any) => {
     const message = `Lên khoá tập
-Thông tin của tôi như sau:
+---------------
 Tuổi: ${data.age}
 Chiều cao: ${data.height}cm
 Cân nặng: ${data.weight}kg
@@ -63,7 +63,7 @@ Số ngày tập trong tuần: ${data.weeklyDays} ngày`
 
   const handleMealFormSubmit = (data: any) => {
     const message = `Lên thực đơn
-Thông tin của tôi như sau:
+---------------
 Tuổi: ${data.age}
 Chiều cao: ${data.height}cm
 Cân nặng: ${data.weight}kg
