@@ -45,11 +45,11 @@ const formSchema = z.object({
   is_public: z.boolean(),
   is_popular: z.boolean(),
   assets: z.object({
-    thumbnail: z.string().optional(),
-    mobile_cover: z.string().optional(),
-    desktop_cover: z.string().optional(),
-    youtube_cover: z.string().optional(),
-    homepage_thumbnail: z.string().optional(),
+    thumbnail: z.string().url().nullable(),
+    mobile_cover: z.string().url().nullable(),
+    desktop_cover: z.string().url().nullable(),
+    youtube_cover: z.string().url().nullable(),
+    homepage_thumbnail: z.string().url().nullable(),
   }),
   is_free: z.boolean(),
   summary: z.string(),
@@ -73,7 +73,6 @@ interface EditCourseFormProps {
 }
 
 const DEFAULT_IMAGE_URL = 'https://placehold.co/400?text=shefit.vn&font=Oswald'
-const DEFAULT_YOUTUBE_URL = 'https://youtu.be/EngW7tLk6R8?si=gesFcAqfOVJB3EMy'
 
 export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: EditCourseFormProps) {
   const isEdit = !!data
@@ -88,6 +87,9 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
     assets: {
       thumbnail: DEFAULT_IMAGE_URL,
       mobile_cover: DEFAULT_IMAGE_URL,
+      desktop_cover: null,
+      youtube_cover: null,
+      homepage_thumbnail: null,
     },
     is_free: false,
     summary: '',
@@ -375,27 +377,30 @@ function EditCourseAssets({ form }: { form: ReturnType<typeof useForm<FormValue>
         description="Chỉnh sửa các thông tin liên quan đến khoá tập"
       >
         <div className="space-y-4">
-          <FormImageSelectField control={form.control} name="assets.thumbnail" label="Hình ảnh đại diện" />
-          <FormImageSelectField
-            control={form.control}
-            name="assets.homepage_thumbnail"
-            label="Hình ảnh đại diện (Homepage)"
-            description="Ảnh đại diện (mặc định) sẽ được sử dụng nếu không đặt"
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormImageSelectField control={form.control} name="assets.thumbnail" label="Hình ảnh đại diện" />
+            <FormImageSelectField
+              control={form.control}
+              name="assets.homepage_thumbnail"
+              label="Hình ảnh đại diện (Homepage)"
+              description="Ảnh đại diện (mặc định) sẽ được sử dụng nếu không đặt"
+            />
+          </div>
           <Separator />
-          <FormImageSelectField control={form.control} name="assets.mobile_cover" label="Hình ảnh bìa (Mobile)" />
-          <FormImageSelectField
-            control={form.control}
-            name="assets.desktop_cover"
-            label="Hình ảnh bìa (Desktop)"
-            description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormImageSelectField control={form.control} name="assets.mobile_cover" label="Hình ảnh bìa (Mobile)" />
+            <FormImageSelectField
+              control={form.control}
+              name="assets.desktop_cover"
+              label="Hình ảnh bìa (Desktop)"
+              description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
+            />
+          </div>
           <FormInputField
             form={form}
             name="assets.youtube_cover"
             label="Video bìa (YouTube)"
             placeholder="Nhập URL video YouTube"
-            // defaultValue={DEFAULT_YOUTUBE_URL}
             description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
           />
         </div>

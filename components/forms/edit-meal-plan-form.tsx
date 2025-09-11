@@ -22,7 +22,14 @@ import { MainButton } from '../buttons/main-button'
 import { DialogEdit } from '../dialogs/dialog-edit'
 import { DietsTable } from '../data-table/diets-table'
 import { CaloriesTable } from '../data-table/calories-table'
-import { FormImageSelectField, FormInputField, FormNumberField, FormRichTextField, FormSwitchField, FormTextareaField } from './fields'
+import {
+  FormImageSelectField,
+  FormInputField,
+  FormNumberField,
+  FormRichTextField,
+  FormSwitchField,
+  FormTextareaField,
+} from './fields'
 
 // ! Follow MealPlanPayload model in models/meal-plan.ts
 const formSchema = z.object({
@@ -31,11 +38,11 @@ const formSchema = z.object({
   chef_name: z.string(),
   meal_plan_goal_id: z.number().nullable(),
   assets: z.object({
-    thumbnail: z.string().url().optional(),
-    mobile_cover: z.string().url().optional(),
-    desktop_cover: z.string().url().optional(),
-    youtube_cover: z.string().url().optional(),
-    homepage_thumbnail: z.string().url().optional(),
+    thumbnail: z.string().url().nullable(),
+    mobile_cover: z.string().url().nullable(),
+    desktop_cover: z.string().url().nullable(),
+    youtube_cover: z.string().url().nullable(),
+    homepage_thumbnail: z.string().url().nullable(),
   }),
   description: z.string(),
   meal_ingredients: z.array(
@@ -61,7 +68,6 @@ interface EditMealPlanFormProps {
 }
 
 const DEFAULT_IMAGE_URL = 'https://placehold.co/400?text=shefit.vn&font=Oswald'
-const DEFAULT_YOUTUBE_URL = 'https://youtu.be/EngW7tLk6R8?si=gesFcAqfOVJB3EMy'
 
 export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
   const isEdit = !!data
@@ -73,6 +79,9 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
     assets: {
       thumbnail: DEFAULT_IMAGE_URL,
       mobile_cover: DEFAULT_IMAGE_URL,
+      desktop_cover: null,
+      youtube_cover: null,
+      homepage_thumbnail: null,
     },
     description: '',
     meal_ingredients: [],
@@ -331,27 +340,30 @@ function EditMealPlanAssets({ form }: { form: ReturnType<typeof useForm<FormValu
         description="Chỉnh sửa các thông tin liên quan đến thực đơn"
       >
         <div className="space-y-4">
-          <FormImageSelectField control={form.control} name="assets.thumbnail" label="Hình ảnh đại diện" />
-          <FormImageSelectField
-            control={form.control}
-            name="assets.homepage_thumbnail"
-            label="Hình ảnh đại diện (Homepage)"
-            description="Ảnh đại diện (mặc định) sẽ được sử dụng nếu không đặt"
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormImageSelectField control={form.control} name="assets.thumbnail" label="Hình ảnh đại diện" />
+            <FormImageSelectField
+              control={form.control}
+              name="assets.homepage_thumbnail"
+              label="Hình ảnh đại diện (Homepage)"
+              description="Ảnh đại diện (mặc định) sẽ được sử dụng nếu không đặt"
+            />
+          </div>
           <Separator />
-          <FormImageSelectField control={form.control} name="assets.mobile_cover" label="Hình ảnh bìa (Mobile)" />
-          <FormImageSelectField
-            control={form.control}
-            name="assets.desktop_cover"
-            label="Hình ảnh bìa (Desktop)"
-            description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormImageSelectField control={form.control} name="assets.mobile_cover" label="Hình ảnh bìa (Mobile)" />
+            <FormImageSelectField
+              control={form.control}
+              name="assets.desktop_cover"
+              label="Hình ảnh bìa (Desktop)"
+              description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
+            />
+          </div>
           <FormInputField
             form={form}
             name="assets.youtube_cover"
             label="Video bìa (YouTube)"
             placeholder="Nhập URL video YouTube"
-            // defaultValue={DEFAULT_YOUTUBE_URL}
             description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
           />
         </div>
