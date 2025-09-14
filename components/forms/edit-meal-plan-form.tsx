@@ -16,7 +16,7 @@ import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { Separator } from '../ui/separator'
 import { AddButton } from '../buttons/add-button'
-import { GoalsTable } from '../data-table/goals-table'
+import { MealPlanGoalsTable } from '../data-table/meal-plan-goals-table'
 import { SheetEdit } from '../dialogs/sheet-edit'
 import { MainButton } from '../buttons/main-button'
 import { DialogEdit } from '../dialogs/dialog-edit'
@@ -311,7 +311,7 @@ export function EditMealPlanForm({ data, onSuccess }: EditMealPlanFormProps) {
         open={openGoalsTable}
         onOpenChange={setOpenGoalsTable}
       >
-        <GoalsTable
+        <MealPlanGoalsTable
           onConfirmRowSelection={(row) => {
             if (row.length > 1) {
               toast.error('Vui lòng chỉ chọn một mục tiêu')

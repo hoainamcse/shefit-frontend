@@ -1,6 +1,6 @@
 'use client'
 
-import type { Goal } from '@/models/goal'
+import type { MealPlanGoal } from '@/models/meal-plan-goal'
 
 import { z } from 'zod'
 import { toast } from 'sonner'
@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { createGoal, updateGoal } from '@/network/client/goals'
+import { createMealPlanGoal, updateMealPlanGoal } from '@/network/client/meal-plan-goals'
 
 import { FormInputField, FormTextareaField } from './fields'
 import { MainButton } from '../buttons/main-button'
@@ -20,12 +20,12 @@ const formSchema = z.object({
 
 type FormValue = z.infer<typeof formSchema>
 
-interface EditGoalFormProps {
-  data: Goal | null
+interface EditMealPlanGoalFormProps {
+  data: MealPlanGoal | null
   onSuccess?: () => void
 }
 
-export function EditGoalForm({ data, onSuccess }: EditGoalFormProps) {
+export function EditMealPlanGoalForm({ data, onSuccess }: EditMealPlanGoalFormProps) {
   const isEdit = !!data
   const defaultValue = { name: '' } as FormValue
 
@@ -39,7 +39,7 @@ export function EditGoalForm({ data, onSuccess }: EditGoalFormProps) {
   })
 
   const goalMutation = useMutation({
-    mutationFn: (values: FormValue) => (isEdit ? updateGoal(data.id, values) : createGoal(values)),
+    mutationFn: (values: FormValue) => (isEdit ? updateMealPlanGoal(data.id, values) : createMealPlanGoal(values)),
     onSettled(data, error) {
       if (data) {
         toast.success(isEdit ? 'Cập nhật mục tiêu thành công' : 'Tạo mục tiêu thành công')

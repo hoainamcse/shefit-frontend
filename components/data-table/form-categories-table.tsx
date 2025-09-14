@@ -51,7 +51,7 @@ export function FormCategoriesTable({ onConfirmRowSelection }: FormCategoriesTab
             aria-label="Select all"
           />
         ),
-        cell: ({ row }: { row: any }) => (
+        cell: ({ row }) => (
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -65,14 +65,14 @@ export function FormCategoriesTable({ onConfirmRowSelection }: FormCategoriesTab
       {
         header: 'Tên loại phom dáng',
         accessorKey: 'name',
-        cell: ({ row }: { row: any }) => <div className="font-medium">{row.getValue('name')}</div>,
+        cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
         size: 180,
         enableHiding: false,
       },
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
-        cell: ({ row }: { row: any }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
+        cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
         enableHiding: false,
       },

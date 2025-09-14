@@ -1,7 +1,7 @@
 import type { Calorie } from './calorie'
 import type { Diet } from './diet'
 import type { Dish } from './dish'
-import { Goal } from './goal'
+import type { MealPlanGoal } from './meal-plan-goal'
 
 type MealPlanIngredient = {
   name: string
@@ -13,7 +13,7 @@ type MealPlan = {
   title: string
   subtitle: string
   chef_name: string
-  meal_plan_goal: Goal | null
+  meal_plan_goal: MealPlanGoal | null
   assets: {
     thumbnail?: string
     mobile_cover?: string
@@ -33,15 +33,10 @@ type MealPlan = {
   display_order: number
 }
 
-type MealPlanGoal = {
-  id: string
-  name: string
-}
-
 type MealPlanPayload = Omit<MealPlan, 'id' | 'diet' | 'calorie' | 'meal_plan_goal' | 'number_of_days'> & {
   diet_id: Diet['id'] | null
   calorie_id: Calorie['id'] | null
-  meal_plan_goal_id: Goal['id'] | null
+  meal_plan_goal_id: MealPlanGoal['id'] | null
 }
 
 type DishMealTime = 'breakfast' | 'lunch' | 'snack' | 'dinner'

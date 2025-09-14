@@ -86,15 +86,15 @@ export function getMenuList(pathname: string): Group[] {
           submenus: [
             {
               href: '/admin/courses?course_format=video',
-              label: 'Khoá tập video',
+              label: 'Danh sách video',
             },
             {
               href: '/admin/courses?course_format=live',
-              label: 'Khoá tập Zoom',
+              label: 'Danh sách Zoom',
             },
             {
               href: '/admin/courses?is_one_on_one=true',
-              label: 'Khoá tập 1:1',
+              label: 'Danh sách 1-on-1',
             },
             {
               href: '/admin/exercises',
@@ -113,15 +113,15 @@ export function getMenuList(pathname: string): Group[] {
           submenus: [
             {
               href: '/admin/meal-plans',
-              label: 'Danh sách thực đơn',
+              label: 'Danh sách',
             },
             {
               href: '/admin/dishes',
               label: 'Thư viện món ăn',
             },
             {
-              href: '/admin/diets-calories',
-              label: 'Chế độ ăn & calories',
+              href: '/admin/diets',
+              label: 'Chế độ ăn',
             },
           ],
         },

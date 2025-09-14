@@ -1,5 +1,5 @@
 import { FlameIcon, SaladIcon, TargetIcon } from 'lucide-react'
-import { GoalsTable } from '@/components/data-table/goals-table'
+import { MealPlanGoalsTable } from '@/components/data-table/meal-plan-goals-table'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
@@ -9,7 +9,7 @@ import { DietsTable } from '@/components/data-table/diets-table'
 
 export default function DietsCaloriesPage() {
   return (
-    <ContentLayout title="Nhóm cơ & dụng cụ">
+    <ContentLayout title="Chế độ ăn">
       <Tabs defaultValue="tab-1">
         <ScrollArea>
           <TabsList className="bg-background mb-3 h-auto -space-x-px p-0 shadow-xs rtl:space-x-reverse">
@@ -45,7 +45,7 @@ export default function DietsCaloriesPage() {
           <CaloriesTable />
         </TabsContent>
         <TabsContent value="tab-3">
-          <GoalsTable />
+          <MealPlanGoalsTable />
         </TabsContent>
       </Tabs>
     </ContentLayout>

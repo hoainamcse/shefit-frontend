@@ -81,7 +81,7 @@ export default function Gallery() {
       <div>
         <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-10 lg:mb-16 xl:mb-[90px]">
           <div className="font-[family-name:var(--font-roboto-condensed)] text-ring text-2xl lg:text-4xl font-semibold">
-            Động tác theo nhóm cơ
+            Động tác thuộc nhóm cơ
           </div>
           <p className="text-[#737373] text-sm lg:text-lg">
             Xem video hướng dẫn chi tiết 1000+ bài đốt mỡ và cắt nét cơ theo từng vùng hình thể nữ giới
@@ -115,7 +115,7 @@ export default function Gallery() {
           className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-10 lg:mb-16 xl:mb-[90px]"
         >
           <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl">
-            Món theo chế độ ăn
+            Món thuộc chế độ ăn
           </div>
           <p className="text-[#737373] text-sm lg:text-lg">
             Khám phá 500+ món ăn theo các chế độ ăn khác nhau phù hợp nhất với mục tiêu của bạn.

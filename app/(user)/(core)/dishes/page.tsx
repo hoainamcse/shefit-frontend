@@ -107,7 +107,7 @@ export default function DietDishesPage() {
           </Link>
           <div className="flex flex-col sm:justify-center sm:text-center gap-3.5 sm:gap-5 lg:gap-7 mb-4 sm:mb-6 md:mb-10 lg:mb-[60px] xl:mb-[90px]">
             <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-ring text-2xl lg:text-4xl">
-              Các món theo chế độ {diet.name}
+              Các món thuộc chế độ {diet.name}
             </div>
             <p className="text-[#737373] text-sm lg:text-lg">{diet.description}</p>
           </div>

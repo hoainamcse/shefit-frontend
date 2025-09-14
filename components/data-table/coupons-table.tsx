@@ -45,7 +45,7 @@ export function CouponsTable({ couponType }: CouponsTableProps) {
             aria-label="Select all"
           />
         ),
-        cell: ({ row }: { row: any }) => (
+        cell: ({ row }) => (
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -59,14 +59,14 @@ export function CouponsTable({ couponType }: CouponsTableProps) {
       {
         header: 'Mã khuyến mãi',
         accessorKey: 'code',
-        cell: ({ row }: { row: any }) => <div className="font-medium">{row.getValue('code')}</div>,
+        cell: ({ row }) => <div className="font-medium">{row.getValue('code')}</div>,
         size: 180,
         enableHiding: false,
       },
       {
         header: 'Loại khuyến mãi',
         accessorKey: 'discount_type',
-        cell: ({ row }: { row: any }) => (
+        cell: ({ row }) => (
           <div>
             {row.getValue('discount_type') === 'percentage'
               ? 'Tỷ lệ phần trăm'
@@ -81,7 +81,7 @@ export function CouponsTable({ couponType }: CouponsTableProps) {
       {
         header: 'Giá trị',
         accessorKey: 'discount_value',
-        cell: ({ row }: { row: any }) => (
+        cell: ({ row }) => (
           <div>
             {row.getValue('discount_type') === 'percentage'
               ? `${row.getValue('discount_value')} (%)`
@@ -96,21 +96,21 @@ export function CouponsTable({ couponType }: CouponsTableProps) {
       {
         header: 'Lượt đã dùng',
         accessorKey: 'usage_count',
-        cell: ({ row }: { row: any }) => <div>{row.getValue('usage_count')}</div>,
+        cell: ({ row }) => <div>{row.getValue('usage_count')}</div>,
         size: 120,
         enableHiding: false,
       },
       {
         header: 'Lượt dùng tối đa',
         accessorKey: 'max_usage',
-        cell: ({ row }: { row: any }) => <div>{row.getValue('max_usage') ?? 'Unlimited'}</div>,
+        cell: ({ row }) => <div>{row.getValue('max_usage') ?? 'Unlimited'}</div>,
         size: 150,
         enableHiding: false,
       },
       {
         header: 'Lượt dùng tối đa mỗi người',
         accessorKey: 'max_usage_per_user',
-        cell: ({ row }: { row: any }) => <div>{row.getValue('max_usage_per_user') ?? 'Unlimited'}</div>,
+        cell: ({ row }) => <div>{row.getValue('max_usage_per_user') ?? 'Unlimited'}</div>,
         size: 150,
         enableHiding: false,
       },
@@ -137,7 +137,7 @@ export function CouponsTable({ couponType }: CouponsTableProps) {
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
-        cell: ({ row }: { row: any }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
+        cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
         enableHiding: false,
       },

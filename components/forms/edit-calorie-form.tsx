@@ -17,7 +17,6 @@ import { Form } from '../ui/form'
 // ! Follow CaloriePayload model in models/calorie.ts
 const formSchema = z.object({
   name: z.string().min(1, 'Tên calorie không được để trống'),
-  description: z.string(),
 })
 
 type FormValue = z.infer<typeof formSchema>
@@ -36,7 +35,6 @@ export function EditCalorieForm({ data, onSuccess }: EditCalorieFormProps) {
     defaultValues: isEdit
       ? {
           name: data.name,
-          description: data.description,
         }
       : defaultValue,
   })
@@ -61,7 +59,6 @@ export function EditCalorieForm({ data, onSuccess }: EditCalorieFormProps) {
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
         <FormInputField form={form} name="name" label="Tên calorie" withAsterisk placeholder="Nhập tên calorie" />
-        <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
             <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={calorieMutation.isPending} />

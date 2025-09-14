@@ -65,11 +65,6 @@ export function CaloriesTable({ onConfirmRowSelection }: CaloriesTableProps) {
         enableHiding: false,
       },
       {
-        header: 'Mô tả',
-        accessorKey: 'description',
-        size: 180,
-      },
-      {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,

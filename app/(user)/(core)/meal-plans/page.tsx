@@ -15,7 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { CardMealPlan } from '@/components/cards/card-meal-plan'
-import { getGoals } from '@/network/client/goals'
+import { getMealPlanGoals } from '@/network/client/meal-plan-goals'
 import { getCalories } from '@/network/client/calories'
 import { getMealPlans, queryKeyMealPlans } from '@/network/client/meal-plans'
 
@@ -104,7 +104,7 @@ export default function MealPlansPage() {
       },
       {
         queryKey: ['goals'],
-        queryFn: getGoals,
+        queryFn: getMealPlanGoals,
       },
       {
         queryKey: ['calories'],

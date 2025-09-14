@@ -6,12 +6,12 @@ export const queryKeyFormCategories = 'form-categories'
 
 export async function getFormCategories(query?: any): Promise<ListResponse<FormCategory>> {
   const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchData('/v1/form_categories' + '?' + searchParams)
+  const response = await fetchData('/v1/form-categories' + '?' + searchParams)
   return response.json()
 }
 
 export async function createFormCategory(data: FormCategoryPayload): Promise<ApiResponse<FormCategory>> {
-  const response = await fetchData('/v1/form_categories', {
+  const response = await fetchData('/v1/form-categories', {
     method: 'POST',
     body: JSON.stringify(data),
   })
@@ -19,7 +19,7 @@ export async function createFormCategory(data: FormCategoryPayload): Promise<Api
 }
 
 export async function updateFormCategory(id: FormCategory['id'], data: FormCategoryPayload): Promise<ApiResponse<FormCategory>> {
-  const response = await fetchData(`/v1/form_categories/${id}`, {
+  const response = await fetchData(`/v1/form-categories/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   })
@@ -27,14 +27,14 @@ export async function updateFormCategory(id: FormCategory['id'], data: FormCateg
 }
 
 export async function deleteFormCategory(id: FormCategory['id']): Promise<ApiResponse<string>> {
-  const response = await fetchData(`/v1/form_categories/${id}`, {
+  const response = await fetchData(`/v1/form-categories/${id}`, {
     method: 'DELETE',
   })
   return response.json()
 }
 
 export async function deleteBulkFormCategory(ids: FormCategory['id'][]): Promise<ApiResponse<string>> {
-  const response = await fetchData('/v1/form_categories/bulk', {
+  const response = await fetchData('/v1/form-categories/bulk', {
     method: 'DELETE',
     body: JSON.stringify(ids),
   })

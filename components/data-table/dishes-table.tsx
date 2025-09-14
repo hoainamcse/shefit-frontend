@@ -104,6 +104,11 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
         enableHiding: false,
       },
       {
+        header: 'Mô tả',
+        accessorKey: 'description',
+        size: 180,
+      },
+      {
         header: 'Chế độ ăn',
         accessorFn: (originalRow) => originalRow.diet?.name,
         size: 180,

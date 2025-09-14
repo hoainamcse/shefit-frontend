@@ -82,19 +82,12 @@ export function MuscleGroupsTable({ onConfirmRowSelection }: MuscleGroupsTablePr
             />
           </div>
         ),
-        size: 180,
+        size: 100,
         enableSorting: false,
       },
       {
-        header: 'Ngày tạo',
-        accessorKey: 'created_at',
-        cell: ({ row }) => format(row.getValue('created_at'), 'Pp'),
-        size: 180,
-      },
-      {
-        header: 'Ngày cập nhật',
-        accessorKey: 'updated_at',
-        cell: ({ row }) => format(row.getValue('updated_at'), 'Pp'),
+        header: 'Mô tả',
+        accessorKey: 'description',
         size: 180,
       },
       {

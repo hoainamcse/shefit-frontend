@@ -1,35 +1,27 @@
 'use client'
 
 import type { ColumnDef, PaginationState } from '@tanstack/react-table'
-import type { FormCategory } from '@/models/form-category'
+import type { WorkoutMethod } from '@/models/workout-method'
 
 import { toast } from 'sonner'
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
 import {
-  deleteBulkFormCategory,
-  deleteFormCategory,
-  getFormCategories,
-  queryKeyFormCategories,
-} from '@/network/client/form-categories'
-import { RowActions } from '@/components/data-table/row-actions'
-import { DataTable } from '@/components/data-table/data-table'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Spinner } from '@/components/spinner'
-
-import { EditFormCategoryForm } from '../forms/edit-form-category-form'
-import { MainButton } from '../buttons/main-button'
-import { AddButton } from '../buttons/add-button'
-import { SheetEdit } from '../dialogs/sheet-edit'
-import { WorkoutMethod } from '@/models/workout-method'
-import {
   deleteBulkWorkoutMethod,
   deleteWorkoutMethod,
   getWorkoutMethods,
   queryKeyWorkoutMethods,
 } from '@/network/client/workout-methods'
+import { RowActions } from '@/components/data-table/row-actions'
+import { DataTable } from '@/components/data-table/data-table'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Spinner } from '@/components/spinner'
+
 import { EditWorkoutMethodForm } from '../forms/edit-workout-method-form'
+import { MainButton } from '../buttons/main-button'
+import { AddButton } from '../buttons/add-button'
+import { SheetEdit } from '../dialogs/sheet-edit'
 
 interface WorkoutMethodsTableProps {
   onConfirmRowSelection?: (selectedRows: WorkoutMethod[]) => void
@@ -59,7 +51,7 @@ export function WorkoutMethodsTable({ onConfirmRowSelection }: WorkoutMethodsTab
             aria-label="Select all"
           />
         ),
-        cell: ({ row }: { row: any }) => (
+        cell: ({ row }) => (
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -73,14 +65,14 @@ export function WorkoutMethodsTable({ onConfirmRowSelection }: WorkoutMethodsTab
       {
         header: 'Tên loại hình tập luyện',
         accessorKey: 'name',
-        cell: ({ row }: { row: any }) => <div className="font-medium">{row.getValue('name')}</div>,
+        cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
         size: 180,
         enableHiding: false,
       },
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
-        cell: ({ row }: { row: any }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
+        cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
         enableHiding: false,
       },

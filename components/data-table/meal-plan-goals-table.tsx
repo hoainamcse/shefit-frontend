@@ -1,41 +1,46 @@
 'use client'
 
 import type { ColumnDef, PaginationState } from '@tanstack/react-table'
-import type { Goal } from '@/models/goal'
+import type { MealPlanGoal } from '@/models/meal-plan-goal'
 
 import { toast } from 'sonner'
 import { useMemo, useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { deleteBulkGoal, deleteGoal, getGoals, queryKeyGoals } from '@/network/client/goals'
+import {
+  deleteBulkMealPlanGoal,
+  deleteMealPlanGoal,
+  getMealPlanGoals,
+  queryKeyMealPlanGoals,
+} from '@/network/client/meal-plan-goals'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
 
-import { EditGoalForm } from '../forms/edit-goal-form'
+import { EditMealPlanGoalForm } from '../forms/edit-meal-plan-goal-form'
 import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
 import { SheetEdit } from '../dialogs/sheet-edit'
 
-interface GoalsTableProps {
-  onConfirmRowSelection?: (selectedRows: Goal[]) => void
+interface MealPlanGoalsTableProps {
+  onConfirmRowSelection?: (selectedRows: MealPlanGoal[]) => void
 }
 
-export function GoalsTable({ onConfirmRowSelection }: GoalsTableProps) {
+export function MealPlanGoalsTable({ onConfirmRowSelection }: MealPlanGoalsTableProps) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 25,
   })
-  const [rowSelection, setRowSelection] = useState<Goal[]>([])
+  const [rowSelection, setRowSelection] = useState<MealPlanGoal[]>([])
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [queryKeyGoals, pagination],
-    queryFn: () => getGoals({ page: pagination.pageIndex, per_page: pagination.pageSize }),
+    queryKey: [queryKeyMealPlanGoals, pagination],
+    queryFn: () => getMealPlanGoals({ page: pagination.pageIndex, per_page: pagination.pageSize }),
     placeholderData: keepPreviousData,
   })
 
-  const columns = useMemo<ColumnDef<Goal>[]>(
+  const columns = useMemo<ColumnDef<MealPlanGoal>[]>(
     () => [
       {
         id: 'select',
@@ -46,7 +51,7 @@ export function GoalsTable({ onConfirmRowSelection }: GoalsTableProps) {
             aria-label="Select all"
           />
         ),
-        cell: ({ row }: { row: any }) => (
+        cell: ({ row }) => (
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -60,14 +65,14 @@ export function GoalsTable({ onConfirmRowSelection }: GoalsTableProps) {
       {
         header: 'Tên mục tiêu',
         accessorKey: 'name',
-        cell: ({ row }: { row: any }) => <div className="font-medium">{row.getValue('name')}</div>,
+        cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
         size: 180,
         enableHiding: false,
       },
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
-        cell: ({ row }: { row: any }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
+        cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
         enableHiding: false,
       },
@@ -75,7 +80,7 @@ export function GoalsTable({ onConfirmRowSelection }: GoalsTableProps) {
     []
   )
 
-  const [selectedRow, setSelectedRow] = useState<Goal | null>(null)
+  const [selectedRow, setSelectedRow] = useState<MealPlanGoal | null>(null)
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false)
 
   const onAddRow = () => {
@@ -83,13 +88,13 @@ export function GoalsTable({ onConfirmRowSelection }: GoalsTableProps) {
     setIsEditSheetOpen(true)
   }
 
-  const onEditRow = (row: Goal) => {
+  const onEditRow = (row: MealPlanGoal) => {
     setSelectedRow(row)
     setIsEditSheetOpen(true)
   }
 
-  const onDeleteRow = async (row: Goal) => {
-    const deletePromise = () => deleteGoal(row.id)
+  const onDeleteRow = async (row: MealPlanGoal) => {
+    const deletePromise = () => deleteMealPlanGoal(row.id)
 
     toast.promise(deletePromise, {
       loading: 'Đang xoá...',
@@ -101,8 +106,8 @@ export function GoalsTable({ onConfirmRowSelection }: GoalsTableProps) {
     })
   }
 
-  const onDeleteRows = async (selectedRows: Goal[]) => {
-    const deletePromise = () => deleteBulkGoal(selectedRows.map((row) => row.id))
+  const onDeleteRows = async (selectedRows: MealPlanGoal[]) => {
+    const deletePromise = () => deleteBulkMealPlanGoal(selectedRows.map((row) => row.id))
 
     toast.promise(deletePromise, {
       loading: 'Đang xoá...',
@@ -173,7 +178,7 @@ export function GoalsTable({ onConfirmRowSelection }: GoalsTableProps) {
         open={isEditSheetOpen}
         onOpenChange={setIsEditSheetOpen}
       >
-        <EditGoalForm data={selectedRow} onSuccess={onEditSuccess} />
+        <EditMealPlanGoalForm data={selectedRow} onSuccess={onEditSuccess} />
       </SheetEdit>
     </>
   )

@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createMuscleGroup, updateMuscleGroup } from '@/network/client/muscle-groups'
 
-import { FormImageSelectField, FormInputField } from './fields'
+import { FormImageSelectField, FormInputField, FormTextareaField } from './fields'
 import { MainButton } from '../buttons/main-button'
 import { Form } from '../ui/form'
 
@@ -18,6 +18,7 @@ import { Form } from '../ui/form'
 const formSchema = z.object({
   name: z.string().min(1, 'Tên nhóm cơ không được để trống'),
   image: z.string().url(),
+  description: z.string(),
 })
 
 type FormValue = z.infer<typeof formSchema>
@@ -37,6 +38,7 @@ export function EditMuscleGroupForm({ data, onSuccess }: EditMuscleGroupFormProp
       ? {
           name: data.name,
           image: data.image,
+          description: data.description,
         }
       : defaultValue,
   })
@@ -61,8 +63,8 @@ export function EditMuscleGroupForm({ data, onSuccess }: EditMuscleGroupFormProp
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
         <FormInputField form={form} name="name" label="Tên nhóm cơ" withAsterisk placeholder="Nhập tên nhóm cơ" />
+        <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
         <FormImageSelectField control={form.control} name="image" label="Hình ảnh" />
-
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
             <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={muscleGroupMutation.isPending} />
