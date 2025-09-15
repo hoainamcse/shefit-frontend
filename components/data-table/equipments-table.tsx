@@ -55,15 +55,12 @@ export function EquipmentsTable({ onConfirmRowSelection }: EquipmentsTableProps)
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'Tên dụng cụ',
         accessorKey: 'name',
         cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
         size: 180,
-        enableHiding: false,
       },
       {
         header: 'Hình ảnh',
@@ -78,7 +75,6 @@ export function EquipmentsTable({ onConfirmRowSelection }: EquipmentsTableProps)
           </div>
         ),
         size: 100,
-        enableSorting: false,
       },
       {
         header: 'Mô tả',
@@ -91,7 +87,6 @@ export function EquipmentsTable({ onConfirmRowSelection }: EquipmentsTableProps)
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
-        enableHiding: false,
       },
     ],
     []

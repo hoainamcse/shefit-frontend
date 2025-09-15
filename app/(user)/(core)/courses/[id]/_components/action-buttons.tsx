@@ -5,12 +5,12 @@ import type { Course } from '@/models/course'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
-import { checkUserSavedResource } from '@/network/client/users'
+import { checkUserAccessedResource, checkUserSavedResource, trackCourseClick } from '@/network/client/users'
 import { addFavouriteCourse, queryKeyFavouriteCourses } from '@/network/client/user-favourites'
 
 interface ActionButtonsProps {
@@ -29,12 +29,28 @@ export function ActionButtons({ courseID, enableSave }: ActionButtonsProps) {
   const [saving, setSaving] = useState(false)
   const pathname = usePathname()
 
-  // Check saved status
-  const savedStatusQuery = useQuery({
-    queryKey: ['saved-resource-status', session?.userId, 'course', courseID],
-    queryFn: () => checkUserSavedResource(session!.userId, 'course', courseID),
-    enabled: !!session && showSaveDialog,
+  // Use useQueries to batch multiple queries
+  const queries = useQueries({
+    queries: [
+      // Check access status
+      {
+        queryKey: ['user-accessed-resources', session?.userId, 'course', courseID],
+        queryFn: () => checkUserAccessedResource(session!.userId, 'course', courseID),
+        enabled: !!session,
+      },
+      // Check saved status
+      {
+        queryKey: ['saved-resource-status', session?.userId, 'course', courseID],
+        queryFn: () => checkUserSavedResource(session!.userId, 'course', courseID),
+        enabled: !!session && showSaveDialog,
+      },
+    ],
   })
+
+  const accessQuery = queries[0]
+  const savedStatusQuery = queries[1]
+
+  const isAccessed = accessQuery.data?.data || false
 
   const favouriteMutation = useMutation({
     mutationFn: () => addFavouriteCourse(session!.userId, courseID),
@@ -54,7 +70,17 @@ export function ActionButtons({ courseID, enableSave }: ActionButtonsProps) {
     },
   })
 
-  const handleStartCourse = () => {
+  const handleStartCourse = async () => {
+    if (session && isAccessed) {
+      try {
+        // Track course click before redirecting
+        await trackCourseClick(session.userId)
+      } catch (error) {
+        console.error('Failed to track course click:', error)
+        // Continue with redirection even if tracking fails
+      }
+    }
+
     router.push(`/courses/${courseID}/detail${query}`)
   }
 

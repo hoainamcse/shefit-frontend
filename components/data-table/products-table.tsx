@@ -53,15 +53,12 @@ export function ProductsTable({ onConfirmRowSelection }: ProductsTableProps) {
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'Tên sản phẩm',
         accessorKey: 'name',
         cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
         size: 180,
-        enableHiding: false,
       },
       {
         header: 'Mô tả',
@@ -90,14 +87,12 @@ export function ProductsTable({ onConfirmRowSelection }: ProductsTableProps) {
           </div>
         ),
         size: 180,
-        enableSorting: false,
       },
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
-        enableHiding: false,
       },
     ],
     []

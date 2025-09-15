@@ -14,6 +14,8 @@ type User = {
   enable_chatbot: boolean
   enable_chatbot_actions: boolean
   token_usage: number
+  course_clicks_current_month: number
+  meal_plan_clicks_current_month: number
   created_at: string
   updated_at: string
   subscriptions: Array<{

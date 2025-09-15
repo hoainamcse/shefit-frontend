@@ -53,15 +53,12 @@ export function CouponsTable({ couponType }: CouponsTableProps) {
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'Mã khuyến mãi',
         accessorKey: 'code',
         cell: ({ row }) => <div className="font-medium">{row.getValue('code')}</div>,
         size: 180,
-        enableHiding: false,
       },
       {
         header: 'Loại khuyến mãi',
@@ -76,7 +73,6 @@ export function CouponsTable({ couponType }: CouponsTableProps) {
           </div>
         ),
         size: 150,
-        enableHiding: false,
       },
       {
         header: 'Giá trị',
@@ -91,28 +87,24 @@ export function CouponsTable({ couponType }: CouponsTableProps) {
           </div>
         ),
         size: 120,
-        enableHiding: false,
       },
       {
         header: 'Lượt đã dùng',
         accessorKey: 'usage_count',
         cell: ({ row }) => <div>{row.getValue('usage_count')}</div>,
         size: 120,
-        enableHiding: false,
       },
       {
         header: 'Lượt dùng tối đa',
         accessorKey: 'max_usage',
         cell: ({ row }) => <div>{row.getValue('max_usage') ?? 'Unlimited'}</div>,
         size: 150,
-        enableHiding: false,
       },
       {
         header: 'Lượt dùng tối đa mỗi người',
         accessorKey: 'max_usage_per_user',
         cell: ({ row }) => <div>{row.getValue('max_usage_per_user') ?? 'Unlimited'}</div>,
         size: 150,
-        enableHiding: false,
       },
       ...(couponType === 'subscription'
         ? [
@@ -130,7 +122,6 @@ export function CouponsTable({ couponType }: CouponsTableProps) {
                 </div>
               ),
               size: 150,
-              enableSorting: false,
             },
           ]
         : []),
@@ -139,7 +130,6 @@ export function CouponsTable({ couponType }: CouponsTableProps) {
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
-        enableHiding: false,
       },
     ],
     [couponType]

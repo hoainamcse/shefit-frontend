@@ -128,6 +128,8 @@ export function DataTable<T extends { id: string | number }>({
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
     enableSortingRemoval: false,
+    enableSorting: false,
+    enableHiding: false,
     // getPaginationRowModel: getPaginationRowModel(),
     manualPagination: true,
     onPaginationChange,

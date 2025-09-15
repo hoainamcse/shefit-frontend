@@ -47,15 +47,12 @@ export function BlogsTable() {
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'Tên bài viết',
         accessorKey: 'title',
         cell: ({ row }) => <div className="font-medium">{row.getValue('title')}</div>,
         size: 200,
-        enableHiding: false,
       },
       {
         header: 'Hình ảnh đại diện',
@@ -70,7 +67,6 @@ export function BlogsTable() {
           </div>
         ),
         size: 120,
-        enableSorting: false,
       },
       {
         header: 'Hình ảnh bìa',
@@ -85,7 +81,6 @@ export function BlogsTable() {
           </div>
         ),
         size: 120,
-        enableSorting: false,
       },
       {
         header: 'Chủ đề',
@@ -100,14 +95,12 @@ export function BlogsTable() {
           </div>
         ),
         size: 150,
-        enableSorting: false,
       },
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
-        enableHiding: false,
       },
     ],
     []

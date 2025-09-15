@@ -145,8 +145,6 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'STT',
@@ -208,7 +206,6 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
         accessorKey: 'course_name',
         cell: ({ row }) => <div className="font-medium">{row.getValue('course_name')}</div>,
         size: 180,
-        enableHiding: false,
       },
       {
         header: 'HLV',
@@ -228,7 +225,6 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
           </div>
         ),
         size: 180,
-        enableSorting: false,
       },
       {
         header: 'Gói tập',
@@ -243,7 +239,6 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
           </div>
         ),
         size: 180,
-        enableSorting: false,
       },
       {
         header: 'Độ khó',
@@ -254,7 +249,6 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
           </Badge>
         ),
         size: 180,
-        enableSorting: false,
       },
       {
         id: 'actions',
@@ -263,7 +257,6 @@ export function CoursesTable({ courseFormat, isOneOnOne = false, onConfirmRowSel
           <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} onDuplicate={onDuplicateRow} />
         ),
         size: 60,
-        enableHiding: false,
       },
     ],
     [handleEditDisplayOrder, handleCancelEdit, handleSaveDisplayOrder, handleInputChange, editingState]

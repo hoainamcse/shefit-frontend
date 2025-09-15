@@ -54,15 +54,12 @@ export function CoachesTable({ onConfirmRowSelection }: CoachesTableProps) {
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'Tên HLV',
         accessorKey: 'name',
         cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
         size: 180,
-        enableHiding: false,
       },
       {
         header: 'Hình ảnh',
@@ -77,7 +74,6 @@ export function CoachesTable({ onConfirmRowSelection }: CoachesTableProps) {
           </div>
         ),
         size: 180,
-        enableSorting: false,
       },
       {
         header: 'Chuyên môn',
@@ -89,7 +85,6 @@ export function CoachesTable({ onConfirmRowSelection }: CoachesTableProps) {
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
-        enableHiding: false,
       },
     ],
     []

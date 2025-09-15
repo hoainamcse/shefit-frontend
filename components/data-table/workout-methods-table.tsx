@@ -59,22 +59,18 @@ export function WorkoutMethodsTable({ onConfirmRowSelection }: WorkoutMethodsTab
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'Tên loại hình tập luyện',
         accessorKey: 'name',
         cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
         size: 180,
-        enableHiding: false,
       },
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
-        enableHiding: false,
       },
     ],
     []

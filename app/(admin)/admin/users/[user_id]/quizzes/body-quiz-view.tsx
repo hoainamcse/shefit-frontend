@@ -56,8 +56,6 @@ export function UserBodyQuizzesTable({ userID }: BodyQuizViewProps) {
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'Username',
@@ -74,7 +72,6 @@ export function UserBodyQuizzesTable({ userID }: BodyQuizViewProps) {
           </div>
         ),
         size: 120,
-        enableHiding: false,
       },
       {
         header: 'Quiz',
@@ -114,7 +111,6 @@ export function UserBodyQuizzesTable({ userID }: BodyQuizViewProps) {
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
-        enableHiding: false,
       },
     ],
     []

@@ -54,15 +54,12 @@ export function DietsTable({ onConfirmRowSelection }: DietsTableProps) {
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'Tên chế độ ăn',
         accessorKey: 'name',
         cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
         size: 180,
-        enableHiding: false,
       },
       {
         header: 'Hình ảnh',
@@ -77,7 +74,6 @@ export function DietsTable({ onConfirmRowSelection }: DietsTableProps) {
           </div>
         ),
         size: 100,
-        enableSorting: false,
       },
       {
         header: 'Mô tả',
@@ -90,7 +86,6 @@ export function DietsTable({ onConfirmRowSelection }: DietsTableProps) {
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={(row) => onDeleteRows([row])} />,
         size: 60,
-        enableHiding: false,
       },
     ],
     []

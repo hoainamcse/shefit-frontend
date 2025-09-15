@@ -42,6 +42,7 @@ import { Form } from '../ui/form'
 import { Button } from '../ui/button'
 import { useSession } from '@/hooks/use-session'
 import { DialogExcelImport } from '../dialogs/dialog-excel-import'
+import { FilterableSelect, FilterableSelectOption } from '../ui/filterable-select'
 
 export function UsersTable() {
   const { session, isLoading: isPending } = useSession()
@@ -54,25 +55,53 @@ export function UsersTable() {
   const [searchQuery, setSearchQuery] = useState<string>('')
   const debouncedSearchQuery = useDebounce(searchQuery, 500)
 
-  // const [rowSelection, setRowSelection] = useState<User[]>([])
+  // Add sort states
+  const [sortBy, setSortBy] = useState<string | undefined>(undefined)
+  const [sortOrder, setSortOrder] = useState<string>('desc')
+
+  // Available sort options
+  const sortByOptions: FilterableSelectOption[] = useMemo(
+    () => [
+      { value: 'username', label: 'Username' },
+      { value: 'created_at', label: 'Ngày tạo' },
+      { value: 'course_clicks_current_month', label: 'Click khoá tập' },
+      { value: 'meal_plan_clicks_current_month', label: 'Click thực đơn' },
+    ],
+    []
+  )
+
+  // Sort order options
+  const sortOrderOptions: FilterableSelectOption[] = useMemo(
+    () => [
+      { value: 'asc', label: 'Tăng dần' },
+      { value: 'desc', label: 'Giảm dần' },
+    ],
+    []
+  )
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [queryKeyUsers, { ...pagination, ...(debouncedSearchQuery ? { keyword: debouncedSearchQuery } : {}) }],
+    queryKey: [
+      queryKeyUsers,
+      {
+        ...pagination,
+        ...(debouncedSearchQuery ? { keyword: debouncedSearchQuery } : {}),
+        ...(sortBy ? { sort_by: sortBy, sort_order: sortOrder } : {}),
+      },
+    ],
     queryFn: async () =>
       session?.role === 'sub_admin'
         ? getUsersBySubAdmin({
             page: pagination.pageIndex,
             per_page: pagination.pageSize,
-            sort_by: 'created_at',
-            sort_order: 'desc',
+            ...(sortBy ? { sort_by: sortBy, sort_order: sortOrder } : {}),
             ...(debouncedSearchQuery ? { keyword: debouncedSearchQuery } : {}),
           })
         : getUsers({
             page: pagination.pageIndex,
             per_page: pagination.pageSize,
-            sort_by: 'created_at',
-            sort_order: 'desc',
+            ...(sortBy ? { sort_by: sortBy, sort_order: sortOrder } : {}),
             ...(debouncedSearchQuery ? { keyword: debouncedSearchQuery } : {}),
+            include_clicks: true,
           }),
     placeholderData: keepPreviousData,
     enabled: !!session,
@@ -124,20 +153,16 @@ export function UsersTable() {
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       // {
       //   accessorKey: 'id',
       //   header: 'STT',
       //   size: 70,
-      //   enableHiding: false,
       // },
       {
         header: 'Tên',
         accessorKey: 'fullname',
         size: 180,
-        enableHiding: false,
       },
       {
         header: 'Username',
@@ -288,11 +313,20 @@ export function UsersTable() {
         size: 150,
       },
       {
+        header: 'Lần click khoá tập (tháng này)',
+        accessorKey: 'course_clicks_current_month',
+        size: 150,
+      },
+      {
+        header: 'Lần click thực đơn (tháng này)',
+        accessorKey: 'meal_plan_clicks_current_month',
+        size: 150,
+      },
+      {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
-        enableHiding: false,
       },
     ],
     [handleChatbotToggle]
@@ -354,7 +388,6 @@ export function UsersTable() {
       rowCount={data?.paging.total}
       onDelete={onDeleteRows}
       onPaginationChange={setPagination}
-      // onRowSelectionChange={setRowSelection}
       leftSection={
         <div className="flex items-center gap-3">
           <div className="relative w-64">
@@ -373,6 +406,26 @@ export function UsersTable() {
                 <span className="sr-only">Clear search</span>
               </button>
             )}
+          </div>
+
+          {/* Sort selects */}
+          <div className="flex items-center gap-2">
+            <FilterableSelect
+              value={sortBy || ''}
+              onValueChange={setSortBy}
+              options={sortByOptions}
+              placeholder="Chọn trường sắp xếp"
+              className="w-56"
+            />
+            <FilterableSelect
+              value={sortOrder}
+              onValueChange={(value) => setSortOrder(value || 'asc')}
+              options={sortOrderOptions}
+              placeholder="Kiểu sắp xếp"
+              className="w-36"
+              showClearButton={false}
+              disabled={!sortBy}
+            />
           </div>
         </div>
       }

@@ -183,3 +183,17 @@ export async function addUserSavedResource(
   })
   return response.json()
 }
+
+export async function trackCourseClick(userId: User['id']) {
+  const response = await fetchData(`/v1/users/${userId}/clicks/course`, {
+    method: 'POST',
+  })
+  return response.json()
+}
+
+export async function trackMealPlanClick(userId: User['id']) {
+  const response = await fetchData(`/v1/users/${userId}/clicks/meal-plan`, {
+    method: 'POST',
+  })
+  return response.json()
+}

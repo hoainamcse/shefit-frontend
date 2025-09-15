@@ -73,22 +73,18 @@ export function NotificationsTable() {
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'Tiêu đề',
         accessorKey: 'title',
         cell: ({ row }) => <div className="font-medium">{row.getValue('title')}</div>,
         size: 200,
-        enableHiding: false,
       },
       {
         header: 'Nội dung',
         accessorKey: 'content',
         cell: ({ row }) => <div className="max-w-md truncate">{htmlToText(row.getValue('content'))}</div>,
         size: 300,
-        enableSorting: false,
       },
       {
         header: 'Ngày thông báo',
@@ -113,7 +109,6 @@ export function NotificationsTable() {
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
-        enableHiding: false,
       },
     ],
     [handleTogglePinned]

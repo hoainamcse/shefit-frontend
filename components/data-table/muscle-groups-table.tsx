@@ -60,15 +60,12 @@ export function MuscleGroupsTable({ onConfirmRowSelection }: MuscleGroupsTablePr
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'Tên nhóm cơ',
         accessorKey: 'name',
         cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
         size: 180,
-        enableHiding: false,
       },
       {
         header: 'Hình ảnh',
@@ -83,7 +80,6 @@ export function MuscleGroupsTable({ onConfirmRowSelection }: MuscleGroupsTablePr
           </div>
         ),
         size: 100,
-        enableSorting: false,
       },
       {
         header: 'Mô tả',
@@ -96,7 +92,6 @@ export function MuscleGroupsTable({ onConfirmRowSelection }: MuscleGroupsTablePr
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
-        enableHiding: false,
       },
     ],
     []

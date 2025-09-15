@@ -136,8 +136,6 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'STT',
@@ -199,7 +197,6 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
         accessorKey: 'title',
         cell: ({ row }) => <div className="font-medium">{row.getValue('title')}</div>,
         size: 180,
-        enableHiding: false,
       },
       {
         header: 'Tóm tắt',
@@ -229,7 +226,6 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
           </div>
         ),
         size: 180,
-        enableSorting: false,
       },
       {
         id: 'actions',
@@ -238,7 +234,6 @@ export function MealPlansTable({ onConfirmRowSelection }: MealPlansTableProps) {
           <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} onDuplicate={onDuplicateRow} />
         ),
         size: 60,
-        enableHiding: false,
       },
     ],
     [handleEditDisplayOrder, handleCancelEdit, handleSaveDisplayOrder, handleInputChange, editingState]

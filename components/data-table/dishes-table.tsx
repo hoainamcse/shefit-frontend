@@ -17,15 +17,6 @@ import { getDiets, queryKeyDiets } from '@/network/client/diets'
 import { useDebounce } from '@/hooks/use-debounce'
 import { Spinner } from '@/components/spinner'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { EditDishForm } from '../forms/edit-dish-form'
 import { MainButton } from '../buttons/main-button'
 import { AddButton } from '../buttons/add-button'
@@ -33,6 +24,7 @@ import { DialogExcelImport } from '../dialogs/dialog-excel-import'
 import { Button } from '../ui/button'
 import { SheetEdit } from '../dialogs/sheet-edit'
 import { getYouTubeThumbnail } from '@/lib/youtube'
+import { FilterableSelect, FilterableSelectOption } from '../ui/filterable-select'
 
 interface DishesTableProps {
   onConfirmRowSelection?: (selectedRows: Dish[]) => void
@@ -74,6 +66,15 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
     queryFn: () => getDiets(),
   })
 
+  // Create options array for diets
+  const dietOptions: FilterableSelectOption[] = useMemo(() => {
+    if (!dietsQuery.data?.data) return []
+    return dietsQuery.data.data.map((diet) => ({
+      value: String(diet.id),
+      label: diet.name,
+    }))
+  }, [dietsQuery.data?.data])
+
   const columns = useMemo<ColumnDef<Dish>[]>(
     () => [
       {
@@ -93,15 +94,12 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'Tên món ăn',
         accessorKey: 'name',
         cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
         size: 180,
-        enableHiding: false,
       },
       {
         header: 'Mô tả',
@@ -133,14 +131,12 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
           )
         },
         size: 120,
-        enableSorting: false,
       },
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={(row) => onDeleteRows([row])} />,
         size: 60,
-        enableHiding: false,
       },
     ],
     []
@@ -225,36 +221,14 @@ export function DishesTable({ onConfirmRowSelection }: DishesTableProps) {
                 </button>
               )}
             </div>
-            <Select value={selectedDiet || ''} onValueChange={(value) => setSelectedDiet(value || undefined)}>
-              <SelectTrigger className="w-56">
-                <SelectValue placeholder="Chọn chế độ ăn" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {dietsQuery.data?.data.map((diet) => (
-                    <SelectItem key={diet.id} value={String(diet.id)}>
-                      {diet.name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-                {selectedDiet && (
-                  <>
-                    <SelectSeparator />
-                    <Button
-                      className="w-full px-2"
-                      variant="secondary"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setSelectedDiet(undefined)
-                      }}
-                    >
-                      Bỏ chọn
-                    </Button>
-                  </>
-                )}
-              </SelectContent>
-            </Select>
+
+            <FilterableSelect
+              value={selectedDiet || ''}
+              onValueChange={setSelectedDiet}
+              options={dietOptions}
+              placeholder="Chọn chế độ ăn"
+              className="w-56"
+            />
           </div>
         }
         rightSection={

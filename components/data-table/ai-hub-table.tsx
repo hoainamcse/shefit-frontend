@@ -54,15 +54,12 @@ export function AIHubTable({ onConfirmRowSelection }: AIHubTableProps) {
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'Message',
         accessorKey: 'message',
         cell: ({ row }) => <div className="font-medium">{row.getValue('message')}</div>,
         size: 180,
-        enableHiding: false,
       },
       {
         header: 'Prompt',
@@ -81,7 +78,6 @@ export function AIHubTable({ onConfirmRowSelection }: AIHubTableProps) {
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
-        enableHiding: false,
       },
     ],
     []

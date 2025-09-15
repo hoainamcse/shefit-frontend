@@ -148,8 +148,6 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'STT',
@@ -211,7 +209,6 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
         accessorKey: 'name',
         cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
         size: 180,
-        enableHiding: false,
       },
       {
         header: 'Loại khoá tập',
@@ -232,7 +229,6 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
           </div>
         ),
         size: 180,
-        enableSorting: false,
       },
       {
         id: 'actions',
@@ -241,7 +237,6 @@ export function SubscriptionsTable({ onConfirmRowSelection }: SubscriptionsTable
           <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} onDuplicate={onDuplicateRow} />
         ),
         size: 60,
-        enableHiding: false,
       },
     ],
     [handleEditDisplayOrder, handleCancelEdit, handleSaveDisplayOrder, handleInputChange, editingState]

@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useSession } from '@/hooks/use-session'
 import { addFavouriteMealPlan, queryKeyFavouriteMealPlans } from '@/network/client/user-favourites'
 import { addUserSubscriptionMealPlan, queryKeyUserSubscriptions } from '@/network/client/user-subscriptions'
-import { getUserSubscriptions, checkUserAccessedResource, checkUserSavedResource } from '@/network/client/users'
+import { getUserSubscriptions, checkUserAccessedResource, checkUserSavedResource, trackMealPlanClick } from '@/network/client/users'
 
 interface ActionButtonsProps {
   mealPlanID: MealPlan['id']
@@ -99,7 +99,7 @@ export function ActionButtons({ mealPlanID, query }: ActionButtonsProps) {
     },
   })
 
-  const handleStartMealPlan = () => {
+  const handleStartMealPlan = async () => {
     if (!session) {
       setOpenLogin(true)
       return
@@ -108,6 +108,14 @@ export function ActionButtons({ mealPlanID, query }: ActionButtonsProps) {
     if (!isAccessed) {
       setOpenBuyPackage(true)
       return
+    }
+
+    try {
+      // Track meal plan click before redirecting
+      await trackMealPlanClick(session.userId)
+    } catch (error) {
+      console.error("Failed to track meal plan click:", error)
+      // Continue with redirection even if tracking fails
     }
 
     router.push(`/meal-plans/${mealPlanID}/detail${query}`)

@@ -49,15 +49,12 @@ export function BodyQuizUsersTable() {
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'Tên người dùng',
         accessorKey: 'fullname',
         cell: ({ row }) => <div className="font-medium">{row.getValue('fullname')}</div>,
         size: 180,
-        enableHiding: false,
       },
       {
         header: 'Username',
@@ -90,7 +87,6 @@ export function BodyQuizUsersTable() {
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
-        enableHiding: false,
       },
     ],
     []

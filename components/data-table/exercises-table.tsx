@@ -15,15 +15,6 @@ import {
   importExerciseExcel,
   queryKeyExercises,
 } from '@/network/client/exercises'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { getMuscleGroups, queryKeyMuscleGroups } from '@/network/client/muscle-groups'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
@@ -39,6 +30,7 @@ import { MainButton } from '../buttons/main-button'
 import { DialogExcelImport } from '../dialogs/dialog-excel-import'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
+import { FilterableSelect, FilterableSelectOption } from '../ui/filterable-select'
 
 interface ExercisesTableProps {
   onConfirmRowSelection?: (selectedRows: Exercise[]) => void
@@ -80,6 +72,15 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
     queryFn: () => getMuscleGroups(),
   })
 
+  // Create options array for muscle groups
+  const muscleGroupOptions: FilterableSelectOption[] = useMemo(() => {
+    if (!muscleGroupsQuery.data?.data) return []
+    return muscleGroupsQuery.data.data.map((mg) => ({
+      value: String(mg.id),
+      label: mg.name,
+    }))
+  }, [muscleGroupsQuery.data?.data])
+
   const columns = useMemo<ColumnDef<Exercise>[]>(
     () => [
       {
@@ -99,15 +100,12 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
           />
         ),
         size: 28,
-        enableSorting: false,
-        enableHiding: false,
       },
       {
         header: 'Tên động tác',
         accessorKey: 'name',
         cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
         size: 180,
-        enableHiding: false,
       },
       {
         header: 'Mô tả',
@@ -128,7 +126,6 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
           </div>
         ),
         size: 180,
-        enableSorting: false,
       },
       {
         header: 'Dụng cụ',
@@ -143,7 +140,6 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
           </div>
         ),
         size: 180,
-        enableSorting: false,
       },
       {
         header: 'Video',
@@ -161,14 +157,12 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
           )
         },
         size: 180,
-        enableSorting: false,
       },
       {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
         size: 60,
-        enableHiding: false,
       },
     ],
     []
@@ -266,39 +260,14 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
                 </button>
               )}
             </div>
-            <Select
+
+            <FilterableSelect
               value={selectedMuscleGroup || ''}
-              onValueChange={(value) => setSelectedMuscleGroup(value || undefined)}
-            >
-              <SelectTrigger className="w-56">
-                <SelectValue placeholder="Chọn nhóm cơ" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {muscleGroupsQuery.data?.data.map((mg) => (
-                    <SelectItem key={mg.id} value={String(mg.id)}>
-                      {mg.name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-                {selectedMuscleGroup && (
-                  <>
-                    <SelectSeparator />
-                    <Button
-                      className="w-full px-2"
-                      variant="secondary"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setSelectedMuscleGroup(undefined)
-                      }}
-                    >
-                      Bỏ chọn
-                    </Button>
-                  </>
-                )}
-              </SelectContent>
-            </Select>
+              onValueChange={setSelectedMuscleGroup}
+              options={muscleGroupOptions}
+              placeholder="Chọn nhóm cơ"
+              className="w-56"
+            />
           </div>
         }
         rightSection={
