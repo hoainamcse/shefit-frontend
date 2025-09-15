@@ -112,6 +112,7 @@ export function ExercisesTable({ onConfirmRowSelection }: ExercisesTableProps) {
       {
         header: 'Mô tả',
         accessorKey: 'description',
+        cell: ({ row }) => <div className="line-clamp-2">{row.getValue('description')}</div>,
         size: 180,
       },
       {

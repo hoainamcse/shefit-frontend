@@ -79,7 +79,7 @@ export function UsersTable() {
   })
 
   const handleChatbotToggle = useCallback(
-    async (bot_config: any, user: User) => {
+    async (bot_config: Partial<Pick<User, 'enable_chatbot' | 'enable_chatbot_actions'>>, user: User) => {
       try {
         const { email, ...rest } = user
         await updateUser(user.id, { ...rest, ...bot_config })
@@ -90,8 +90,20 @@ export function UsersTable() {
         toast.error('Lỗi khi cập nhật trạng thái chatbot')
       }
     },
-    [refetch, session]
+    [refetch]
   )
+
+  // Helper function for subscription date formatting
+  const getFormattedSubscriptionDate = (
+    user: User,
+    dateField: 'subscription_start_at' | 'subscription_end_at'
+  ): string => {
+    const sortedSubs = sortByKey(user.subscriptions, 'subscription_start_at', {
+      transform: (val) => new Date(val).getTime(),
+      direction: 'desc',
+    })
+    return sortedSubs.length > 0 ? format(sortedSubs[0][dateField], 'dd/MM/yyyy') : '-'
+  }
 
   const columns = useMemo<ColumnDef<User>[]>(
     () => [
@@ -124,7 +136,6 @@ export function UsersTable() {
       {
         header: 'Tên',
         accessorKey: 'fullname',
-
         size: 180,
         enableHiding: false,
       },
@@ -185,42 +196,64 @@ export function UsersTable() {
       {
         accessorKey: 'created_at',
         header: 'Ngày tạo',
-        cell: ({ row }) => <div className="font-medium">{format(row.getValue('created_at'), 'dd/MM/yyyy')}</div>,
+        cell: ({ row }) => (
+          <div className="font-medium">{format(new Date(row.getValue('created_at')), 'dd/MM/yyyy')}</div>
+        ),
         size: 100,
       },
       {
-        header: 'Gói tập',
-        accessorFn: (row) => {
-          if (row.subscriptions.length === 0) return '-'
-          return row.subscriptions.flatMap((s) => s.subscription.name).join('; ')
+        header: 'Gói đăng ký',
+        id: 'subscriptions',
+        cell: ({ row }) => {
+          const subscriptions = row.original.subscriptions || []
+          if (subscriptions.length === 0) return '-'
+
+          return (
+            <div className="flex flex-wrap gap-2">
+              {subscriptions.map((userSub) => (
+                <Badge key={userSub.subscription.id} variant="outline">
+                  {userSub.subscription.name}
+                </Badge>
+              ))}
+            </div>
+          )
         },
-        size: 150,
+        size: 180,
+      },
+      {
+        header: 'Tình trạng gói',
+        id: 'subscription_status',
+        cell: ({ row }) => {
+          const subscriptions = row.original.subscriptions || []
+          if (subscriptions.length === 0) return '-'
+
+          const hasActiveSubscription = subscriptions.some((s) => isActiveSubscription(s.status, s.subscription_end_at))
+
+          return hasActiveSubscription ? (
+            <Badge className="bg-[#13D8A7] rounded-none border border-[#000000]">Còn hạn</Badge>
+          ) : (
+            <Badge className="bg-[#E61417] rounded-none border border-[#000000]">Hết hạn</Badge>
+          )
+        },
+        size: 120,
       },
       {
         header: 'Ngày bắt đầu (latest)',
-        accessorFn: (row) => {
-          const sortedSubs = sortByKey(row.subscriptions, 'subscription_start_at', {
-            transform: (val) => new Date(val).getTime(),
-            direction: 'desc',
-          })
-          return sortedSubs.length > 0 ? format(sortedSubs[0].subscription_start_at, 'dd/MM/yyyy') : '-'
-        },
+        id: 'subscription_start',
+        cell: ({ row }) => getFormattedSubscriptionDate(row.original, 'subscription_start_at'),
         size: 120,
       },
       {
         header: 'Ngày kết thúc (latest)',
-        accessorFn: (row) => {
-          const sortedSubs = sortByKey(row.subscriptions, 'subscription_start_at', {
-            transform: (val) => new Date(val).getTime(),
-            direction: 'desc',
-          })
-          return sortedSubs.length > 0 ? format(sortedSubs[0].subscription_end_at, 'dd/MM/yyyy') : '-'
-        },
+        id: 'subscription_end',
+        cell: ({ row }) => getFormattedSubscriptionDate(row.original, 'subscription_end_at'),
         size: 120,
       },
       {
-        accessorFn: (row) => {
-          const sortedSubs = sortByKey(row.subscriptions, 'subscription_start_at', {
+        header: 'Coupon dùng',
+        id: 'coupons',
+        cell: ({ row }) => {
+          const sortedSubs = sortByKey(row.original.subscriptions, 'subscription_start_at', {
             transform: (val) => new Date(val).getTime(),
             direction: 'desc',
           })
@@ -238,12 +271,21 @@ export function UsersTable() {
               return false
             })
             .map((s) => s.coupon?.code)
-            .filter(Boolean)
+            .filter(Boolean) as string[]
 
-          return uniqueCoupons.length > 0 ? uniqueCoupons.join('; ') : '-'
+          if (uniqueCoupons.length === 0) return '-'
+
+          return (
+            <div className="flex flex-wrap gap-2">
+              {uniqueCoupons.map((coupon) => (
+                <Badge key={coupon} variant="outline">
+                  {coupon}
+                </Badge>
+              ))}
+            </div>
+          )
         },
-        header: 'Coupon dùng',
-        size: 120,
+        size: 150,
       },
       {
         id: 'actions',
@@ -671,4 +713,11 @@ function ExportDialog({ data, onSuccess }: { data?: User[]; onSuccess?: () => vo
       <MainButton text="Xuất dữ liệu" icon={Download} variant="outline" onClick={onSubmit} loading={isPending} />
     </>
   )
+}
+
+function isActiveSubscription(status: string, endDate: string) {
+  if (!endDate) return false
+  const now = new Date()
+  const end = new Date(endDate)
+  return status === 'active' && end > now
 }
