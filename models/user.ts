@@ -1,4 +1,4 @@
-import type { Coupon } from "./coupon"
+import type { Coupon } from './coupon'
 
 type User = {
   id: number
@@ -19,16 +19,13 @@ type User = {
   created_at: string
   updated_at: string
   subscriptions: Array<{
+    id: number
     coupon?: Coupon
     status: 'active' | 'expired' | 'canceled' | 'pending'
     subscription_start_at: string
     subscription_end_at: string
     subscription: {
       id: number
-      courses: Array<{
-        id: number
-        course_name: string
-      }>
       name: string
     }
   }>

@@ -64,6 +64,7 @@ export function UsersTable() {
     () => [
       { value: 'username', label: 'Username' },
       { value: 'created_at', label: 'Ngày tạo' },
+      { value: 'subscription_end_at', label: 'Ngày kết thúc gói' },
       { value: 'course_clicks_current_month', label: 'Click khoá tập' },
       { value: 'meal_plan_clicks_current_month', label: 'Click thực đơn' },
     ],
@@ -101,7 +102,6 @@ export function UsersTable() {
             per_page: pagination.pageSize,
             ...(sortBy ? { sort_by: sortBy, sort_order: sortOrder } : {}),
             ...(debouncedSearchQuery ? { keyword: debouncedSearchQuery } : {}),
-            include_clicks: true,
           }),
     placeholderData: keepPreviousData,
     enabled: !!session,
@@ -246,23 +246,6 @@ export function UsersTable() {
         size: 180,
       },
       {
-        header: 'Tình trạng gói',
-        id: 'subscription_status',
-        cell: ({ row }) => {
-          const subscriptions = row.original.subscriptions || []
-          if (subscriptions.length === 0) return '-'
-
-          const hasActiveSubscription = subscriptions.some((s) => isActiveSubscription(s.status, s.subscription_end_at))
-
-          return hasActiveSubscription ? (
-            <Badge className="bg-[#13D8A7] rounded-none border border-[#000000]">Còn hạn</Badge>
-          ) : (
-            <Badge className="bg-[#E61417] rounded-none border border-[#000000]">Hết hạn</Badge>
-          )
-        },
-        size: 120,
-      },
-      {
         header: 'Ngày bắt đầu (latest)',
         id: 'subscription_start',
         cell: ({ row }) => getFormattedSubscriptionDate(row.original, 'subscription_start_at'),
@@ -311,6 +294,23 @@ export function UsersTable() {
           )
         },
         size: 150,
+      },
+      {
+        header: 'Tình trạng gói',
+        id: 'subscription_status',
+        cell: ({ row }) => {
+          const subscriptions = row.original.subscriptions || []
+          if (subscriptions.length === 0) return '-'
+
+          const hasActiveSubscription = subscriptions.some((s) => isActiveSubscription(s.status, s.subscription_end_at))
+
+          return hasActiveSubscription ? (
+            <Badge className="bg-[#13D8A7] rounded-none border border-[#000000]">Còn hạn</Badge>
+          ) : (
+            <Badge className="bg-[#E61417] rounded-none border border-[#000000]">Hết hạn</Badge>
+          )
+        },
+        size: 120,
       },
       {
         header: 'Lần click khoá tập (tháng này)',
