@@ -8,15 +8,17 @@ import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { FormNumberField, FormSelectField, FormTextareaField } from '../forms/fields'
 import styles from './chatbot.module.css'
+import { toast } from 'sonner'
 
 const mealFormSchema = z.object({
-  age: z.number().min(1, 'Tuổi phải lớn hơn 0'),
-  height: z.number().min(1, 'Chiều cao phải lớn hơn 0'),
-  weight: z.number().min(1, 'Cân nặng phải lớn hơn 0'),
+  age: z.number().min(1, 'Tuổi phải lớn hơn 1'),
+  height: z.number().min(1, 'Chiều cao phải lớn hơn 1'),
+  weight: z.number().min(1, 'Cân nặng phải lớn hơn 1'),
   goal: z.enum(['Giảm Cân', 'Giữ Cân', 'Tăng Cân'], {
     required_error: 'Vui lòng chọn mục tiêu',
   }),
-  foodPreferences: z.string().min(1, 'Vui lòng cho biết sở thích ăn uống'),
+  foodPreferences: z.string(),
+  // foodPreferences: z.string().min(1, 'Vui lòng cho biết sở thích ăn uống'),
 })
 
 type MealFormValues = z.infer<typeof mealFormSchema>
@@ -42,6 +44,18 @@ export function MealForm({ onSubmit, onCancel }: MealFormProps) {
     onSubmit(data)
   }
 
+  const onError = (errors: any) => {
+    // Get all error messages
+    const errorMessages = Object.entries(errors)
+      .map(([field, error]: [string, any]) => `${error.message}`)
+      .join(', ')
+
+    // Show toast with error messages
+    toast.error('Lỗi nhập liệu', {
+      description: errorMessages,
+    })
+  }
+
   return (
     <div className={`w-full max-h-full overflow-y-auto ${styles.promptsContainerScrollbar}`}>
       <div className="mb-4">
@@ -50,7 +64,7 @@ export function MealForm({ onSubmit, onCancel }: MealFormProps) {
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(handleSubmit, onError)} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <FormNumberField name="age" form={form} label="Tuổi" placeholder="25" min={1} />
             <FormNumberField name="height" form={form} label="Chiều cao (cm)" placeholder="160" min={1} />

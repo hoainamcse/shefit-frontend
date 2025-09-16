@@ -8,13 +8,14 @@ import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { FormInputField, FormNumberField, FormRadioField, FormSelectField, FormTextareaField } from '../forms/fields'
 import styles from './chatbot.module.css'
+import { toast } from 'sonner'
 
 const workoutFormSchema = z.object({
-  age: z.number().min(1, 'Tuổi phải lớn hơn 0'),
-  height: z.number().min(1, 'Chiều cao phải lớn hơn 0'),
-  weight: z.number().min(1, 'Cân nặng phải lớn hơn 0'),
+  age: z.number().min(1, 'Tuổi phải lớn hơn 1'),
+  height: z.number().min(1, 'Chiều cao phải lớn hơn 1'),
+  weight: z.number().min(1, 'Cân nặng phải lớn hơn 1'),
   measurements: z.string().min(1, 'Vui lòng nhập số đo 3 vòng'),
-  bellyMeasurement: z.number().min(1, 'Số đo bụng dưới phải lớn hơn 0'),
+  bellyMeasurement: z.number().min(1, 'Số đo bụng dưới phải lớn hơn 1'),
   isExperienced: z.enum(['true', 'false']),
   injuries: z.string(),
   weeklyDays: z.number().min(1, 'Ít nhất 1 ngày').max(7, 'Tối đa 7 ngày'),
@@ -46,6 +47,18 @@ export function WorkoutForm({ onSubmit, onCancel }: WorkoutFormProps) {
     onSubmit({ ...data, isExperienced: data.isExperienced === 'true' })
   }
 
+  const onError = (errors: any) => {
+    // Get all error messages
+    const errorMessages = Object.entries(errors)
+      .map(([field, error]: [string, any]) => `${error.message}`)
+      .join(', ')
+
+    // Show toast with error messages
+    toast.error('Lỗi nhập liệu',{
+      description: errorMessages,
+    })
+  }
+
   return (
     <div className={`w-full max-h-full overflow-y-auto ${styles.promptsContainerScrollbar}`}>
       <div className="mb-4">
@@ -54,7 +67,7 @@ export function WorkoutForm({ onSubmit, onCancel }: WorkoutFormProps) {
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(handleSubmit, onError)} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <FormNumberField name="age" form={form} label="Tuổi" placeholder="25" min={1} />
             <FormNumberField name="height" form={form} label="Chiều cao (cm)" placeholder="160" min={1} />
