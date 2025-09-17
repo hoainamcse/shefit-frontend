@@ -112,16 +112,6 @@ export function ListCourses() {
     )
   }
 
-  if (courses.length === 0) {
-    return (
-      <Link href="/courses">
-        <Button className="bg-[#13D8A7] text-white text-sm lg:text-lg w-full rounded-full h-14 mt-6">
-          Thêm khóa tập
-        </Button>
-      </Link>
-    )
-  }
-
   return (
     <div>
       <Dialog open={renewDialogOpen} onOpenChange={setRenewDialogOpen}>
