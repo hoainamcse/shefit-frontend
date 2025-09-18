@@ -45,11 +45,11 @@ const formSchema = z.object({
   is_public: z.boolean(),
   is_popular: z.boolean(),
   assets: z.object({
-    thumbnail: z.string().url().nullable(),
-    mobile_cover: z.string().url().nullable(),
-    desktop_cover: z.string().url().nullable(),
-    youtube_cover: z.string().url().nullable(),
-    homepage_thumbnail: z.string().url().nullable(),
+    thumbnail: z.union([z.string().url(), z.string().max(0)]),
+    mobile_cover: z.union([z.string().url(), z.string().max(0)]),
+    desktop_cover: z.union([z.string().url(), z.string().max(0)]),
+    youtube_cover: z.union([z.string().url(), z.string().max(0)]),
+    homepage_thumbnail: z.union([z.string().url(), z.string().max(0)]),
   }),
   is_free: z.boolean(),
   summary: z.string(),
@@ -87,9 +87,9 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
     assets: {
       thumbnail: DEFAULT_IMAGE_URL,
       mobile_cover: DEFAULT_IMAGE_URL,
-      desktop_cover: null,
-      youtube_cover: null,
-      homepage_thumbnail: null,
+      desktop_cover: '',
+      youtube_cover: '',
+      homepage_thumbnail: '',
     },
     is_free: false,
     summary: '',
@@ -183,7 +183,35 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
             placeholder="Nhập mô tả"
           />
 
-          <EditCourseAssets form={form} />
+          <div className="space-y-4 border p-4 rounded-md">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormImageSelectField control={form.control} name="assets.thumbnail" label="Hình ảnh đại diện" />
+              <FormImageSelectField
+                control={form.control}
+                name="assets.homepage_thumbnail"
+                label="Hình ảnh đại diện (Homepage)"
+                description="Ảnh đại diện (mặc định) sẽ được sử dụng nếu không đặt"
+              />
+            </div>
+            <Separator />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormImageSelectField control={form.control} name="assets.mobile_cover" label="Hình ảnh bìa (Mobile)" />
+              <FormImageSelectField
+                control={form.control}
+                name="assets.desktop_cover"
+                label="Hình ảnh bìa (Desktop)"
+                description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
+              />
+            </div>
+            <FormInputField
+              form={form}
+              name="assets.youtube_cover"
+              label="Video bìa (YouTube)"
+              placeholder="Nhập URL video YouTube"
+              description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
+            />
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Nhóm cơ</Label>
@@ -361,50 +389,6 @@ export function EditCourseForm({ data, onSuccess, courseFormat, isOneOnOne }: Ed
           }}
         />
       </DialogEdit>
-    </>
-  )
-}
-
-function EditCourseAssets({ form }: { form: ReturnType<typeof useForm<FormValue>> }) {
-  const [openEditSheet, setOpenEditSheet] = useState(false)
-  return (
-    <>
-      <MainButton text="Assets của khoá tập" variant="outline" type="button" onClick={() => setOpenEditSheet(true)} />
-      <SheetEdit
-        open={openEditSheet}
-        onOpenChange={setOpenEditSheet}
-        title="Chỉnh sửa khoá tập"
-        description="Chỉnh sửa các thông tin liên quan đến khoá tập"
-      >
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormImageSelectField control={form.control} name="assets.thumbnail" label="Hình ảnh đại diện" />
-            <FormImageSelectField
-              control={form.control}
-              name="assets.homepage_thumbnail"
-              label="Hình ảnh đại diện (Homepage)"
-              description="Ảnh đại diện (mặc định) sẽ được sử dụng nếu không đặt"
-            />
-          </div>
-          <Separator />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormImageSelectField control={form.control} name="assets.mobile_cover" label="Hình ảnh bìa (Mobile)" />
-            <FormImageSelectField
-              control={form.control}
-              name="assets.desktop_cover"
-              label="Hình ảnh bìa (Desktop)"
-              description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
-            />
-          </div>
-          <FormInputField
-            form={form}
-            name="assets.youtube_cover"
-            label="Video bìa (YouTube)"
-            placeholder="Nhập URL video YouTube"
-            description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
-          />
-        </div>
-      </SheetEdit>
     </>
   )
 }

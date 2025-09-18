@@ -160,7 +160,7 @@ export function UsersTable() {
       //   size: 70,
       // },
       {
-        header: 'Tên',
+        header: 'Tên đầy đủ',
         accessorKey: 'fullname',
         size: 180,
       },
@@ -188,35 +188,6 @@ export function UsersTable() {
           </Badge>
         ),
         size: 120,
-      },
-      {
-        header: 'Token Usage',
-        accessorKey: 'token_usage',
-        size: 120,
-      },
-      {
-        header: 'Bật bot',
-        accessorKey: 'enable_chatbot',
-        cell: ({ row }) => (
-          <Switch
-            className="transform scale-75"
-            checked={row.getValue('enable_chatbot')}
-            onCheckedChange={(checked) => handleChatbotToggle({ enable_chatbot: checked }, row.original)}
-          />
-        ),
-        size: 80,
-      },
-      {
-        header: 'Bật thao tác',
-        accessorKey: 'enable_chatbot_actions',
-        cell: ({ row }) => (
-          <Switch
-            className="transform scale-75"
-            checked={row.getValue('enable_chatbot_actions')}
-            onCheckedChange={(checked) => handleChatbotToggle({ enable_chatbot_actions: checked }, row.original)}
-          />
-        ),
-        size: 80,
       },
       {
         accessorKey: 'created_at',
@@ -323,6 +294,35 @@ export function UsersTable() {
         size: 150,
       },
       {
+        header: 'Token Usage',
+        accessorKey: 'token_usage',
+        size: 120,
+      },
+      {
+        header: 'Bật bot',
+        accessorKey: 'enable_chatbot',
+        cell: ({ row }) => (
+          <Switch
+            className="transform scale-75"
+            checked={row.getValue('enable_chatbot')}
+            onCheckedChange={(checked) => handleChatbotToggle({ enable_chatbot: checked }, row.original)}
+          />
+        ),
+        size: 80,
+      },
+      {
+        header: 'Bật thao tác',
+        accessorKey: 'enable_chatbot_actions',
+        cell: ({ row }) => (
+          <Switch
+            className="transform scale-75"
+            checked={row.getValue('enable_chatbot_actions')}
+            onCheckedChange={(checked) => handleChatbotToggle({ enable_chatbot_actions: checked }, row.original)}
+          />
+        ),
+        size: 80,
+      },
+      {
         id: 'actions',
         header: () => <span className="sr-only">Actions</span>,
         cell: ({ row }) => <RowActions row={row} onEdit={onEditRow} onDelete={onDeleteRow} />,
@@ -384,7 +384,7 @@ export function UsersTable() {
     <DataTable
       data={data?.data}
       columns={columns}
-      state={{ pagination }}
+      state={{ pagination, columnPinning: { left: ['select', 'fullname'], right: ['actions'] } }}
       rowCount={data?.paging.total}
       onDelete={onDeleteRows}
       onPaginationChange={setPagination}

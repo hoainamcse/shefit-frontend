@@ -20,7 +20,7 @@ type SubscriptionPrice = {
 }
 
 type Subscription = {
-  original_subscription_end_at?: string;
+  original_subscription_end_at?: string
   id: number
   name: string
   course_format: 'video' | 'live' | 'both'
@@ -58,7 +58,10 @@ type Subscription = {
   display_order: number
 }
 
-type SubscriptionPayload = Omit<Subscription, 'id' | 'created_at' | 'updated_at' | 'gifts' | 'courses' | 'meal_plans' | 'relationships'> & {
+type SubscriptionPayload = Omit<
+  Subscription,
+  'id' | 'created_at' | 'updated_at' | 'gifts' | 'courses' | 'meal_plans' | 'relationships'
+> & {
   gift_ids: Gift['id'][]
   course_ids: Course['id'][]
   meal_plan_ids: MealPlan['id'][]

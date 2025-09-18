@@ -53,11 +53,11 @@ const formSchema = z.object({
     message: 'Mô tả phải có ít nhất 10 ký tự.',
   }),
   assets: z.object({
-    thumbnail: z.string().url().nullable(),
-    mobile_cover: z.string().url().nullable(),
-    desktop_cover: z.string().url().nullable(),
-    youtube_cover: z.string().url().nullable(),
-    homepage_thumbnail: z.string().url().nullable(),
+    thumbnail: z.union([z.string().url(), z.string().max(0)]),
+    mobile_cover: z.union([z.string().url(), z.string().max(0)]),
+    desktop_cover: z.union([z.string().url(), z.string().max(0)]),
+    youtube_cover: z.union([z.string().url(), z.string().max(0)]),
+    homepage_thumbnail: z.union([z.string().url(), z.string().max(0)]),
   }),
   gifts: z
     .array(
@@ -139,9 +139,9 @@ export function CreateSubscriptionForm({ isEdit, data }: CreateSubscriptionFormP
           assets: {
             thumbnail: DEFAULT_IMAGE_URL,
             mobile_cover: DEFAULT_IMAGE_URL,
-            desktop_cover: null,
-            youtube_cover: null,
-            homepage_thumbnail: null,
+            desktop_cover: '',
+            youtube_cover: '',
+            homepage_thumbnail: '',
           },
           result_checkup: '',
           description_1: '',
@@ -337,7 +337,40 @@ export function CreateSubscriptionForm({ isEdit, data }: CreateSubscriptionFormP
                 label="Theo dõi kết quả"
                 placeholder="Nhập thông tin theo dõi kết quả"
               />
-              <EditSubscriptionAssets form={form} />
+
+              <div className="space-y-4 border p-4 rounded-md">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormImageSelectField control={form.control} name="assets.thumbnail" label="Hình ảnh đại diện" />
+                  <FormImageSelectField
+                    control={form.control}
+                    name="assets.homepage_thumbnail"
+                    label="Hình ảnh đại diện (Homepage)"
+                    description="Ảnh đại diện (mặc định) sẽ được sử dụng nếu không đặt"
+                  />
+                </div>
+                <Separator />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormImageSelectField
+                    control={form.control}
+                    name="assets.mobile_cover"
+                    label="Hình ảnh bìa (Mobile)"
+                  />
+                  <FormImageSelectField
+                    control={form.control}
+                    name="assets.desktop_cover"
+                    label="Hình ảnh bìa (Desktop)"
+                    description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
+                  />
+                </div>
+                <FormInputField
+                  form={form}
+                  name="assets.youtube_cover"
+                  label="Video bìa (YouTube)"
+                  placeholder="Nhập URL video YouTube"
+                  description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Khoá tập</Label>
@@ -740,49 +773,5 @@ export function CreateSubscriptionForm({ isEdit, data }: CreateSubscriptionFormP
         />
       </DialogEdit>
     </div>
-  )
-}
-
-function EditSubscriptionAssets({ form }: { form: ReturnType<typeof useForm<FormValue>> }) {
-  const [openEditSheet, setOpenEditSheet] = useState(false)
-  return (
-    <>
-      <MainButton text="Assets của gói tập" variant="outline" type="button" onClick={() => setOpenEditSheet(true)} />
-      <SheetEdit
-        open={openEditSheet}
-        onOpenChange={setOpenEditSheet}
-        title="Chỉnh sửa gói tập"
-        description="Chỉnh sửa các thông tin liên quan đến gói tập"
-      >
-        <div className="space-y-4">
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-            <FormImageSelectField control={form.control} name="assets.thumbnail" label="Hình ảnh đại diện" />
-            <FormImageSelectField
-              control={form.control}
-              name="assets.homepage_thumbnail"
-              label="Hình ảnh đại diện (Homepage)"
-              description="Ảnh đại diện (mặc định) sẽ được sử dụng nếu không đặt"
-            />
-          </div>
-          <Separator />
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-            <FormImageSelectField control={form.control} name="assets.mobile_cover" label="Hình ảnh bìa (Mobile)" />
-            <FormImageSelectField
-              control={form.control}
-              name="assets.desktop_cover"
-              label="Hình ảnh bìa (Desktop)"
-              description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
-            />
-          </div>
-          <FormInputField
-            form={form}
-            name="assets.youtube_cover"
-            label="Video bìa (YouTube)"
-            placeholder="Nhập URL video YouTube"
-            description="Ảnh bìa mobile sẽ được sử dụng nếu không đặt"
-          />
-        </div>
-      </SheetEdit>
-    </>
   )
 }

@@ -22,6 +22,7 @@ export default function CoursePage() {
   const searchParams = useSearchParams()
   const query = searchParams ? `?${searchParams.toString()}` : ''
   const back = searchParams?.get('back') || ''
+  const hidePackages = searchParams?.get('hide_packages') === 'true'
   const { session } = useSession()
 
   // Use useQueries to fetch both course data and user subscriptions
@@ -107,7 +108,7 @@ export default function CoursePage() {
             {course.relationships?.form_categories.map((fg) => fg.name).join(', ')}
           </div>
         </div>
-        {courseSubscriptions.length > 0 && (
+        {!hidePackages && courseSubscriptions.length > 0 && (
           <div className="flex flex-col lg:gap-5 gap-2">
             <div className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-ring text-2xl xl:text-4xl uppercase">
               Gói Member

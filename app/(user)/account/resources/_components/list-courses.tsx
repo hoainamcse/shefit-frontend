@@ -144,7 +144,7 @@ export function ListCourses() {
           <CardCourse
             key={course.id}
             data={course}
-            to={`/courses/${course.id}?back=%2Faccount%2Fresources`}
+            to={`/courses/${course.id}?back=%2Faccount%2Fresources&hide_packages=true`}
             locked={isSubscriptionExpired}
             onLockedClick={() => setRenewDialogOpen(true)}
           />

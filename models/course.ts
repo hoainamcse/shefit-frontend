@@ -50,7 +50,15 @@ type Course = {
 
 type CoursePayload = Omit<
   Course,
-  'id' | 'created_at' | 'updated_at' | 'muscle_groups' | 'equipments' | 'subscriptions' | 'relationships' | 'form_categories' | 'workout_methods'
+  | 'id'
+  | 'created_at'
+  | 'updated_at'
+  | 'muscle_groups'
+  | 'equipments'
+  | 'subscriptions'
+  | 'relationships'
+  | 'form_categories'
+  | 'workout_methods'
 > & {
   muscle_group_ids: MuscleGroup['id'][]
   equipment_ids: Equipment['id'][]

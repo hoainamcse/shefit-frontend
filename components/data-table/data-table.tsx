@@ -1,7 +1,8 @@
 'use client'
 
-import { useId, useState, useEffect } from 'react'
+import { useId, useState, useEffect, CSSProperties } from 'react'
 import {
+  Column,
   ColumnDef,
   ColumnFiltersState,
   flexRender,
@@ -130,6 +131,7 @@ export function DataTable<T extends { id: string | number }>({
     enableSortingRemoval: false,
     enableSorting: false,
     enableHiding: false,
+    enableColumnPinning: true,
     // getPaginationRowModel: getPaginationRowModel(),
     manualPagination: true,
     onPaginationChange,
@@ -203,7 +205,11 @@ export function DataTable<T extends { id: string | number }>({
                 {headerGroup.headers.map((header) => {
                   if (header.isPlaceholder) {
                     return (
-                      <TableHead key={header.id} style={{ width: `${header.getSize()}px` }} className="h-11">
+                      <TableHead
+                        key={header.id}
+                        style={{ width: `${header.getSize()}px`, ...getCommonPinningStyles(header.column) }}
+                        // className="h-11"
+                      >
                         {null}
                       </TableHead>
                     )
@@ -211,7 +217,11 @@ export function DataTable<T extends { id: string | number }>({
 
                   if (header.column.getCanSort()) {
                     return (
-                      <TableHead key={header.id} style={{ width: `${header.getSize()}px` }} className="h-11">
+                      <TableHead
+                        key={header.id}
+                        style={{ width: `${header.getSize()}px`, ...getCommonPinningStyles(header.column) }}
+                        // className={headerClassName}
+                      >
                         <button
                           className="flex h-full w-full cursor-pointer items-center justify-between gap-2 select-none"
                           onClick={header.column.getToggleSortingHandler()}
@@ -234,7 +244,11 @@ export function DataTable<T extends { id: string | number }>({
                   }
 
                   return (
-                    <TableHead key={header.id} style={{ width: `${header.getSize()}px` }} className="h-11">
+                    <TableHead
+                      key={header.id}
+                      style={{ width: `${header.getSize()}px`, ...getCommonPinningStyles(header.column) }}
+                      // className="h-11"
+                    >
                       {flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   )
@@ -247,7 +261,11 @@ export function DataTable<T extends { id: string | number }>({
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="last:py-0">
+                    <TableCell
+                      key={cell.id}
+                      // className="last:py-0"
+                      style={{ ...getCommonPinningStyles(cell.column) }}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -369,4 +387,24 @@ export function DataTable<T extends { id: string | number }>({
       </div>
     </div>
   )
+}
+
+const getCommonPinningStyles = (column: Column<any>): CSSProperties => {
+  const isPinned = column.getIsPinned()
+  const isLastLeftPinnedColumn = isPinned === 'left' && column.getIsLastColumn('left')
+  const isFirstRightPinnedColumn = isPinned === 'right' && column.getIsFirstColumn('right')
+
+  return {
+    backgroundColor: isPinned ? 'hsl(var(--background))' : undefined,
+    boxShadow: isLastLeftPinnedColumn
+      ? 'inset -1px 0 0 hsl(var(--border))'
+      : isFirstRightPinnedColumn
+      ? 'inset 1px 0 0 hsl(var(--border))'
+      : undefined,
+    left: isPinned === 'left' ? `${column.getStart('left')}px` : undefined,
+    right: isPinned === 'right' ? `${column.getAfter('right')}px` : undefined,
+    position: isPinned ? 'sticky' : 'relative',
+    width: column.getSize(),
+    zIndex: isPinned ? 1 : 0,
+  }
 }
