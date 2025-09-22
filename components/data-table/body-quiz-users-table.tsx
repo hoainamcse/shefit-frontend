@@ -10,7 +10,7 @@ import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { getBodyQuizUsers, getUserBodyQuizzes, queryKeyBodyQuizUsers } from '@/network/client/body-quizzes'
+import { getBodyQuizzesUsers, getUserBodyQuizzes, queryKeyBodyQuizUsers } from '@/network/client/body-quizzes'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -26,7 +26,7 @@ export function BodyQuizUsersTable() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: [queryKeyBodyQuizUsers, pagination],
-    queryFn: () => getBodyQuizUsers({ page: pagination.pageIndex, per_page: pagination.pageSize }),
+    queryFn: () => getBodyQuizzesUsers({ page: pagination.pageIndex, per_page: pagination.pageSize }),
     placeholderData: keepPreviousData,
   })
 

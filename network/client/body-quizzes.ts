@@ -48,6 +48,12 @@ export async function deleteBodyQuiz(id: BodyQuiz['id']): Promise<ApiResponse<st
   return response.json()
 }
 
+export async function getBodyQuizzesUsers(query?: any): Promise<ListResponse<BodyQuizUser>> {
+  const searchParams = new URLSearchParams(query).toString()
+  const response = await fetchData('/v1/body-quizzes/users' + '?' + searchParams)
+  return response.json()
+}
+
 // Question APIs
 export const queryKeyQuestions = 'questions'
 
@@ -76,12 +82,6 @@ export async function deleteQuestion(id: Question['id']): Promise<ApiResponse<st
 
 // Body Quiz User APIs
 export const queryKeyBodyQuizUsers = 'body-quiz-users'
-
-export async function getBodyQuizUsers(query?: any): Promise<ListResponse<BodyQuizUser>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchData('/v1/users/body-quizzes-summary' + '?' + searchParams)
-  return response.json()
-}
 
 // User Body Quiz APIs
 export const queryKeyUserBodyQuizzes = 'user-body-quizzes'
