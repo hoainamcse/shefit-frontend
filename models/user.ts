@@ -11,6 +11,7 @@ type User = {
   provider: 'default' | 'google'
   provider_id: string | null
   role: 'admin' | 'normal_user' | 'sub_admin'
+  conversation_id: string | null
   enable_chatbot: boolean
   enable_chatbot_actions: boolean
   token_usage: number
