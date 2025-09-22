@@ -22,8 +22,9 @@ export async function getBodyQuiz(quizId: BodyQuiz['id']): Promise<ApiResponse<B
 }
 
 // User Body Quiz
-export const getBodyQuizzesByUser = async (user_id: User['id']): Promise<ListResponse<UserBodyQuiz>> => {
-  const response = await fetchDataServer(`/v1/users/${user_id}/body-quizzes`)
+export const getBodyQuizzesByUser = async (user_id: User['id'], query?: any): Promise<ListResponse<UserBodyQuiz>> => {
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchDataServer(`/v1/users/${user_id}/body-quizzes/history` + searchParams)
   return response.json()
 }
 

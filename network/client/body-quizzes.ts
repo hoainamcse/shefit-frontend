@@ -90,8 +90,8 @@ export async function getUserBodyQuizzes(
   user_id: BodyQuizUser['id'],
   query?: any
 ): Promise<ListResponse<UserBodyQuiz>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchData(`/v1/users/${user_id}/body-quizzes` + '?' + searchParams)
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData(`/v1/users/${user_id}/body-quizzes/history` + searchParams)
   return response.json()
 }
 
