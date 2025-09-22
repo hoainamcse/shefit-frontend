@@ -61,7 +61,7 @@ export function Footer() {
                   chi phí.
                 </li>
               </ul>
-              <div className="w-full flex  col-span-2">
+              <div className="w-full flex col-span-2">
                 <ul className="ml-auto flex flex-col gap-3">
                   <li className="font-bold text-lg lg:text-xl uppercase font-[family-name:var(--font-roboto)]">
                     Công ty TNHH Shefit Việt Nam

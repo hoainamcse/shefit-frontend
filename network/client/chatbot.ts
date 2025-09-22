@@ -2,25 +2,18 @@ import { ApiResponse, ListResponse } from '@/models/response'
 import { fetchData } from '../helpers/fetch-data'
 import { Message, Greeting, GreetingPayload } from '@/models/chatbot'
 
-export const queryKeyGreetings = 'greeting'
+export const queryKeyGreetings = 'greetings'
+export const queryKeyConversations = 'conversations'
 
-export async function getConversationHistory(params: string): Promise<ApiResponse<Message[]>> {
-  const response = await fetchData(`/v1/chatbot/conversation/history${params}`, {
-    method: 'GET',
-  })
+export async function getConversation(id: string, query: any): Promise<ListResponse<Message>> {
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData(`/v1/chatbot/conversations/${id}` + searchParams)
   return response.json()
 }
 
-export async function getGreetings(params: string): Promise<ListResponse<Greeting>> {
-  const response = await fetchData(`/v1/greeting/search${params}`, {
-    method: 'GET',
-  })
-  return response.json()
-}
-
-export async function getListGreeting(query?: any): Promise<ListResponse<Greeting>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchData('/v1/greeting' + '?' + searchParams)
+export async function getGreetings(query?: any): Promise<ListResponse<Greeting>> {
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData('/v1/greeting' + searchParams)
   return response.json()
 }
 

@@ -29,7 +29,7 @@ import { BusinessIcon } from '@/components/icons/BusinessIcon'
 import dynamic from 'next/dynamic'
 import { StarIcon } from '@/components/icons/StarIcon'
 
-const ChatBot = dynamic(() => import('@/components/chatbot/chatbot').then((mod) => mod.ChatBot), { ssr: false })
+const Chatbot = dynamic(() => import('@/components/chatbot/chatbot').then((mod) => mod.Chatbot), { ssr: false })
 
 export function Header() {
   const pathname = usePathname()
@@ -203,7 +203,7 @@ export function Header() {
           </Sheet>
         </div>
       </div>
-      {isChatOpen && <ChatBot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />}
+      {isChatOpen && <Chatbot open={isChatOpen} onClose={() => setIsChatOpen(false)} />}
     </header>
   )
 }

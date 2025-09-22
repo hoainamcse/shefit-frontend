@@ -15,7 +15,13 @@ import { AddButton } from '../buttons/add-button'
 import { SheetEdit } from '../dialogs/sheet-edit'
 import { EditAIHubForm } from '../forms/edit-ai-hub-form'
 import { Greeting } from '@/models/chatbot'
-import { deleteBulkGreeting, deleteGreeting, getListGreeting, importGreetingExcel, queryKeyGreetings } from '@/network/client/chatbot'
+import {
+  deleteBulkGreeting,
+  deleteGreeting,
+  getGreetings,
+  importGreetingExcel,
+  queryKeyGreetings,
+} from '@/network/client/chatbot'
 import { DialogExcelImport } from '../dialogs/dialog-excel-import'
 
 interface AIHubTableProps {
@@ -31,7 +37,7 @@ export function AIHubTable({ onConfirmRowSelection }: AIHubTableProps) {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [queryKeyGreetings, pagination],
-    queryFn: () => getListGreeting({ page: pagination.pageIndex, per_page: pagination.pageSize }),
+    queryFn: () => getGreetings({ page: pagination.pageIndex, per_page: pagination.pageSize }),
     placeholderData: keepPreviousData,
   })
 

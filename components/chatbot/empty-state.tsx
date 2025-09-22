@@ -4,8 +4,8 @@ import React from 'react'
 import { Loader2, RefreshCcw } from 'lucide-react'
 import { Button } from '../ui/button'
 import Link from 'next/link'
-import { WorkoutForm } from './workout-form'
-import { MealForm } from './meal-form'
+import { CourseForm } from './course-form'
+import { MealPlanForm } from './meal-plan-form'
 import { usePathname } from 'next/navigation'
 
 interface EmptyStateProps {
@@ -116,13 +116,13 @@ Sở thích ăn uống: ${data.foodPreferences}`
           {/* Show forms when selected */}
           {showForm === 'workout' && (
             <div className="bg-pink-50 p-4 rounded-xl">
-              <WorkoutForm onSubmit={handleWorkoutFormSubmit} onCancel={handleFormCancel} />
+              <CourseForm onSubmit={handleWorkoutFormSubmit} onCancel={handleFormCancel} />
             </div>
           )}
 
           {showForm === 'meal' && (
             <div className="bg-pink-50 p-4 rounded-xl">
-              <MealForm onSubmit={handleMealFormSubmit} onCancel={handleFormCancel} />
+              <MealPlanForm onSubmit={handleMealFormSubmit} onCancel={handleFormCancel} />
             </div>
           )}
 

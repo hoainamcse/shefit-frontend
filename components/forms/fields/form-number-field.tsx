@@ -1,7 +1,13 @@
 import * as React from 'react'
 import { type FieldValues, type Path, type UseFormReturn } from 'react-hook-form'
-
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
 type FormNumberFieldProps<
@@ -42,38 +48,18 @@ export function FormNumberField<
           <FormControl>
             <Input
               {...inputProps}
-              type="number"
-              min={0}
-              // Apply field props but ensure our custom handlers take precedence
-              value={field.value}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={field.value ?? ''}
               name={field.name}
               ref={field.ref}
               onBlur={field.onBlur}
-              // Improved key down handler to prevent negative numbers
-              onKeyDown={(event) => {
-                // Prevent typing the minus sign, 'e', or any non-numeric keys except allowed control keys
-                if (event.key === '-' || event.key === 'e' || event.key === '+') {
-                  event.preventDefault()
-                }
-
-                // Allow input props onKeyDown to still work if provided
-                inputProps.onKeyDown?.(event)
-              }}
-              // Improved onChange handler with stricter validation
-              onChange={(event) => {
-                let value = event.target.value
-
-                // Remove any minus signs that might have been entered through pasting
-                value = value.replace(/-/g, '')
-
-                // Ensure we have a valid number or empty string
-                const numericValue = value === '' ? value : Math.max(0, parseFloat(value))
-
-                // Update the field value
-                field.onChange(numericValue)
-
-                // Also call any onChange from inputProps if it exists
-                inputProps.onChange?.(event)
+              onInput={(e) => {
+                const el = e.currentTarget
+                const cleaned = el.value.replace(/\D+/g, '') // allow only digits
+                if (el.value !== cleaned) el.value = cleaned
+                field.onChange(cleaned === '' ? '' : Number(cleaned))
               }}
             />
           </FormControl>

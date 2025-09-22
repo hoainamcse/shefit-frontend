@@ -1,6 +1,6 @@
 import { ContentLayout } from '@/components/admin-panel/content-layout'
 import { AIHubTable } from '@/components/data-table/ai-hub-table'
-import { ChatBot } from '@/components/chatbot/chatbot'
+import { Chatbot } from '@/components/chatbot/chatbot'
 import { TokenUsage } from '@/components/chatbot/token-usage'
 import { Card, CardContent } from '@/components/ui/card'
 import { getTotalTokenUsage } from '@/network/server/chatbot'
@@ -20,7 +20,7 @@ export default async function AIHubPage() {
           {/* Chatbot Preview Card */}
           <Card>
             <CardContent className="p-0">
-              <ChatBot isOpen isPreview />
+              <Chatbot open />
             </CardContent>
           </Card>
         </div>

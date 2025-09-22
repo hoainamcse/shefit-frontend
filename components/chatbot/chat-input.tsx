@@ -1,100 +1,92 @@
-import React from 'react'
-import { ArrowRight, MenuIcon } from 'lucide-react'
-import { Button } from '../ui/button'
-import { Input } from './custom-input-chatbot'
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import PromptSuggestions from './prompt-suggestions'
-import { UseFormReturn } from 'react-hook-form'
-import { Greeting } from '@/models/chatbot'
+'use client'
 
-interface ChatInputProps {
-  form: UseFormReturn<{ message: string }>
-  session: any
-  isShowingPromptSuggestions: boolean
-  setIsShowingPromptSuggestions: (value: boolean) => void
-  greetings: Greeting[]
-  total: number
-  isLoadingGreetings: boolean
-  isLoadingMore: boolean
-  onSubmit: (data: { message: string }) => void
-  sendMessage: (messageValue?: string, isUsingOption?: boolean, isReSend?: boolean) => Promise<any>
-  fetchGreetings: (searchQuery?: string, isLoadMore?: boolean) => Promise<void>
-  disabled?: boolean
-  enableChatbotActions?: boolean
-}
+import { useState } from 'react'
+import { ArrowRight, Menu } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Input } from './custom-input-chatbot'
+import { CommonMessages } from './common-messages'
+import { ChatActions } from './chat-actions'
 
 export function ChatInput({
-  form,
-  session,
-  isShowingPromptSuggestions,
-  setIsShowingPromptSuggestions,
-  greetings,
-  total,
-  isLoadingGreetings,
-  isLoadingMore,
-  onSubmit,
-  sendMessage,
-  fetchGreetings,
   disabled = false,
-  enableChatbotActions = false,
-}: ChatInputProps) {
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="message"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <div className="flex items-center gap-2 relative">
-                  <Popover open={isShowingPromptSuggestions} onOpenChange={setIsShowingPromptSuggestions}>
-                    <PopoverTrigger className="absolute left-[6px] top-1/2 -translate-y-1/2 p-0 bg-primary size-9 rounded-full flex justify-center items-center">
-                      <MenuIcon className="text-background" size={20} />
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0 w-[320px]">
-                      <PromptSuggestions
-                        greetings={greetings}
-                        handleClose={() => setIsShowingPromptSuggestions(false)}
-                        onClickPrompt={sendMessage}
-                        fetchGreetings={fetchGreetings}
-                        total={total}
-                        isSearching={isLoadingGreetings}
-                        isLoadingMore={isLoadingMore}
-                        enableChatbotActions={enableChatbotActions}
-                      />
-                    </PopoverContent>
-                  </Popover>
+  onSubmit,
+  onActionClick: _onActionClick,
+}: {
+  disabled?: boolean
+  onSubmit?: (message: string) => void
+  onActionClick?: (id: 'course-form' | 'meal-plan-form') => void
+}) {
+  const [value, setValue] = useState('')
+  const [openPopover, setOpenPopover] = useState(false)
 
-                  <Input
-                    placeholder="Nhập tin nhắn..."
-                    className="bg-white text-foreground rounded-full !min-h-12 px-[52px]"
-                    disabled={!session || disabled}
-                    minRows={1}
-                    maxRows={4}
-                    autoResize={true}
-                    onEnterPress={(e) => {
-                      e.preventDefault()
-                      form.handleSubmit(onSubmit)()
-                    }}
-                    {...field}
-                  />
-                  <Button
-                    type="submit"
-                    className="absolute right-[6px] top-1/2 -translate-y-1/2 p-0 bg-primary size-9 rounded-full"
-                    disabled={!field.value || disabled}
-                    size="icon"
-                  >
-                    <ArrowRight />
-                  </Button>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </form>
-    </Form>
+  const isDisabled = value.trim().length === 0 || disabled
+
+  function onClick() {
+    if (!isDisabled) {
+      setValue('')
+      onSubmit?.(value.trim())
+    }
+  }
+
+  function onKeyDown(e: React.KeyboardEvent) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      onClick()
+    }
+  }
+
+  function onMessageClick(m: string) {
+    onSubmit?.(m)
+    setOpenPopover(false)
+  }
+
+  function onActionClick(id: 'course-form' | 'meal-plan-form') {
+    _onActionClick?.(id)
+    setOpenPopover(false)
+  }
+
+  return (
+    <div className="relative">
+      <Popover open={openPopover} onOpenChange={setOpenPopover}>
+        <PopoverTrigger
+          className="absolute left-[6px] top-1/2 -translate-y-1/2 p-0 bg-primary size-9 rounded-full flex justify-center items-center"
+          disabled={disabled}
+        >
+          <Menu className="text-background" size={20} />
+        </PopoverTrigger>
+        <PopoverContent className="p-0 w-[320px] rounded-lg">
+          <ScrollArea className="h-[400px]">
+            <div className="p-3 space-y-4">
+              <ChatActions onMessageClick={onMessageClick} onClick={onActionClick} />
+              <Separator />
+              <CommonMessages enable={openPopover} onClick={onMessageClick} />
+            </div>
+          </ScrollArea>
+        </PopoverContent>
+      </Popover>
+      <Input
+        placeholder="Nhập tin nhắn..."
+        className="bg-white text-foreground rounded-full !min-h-12 px-[52px]"
+        disabled={disabled}
+        minRows={1}
+        maxRows={4}
+        autoResize={true}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={onKeyDown}
+      />
+      <Button
+        className="absolute right-[6px] top-1/2 -translate-y-1/2 p-0 bg-primary size-9 rounded-full"
+        disabled={isDisabled}
+        size="icon"
+        onClick={onClick}
+      >
+        <ArrowRight />
+      </Button>
+    </div>
   )
 }

@@ -1,7 +1,7 @@
 type GreetingStatus = 'ACTIVE' | 'INACTIVE'
 
 export type Message = {
-  id: string
+  id: number
   content: string
   role: string
   content_type: string
