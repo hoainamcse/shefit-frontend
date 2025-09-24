@@ -10,30 +10,32 @@ import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 
-import { getUserBodyQuizzes, queryKeyUserBodyQuizzes, updateUserBodyQuiz } from '@/network/client/body-quizzes'
+import { getBodyQuizzesHistoryByUser, queryKeyBodyQuizzes, updateBodyQuizHistory } from '@/network/client/body-quizzes'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { SheetEdit } from '@/components/dialogs/sheet-edit'
 import { FormRichTextField } from '@/components/forms/fields'
 import { MainButton } from '@/components/buttons/main-button'
+import { queryKeyUsers } from '@/network/client/users'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
 import { Form } from '@/components/ui/form'
+import { htmlToText } from '@/lib/helpers'
 
 interface BodyQuizViewProps {
-  userID: BodyQuizUser['id']
+  userId: BodyQuizUser['id']
 }
 
-export function UserBodyQuizzesTable({ userID }: BodyQuizViewProps) {
+export function UserBodyQuizzesTable({ userId }: BodyQuizViewProps) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 25,
   })
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [queryKeyUserBodyQuizzes, { ...pagination, userID }],
-    queryFn: () => getUserBodyQuizzes(userID, { page: pagination.pageIndex, per_page: pagination.pageSize }),
+    queryKey: [queryKeyUsers, userId, queryKeyBodyQuizzes, 'attempts', { ...pagination, userID: userId }],
+    queryFn: () => getBodyQuizzesHistoryByUser(userId, { page: pagination.pageIndex, per_page: pagination.pageSize }),
     placeholderData: keepPreviousData,
   })
 
@@ -58,16 +60,16 @@ export function UserBodyQuizzesTable({ userID }: BodyQuizViewProps) {
         size: 28,
       },
       {
-        header: 'Username',
-        accessorKey: 'user_name',
+        header: 'Tên đây đủ',
+        accessorFn: (row) => row.user?.fullname,
         cell: ({ row }) => (
           <div className="font-medium">
             <a
-              href={`/admin/users/${row.original.user_id}`}
+              href={`/admin/users/${row.original.user.id}`}
               className="hover:underline underline-offset-2"
               target="_blank"
             >
-              {row.getValue('user_name')}
+              {row.original.user.fullname}
             </a>
           </div>
         ),
@@ -104,6 +106,7 @@ export function UserBodyQuizzesTable({ userID }: BodyQuizViewProps) {
       {
         header: 'Nhận xét',
         accessorKey: 'comment',
+        cell: ({ row }) => htmlToText(row.getValue('comment') || ''),
         size: 180,
       },
       {
@@ -173,6 +176,10 @@ export function UserBodyQuizzesTable({ userID }: BodyQuizViewProps) {
 
 // ! Follow UserBodyQuizPayload model in models/body-quiz.ts
 const formSchema = z.object({
+  user_id: z.number(),
+  body_quiz_id: z.number(),
+  quiz_date: z.string(),
+  responses: z.array(z.string()),
   comment: z.string(),
 })
 
@@ -186,11 +193,17 @@ interface EditUserBodyQuizFormProps {
 function EditUserBodyQuizForm({ data, onSuccess }: EditUserBodyQuizFormProps) {
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),
-    defaultValues: { comment: data.comment || '' },
+    defaultValues: {
+      user_id: data.user.id,
+      body_quiz_id: data.body_quiz.id,
+      quiz_date: data.quiz_date,
+      responses: data.responses || [],
+      comment: data.comment || '',
+    },
   })
 
   const equipmentMutation = useMutation({
-    mutationFn: (values: FormValue) => updateUserBodyQuiz(data.id, { ...data, ...values }),
+    mutationFn: (values: FormValue) => updateBodyQuizHistory(data.id, { ...values }),
     onSettled(data, error) {
       if (data?.status === 'success') {
         toast.success('Cập nhật kết quả quiz thành công')

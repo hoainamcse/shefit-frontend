@@ -15,8 +15,8 @@ import { fetchData } from '../helpers/fetch-data'
 export const queryKeyBodyQuizzes = 'body-quizzes'
 
 export async function getBodyQuizzes(query?: any): Promise<ListResponse<BodyQuiz>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchData('/v1/body-quizzes' + '?' + searchParams)
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData('/v1/body-quizzes' + searchParams)
   return response.json()
 }
 
@@ -48,9 +48,33 @@ export async function deleteBodyQuiz(id: BodyQuiz['id']): Promise<ApiResponse<st
   return response.json()
 }
 
-export async function getBodyQuizzesUsers(query?: any): Promise<ListResponse<BodyQuizUser>> {
-  const searchParams = new URLSearchParams(query).toString()
-  const response = await fetchData('/v1/body-quizzes/users' + '?' + searchParams)
+export async function getAttempedUsers(query?: any): Promise<ListResponse<BodyQuizUser>> {
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData('/v1/body-quizzes/users' + searchParams)
+  return response.json()
+}
+
+export async function attemptBodyQuiz(data: UserBodyQuizPayload): Promise<ApiResponse<UserBodyQuiz>> {
+  const response = await fetchData(`/v1/body-quizzes/attempts`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return response.json()
+}
+
+export async function getBodyQuizHistory(attempt_id: number): Promise<ApiResponse<UserBodyQuiz>> {
+  const response = await fetchData(`/v1/body-quizzes/attempts/${attempt_id}`)
+  return response.json()
+}
+
+export async function updateBodyQuizHistory(
+  attempt_id: number,
+  data: UserBodyQuizPayload
+): Promise<ApiResponse<UserBodyQuiz>> {
+  const response = await fetchData(`/v1/body-quizzes/attempts/${attempt_id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
   return response.json()
 }
 
@@ -80,28 +104,18 @@ export async function deleteQuestion(id: Question['id']): Promise<ApiResponse<st
   return response.json()
 }
 
-// Body Quiz User APIs
-export const queryKeyBodyQuizUsers = 'body-quiz-users'
-
 // User Body Quiz APIs
-export const queryKeyUserBodyQuizzes = 'user-body-quizzes'
-
-export async function getUserBodyQuizzes(
-  user_id: BodyQuizUser['id'],
-  query?: any
-): Promise<ListResponse<UserBodyQuiz>> {
+export async function getBodyQuizzesHistoryByUsers(query?: any): Promise<ListResponse<UserBodyQuiz>> {
   const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
-  const response = await fetchData(`/v1/users/${user_id}/body-quizzes/history` + searchParams)
+  const response = await fetchData(`/v1/users/body-quizzes/attempts` + searchParams)
   return response.json()
 }
 
-export async function updateUserBodyQuiz(
-  id: UserBodyQuiz['id'],
-  data: UserBodyQuizPayload
-): Promise<ApiResponse<UserBodyQuiz>> {
-  const response = await fetchData(`/v1/users/body-quizzes/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(data),
-  })
+export async function getBodyQuizzesHistoryByUser(
+  userId: BodyQuizUser['id'],
+  query?: any
+): Promise<ListResponse<UserBodyQuiz>> {
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData(`/v1/users/${userId}/body-quizzes/attempts` + searchParams)
   return response.json()
 }

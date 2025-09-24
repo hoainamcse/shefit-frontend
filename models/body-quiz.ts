@@ -34,27 +34,25 @@ export type { QuestionPayload, BodyQuizPayload }
 // User
 type BodyQuizUser = {
   id: User['id']
-  user_name: string
-  fullname: string
-  telephone_number: string
+  user: Pick<User, 'id' | 'username' | 'fullname' | 'phone_number'>
+  num_quizzes_attempted: number
   num_quizzes_commented: number
-  num_quizzes_done: number
+  last_quiz_date: string | null
 }
 
 type UserBodyQuiz = {
   id: number
-  user_id: User['id']
-  body_quiz: BodyQuiz
-  user_name: string
-  telephone_number: string
   quiz_date: string
   responses: string[]
   comment: string
-  created_at: string
-  updated_at: string
+  user: Pick<User, 'id' | 'username' | 'fullname' | 'phone_number'>
+  body_quiz: Pick<BodyQuiz, 'id' | 'title' | 'description'>
 }
 
-type UserBodyQuizPayload = Pick<UserBodyQuiz, 'comment'>
+type UserBodyQuizPayload = Omit<UserBodyQuiz, 'id' | 'user' | 'body_quiz'> & {
+  user_id: User['id']
+  body_quiz_id: BodyQuiz['id']
+}
 
 export type { BodyQuizUser, UserBodyQuiz }
 export type { UserBodyQuizPayload }

@@ -9,7 +9,7 @@ export default async function EditQuizResultPage({ params }: { params: Promise<{
 
   return (
     <ContentLayout title={`Kết quả quiz của người dùng ${user_id}`}>
-      <UserBodyQuizzesTable userID={user_id} />
+      <UserBodyQuizzesTable userId={user_id} />
     </ContentLayout>
   )
 }

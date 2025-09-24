@@ -7,7 +7,7 @@ import { Form, FormItem, FormControl, FormMessage, FormField } from '@/component
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
-import { getBodyQuiz } from '@/network/server/body-quizzes'
+import { getBodyQuiz } from '@/network/client/body-quizzes'
 import type { BodyQuiz } from '@/models/body-quiz'
 import { useState } from 'react'
 import { useEffect } from 'react'
@@ -21,7 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { createBodyQuizByUser } from '@/network/server/body-quizzes'
+import { attemptBodyQuiz } from '@/network/client/body-quizzes'
 import { addUserSavedResource, getUser } from '@/network/client/users'
 import { toast } from 'sonner'
 import { getConfiguration } from '@/network/client/configurations'
@@ -465,15 +465,13 @@ const useQuizSubmission = (session: any, bodyQuiz: BodyQuiz | null, userInfo: an
       user_id: session?.userId,
       body_quiz_id: bodyQuiz.id,
       quiz_date: new Date().toISOString(),
-      user_name: userInfo.fullname || '',
-      telephone_number: userInfo.phone_number || '',
       comment: '',
       responses: responses,
     }
 
     console.log('Submitting quiz data:', JSON.stringify(quizData, null, 2))
 
-    const response = await createBodyQuizByUser(session?.userId || '', quizData)
+    const response = await attemptBodyQuiz(quizData)
 
     if (response.status === 'success' && response.data) {
       setShowSuccessDialog(true)

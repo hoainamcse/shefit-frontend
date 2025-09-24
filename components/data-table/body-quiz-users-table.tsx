@@ -10,11 +10,13 @@ import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { getBodyQuizzesUsers, getUserBodyQuizzes, queryKeyBodyQuizUsers } from '@/network/client/body-quizzes'
+import { getAttempedUsers, getBodyQuizzesHistoryByUsers, queryKeyBodyQuizzes } from '@/network/client/body-quizzes'
 import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
+import { queryKeyUsers } from '@/network/client/users'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
+import { htmlToText } from '@/lib/helpers'
 
 import { MainButton } from '../buttons/main-button'
 
@@ -25,8 +27,8 @@ export function BodyQuizUsersTable() {
   })
 
   const { data, isLoading, error } = useQuery({
-    queryKey: [queryKeyBodyQuizUsers, pagination],
-    queryFn: () => getBodyQuizzesUsers({ page: pagination.pageIndex, per_page: pagination.pageSize }),
+    queryKey: [queryKeyBodyQuizzes, queryKeyUsers, pagination],
+    queryFn: () => getAttempedUsers({ page: pagination.pageIndex, per_page: pagination.pageSize }),
     placeholderData: keepPreviousData,
   })
 
@@ -51,24 +53,24 @@ export function BodyQuizUsersTable() {
         size: 28,
       },
       {
-        header: 'Tên người dùng',
-        accessorKey: 'fullname',
-        cell: ({ row }) => <div className="font-medium">{row.getValue('fullname')}</div>,
+        header: 'Tên đầy đủ',
+        accessorKey: 'user',
+        cell: ({ row }) => <div className="font-medium">{row.original.user.fullname}</div>,
         size: 180,
       },
       {
         header: 'Username',
-        accessorKey: 'user_name',
+        accessorFn: (row) => row.user.username || '-',
         size: 180,
       },
       {
         header: 'Số điện thoại',
-        accessorKey: 'telephone_number',
+        accessorFn: (row) => row.user.phone_number || '-',
         size: 180,
       },
       {
         header: 'Số quiz đã làm',
-        accessorKey: 'num_quizzes_done',
+        accessorKey: 'num_quizzes_attempted',
         size: 180,
       },
       {
@@ -78,8 +80,8 @@ export function BodyQuizUsersTable() {
       },
       {
         header: 'Lần làm quiz gần nhất',
-        accessorKey: 'last_done',
-        cell: ({ row }) => format(row.getValue('last_done'), 'Pp'),
+        accessorKey: 'last_quiz_date',
+        cell: ({ row }) => format(row.getValue('last_quiz_date'), 'Pp'),
         size: 180,
       },
       {
@@ -122,7 +124,7 @@ export function BodyQuizUsersTable() {
     <DataTable
       data={data?.data}
       columns={columns}
-      state={{ pagination }}
+      state={{ pagination, columnPinning: { left: ['select', 'user'], right: ['actions'] } }}
       rowCount={data?.paging.total}
       onPaginationChange={setPagination}
       rightSection={
@@ -140,19 +142,19 @@ function ExportDialog({ data, onSuccess }: { data?: BodyQuizUser[]; onSuccess?: 
   const onSubmit = async () => {
     setIsPending(true)
     try {
-      const res = await Promise.all(data.map((user) => getUserBodyQuizzes(user.id)))
+      const res = await Promise.all(data.map((user) => getBodyQuizzesHistoryByUsers(user.id)))
       const _data = res.flatMap((quiz) => quiz.data)
       const exportedData = _data.map((item) => {
         return {
-          user_id: item.user_id,
-          fullname: data.find((user) => user.id === item.user_id)?.fullname || 'N/A',
-          username: data.find((user) => user.id === item.user_id)?.user_name || 'N/A',
-          telephone_number: data.find((user) => user.id === item.user_id)?.telephone_number || 'N/A',
+          user_id: item.user.id,
+          fullname: data.find((user) => user.id === item.user.id)?.user.fullname || 'N/A',
+          username: data.find((user) => user.id === item.user.id)?.user.username || 'N/A',
+          phone_number: data.find((user) => user.id === item.user.id)?.user.phone_number || 'N/A',
           body_quiz_id: item.body_quiz.id,
           body_quiz_title: item.body_quiz.title,
           submitted_at: format(new Date(item.quiz_date), 'Pp'),
           responses: item.responses.join(', '),
-          comment: item.comment,
+          comment: htmlToText(item.comment || ''),
         }
       })
 
