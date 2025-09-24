@@ -148,7 +148,7 @@ export function LiveCourseDetail({ courseID, query }: { courseID: Course['id']; 
         {daysData.map((day) => (
           <TabsContent key={day.id} value={day.id.toString()} className="ml-2 mt-10">
             <div className="space-y-2 text-xs leading-7 text-gray-600 dark:text-gray-500 flex flex-col gap-5">
-              {day.sessions.map((session) => (
+              {sortByKey(day.sessions, 'session_number').map((session) => (
                 <div key={session.id} className="flex justify-between">
                   <div>
                     <p className="font-[family-name:var(--font-roboto-condensed)] lg:font-[family-name:var(--font-coiny)] font-semibold lg:font-bold text-lg lg:text-2xl flex gap-2">
