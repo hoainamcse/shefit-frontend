@@ -10,6 +10,17 @@ import { Subscription } from '@/models/subscription'
 
 export const queryKeyUserSubscriptions = 'user-subscriptions'
 
+// UserSubscription Course
+export async function getUserSubscriptionCourses(
+  user_id: User['id'],
+  subscription_id: Subscription['id'],
+  query?: any
+): Promise<ListResponse<Course>> {
+  const searchParams = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const response = await fetchData(`/v1/users/${user_id}/subscriptions/${subscription_id}/courses${searchParams}`)
+  return response.json()
+}
+
 // UserSubscription Dish
 export async function getUserSubscriptionDishes(
   user_id: User['id'],

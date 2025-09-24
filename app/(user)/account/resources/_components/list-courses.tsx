@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { usePathname, useRouter } from 'next/navigation'
@@ -17,7 +16,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { CardCourse } from '@/components/cards/card-course'
 import { useSession } from '@/hooks/use-session'
-import { getCourses } from '@/network/client/courses'
+import { getUserSubscriptionCourses } from '@/network/client/user-subscriptions'
 import { useSubscription } from './subscription-context'
 
 export function ListCourses() {
@@ -53,8 +52,8 @@ export function ListCourses() {
   // Use React Query to fetch courses by IDs
   const { data: coursesData, isLoading } = useQuery({
     queryKey: ['subscription-courses', session?.userId, selectedSubscription?.subscription.id],
-    queryFn: () => getCourses({ ids: courseIds.join(',') }),
-    enabled: !!session?.userId && !!selectedSubscription?.subscription.id && courseIds.length > 0,
+    queryFn: () => getUserSubscriptionCourses(session!.userId, selectedSubscription!.subscription.id),
+    enabled: !!session?.userId && !!selectedSubscription?.subscription?.id,
   })
 
   const courses = courseIds.length > 0 ? coursesData?.data || [] : []
