@@ -106,7 +106,7 @@ export default function BodyQuizzesPage() {
                   </div>
                   <div className="flex items-center text-sm text-muted-foreground mt-2">
                     <Calendar className="mr-1 h-4 w-4" />
-                    <span>Ngày thêm: {format(quiz.created_at, 'PPpp')}</span>
+                    <span>Ngày thêm: {format(quiz.created_at, 'Pp')}</span>
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-between">

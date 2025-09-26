@@ -20,7 +20,7 @@ export default async function AIHubPage() {
           {/* Chatbot Preview Card */}
           <Card>
             <CardContent className="p-0">
-              <Chatbot open />
+              <Chatbot open preview />
             </CardContent>
           </Card>
         </div>

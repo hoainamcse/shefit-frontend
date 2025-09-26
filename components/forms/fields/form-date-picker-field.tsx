@@ -40,7 +40,7 @@ export function FormDatePickerField<
   disabled = false,
   calendarDisabled,
   required = false,
-  dateFormat = 'PPP',
+  dateFormat = 'dd/MM/yyyy',
 }: FormDatePickerFieldProps<TFieldValues, TName>) {
   const [open, setOpen] = React.useState(false)
 

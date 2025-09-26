@@ -3,6 +3,7 @@
 import { Star, X } from 'lucide-react'
 import { useEffect, useState, useRef, useCallback } from 'react'
 
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { ChatInput } from './chat-input'
@@ -13,7 +14,15 @@ import { ListMessages } from './list-messages'
 import { MealPlanForm } from './meal-plan-form'
 import { MainButton } from '../buttons/main-button'
 
-export function Chatbot({ open, onClose }: { open: boolean; onClose?: () => void }) {
+export function Chatbot({
+  open,
+  onClose,
+  preview = false,
+}: {
+  open: boolean
+  onClose?: () => void
+  preview?: boolean
+}) {
   const [screen, setScreen] = useState<'chat' | 'course-form' | 'meal-plan-form'>('chat')
   const scrollAreaRef = useRef<HTMLDivElement>(null)
 
@@ -33,13 +42,13 @@ export function Chatbot({ open, onClose }: { open: boolean; onClose?: () => void
   } = useChatbot()
 
   useEffect(() => {
-    if (open) {
+    if (open && !preview) {
       document.body.style.overflow = 'hidden'
       return () => {
         document.body.style.overflow = ''
       }
     }
-  }, [open])
+  }, [open, preview])
 
   const handleFormSubmit = useCallback(
     (message: string, nextScreen: 'chat' | 'course-form' | 'meal-plan-form' = 'chat') => {
@@ -50,12 +59,21 @@ export function Chatbot({ open, onClose }: { open: boolean; onClose?: () => void
   )
 
   return (
-    <div className="fixed z-50 inset-0 lg:bottom-4 lg:right-4 lg:w-[400px] lg:h-[80vh] lg:top-auto lg:left-auto bg-primary lg:rounded-2xl lg:shadow-md p-3 flex flex-col">
+    <div
+      className={cn(
+        preview
+          ? 'h-[600px]'
+          : 'fixed z-50 inset-0 lg:bottom-4 lg:right-4 lg:w-[400px] lg:h-[80vh] lg:top-auto lg:left-auto ',
+        'bg-primary lg:rounded-2xl lg:shadow-md p-3 flex flex-col'
+      )}
+    >
       <div className="flex items-center justify-between">
         <p className="text-background font-semibold">HLV 24/7 - Đồng hành cùng vóc dáng đẹp</p>
-        <Button variant="link" size="icon" onClick={onClose} className="text-background">
-          <X />
-        </Button>
+        {!preview && (
+          <Button variant="link" size="icon" onClick={onClose} className="text-background">
+            <X />
+          </Button>
+        )}
       </div>
       <div className="flex-1 flex flex-col gap-3">
         <div className="bg-background rounded-2xl flex-grow h-64 overflow-hidden" ref={scrollAreaRef}>
