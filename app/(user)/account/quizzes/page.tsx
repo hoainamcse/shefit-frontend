@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { format } from 'date-fns'
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
@@ -10,14 +11,6 @@ import { useSession } from '@/hooks/use-session'
 import { queryKeyUsers } from '@/network/client/users'
 import type { BodyQuiz } from '@/models/body-quiz'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return new Intl.DateTimeFormat('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }).format(date)
-}
 
 export default function BodyQuiz() {
   const { session } = useSession()
@@ -140,7 +133,7 @@ export default function BodyQuiz() {
                   href={`/quizzes/${quiz.id}/result`}
                   className="text-[#000000] text-sm lg:text-lg font-normal border border-[#E2E2E2] p-4 rounded-lg"
                 >
-                  Kết quả ngày {formatDate(quiz.quiz_date)} - {quiz.body_quiz.title}
+                  Kết quả ngày {format(new Date(quiz.quiz_date), 'Pp')} - {quiz.body_quiz.title}
                 </Link>
               ))
             ) : (

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { VideoClient } from './_components/video-client'
 import { Course } from '@/models/course'
 import Link from 'next/link'
+import { sortByKey } from '@/lib/helpers'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { serializeSearchParams } from '@/utils/searchParams'
 
@@ -32,7 +33,8 @@ export default async function Video({
       notFound()
     }
 
-    const { data } = await getDayCircuits(courseID, currentWeek.id, currentDay.id)
+    const circuits = await getDayCircuits(courseID, currentWeek.id, currentDay.id)
+    const circuitsData = sortByKey(circuits.data || [], 'created_at', { transform: (val) => new Date(val).getTime() })
 
     return (
       <div className="flex flex-col">
@@ -43,7 +45,7 @@ export default async function Video({
           <BackIconBlack className="w-5 h-5" />
           <span>Quay về</span>
         </Link>
-        <VideoClient data={data} />
+        <VideoClient data={circuitsData} />
       </div>
     )
   } catch (error) {

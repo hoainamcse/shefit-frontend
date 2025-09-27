@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { formatDate } from '@/lib/utils'
+import { format } from 'date-fns'
 import { verifySession } from '@/lib/dal'
 import { getUserSubscriptions } from '@/network/server/users'
 
@@ -29,11 +29,11 @@ export default async function SubscriptionInfo({ subscriptionId }: { subscriptio
       </div>
       <div className="flex gap-2 items-center mb-2 text-[#737373] text-sm lg:text-lg">
         <span>Ngày bắt đầu:</span>
-        <span>{formatDate(userSubscription.subscription_start_at)}</span>
+        <span>{format(new Date(userSubscription.subscription_start_at), 'dd/MM/yyyy')}</span>
       </div>
       <div className="flex gap-2 items-center mb-2 text-[#737373] text-sm lg:text-lg">
         <span>Ngày kết thúc:</span>
-        <span>{formatDate(userSubscription.subscription_end_at)}</span>
+        <span>{format(new Date(userSubscription.subscription_end_at), 'dd/MM/yyyy')}</span>
       </div>
       {userSubscription.coupon && (
         <div className="flex gap-2 items-center mb-2 text-[#737373] text-sm lg:text-lg">

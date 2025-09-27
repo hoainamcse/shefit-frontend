@@ -1,21 +1,13 @@
 'use client'
 
 import React from 'react'
+import { format } from 'date-fns'
 import { getBodyQuizHistory, getBodyQuiz, queryKeyBodyQuizzes } from '@/network/client/body-quizzes'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { HTMLRenderer } from '@/components/html-renderer'
-
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return new Intl.DateTimeFormat('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }).format(date)
-}
 
 export default function QuizResultPage() {
   const params = useParams<{ id: string }>()
@@ -92,7 +84,7 @@ export default function QuizResultPage() {
       />
       <div className="xl:text-2xl max-lg:text-lg flex flex-col gap-5">
         <p>
-          Kết quả ngày {formatDate(quizData.quiz_date)} - {quizData.body_quiz?.title || 'Đánh giá cơ thể'}
+          Kết quả ngày {format(new Date(quizData.quiz_date), 'Pp')} - {quizData.body_quiz?.title || 'Đánh giá cơ thể'}
         </p>
         <div className="md:space-y-6 space-y-2 text-lg text-gray-600">
           {quizData.body_quiz.questions &&
