@@ -18,8 +18,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { CardExercise } from '@/components/cards/card-exercise'
 import { useSession } from '@/hooks/use-session'
+import { isActiveSubscription } from '@/utils/business'
 import { getUserSubscriptionExercises, removeUserSubscriptionExercise } from '@/network/client/user-subscriptions'
-import { useSubscription } from './subscription-context'
+import { useSubscription } from './subscription-provider'
 
 export default function ListExercises() {
   const { session } = useSession()
@@ -30,10 +31,9 @@ export default function ListExercises() {
   const router = useRouter()
   const queryClient = useQueryClient()
 
-  const isSubscriptionExpired = useMemo(() => {
-    if (!selectedSubscription?.subscription_end_at) return true
-    const endDate = new Date(selectedSubscription.subscription_end_at)
-    return new Date() > endDate
+  const isSubscriptionActive = useMemo(() => {
+    if (!selectedSubscription?.subscription_end_at) return false
+    return isActiveSubscription(selectedSubscription.status, selectedSubscription.subscription_end_at)
   }, [selectedSubscription])
 
   const handleLoginClick = () => {
@@ -184,7 +184,7 @@ export default function ListExercises() {
             key={exercise.id}
             data={exercise}
             to={`/exercises/${exercise.id}?back=%2Faccount%2Fresources`}
-            locked={isSubscriptionExpired}
+            locked={!isSubscriptionActive}
             onLockedClick={() => setRenewDialogOpen(true)}
             onDelete={() =>
               handleDeleteUserSubscriptionExercise({ exerciseId: exercise.id, exerciseTitle: exercise.name })

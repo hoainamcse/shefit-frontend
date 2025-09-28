@@ -21,7 +21,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
 import { Form } from '@/components/ui/form'
-import { htmlToText } from '@/lib/helpers'
+import { htmlToText } from '@/utils/helpers'
 
 interface BodyQuizViewProps {
   userId: BodyQuizUser['id']

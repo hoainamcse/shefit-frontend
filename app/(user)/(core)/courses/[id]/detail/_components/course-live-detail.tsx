@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
 import { cn } from '@/lib/utils'
-import { sortByKey } from '@/lib/helpers'
+import { sortByKey } from '@/utils/helpers'
 import { checkUserAccessedResource } from '@/network/client/users'
 import { getLiveDays, queryKeyLiveDays } from '@/network/client/courses'
 

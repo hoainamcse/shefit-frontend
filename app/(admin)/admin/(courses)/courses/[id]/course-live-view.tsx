@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Calendar, Clock, Video, Edit, Trash2 } from 'lucide-react'
 
-import { sortByKey } from '@/lib/helpers'
+import { sortByKey } from '@/utils/helpers'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { AddButton } from '@/components/buttons/add-button'

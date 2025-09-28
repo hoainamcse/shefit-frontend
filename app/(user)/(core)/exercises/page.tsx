@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
 import { cn } from '@/lib/utils'
+import { isActiveSubscription } from '@/utils/business'
 import { getUserSubscriptions } from '@/network/client/users'
 import { getExercises, queryKeyExercises } from '@/network/client/exercises'
 import { queryKeyUserSubscriptions } from '@/network/client/user-subscriptions'
@@ -217,10 +218,4 @@ export default function MuscleGroupExercises() {
       </Dialog>
     </>
   )
-}
-
-function isActiveSubscription(status: string, endDate: string) {
-  const now = new Date()
-  const end = new Date(endDate)
-  return status === 'active' && end > now
 }

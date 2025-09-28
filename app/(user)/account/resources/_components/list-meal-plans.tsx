@@ -18,8 +18,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { CardMealPlan } from '@/components/cards/card-meal-plan'
 import { useSession } from '@/hooks/use-session'
+import { isActiveSubscription } from '@/utils/business'
 import { getUserSubscriptionMealPlans, removeUserSubscriptionMealPlan } from '@/network/client/user-subscriptions'
-import { useSubscription } from './subscription-context'
+import { useSubscription } from './subscription-provider'
 
 export default function ListMealPlans() {
   const { session } = useSession()
@@ -30,10 +31,9 @@ export default function ListMealPlans() {
   const router = useRouter()
   const queryClient = useQueryClient()
 
-  const isSubscriptionExpired = useMemo(() => {
-    if (!selectedSubscription?.subscription_end_at) return true
-    const endDate = new Date(selectedSubscription.subscription_end_at)
-    return new Date() > endDate
+  const isSubscriptionActive = useMemo(() => {
+    if (!selectedSubscription?.subscription_end_at) return false
+    return isActiveSubscription(selectedSubscription.status, selectedSubscription.subscription_end_at)
   }, [selectedSubscription])
 
   const handleLoginClick = () => {
@@ -182,8 +182,8 @@ export default function ListMealPlans() {
           <CardMealPlan
             key={mealPlan.id}
             data={mealPlan}
-            to={`/meal-plans/${mealPlan.id}?back=%2Faccount%2Fresources`}
-            locked={isSubscriptionExpired}
+            to={`/meal-plans/${mealPlan.id}/detail?back=%2Faccount%2Fresources`}
+            locked={!isSubscriptionActive}
             onLockedClick={() => setRenewDialogOpen(true)}
             onDelete={() => handleDeleteUserSubscriptionMealPlan({ mealPlanId: mealPlan.id, mealPlanTitle: mealPlan.title })}
           />

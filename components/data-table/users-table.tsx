@@ -30,10 +30,11 @@ import { Switch } from '../ui/switch'
 import { Badge } from '../ui/badge'
 import { PROVINCES, roleLabel } from '@/lib/label'
 import { getUsersBySubAdmin, getSubscription } from '@/network/client/subscriptions'
-import { formatDateString, generatePassword, generateUsername, sortByKey } from '@/lib/helpers'
+import { formatDateString, generatePassword, generateUsername, sortByKey } from '@/utils/helpers'
 import { AddButton } from '../buttons/add-button'
 import z from 'zod'
 import { useForm } from 'react-hook-form'
+import { isActiveSubscription } from '@/utils/business'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { register } from '@/network/client/auth'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
@@ -766,11 +767,4 @@ function ExportDialog({ data, onSuccess }: { data?: User[]; onSuccess?: () => vo
       <MainButton text="Xuất dữ liệu" icon={Download} variant="outline" onClick={onSubmit} loading={isPending} />
     </>
   )
-}
-
-function isActiveSubscription(status: string, endDate: string) {
-  if (!endDate) return false
-  const now = new Date()
-  const end = new Date(endDate)
-  return status === 'active' && end > now
 }

@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { format } from 'date-fns'
 import { verifySession } from '@/lib/dal'
+import { isActiveSubscription } from '@/utils/business'
 import { getUserSubscriptions } from '@/network/server/users'
 
 export default async function SubscriptionInfo({ subscriptionId }: { subscriptionId: string }) {
@@ -43,10 +44,4 @@ export default async function SubscriptionInfo({ subscriptionId }: { subscriptio
       )}
     </div>
   )
-}
-
-function isActiveSubscription(status: string, endDate: string) {
-  const now = new Date()
-  const end = new Date(endDate)
-  return status === 'active' && end > now
 }

@@ -9,7 +9,7 @@ import { useParams, useSearchParams } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
-import { sortByKey } from '@/lib/helpers'
+import { sortByKey } from '@/utils/helpers'
 import {
   getMealPlan,
   getMealPlanDays,

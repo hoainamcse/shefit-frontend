@@ -46,3 +46,9 @@ export function calculateCaloriePlan(weight: number, height: number): number {
     return tdee + 500
   }
 }
+
+export function isActiveSubscription(status: string, endDate: string) {
+  const now = new Date()
+  const end = new Date(endDate)
+  return status === 'active' && end > now
+}

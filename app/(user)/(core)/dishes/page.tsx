@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useSession } from '@/hooks/use-session'
 import { getDiet, queryKeyDiets } from '@/network/client/diets'
 import { getDishes, queryKeyDishes } from '@/network/client/dishes'
+import { isActiveSubscription } from '@/utils/business'
 import { getUserSubscriptions } from '@/network/client/users'
 import { queryKeyUserSubscriptions } from '@/network/client/user-subscriptions'
 
@@ -154,10 +155,4 @@ export default function DietDishesPage() {
       </Dialog>
     </>
   )
-}
-
-function isActiveSubscription(status: string, endDate: string) {
-  const now = new Date()
-  const end = new Date(endDate)
-  return status === 'active' && end > now
 }

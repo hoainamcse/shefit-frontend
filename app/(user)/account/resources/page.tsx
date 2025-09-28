@@ -6,11 +6,11 @@ import ListMealPlans from './_components/list-meal-plans'
 import ListExercises from './_components/list-exercises'
 import { ListCourses } from './_components/list-courses'
 import ListSubscriptions from './_components/list-subscriptions'
-import { SubscriptionProvider, useSubscription } from './_components/subscription-context'
+import { SubscriptionProvider, useSubscription } from './_components/subscription-provider'
 import ListDishes from './_components/list-dishes'
 import FavouriteContent from './_components/favourite-content'
 
-function ExerciseContent() {
+function ListResources() {
   const { showFavorites } = useSubscription()
 
   if (showFavorites) {
@@ -82,7 +82,7 @@ function ExercisePage() {
     <div className="px-4 lg:px-14">
       <SubscriptionProvider>
         <ListSubscriptions />
-        <ExerciseContent />
+        <ListResources />
       </SubscriptionProvider>
     </div>
   )

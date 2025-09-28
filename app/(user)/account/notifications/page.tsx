@@ -16,7 +16,7 @@ import {
   queryKeyUserNotifications,
 } from '@/network/client/notifications'
 import { useSession } from '@/hooks/use-session'
-import { htmlToText } from '@/lib/helpers'
+import { htmlToText } from '@/utils/helpers'
 
 export default function NotificationsPage() {
   const router = useRouter()
@@ -127,7 +127,7 @@ export default function NotificationsPage() {
 
   // Data loading state
   if (isNotificationsLoading || isUserNotificationsLoading) {
-    return <div className="p-4 text-center">Đang tải thông báo...</div>
+    return <div className="p-4 text-center">Đang tải dữ liệu...</div>
   }
 
   return (

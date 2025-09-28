@@ -436,7 +436,7 @@ export default function CurrentCart() {
       {selectedCart ? (
         <FormDelivery cartData={selectedCart} discountAmount={discountAmount} couponCode={appliedCoupon?.code || ''} />
       ) : (
-        <div className="mt-6 text-center text-gray-500">Đang tải thông tin...</div>
+        <div className="mt-6 text-center text-gray-500">Đang tải dữ liệu...</div>
       )}
     </div>
   )

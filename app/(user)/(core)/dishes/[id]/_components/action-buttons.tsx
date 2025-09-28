@@ -11,6 +11,7 @@ import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
+import { isActiveSubscription } from '@/utils/business'
 import { getUserSubscriptions, checkUserSavedResource } from '@/network/client/users'
 import { addFavouriteDish, queryKeyFavouriteDishes } from '@/network/client/user-favourites'
 import { addUserSubscriptionDish, queryKeyUserSubscriptions } from '@/network/client/user-subscriptions'
@@ -255,9 +256,3 @@ export function ActionButtons({ dishID }: ActionButtonsProps) {
 }
 
 export default ActionButtons
-
-function isActiveSubscription(status: string, endDate: string) {
-  const now = new Date()
-  const end = new Date(endDate)
-  return status === 'active' && end > now
-}

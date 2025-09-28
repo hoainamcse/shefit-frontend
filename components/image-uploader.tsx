@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { getS3FileUrl, uploadImageApi } from '@/network/client/upload'
 
 import { cn } from '@/lib/utils'
-import { formatBytes } from '@/lib/helpers'
+import { formatBytes } from '@/utils/helpers'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -419,7 +419,7 @@ export function ImageUploader({
                 {isUploading ? (
                   <>
                     <Loader2 className="size-4 mr-2 animate-spin" />
-                    Đang tải lên...
+                    Đang tải...
                   </>
                 ) : (
                   <>Tải lên tất cả ({previewFiles.length})</>

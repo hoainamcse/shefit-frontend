@@ -3,7 +3,7 @@ import { getBlog } from '@/network/server/blogs'
 import { HTMLRenderer } from '@/components/html-renderer'
 import Link from 'next/link'
 import { BackIcon } from '@/components/icons/BackIcon'
-import { htmlToText } from '@/lib/helpers'
+import { htmlToText } from '@/utils/helpers'
 
 export async function generateMetadata({ params }: { params: Promise<{ id: Blog['id'] }> }) {
   const { id: blogID } = await params

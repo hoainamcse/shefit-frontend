@@ -44,7 +44,7 @@ import { queryKeyUserSubscriptions } from '@/network/client/user-subscriptions'
 
 // Assets
 import ShefitLogo from '@/public/logo-vertical-dark.png'
-import { formatDuration } from '@/lib/helpers'
+import { formatDuration } from '@/utils/helpers'
 
 export default function PurchasePage() {
   const { id } = useParams<{ id: string }>()

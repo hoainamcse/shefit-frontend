@@ -10,7 +10,7 @@ import { useInfiniteQuery, useMutation } from '@tanstack/react-query'
 import { useClipboard } from '@/hooks/use-clipboard'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
-import { formatBytes } from '@/lib/helpers'
+import { formatBytes } from '@/utils/helpers'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export interface ImageItem {
@@ -282,7 +282,7 @@ export function ImageManager({
                       {isFetchingNextPage ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Đang tải thêm...
+                          Đang tải...
                         </>
                       ) : (
                         'Tải thêm hình ảnh'

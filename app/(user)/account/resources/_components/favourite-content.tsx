@@ -19,6 +19,7 @@ import { CardExercise } from '@/components/cards/card-exercise'
 import { CardMealPlan } from '@/components/cards/card-meal-plan'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useSession } from '@/hooks/use-session'
+import { isActiveSubscription } from '@/utils/business'
 import {
   getFavouriteExercises,
   getFavouriteCourses,
@@ -33,9 +34,11 @@ import {
   queryKeyFavouriteCourses,
   queryKeyFavouriteMealPlans,
 } from '@/network/client/user-favourites'
+import { useSubscription } from './subscription-provider'
 
 export default function FavouriteContent() {
   const { session } = useSession()
+  const { userSubscriptions } = useSubscription()
   const pathname = usePathname()
   const router = useRouter()
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -81,6 +84,18 @@ export default function FavouriteContent() {
   const courses = courseQuery.data?.data || []
   const mealPlans = mealPlanQuery.data?.data || []
   const dishes = dishQuery.data?.data || []
+
+  // Check if any subscription is active
+  const hasActiveSubscription = userSubscriptions.some((subscription) =>
+    isActiveSubscription(subscription.status, subscription.subscription_end_at)
+  )
+
+  // Helper function to check if a course belongs to any user subscription
+  const isCourseInUserSubscriptions = (courseId: number): boolean => {
+    return userSubscriptions.some((subscription) =>
+      subscription.subscription.courses?.some((course) => course.id === courseId)
+    )
+  }
 
   // Mutations for deleting favourites
   const deleteDishMutation = useMutation({
@@ -282,7 +297,11 @@ export default function FavouriteContent() {
               <CardCourse
                 data={course}
                 key={course.id}
-                to={`/courses/${course.id}?back=%2Faccount%2Fresources`}
+                to={
+                  isCourseInUserSubscriptions(course.id)
+                    ? `/courses/${course.id}/detail?back=%2Faccount%2Fresources`
+                    : `/courses/${course.id}?back=%2Faccount%2Fresources`
+                }
                 onDelete={() => handleDeleteFavouriteCourse(course.id, course.course_name)}
               />
             ))
@@ -319,7 +338,11 @@ export default function FavouriteContent() {
               <CardMealPlan
                 data={meal_plan}
                 key={meal_plan.id}
-                to={`/meal-plans/${meal_plan.id}?back=%2Faccount%2Fresources`}
+                to={
+                  hasActiveSubscription
+                    ? `/meal-plans/${meal_plan.id}/detail?back=%2Faccount%2Fresources`
+                    : `/meal-plans/${meal_plan.id}?back=%2Faccount%2Fresources`
+                }
                 onDelete={() => handleDeleteFavouriteMealPlan(meal_plan.id, meal_plan.title)}
               />
             ))

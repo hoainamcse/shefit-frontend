@@ -55,7 +55,7 @@ export default function UserGreeting() {
     <Tabs value={tab} defaultValue="quizzes">
       <div className="lg:pt-8 px-4 lg:px-[56px] pb-8 lg:pb-[80px]">
         <div className="lg:font-[family-name:var(--font-coiny)] font-[family-name:var(--font-roboto-condensed)] font-semibold lg:font-bold text-[#FF7873] text-2xl lg:text-4xl leading-[33px] lg:leading-[60px] mb-4 md:mb-10">
-          {isLoading ? <div>Loading...</div> : `Xin chào ${data?.data.fullname || 'chị'}`}
+          {isLoading ? <div>Đang tải...</div> : `Xin chào ${data?.data.fullname || 'chị'}`}
         </div>
         <TabsList className="w-full lg:w-fit flex-wrap bg-background gap-y-3 sm:gap-y-5 lg:gap-x-7 pl-0 h-fit lg:h-9">
           {TABS.map((tabItem) => (

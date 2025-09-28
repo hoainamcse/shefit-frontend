@@ -16,8 +16,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { CardCourse } from '@/components/cards/card-course'
 import { useSession } from '@/hooks/use-session'
+import { isActiveSubscription } from '@/utils/business'
 import { getUserSubscriptionCourses } from '@/network/client/user-subscriptions'
-import { useSubscription } from './subscription-context'
+import { useSubscription } from './subscription-provider'
 
 export function ListCourses() {
   const router = useRouter()
@@ -26,10 +27,9 @@ export function ListCourses() {
   const { selectedSubscription } = useSubscription()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [renewDialogOpen, setRenewDialogOpen] = useState(false)
-  const isSubscriptionExpired = useMemo(() => {
-    if (!selectedSubscription?.subscription_end_at) return true
-    const endDate = new Date(selectedSubscription.subscription_end_at)
-    return new Date() > endDate
+  const isSubscriptionActive = useMemo(() => {
+    if (!selectedSubscription?.subscription_end_at) return false
+    return isActiveSubscription(selectedSubscription.status, selectedSubscription.subscription_end_at)
   }, [selectedSubscription])
 
   const handleLoginClick = () => {
@@ -143,8 +143,8 @@ export function ListCourses() {
           <CardCourse
             key={course.id}
             data={course}
-            to={`/courses/${course.id}?back=%2Faccount%2Fresources&hide_packages=true`}
-            locked={isSubscriptionExpired}
+            to={`/courses/${course.id}/detail?back=%2Faccount%2Fresources&hide_packages=true`}
+            locked={!isSubscriptionActive}
             onLockedClick={() => setRenewDialogOpen(true)}
           />
         ))}

@@ -15,7 +15,7 @@ import { EditButton } from '@/components/buttons/edit-button'
 import { AddButton } from '@/components/buttons/add-button'
 import { Spinner } from '@/components/spinner'
 import { Label } from '@/components/ui/label'
-import { sortByKey } from '@/lib/helpers'
+import { sortByKey } from '@/utils/helpers'
 import {
   deleteMealPlanDay,
   deleteMealPlanDish,

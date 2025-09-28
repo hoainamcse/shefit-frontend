@@ -18,8 +18,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { CardDish } from '@/components/cards/card-dish'
 import { useSession } from '@/hooks/use-session'
+import { isActiveSubscription } from '@/utils/business'
 import { getUserSubscriptionDishes, removeUserSubscriptionDish } from '@/network/client/user-subscriptions'
-import { useSubscription } from './subscription-context'
+import { useSubscription } from './subscription-provider'
 
 export default function ListDishes() {
   const { session } = useSession()
@@ -30,10 +31,9 @@ export default function ListDishes() {
   const router = useRouter()
   const queryClient = useQueryClient()
 
-  const isSubscriptionExpired = useMemo(() => {
-    if (!selectedSubscription?.subscription_end_at) return true
-    const endDate = new Date(selectedSubscription.subscription_end_at)
-    return new Date() > endDate
+  const isSubscriptionActive = useMemo(() => {
+    if (!selectedSubscription?.subscription_end_at) return false
+    return isActiveSubscription(selectedSubscription.status, selectedSubscription.subscription_end_at)
   }, [selectedSubscription])
 
   const handleLoginClick = () => {
@@ -184,7 +184,7 @@ export default function ListDishes() {
             key={dish.id}
             data={dish}
             to={`/dishes/${dish.id}?back=%2Faccount%2Fresources`}
-            locked={isSubscriptionExpired}
+            locked={!isSubscriptionActive}
             onLockedClick={() => setRenewDialogOpen(true)}
             onDelete={() => handleDeleteUserSubscriptionDish({ dishId: dish.id, dishTitle: dish.name })}
           />

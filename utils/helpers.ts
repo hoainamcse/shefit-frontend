@@ -61,24 +61,6 @@ export const generatePassword = (): string => {
   return pwd
 }
 
-export const calculateMonthsFromDates = (
-  startDate: Date | string | null | undefined,
-  endDate: Date | string | null | undefined
-): number => {
-  // Return 0 if either date is missing
-  if (!startDate || !endDate) return 0
-
-  // Convert to Date objects if they're strings
-  const start = startDate instanceof Date ? startDate : new Date(startDate)
-  const end = endDate instanceof Date ? endDate : new Date(endDate)
-
-  // Calculate days between dates
-  const daysDifference = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
-
-  // Convert days to months (35 days = 1 month)
-  return Math.round(daysDifference / 35)
-}
-
 export function formatBytes(
   bytes: number,
   opts: {
@@ -95,16 +77,6 @@ export function formatBytes(
   return `${(bytes / Math.pow(1024, i)).toFixed(decimals)} ${
     sizeType === 'accurate' ? accurateSizes[i] ?? 'Bytes' : sizes[i] ?? 'Bytes'
   }`
-}
-
-type Valuable<T> = { [K in keyof T as T[K] extends null | undefined ? never : K]: T[K] }
-
-export function getValuable<T extends {}, V = Valuable<T>>(obj: T): V {
-  return Object.fromEntries(
-    Object.entries(obj).filter(
-      ([, v]) => !((typeof v === 'string' && !v.length) || v === null || typeof v === 'undefined')
-    )
-  ) as V
 }
 
 export function formatCurrency(amount: number, currency: string = 'VND'): string {

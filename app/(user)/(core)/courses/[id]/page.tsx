@@ -11,6 +11,7 @@ import { ActionButtons } from './_components/action-buttons'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useSession } from '@/hooks/use-session'
+import { isActiveSubscription } from '@/utils/business'
 import { getUserSubscriptions } from '@/network/client/users'
 import { HTMLRenderer } from '@/components/html-renderer'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
@@ -257,10 +258,4 @@ export default function CoursePage() {
       <ActionButtons courseID={courseID} enableSave={enableSave} />
     </div>
   )
-}
-
-function isActiveSubscription(status: string, endDate: string) {
-  const now = new Date()
-  const end = new Date(endDate)
-  return status === 'active' && end > now
 }

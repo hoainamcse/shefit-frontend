@@ -19,7 +19,7 @@ import { RowActions } from '@/components/data-table/row-actions'
 import { DataTable } from '@/components/data-table/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
-import { htmlToText } from '@/lib/helpers'
+import { htmlToText } from '@/utils/helpers'
 import { Switch } from '../ui/switch'
 import { AddButton } from '../buttons/add-button'
 

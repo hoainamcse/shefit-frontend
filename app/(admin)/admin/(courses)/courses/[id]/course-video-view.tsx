@@ -45,7 +45,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { sortByKey } from '@/lib/helpers'
+import { sortByKey } from '@/utils/helpers'
 import { Badge } from '@/components/ui/badge'
 import { transformExercise } from '@/lib/xlsx'
 import { Button } from '@/components/ui/button'

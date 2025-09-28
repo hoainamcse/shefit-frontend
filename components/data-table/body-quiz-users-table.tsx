@@ -16,7 +16,7 @@ import { DataTable } from '@/components/data-table/data-table'
 import { queryKeyUsers } from '@/network/client/users'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Spinner } from '@/components/spinner'
-import { htmlToText } from '@/lib/helpers'
+import { htmlToText } from '@/utils/helpers'
 
 import { MainButton } from '../buttons/main-button'
 

@@ -52,7 +52,7 @@ export function ListMessages({
 
   return (
     <div className="w-full h-full my-3 space-y-2">
-      {status === 'pending' && <p className="text-center my-4">Đang tải tin nhắn...</p>}
+      {status === 'pending' && <p className="text-center my-4">Đang tải dữ liệu...</p>}
       {status === 'error' && <p className="text-center my-4 text-red-500">Lỗi khi tải tin nhắn.</p>}
 
       {hasNextPage && (

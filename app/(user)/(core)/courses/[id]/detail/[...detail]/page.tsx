@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { VideoClient } from './_components/video-client'
 import { Course } from '@/models/course'
 import Link from 'next/link'
-import { sortByKey } from '@/lib/helpers'
+import { sortByKey } from '@/utils/helpers'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import { serializeSearchParams } from '@/utils/searchParams'
 
