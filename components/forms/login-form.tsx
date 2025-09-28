@@ -1,6 +1,7 @@
 'use client'
 
 import * as z from 'zod'
+import { use } from 'react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
@@ -68,9 +69,13 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>
 
-export function LoginForm() {
-  const searchParams = useSearchParams()
-  const redirectTo = searchParams.get('redirect') || ''
+export function LoginForm({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const params = use(searchParams)
+  const redirectTo = typeof params.redirect === 'string' ? params.redirect : ''
 
   // Initialize form with validation
   const form = useForm<LoginFormValues>({

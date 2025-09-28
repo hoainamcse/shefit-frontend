@@ -1,10 +1,14 @@
+import LoginForm from '@/components/forms/login-form'
 import { Suspense } from 'react'
-import { LoginForm } from '@/components/forms/login-form'
 
-export default function LoginPage() {
+export default function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   return (
     <Suspense fallback={<p>Đang tải...</p>}>
-      <LoginForm />
+      <LoginForm searchParams={searchParams} />
     </Suspense>
   )
 }
