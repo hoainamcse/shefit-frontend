@@ -86,14 +86,6 @@ export function LoginForm({
     },
   })
 
-  const handleClose = () => {
-    if (redirectTo) {
-      window.location.href = redirectTo
-    } else {
-      window.location.href = '/'
-    }
-  }
-
   const handleGoogleSignIn = async () => {
     try {
       const response = await getOauth2AuthUrl(encodeURIComponent(`${process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}`))

@@ -1,7 +1,7 @@
-import LoginForm from '@/components/forms/login-form'
 import { Suspense } from 'react'
+import { LoginForm } from '@/components/forms/login-form'
 
-export default function Page({
+export default function LoginPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>

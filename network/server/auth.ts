@@ -67,5 +67,5 @@ export async function signIn(data: any) {
 
 export async function signOut(redirectTo = '') {
   await deleteSession()
-  redirect(`/auth/login${redirectTo ? `?redirect=${redirectTo}` : ''}`)
+  return redirect(`/auth/login${redirectTo ? `?redirect=${redirectTo}` : ''}`)
 }
