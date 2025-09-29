@@ -44,7 +44,7 @@ import { queryKeyUserSubscriptions } from '@/network/client/user-subscriptions'
 
 // Assets
 import ShefitLogo from '@/public/logo-vertical-dark.png'
-import { formatDuration } from '@/utils/helpers'
+import { convertDuration } from '@/utils/business'
 
 export default function PurchasePage() {
   const { id } = useParams<{ id: string }>()
@@ -707,7 +707,7 @@ export default function PurchasePage() {
                   disabled={isMembershipPlan}
                 />
                 <div className={`text-base md:text-xl ${isMembershipPlan ? 'text-gray-400' : 'text-[#737373]'}`}>
-                  {formatDuration(price.duration)}
+                  {convertDuration(price.duration)}
                 </div>
               </div>
             ))}
@@ -989,7 +989,7 @@ export default function PurchasePage() {
                               <div>
                                 {gift.duration && (
                                   <div className="text-[#000000] text-base md:text-xl font-medium mb-2">
-                                    {formatDuration(gift.duration)}
+                                    {convertDuration(gift.duration)}
                                   </div>
                                 )}
                               </div>

@@ -98,9 +98,13 @@ export function UserBodyQuizzesTable({ userId }: BodyQuizViewProps) {
         size: 180,
       },
       {
-        header: 'Phản hồi',
+        header: 'Câu trả lời',
         accessorKey: 'responses',
-        cell: ({ row }) => row.original.responses.join('; '),
+        cell: ({ row }) => (
+          <a href={`/quizzes/${row.original.id}/result`} target="_blank">
+            Xem trả lời
+          </a>
+        ),
         size: 180,
       },
       {

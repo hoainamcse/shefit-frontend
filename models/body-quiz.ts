@@ -3,12 +3,10 @@ import { User } from './user'
 type Question = {
   id: string
   title: string
-  question_type: 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'SHORT_ANSWER'
+  question_type: 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'SHORT_ANSWER' | 'IMAGE_UPLOAD'
   is_required: boolean
   input_type: 'string' | 'integer'
   choices: string[]
-  answer: string
-  image: string
   created_at: string
   updated_at: string
 }

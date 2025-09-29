@@ -12,22 +12,19 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { createQuestion, updateQuestion } from '@/network/client/body-quizzes'
 
 import { Input } from '../ui/input'
-import { Checkbox } from '../ui/checkbox'
 import { AddButton } from '../buttons/add-button'
 import { MainButton } from '../buttons/main-button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
-import { FormImageSelectField, FormInputField, FormSelectField, FormSwitchField, FormTextareaField } from './fields'
+import { FormRichTextField, FormSelectField, FormSwitchField } from './fields'
 
 // ! Follow QuestionPayload model in models/body-quiz.ts
 const formSchema = z
   .object({
     title: z.string().min(1, { message: 'Tiêu đề câu hỏi không được để trống' }),
-    question_type: z.enum(['SINGLE_CHOICE', 'MULTIPLE_CHOICE', 'SHORT_ANSWER']),
+    question_type: z.enum(['SINGLE_CHOICE', 'MULTIPLE_CHOICE', 'SHORT_ANSWER', 'IMAGE_UPLOAD']),
     is_required: z.boolean(),
     input_type: z.enum(['string', 'integer']),
-    choices: z.array(z.object({ value: z.string(), is_true: z.boolean() })),
-    answer: z.string(),
-    image: z.string(),
+    choices: z.array(z.object({ value: z.string() })),
   })
   .superRefine((data, ctx) => {
     // Only validate choices for choice-based questions
@@ -51,15 +48,6 @@ const formSchema = z
           path: ['choices'],
         })
       }
-
-      // Check for at least one correct choice
-      // if (!data.choices.some((choice) => choice.is_true)) {
-      //   ctx.addIssue({
-      //     code: z.ZodIssueCode.custom,
-      //     message: 'Cung cấp ít nhất một lựa chọn đúng',
-      //     path: ['choices'],
-      //   })
-      // }
     }
   })
 
@@ -78,8 +66,6 @@ export function EditQuestionForm({ data, onSuccess }: EditQuestionFormProps) {
     is_required: false,
     input_type: 'string',
     choices: [],
-    answer: '',
-    image: '',
   } as FormValue
 
   const form = useForm<FormValue>({
@@ -90,9 +76,7 @@ export function EditQuestionForm({ data, onSuccess }: EditQuestionFormProps) {
           question_type: data.question_type,
           is_required: data.is_required,
           input_type: data.input_type,
-          choices: data.choices.map((choice) => ({ value: choice, is_true: data.answer.includes(choice) })),
-          answer: data.answer,
-          image: data.image,
+          choices: data.choices.map((choice) => ({ value: choice })),
         }
       : defaultValue,
   })
@@ -109,13 +93,6 @@ export function EditQuestionForm({ data, onSuccess }: EditQuestionFormProps) {
       const processedValues = {
         ...values,
         choices: values.choices.map((choice) => choice.value),
-        answer:
-          values.question_type === 'SHORT_ANSWER'
-            ? values.answer
-            : values.choices
-                .filter((choice) => choice.is_true)
-                .map((choice) => choice.value)
-                .join(';'),
       }
       return isEdit ? updateQuestion(data.id, processedValues) : createQuestion(processedValues)
     },
@@ -136,22 +113,27 @@ export function EditQuestionForm({ data, onSuccess }: EditQuestionFormProps) {
   return (
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-        <FormInputField
+        <FormRichTextField
           form={form}
           name="title"
-          label="Tiêu đề câu hỏi"
+          label="Tiêu đề"
           withAsterisk
-          placeholder="Nhập tiêu đề câu hỏi"
+          placeholder="Nhập tiêu đề"
         />
         <FormSelectField
           form={form}
           name="question_type"
           label="Loại câu hỏi"
           placeholder="Chọn loại câu hỏi"
-          data={['SINGLE_CHOICE', 'MULTIPLE_CHOICE', 'SHORT_ANSWER']}
+          data={[
+            { value: 'SINGLE_CHOICE', label: 'Lựa chọn đơn' },
+            { value: 'MULTIPLE_CHOICE', label: 'Lựa chọn đa' },
+            { value: 'SHORT_ANSWER', label: 'Câu trả lời ngắn' },
+            { value: 'IMAGE_UPLOAD', label: 'Tải lên hình ảnh' },
+          ]}
         />
         <FormSwitchField form={form} name="is_required" label="Đánh dấu là bắt buộc" />
-        {questionType !== 'SHORT_ANSWER' && (
+        {(questionType === 'SINGLE_CHOICE' || questionType === 'MULTIPLE_CHOICE') && (
           <FormField
             control={form.control}
             name="choices"
@@ -164,35 +146,16 @@ export function EditQuestionForm({ data, onSuccess }: EditQuestionFormProps) {
                     variant="outline"
                     text="Thêm lựa chọn"
                     type="button"
-                    onClick={() => append({ value: '', is_true: false })}
+                    onClick={() => append({ value: '' })}
                   />
                 </div>
                 {fields.map((item, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <FormControl>
-                      <Checkbox
-                        checked={item.is_true}
-                        onCheckedChange={(checked) => {
-                          const updatedChoices = [...fields]
-                          if (questionType === 'SINGLE_CHOICE') {
-                            updatedChoices.forEach((choice, idx) => {
-                              if (idx !== index) update(idx, { ...choice, is_true: false })
-                            })
-                          }
-                          update(index, { ...item, is_true: !!checked })
-                        }}
-                      />
-                    </FormControl>
+                  <div key={item.id} className="flex items-center space-x-2">
                     <FormControl>
                       <Input
                         placeholder="Nhập lựa chọn"
-                        // className="w-full"
                         value={item.value}
-                        onChange={(e) => {
-                          const updatedChoices = [...fields]
-                          updatedChoices[index] = { ...item, value: e.target.value }
-                          update(index, { ...item, value: e.target.value })
-                        }}
+                        onChange={(e) => update(index, { value: e.target.value })}
                       />
                     </FormControl>
                     <MainButton
@@ -211,20 +174,16 @@ export function EditQuestionForm({ data, onSuccess }: EditQuestionFormProps) {
           />
         )}
         {questionType === 'SHORT_ANSWER' && (
-          <>
-            <FormSelectField
-              form={form}
-              name="input_type"
-              label="Kiểu dữ liệu đầu vào"
-              data={[
-                { value: 'string', label: 'Chuỗi ký tự' },
-                { value: 'integer', label: 'Số thực' },
-              ]}
-            />
-            <FormTextareaField form={form} name="answer" label="Đáp án (hoặc ví dụ câu trả lời)" placeholder="Nhập đáp án" />
-          </>
+          <FormSelectField
+            form={form}
+            name="input_type"
+            label="Kiểu dữ liệu đầu vào"
+            data={[
+              { value: 'string', label: 'Chuỗi ký tự' },
+              { value: 'integer', label: 'Số thực' },
+            ]}
+          />
         )}
-        <FormImageSelectField control={form.control} name="image" label="Hình ảnh" />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (
             <MainButton text={isEdit ? `Cập nhật` : `Tạo mới`} loading={questionMutation.isPending} />

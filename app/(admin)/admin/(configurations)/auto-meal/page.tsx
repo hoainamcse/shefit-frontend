@@ -18,7 +18,7 @@ import { Badge } from '@/components/ui/badge'
 import { Trash2, Plus, Save, Download } from 'lucide-react'
 import { Spinner } from '@/components/spinner'
 import { ContentLayout } from '@/components/admin-panel/content-layout'
-import { MainButton } from '@/components/buttons/main-button'
+import { htmlToText } from '@/utils/helpers'
 import { Form } from '@/components/ui/form'
 
 import { getConfiguration, queryKeyConfigurations, updateConfiguration } from '@/network/client/configurations'
@@ -322,7 +322,7 @@ function EditMealPlanConfigForm({ data, onSuccess }: EditMealPlanConfigFormProps
                         <SelectContent>
                           {selectedQuiz.questions?.map((question) => (
                             <SelectItem key={question.id} value={question.id.toString()}>
-                              {question.title}
+                              {htmlToText(question.title)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -344,7 +344,7 @@ function EditMealPlanConfigForm({ data, onSuccess }: EditMealPlanConfigFormProps
                         <SelectContent>
                           {selectedQuiz.questions?.map((question) => (
                             <SelectItem key={question.id} value={question.id.toString()}>
-                              {question.title}
+                              {htmlToText(question.title)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -366,7 +366,7 @@ function EditMealPlanConfigForm({ data, onSuccess }: EditMealPlanConfigFormProps
                         <SelectContent>
                           {selectedQuiz.questions?.map((question) => (
                             <SelectItem key={question.id} value={question.id.toString()}>
-                              {question.title}
+                              {htmlToText(question.title)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -388,7 +388,7 @@ function EditMealPlanConfigForm({ data, onSuccess }: EditMealPlanConfigFormProps
                         <SelectContent>
                           {selectedQuiz.questions?.map((question) => (
                             <SelectItem key={question.id} value={question.id.toString()}>
-                              {question.title}
+                              {htmlToText(question.title)}
                             </SelectItem>
                           ))}
                         </SelectContent>

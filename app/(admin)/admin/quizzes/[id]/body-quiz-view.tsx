@@ -6,23 +6,13 @@ import { toast } from 'sonner'
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import {
-  ArrowLeft,
-  Edit,
-  Trash2,
-  FileQuestion,
-  CheckCircle,
-  Circle,
-  ImageIcon,
-  GripVertical,
-  AlertCircle,
-  Square,
-  SquareCheck,
-} from 'lucide-react'
+import { ArrowLeft, Edit, Trash2, FileQuestion, GripVertical, AlertCircle, Upload } from 'lucide-react'
 
+import { sortByKey } from '@/utils/helpers'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { HTMLRenderer } from '@/components/html-renderer'
 import { AddButton } from '@/components/buttons/add-button'
 import { MainButton } from '@/components/buttons/main-button'
 import { SheetEdit } from '@/components/dialogs/sheet-edit'
@@ -51,6 +41,7 @@ export function BodyQuizView({ quizID }: { quizID: BodyQuiz['id'] }) {
   })
 
   const quizData = quiz?.data || null
+  const sortedQuestions = sortByKey(quizData?.questions || [], 'created_at', { transform: (val) => new Date(val).getTime() })
 
   const handleAddQuestion = () => {
     setEditingQuestion(null)
@@ -92,6 +83,8 @@ export function BodyQuizView({ quizID }: { quizID: BodyQuiz['id'] }) {
         return 'bg-purple-100 text-purple-800'
       case 'SHORT_ANSWER':
         return 'bg-green-100 text-green-800'
+      case 'IMAGE_UPLOAD':
+        return 'bg-orange-100 text-orange-800'
       default:
         return 'bg-gray-100 text-gray-800'
     }
@@ -121,10 +114,10 @@ export function BodyQuizView({ quizID }: { quizID: BodyQuiz['id'] }) {
           <Card>
             <CardHeader>
               <CardTitle className="text-xl">Câu hỏi</CardTitle>
-              <CardDescription>{quizData.questions.length} câu hỏi trong quiz này</CardDescription>
+              <CardDescription>{sortedQuestions.length} câu hỏi trong quiz này</CardDescription>
             </CardHeader>
             <CardContent>
-              {quizData.questions.length === 0 ? (
+              {sortedQuestions.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8">
                   <FileQuestion className="h-12 w-12 text-muted-foreground mb-4" />
                   <h3 className="text-lg font-medium mb-2">Chưa có câu hỏi nào</h3>
@@ -133,7 +126,7 @@ export function BodyQuizView({ quizID }: { quizID: BodyQuiz['id'] }) {
               ) : (
                 <ScrollArea className="h-[500px] pr-4">
                   <div className="space-y-4">
-                    {quizData.questions.map((question, index) => (
+                    {sortedQuestions.map((question, index) => (
                       <Card key={question.id} className="bg-muted/30">
                         <CardContent className="p-4">
                           <div className="flex items-start">
@@ -169,39 +162,16 @@ export function BodyQuizView({ quizID }: { quizID: BodyQuiz['id'] }) {
                                   />
                                 </div>
                               </div>
-                              <h3 className="font-medium mb-2">{question.title}</h3>
+                              <div className="mb-2">
+                                <HTMLRenderer content={question.title} className="prose-sm" />
+                              </div>
 
-                              {question.image && (
-                                <div className="mb-2 flex items-center">
-                                  <ImageIcon className="h-4 w-4 mr-1 text-muted-foreground" />
-                                  <span className="text-sm text-muted-foreground">Có tệp đính kèm hình ảnh</span>
-                                </div>
-                              )}
-
-                              {question.question_type === 'SINGLE_CHOICE' && (
+                              {(question.question_type === 'SINGLE_CHOICE' ||
+                                question.question_type === 'MULTIPLE_CHOICE') && (
                                 <div className="space-y-2 mt-3">
                                   {question.choices.map((choice, i) => (
                                     <div key={i} className="flex items-center">
-                                      {choice === question.answer ? (
-                                        <CheckCircle className="h-4 w-4 mr-2 text-primary" />
-                                      ) : (
-                                        <Circle className="h-4 w-4 mr-2 text-muted-foreground" />
-                                      )}
-                                      <span>{choice}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-
-                              {question.question_type === 'MULTIPLE_CHOICE' && (
-                                <div className="space-y-2 mt-3">
-                                  {question.choices.map((choice, i) => (
-                                    <div key={i} className="flex items-center">
-                                      {question.answer.split(';').includes(choice) ? (
-                                        <SquareCheck className="h-4 w-4 mr-2 text-primary" />
-                                      ) : (
-                                        <Square className="h-4 w-4 mr-2 text-muted-foreground" />
-                                      )}
+                                      <div className="h-4 w-4 mr-2 border rounded-sm bg-muted" />
                                       <span>{choice}</span>
                                     </div>
                                   ))}
@@ -211,10 +181,19 @@ export function BodyQuizView({ quizID }: { quizID: BodyQuiz['id'] }) {
                               {question.question_type === 'SHORT_ANSWER' && (
                                 <div className="mt-3 p-2 border rounded-md bg-background">
                                   <p className="text-sm text-muted-foreground italic">
-                                    {question.answer
-                                      ? `Ví dụ câu trả lời: ${question.answer}`
-                                      : 'Không có câu trả lời ví dụ nào được cung cấp'}
+                                    Người dùng sẽ nhập câu trả lời tại đây
                                   </p>
+                                </div>
+                              )}
+
+                              {question.question_type === 'IMAGE_UPLOAD' && (
+                                <div className="mt-3 p-4 border-2 border-dashed border-muted rounded-md bg-background">
+                                  <div className="flex flex-col items-center">
+                                    <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                                    <p className="text-sm text-muted-foreground">
+                                      Người dùng sẽ tải lên hình ảnh tại đây
+                                    </p>
+                                  </div>
                                 </div>
                               )}
                             </div>
@@ -242,7 +221,7 @@ export function BodyQuizView({ quizID }: { quizID: BodyQuiz['id'] }) {
 
       {/* Sheets and Forms */}
       <SheetEdit
-        title="Chỉnh sửa quiz"
+        title="Chỉnh sửa survey"
         description="Make changes to your profile here. Click save when you're done."
         open={showQuizForm}
         onOpenChange={setShowQuizForm}
@@ -252,8 +231,6 @@ export function BodyQuizView({ quizID }: { quizID: BodyQuiz['id'] }) {
           onSuccess={() => {
             setShowQuizForm(false)
             quizRefetch()
-            // queryClient.invalidateQueries({ queryKey: ['quiz', quizID] })
-            // queryClient.invalidateQueries({ queryKey: ['quizzes'] })
           }}
         />
       </SheetEdit>
@@ -277,22 +254,9 @@ export function BodyQuizView({ quizID }: { quizID: BodyQuiz['id'] }) {
             setShowQuestionForm(false)
             setEditingQuestion(null)
             quizRefetch()
-            // queryClient.invalidateQueries({ queryKey: ['quiz', quizID] })
           }}
         />
       </SheetEdit>
-
-      {/* <DeleteConfirmDialog
-        open={!!deleteQuestion}
-        onOpenChange={() => setDeleteQuestion(null)}
-        itemType="question"
-        itemName={deleteQuestion?.title || ''}
-        onConfirm={() => {
-          // Handle delete logic here
-          setDeleteQuestion(null)
-          queryClient.invalidateQueries({ queryKey: ['quiz', quizID] })
-        }}
-      /> */}
     </div>
   )
 }

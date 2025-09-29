@@ -1,5 +1,7 @@
 'use client'
 
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { useForm } from 'react-hook-form'
@@ -28,7 +30,10 @@ import { getConfiguration } from '@/network/client/configurations'
 import { calculateGoal, calculateCaloriePlan } from '@/utils/business'
 import Link from 'next/link'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
+import { ImageUploader } from '@/components/image-uploader'
+import { HTMLRenderer } from '@/components/html-renderer'
 import { Badge } from '@/components/ui/badge'
+import { sortByKey } from '@/utils/helpers'
 
 const configurationID = 5
 
@@ -80,14 +85,18 @@ const mapToBodyQuiz = (data: any): BodyQuiz => ({
   ...data,
   created_at: data.created_at || new Date().toISOString(),
   updated_at: data.updated_at || new Date().toISOString(),
-  questions: (data.questions || []).map((q: any) => ({
-    ...q,
-    id: q.id || Math.floor(Math.random() * 10000),
-    answer: q.answer || null,
-    created_at: q.created_at || new Date().toISOString(),
-    updated_at: q.updated_at || new Date().toISOString(),
-    image: q.image || '',
-  })),
+  questions: sortByKey(
+    (data.questions || []).map((q: any) => ({
+      ...q,
+      id: q.id || Math.floor(Math.random() * 10000),
+      answer: q.answer || null,
+      created_at: q.created_at || new Date().toISOString(),
+      updated_at: q.updated_at || new Date().toISOString(),
+      image: q.image || '',
+    })),
+    'created_at',
+    { transform: (val) => new Date(val).getTime() }
+  ),
 })
 
 const extractUserDataFromResponses = (formData: Record<string, any>, inputMapping: any): UserData => {
@@ -315,21 +324,28 @@ const QuestionField = ({ question, form }: { question: BodyQuiz['questions'][num
   return (
     <div key={question.id} className="bg-white p-4 lg:p-6 rounded-lg shadow-sm border mb-6">
       <div className="space-y-4">
-        <h3 className="text-sm lg:text-lg font-medium">
-          {question.title}
-          {question.is_required && <span className="text-red-500 ml-1">*</span>}
-        </h3>
-
-        {question.image && (
-          <div className="relative w-full h-48 md:h-64 lg:h-80">
-            <Image src={question.image} alt={`Câu hỏi ${question.id}`} fill className="object-cover rounded-lg" />
-          </div>
-        )}
+        <div className="text-sm lg:text-lg font-medium">
+          <HTMLRenderer content={question.title} className="prose-sm" />
+        </div>
 
         <FormField
           control={form.control}
           name={fieldName}
-          render={({ field }) => (
+          rules={{
+            required: question.is_required ? 'Câu hỏi này là bắt buộc' : false,
+            validate: question.is_required
+              ? (value) => {
+                  if (question.question_type === 'MULTIPLE_CHOICE') {
+                    return Array.isArray(value) && value.length > 0 ? true : 'Câu hỏi này là bắt buộc'
+                  }
+                  if (question.question_type === 'IMAGE_UPLOAD') {
+                    return Array.isArray(value) && value.length > 0 ? true : 'Vui lòng tải lên ít nhất một hình ảnh'
+                  }
+                  return value && value.toString().trim() !== '' ? true : 'Câu hỏi này là bắt buộc'
+                }
+              : undefined,
+          }}
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormControl>
                 <div className="text-sm lg:text-lg">
@@ -339,7 +355,11 @@ const QuestionField = ({ question, form }: { question: BodyQuiz['questions'][num
                       value={field.value as string}
                       defaultValue={typeof field.value === 'string' ? field.value : ''}
                     >
-                      <SelectTrigger className="w-full h-[50px] bg-white text-black text-sm lg:text-lg">
+                      <SelectTrigger
+                        className={`w-full h-[50px] bg-white text-black text-sm lg:text-lg ${
+                          fieldState.error ? 'border-red-500' : ''
+                        }`}
+                      >
                         <SelectValue placeholder="Chọn câu trả lời" className="text-black text-sm lg:text-lg" />
                       </SelectTrigger>
                       <SelectContent>
@@ -387,8 +407,31 @@ const QuestionField = ({ question, form }: { question: BodyQuiz['questions'][num
                       {...field}
                       type={question.input_type === 'integer' ? 'number' : 'text'}
                       placeholder="Nhập câu trả lời"
-                      className="w-full h-[50px] bg-white text-black text-sm lg:text-lg"
+                      className={`w-full h-[50px] bg-white text-black text-sm lg:text-lg ${
+                        fieldState.error ? 'border-red-500' : ''
+                      }`}
                     />
+                  )}
+                  {question.question_type === 'IMAGE_UPLOAD' && (
+                    <div className={`${fieldState.error ? 'border-red-500 border rounded-lg p-2' : ''}`}>
+                      <ImageUploader
+                        label={question.is_required ? 'Tải lên hình ảnh (bắt buộc)' : 'Tải lên hình ảnh (tùy chọn)'}
+                        accept={{ 'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'] }}
+                        maxSize={5 * 1024 * 1024} // 5MB
+                        initialImages={Array.isArray(field.value) ? field.value : []}
+                        onSuccess={(images) => {
+                          // Store image URLs as array of strings for form submission
+                          const imageUrls = images.map(img => img.url)
+                          field.onChange(imageUrls)
+                        }}
+                        onRemove={(removedImage) => {
+                          // Remove the image URL from the form value
+                          const currentImages = Array.isArray(field.value) ? field.value : []
+                          const updatedImages = currentImages.filter(url => url !== removedImage.url)
+                          field.onChange(updatedImages)
+                        }}
+                      />
+                    </div>
                   )}
                 </div>
               </FormControl>
@@ -438,18 +481,33 @@ const useQuizSubmission = (session: any, bodyQuiz: BodyQuiz | null, userInfo: an
 
   const submitQuiz = async (formData: Record<string, any>) => {
     const responses: string[] = []
+
+    // Process responses in the same order as questions to maintain index mapping
     bodyQuiz?.questions.forEach((question) => {
       const fieldName = `question_${question.id}`
       const value = formData[fieldName]
 
-      if (value === undefined || value === null) return
+      // If value is undefined, null, or empty, add empty string to maintain array index
+      if (value === undefined || value === null) {
+        responses.push('')
+        return
+      }
 
+      // Handle multiple choice and image upload as semicolon-separated strings
       if (Array.isArray(value)) {
-        value.forEach((v) => {
-          if (v) responses.push(String(v))
-        })
-      } else if (value !== '') {
+        // Filter out empty values and join with semicolon
+        const validValues = value.filter(v => v && v.toString().trim() !== '')
+        if (validValues.length > 0) {
+          responses.push(validValues.join(';'))
+        } else {
+          // If array is empty or contains only empty values, add empty string
+          responses.push('')
+        }
+      } else if (value !== '' && value.toString().trim() !== '') {
         responses.push(String(value))
+      } else {
+        // If single value is empty string or whitespace only, add empty string
+        responses.push('')
       }
     })
 
@@ -594,12 +652,39 @@ export default function BodyQuizPage() {
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [userInfo, setUserInfo] = useState<{ fullname: string; phone_number: string } | null>(null)
 
+  // Create dynamic form schema based on quiz questions
+  const createFormSchema = (questions: BodyQuiz['questions']) => {
+    const schemaFields: Record<string, z.ZodType> = {}
+
+    questions.forEach((question) => {
+      const fieldName = `question_${question.id}`
+
+      if (question.question_type === 'MULTIPLE_CHOICE' || question.question_type === 'IMAGE_UPLOAD') {
+        if (question.is_required) {
+          schemaFields[fieldName] = z.array(z.string()).min(1, question.question_type === 'IMAGE_UPLOAD' ? 'Vui lòng tải lên ít nhất một hình ảnh' : 'Câu hỏi này là bắt buộc')
+        } else {
+          schemaFields[fieldName] = z.array(z.string()).optional()
+        }
+      } else {
+        if (question.is_required) {
+          schemaFields[fieldName] = z.string().min(1, 'Câu hỏi này là bắt buộc')
+        } else {
+          schemaFields[fieldName] = z.string().optional()
+        }
+      }
+    })
+
+    return z.object(schemaFields)
+  }
+
   const form = useForm<FormValues>({
+    resolver: bodyQuiz ? zodResolver(createFormSchema(bodyQuiz.questions)) : undefined,
+    mode: 'onChange',
     defaultValues: {
       ...(bodyQuiz?.questions?.reduce(
         (acc, q) => ({
           ...acc,
-          [`question_${q.id}`]: q.question_type === 'MULTIPLE_CHOICE' ? [] : '',
+          [`question_${q.id}`]: q.question_type === 'MULTIPLE_CHOICE' || q.question_type === 'IMAGE_UPLOAD' ? [] : '',
         }),
         {}
       ) || {}),
@@ -622,6 +707,37 @@ export default function BodyQuizPage() {
       setShowLoginDialog(true)
       return
     }
+
+    // Additional validation for required questions
+    if (bodyQuiz) {
+      const missingRequired: string[] = []
+
+      bodyQuiz.questions.forEach((question) => {
+        if (question.is_required) {
+          const fieldName = `question_${question.id}`
+          const value = formData[fieldName]
+
+          if (question.question_type === 'MULTIPLE_CHOICE' || question.question_type === 'IMAGE_UPLOAD') {
+            if (!Array.isArray(value) || value.length === 0) {
+              const errorMessage = question.question_type === 'IMAGE_UPLOAD'
+                ? 'Vui lòng tải lên ít nhất một hình ảnh'
+                : 'Câu hỏi này là bắt buộc'
+              missingRequired.push(`${question.title.replace(/<[^>]*>/g, '')}: ${errorMessage}`)
+            }
+          } else {
+            if (!value || value.toString().trim() === '') {
+              missingRequired.push(`Câu hỏi: ${question.title.replace(/<[^>]*>/g, '')}`)
+            }
+          }
+        }
+      })
+
+      if (missingRequired.length > 0) {
+        toast.error(`Vui lòng hoàn thành các câu hỏi sau:\n${missingRequired.join('\n')}`)
+        return
+      }
+    }
+
     await quizSubmission.handleSubmit(formData)
   }
 
@@ -635,11 +751,20 @@ export default function BodyQuizPage() {
       const defaultValues = bodyQuiz.questions.reduce(
         (acc, q) => ({
           ...acc,
-          [`question_${q.id}`]: q.question_type === 'MULTIPLE_CHOICE' ? [] : '',
+          [`question_${q.id}`]: q.question_type === 'MULTIPLE_CHOICE' || q.question_type === 'IMAGE_UPLOAD' ? [] : '',
         }),
         {}
       )
+
+      // Update form resolver with new schema
+      const newResolver = zodResolver(createFormSchema(bodyQuiz.questions))
       form.reset(defaultValues)
+
+      // Manually update the resolver since react-hook-form doesn't have a direct method
+      Object.defineProperty(form, '_resolver', {
+        value: newResolver,
+        writable: true,
+      })
     }
   }, [bodyQuiz, form])
 
@@ -683,7 +808,7 @@ export default function BodyQuizPage() {
             response.data.questions.reduce<Record<string, string | string[]>>(
               (acc, q) => ({
                 ...acc,
-                [`question_${q.id}`]: q.question_type === 'MULTIPLE_CHOICE' ? [] : '',
+                [`question_${q.id}`]: q.question_type === 'MULTIPLE_CHOICE' || q.question_type === 'IMAGE_UPLOAD' ? [] : '',
               }),
               {}
             )

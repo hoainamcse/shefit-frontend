@@ -86,29 +86,15 @@ export function formatCurrency(amount: number, currency: string = 'VND'): string
   }).format(amount)
 }
 
-export function formatDateString(dateString: string): string {
-  const date = new Date(dateString)
-  return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1)
-    .toString()
-    .padStart(2, '0')}/${date.getFullYear()}`
-}
-
-export const formatDuration = (duration: number) => {
-  if (duration !== 0 && duration % 35 === 0) {
-    return `${duration / 35} tháng`
-  }
-  return `${duration} ngày`
-}
-
 /**
  * Converts HTML string to plain text by removing HTML tags and decoding HTML entities
  * Designed for server-side execution (Node.js)
  */
 
 interface HtmlToTextOptions {
-  preserveLineBreaks?: boolean;
-  preserveSpaces?: boolean;
-  trimWhitespace?: boolean;
+  preserveLineBreaks?: boolean
+  preserveSpaces?: boolean
+  trimWhitespace?: boolean
 }
 
 /**
@@ -128,11 +114,11 @@ const HTML_ENTITIES: Record<string, string> = {
   '&hellip;': '...',
   '&mdash;': '—',
   '&ndash;': '–',
-  '&lsquo;': '\'',
-  '&rsquo;': '\'',
+  '&lsquo;': "'",
+  '&rsquo;': "'",
   '&ldquo;': '"',
   '&rdquo;': '"',
-};
+}
 
 /**
  * Decodes HTML entities in a string
@@ -140,101 +126,94 @@ const HTML_ENTITIES: Record<string, string> = {
 function decodeHtmlEntities(text: string): string {
   // Replace named entities
   let decoded = text.replace(/&[a-zA-Z][a-zA-Z0-9]*;/g, (match) => {
-    return HTML_ENTITIES[match] || match;
-  });
+    return HTML_ENTITIES[match] || match
+  })
 
   // Replace numeric entities (&#123; and &#x1A;)
   decoded = decoded.replace(/&#(\d+);/g, (match, num) => {
-    const charCode = parseInt(num, 10);
-    return isNaN(charCode) ? match : String.fromCharCode(charCode);
-  });
+    const charCode = parseInt(num, 10)
+    return isNaN(charCode) ? match : String.fromCharCode(charCode)
+  })
 
   decoded = decoded.replace(/&#x([0-9a-fA-F]+);/g, (match, hex) => {
-    const charCode = parseInt(hex, 16);
-    return isNaN(charCode) ? match : String.fromCharCode(charCode);
-  });
+    const charCode = parseInt(hex, 16)
+    return isNaN(charCode) ? match : String.fromCharCode(charCode)
+  })
 
-  return decoded;
+  return decoded
 }
 
 /**
  * Converts HTML string to plain text
  */
-export function htmlToText(
-  html: string,
-  options: HtmlToTextOptions = {}
-): string {
-  const {
-    preserveLineBreaks = true,
-    preserveSpaces = false,
-    trimWhitespace = true,
-  } = options;
+export function htmlToText(html: string, options: HtmlToTextOptions = {}): string {
+  const { preserveLineBreaks = true, preserveSpaces = false, trimWhitespace = true } = options
 
   if (!html || typeof html !== 'string') {
-    return '';
+    return ''
   }
 
-  let text = html;
+  let text = html
 
   // Remove script and style elements completely
-  text = text.replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, '');
+  text = text.replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, '')
 
   // Convert common block elements to line breaks
   if (preserveLineBreaks) {
-    text = text.replace(/<(div|p|br|h[1-6]|li|tr)[^>]*>/gi, '\n');
-    text = text.replace(/<\/(div|p|h[1-6]|li|blockquote|pre)>/gi, '\n');
+    text = text.replace(/<(div|p|br|h[1-6]|li|tr)[^>]*>/gi, '\n')
+    text = text.replace(/<\/(div|p|h[1-6]|li|blockquote|pre)>/gi, '\n')
   }
 
   // Remove all remaining HTML tags
-  text = text.replace(/<[^>]*>/g, '');
+  text = text.replace(/<[^>]*>/g, '')
 
   // Decode HTML entities
-  text = decodeHtmlEntities(text);
+  text = decodeHtmlEntities(text)
 
   // Handle whitespace
   if (!preserveSpaces) {
     // Replace multiple spaces with single space
-    text = text.replace(/[ \t]+/g, ' ');
+    text = text.replace(/[ \t]+/g, ' ')
   }
 
   if (preserveLineBreaks) {
     // Clean up multiple line breaks but preserve intentional ones
-    text = text.replace(/\n\s*\n\s*\n/g, '\n\n');
+    text = text.replace(/\n\s*\n\s*\n/g, '\n\n')
   } else {
     // Replace all line breaks with spaces if not preserving them
-    text = text.replace(/[\r\n]+/g, ' ');
+    text = text.replace(/[\r\n]+/g, ' ')
   }
 
   if (trimWhitespace) {
     // Trim leading/trailing whitespace from each line
     text = text
       .split('\n')
-      .map(line => line.trim())
+      .map((line) => line.trim())
       .join('\n')
-      .trim();
+      .trim()
   }
 
-  return text;
+  return text
 }
 
 // Alternative simpler version for basic use cases
 export function simpleHtmlToText(html: string): string {
   if (!html || typeof html !== 'string') {
-    return '';
+    return ''
   }
 
   return html
     .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '') // Remove scripts
-    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')   // Remove styles
-    .replace(/<[^>]*>/g, '')                          // Remove all tags
-    .replace(/&nbsp;/g, ' ')                          // Replace &nbsp;
-    .replace(/&amp;/g, '&')                           // Replace &amp;
-    .replace(/&lt;/g, '<')                            // Replace &lt;
-    .replace(/&gt;/g, '>')                            // Replace &gt;
-    .replace(/&quot;/g, '"')                          // Replace &quot;
-    .replace(/&#39;/g, "'")                           // Replace &#39;
-    .replace(/\s+/g, ' ')                             // Normalize whitespace
-    .trim();
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '') // Remove styles
+    .replace(/<[^>]*>/g, '') // Remove all tags
+    .replace(/&nbsp;/g, ' ') // Replace &nbsp;
+    .replace(/&amp;/g, '&') // Replace &amp;
+    .replace(/&lt;/g, '<') // Replace &lt;
+    .replace(/&gt;/g, '>') // Replace &gt;
+    .replace(/&quot;/g, '"') // Replace &quot;
+    .replace(/&#39;/g, "'") // Replace &#39;
+    .replace(/\s+/g, ' ') // Normalize whitespace
+    .trim()
 }
 
 // Usage examples:

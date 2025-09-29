@@ -30,7 +30,7 @@ import { Switch } from '../ui/switch'
 import { Badge } from '../ui/badge'
 import { PROVINCES, roleLabel } from '@/lib/label'
 import { getUsersBySubAdmin, getSubscription } from '@/network/client/subscriptions'
-import { formatDateString, generatePassword, generateUsername, sortByKey } from '@/utils/helpers'
+import { generatePassword, generateUsername, sortByKey } from '@/utils/helpers'
 import { AddButton } from '../buttons/add-button'
 import z from 'zod'
 import { useForm } from 'react-hook-form'
@@ -657,8 +657,10 @@ function ExportDialog({ data, onSuccess }: { data?: User[]; onSuccess?: () => vo
             for (const sub of userSubscriptionsResponse.data) {
               const subscriptionDetail = await getSubscription(sub.subscription.id)
               const subName = subscriptionDetail.data.name
-              const startDate = sub.subscription_start_at ? formatDateString(sub.subscription_start_at) : ''
-              const endDate = sub.subscription_end_at ? formatDateString(sub.subscription_end_at) : ''
+              const startDate = sub.subscription_start_at
+                ? format(new Date(sub.subscription_start_at), 'dd/MM/yyy')
+                : ''
+              const endDate = sub.subscription_end_at ? format(new Date(sub.subscription_end_at), 'dd/MM/yyy') : ''
 
               const courseNames = sub.subscription.courses.map((course) => course.course_name).join(', ')
               const mealPlanNames = sub.meal_plans.map((meal) => meal.title).join(', ')

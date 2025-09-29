@@ -76,9 +76,9 @@ export function EditNotificationForm({ data }: EditNotificationFormProps) {
         <FormInputField
           form={form}
           name="title"
-          label="Tiêu đề thông báo"
+          label="Tiêu đề"
           withAsterisk
-          placeholder="Nhập tiêu đề thông báo"
+          placeholder="Nhập tiêu đề"
         />
         <FormRichTextField
           form={form}

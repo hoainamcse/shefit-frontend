@@ -62,7 +62,7 @@ export function EditBodyQuizForm({ data, onSuccess }: EditBodyQuizFormProps) {
   return (
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-        <FormInputField form={form} name="title" label="Tiêu đề quiz" withAsterisk placeholder="Nhập tiêu đề quiz" />
+        <FormInputField form={form} name="title" label="Tiêu đề" withAsterisk placeholder="Nhập tiêu đề" />
         <FormTextareaField form={form} name="description" label="Mô tả" placeholder="Nhập mô tả" />
         <div className="flex justify-end">
           {(!isEdit || (isEdit && form.formState.isDirty)) && (

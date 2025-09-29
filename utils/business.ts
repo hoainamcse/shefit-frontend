@@ -52,3 +52,10 @@ export function isActiveSubscription(status: string, endDate: string) {
   const end = new Date(endDate)
   return status === 'active' && end > now
 }
+
+export const convertDuration = (duration: number) => {
+  if (duration !== 0 && duration % 35 === 0) {
+    return `${duration / 35} tháng`
+  }
+  return `${duration} ngày`
+}
