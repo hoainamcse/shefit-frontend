@@ -117,6 +117,7 @@ export function CourseVideoView({ courseID }: { courseID: Course['id'] }) {
     queryFn: async () => {
       const { status } = await importVideoCourseStatus(courseID)
       if (status === 'done' || status === 'not started') {
+        weeksRefetch()
         localStorage.removeItem(IMPORT_STATUS_STORAGE_NAME)
       } else {
         localStorage.setItem(IMPORT_STATUS_STORAGE_NAME, status)
