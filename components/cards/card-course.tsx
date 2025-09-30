@@ -6,10 +6,12 @@ import { Lock } from 'lucide-react'
 
 import { NextButton } from './next-button'
 import { DeleteButton } from './delete-button'
+import { QuickAccessButton } from './quick-access-button'
 
 export function CardCourse({
   data,
   to,
+  quickAccess,
   locked = false,
   extend,
   onDelete,
@@ -18,6 +20,7 @@ export function CardCourse({
   data: Course
   locked?: boolean
   to?: string
+  quickAccess?: string
   extend?: React.ReactNode
   onDelete?: () => void
   onLockedClick?: () => void
@@ -32,11 +35,20 @@ export function CardCourse({
         />
 
         {locked ? (
-          <div className="absolute inset-0 bg-black/50 rounded-xl z-20 flex items-center justify-center" onClick={onLockedClick}>
+          <div
+            className="absolute inset-0 bg-black/50 rounded-xl z-20 flex items-center justify-center"
+            onClick={onLockedClick}
+          >
             <Lock className="w-12 h-12 text-white" />
           </div>
         ) : (
           <>
+            {quickAccess && (
+              <QuickAccessButton
+                className="absolute bottom-3 right-14 transform transition-transform duration-300 group-hover:translate-x-1"
+                href={quickAccess || `/courses/${data.id}`}
+              />
+            )}
             <NextButton
               className="absolute bottom-3 right-3 transform transition-transform duration-300 group-hover:translate-x-1"
               href={to || `/courses/${data.id}`}

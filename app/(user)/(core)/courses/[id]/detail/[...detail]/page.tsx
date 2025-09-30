@@ -16,6 +16,7 @@ export default async function Video({
 }) {
   const { id: courseID, detail } = await params
   const _searchParams = await searchParams
+  const back = typeof _searchParams.back === 'string' ? _searchParams.back : ''
   const query = serializeSearchParams(_searchParams)
 
   try {
@@ -39,7 +40,7 @@ export default async function Video({
     return (
       <div className="flex flex-col">
         <Link
-          href={`/courses/${courseID}/detail${query}`}
+          href={back || `/courses/${courseID}/detail${query}`}
           className="inline-flex items-center gap-2 text-lg font-semibold transition-colors px-4 mt-4 w-36"
         >
           <BackIconBlack className="w-5 h-5" />

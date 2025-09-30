@@ -28,6 +28,7 @@ export function ActionButtons({ courseID, enableSave }: ActionButtonsProps) {
   const [showSaveDialog, setShowSaveDialog] = useState(false)
   const [saving, setSaving] = useState(false)
   const pathname = usePathname()
+  const path = pathname + query
 
   // Use useQueries to batch multiple queries
   const queries = useQueries({
@@ -81,7 +82,7 @@ export function ActionButtons({ courseID, enableSave }: ActionButtonsProps) {
       }
     }
 
-    router.push(`/courses/${courseID}/detail${query}`)
+    router.push(`/courses/${courseID}/detail?back=${encodeURIComponent(path)}`)
   }
 
   const handleShowSaveOptions = () => {
@@ -99,7 +100,7 @@ export function ActionButtons({ courseID, enableSave }: ActionButtonsProps) {
   }
 
   const handleLoginClick = () => {
-    router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`)
+    router.push(`/auth/login?redirect=${encodeURIComponent(path)}`)
   }
 
   // Extract saved status

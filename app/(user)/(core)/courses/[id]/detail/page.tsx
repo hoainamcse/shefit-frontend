@@ -19,6 +19,7 @@ export default async function CourseDetailPage({
 }) {
   const _params = await params
   const _searchParams = await searchParams
+  const back = typeof _searchParams.back === 'string' ? _searchParams.back : ''
 
   const courseID = Number(_params.id)
   const query = serializeSearchParams(_searchParams)
@@ -39,7 +40,7 @@ export default async function CourseDetailPage({
           className="items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black dark:text-white shadow-none font-medium"
           asChild
         >
-          <Link href={`/courses/${courseID}${query}`}>
+          <Link href={back || `/courses/${courseID}${query}`}>
             <BackIconBlack /> Quay về
           </Link>
         </Button>

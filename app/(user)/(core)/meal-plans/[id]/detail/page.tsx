@@ -25,6 +25,7 @@ export default function MealPlanDetailPage() {
   const { id: mealPlanId } = useParams<{ id: string }>()
   const searchParams = useSearchParams()
   const query = searchParams ? `?${searchParams.toString()}` : ''
+  const back = searchParams.get('back')
 
   const [selectedTab, setSelectedTab] = useState<string>('1')
 
@@ -69,7 +70,7 @@ export default function MealPlanDetailPage() {
     <div>
       <div className="relative block md:hidden">
         <div className="flex flex-col lg:gap-10 gap-4 max-w-[1800px] w-full mx-auto">
-          <Link href={`/meal-plans/${mealPlanId}${query}`} className="flex items-center">
+          <Link href={back || `/meal-plans/${mealPlanId}${query}`} className="flex items-center">
             <Button className="flex items-center text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent text-black shadow-none font-medium">
               <BackIconBlack className="mb-1" /> Quay về
             </Button>

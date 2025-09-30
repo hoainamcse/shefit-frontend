@@ -182,7 +182,8 @@ export default function ListMealPlans() {
           <CardMealPlan
             key={mealPlan.id}
             data={mealPlan}
-            to={`/meal-plans/${mealPlan.id}/detail?back=%2Faccount%2Fresources`}
+            to={`/meal-plans/${mealPlan.id}?back=%2Faccount%2Fresources`}
+            quickAccess={`/meal-plans/${mealPlan.id}/detail?back=%2Faccount%2Fresources`}
             locked={!isSubscriptionActive}
             onLockedClick={() => setRenewDialogOpen(true)}
             onDelete={() => handleDeleteUserSubscriptionMealPlan({ mealPlanId: mealPlan.id, mealPlanTitle: mealPlan.title })}

@@ -3,7 +3,7 @@
 import type { Course } from '@/models/course'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useQueries } from '@tanstack/react-query'
 
 import { Button } from '@/components/ui/button'
@@ -16,6 +16,9 @@ import { getCourseWeeks, queryKeyCourseWeeks } from '@/network/client/courses'
 
 export function VideoCourseDetail({ courseID, query }: { courseID: Course['id']; query: string }) {
   const router = useRouter()
+  const pathname = usePathname()
+  const path = pathname + query
+
   const { session } = useSession()
   const [openLogin, setOpenLogin] = useState(false)
   const [openBuyPackage, setOpenBuyPackage] = useState(false)
@@ -59,17 +62,17 @@ export function VideoCourseDetail({ courseID, query }: { courseID: Course['id'];
       return
     }
 
-    router.push(`/courses/${courseID}/detail/${weekId}/${dayId}${query}`)
+    router.push(`/courses/${courseID}/detail/${weekId}/${dayId}?back=${encodeURIComponent(path)}`)
   }
 
   // Navigate to login page
   const handleLoginClick = () => {
-    router.push(`/auth/login?redirect=${encodeURIComponent(`/courses/${courseID}/detail${query}`)}`)
+    router.push(`/auth/login?redirect=${encodeURIComponent(path)}`)
   }
 
   // Navigate to packages page with course ID
   const handleBuyPackageClick = () => {
-    router.push(`/packages?course_id=${courseID}&redirect=${encodeURIComponent(`/courses/${courseID}/detail${query}`)}`)
+    router.push(`/packages?course_id=${courseID}&redirect=${encodeURIComponent(path)}`)
   }
 
   // Render course weeks and days accordion

@@ -297,10 +297,11 @@ export default function FavouriteContent() {
               <CardCourse
                 data={course}
                 key={course.id}
-                to={
+                to={`/courses/${course.id}?back=%2Faccount%2Fresources`}
+                quickAccess={
                   isCourseInUserSubscriptions(course.id)
                     ? `/courses/${course.id}/detail?back=%2Faccount%2Fresources`
-                    : `/courses/${course.id}?back=%2Faccount%2Fresources`
+                    : undefined
                 }
                 onDelete={() => handleDeleteFavouriteCourse(course.id, course.course_name)}
               />
@@ -338,10 +339,9 @@ export default function FavouriteContent() {
               <CardMealPlan
                 data={meal_plan}
                 key={meal_plan.id}
-                to={
-                  hasActiveSubscription
-                    ? `/meal-plans/${meal_plan.id}/detail?back=%2Faccount%2Fresources`
-                    : `/meal-plans/${meal_plan.id}?back=%2Faccount%2Fresources`
+                to={`/meal-plans/${meal_plan.id}?back=%2Faccount%2Fresources`}
+                quickAccess={
+                  hasActiveSubscription ? `/meal-plans/${meal_plan.id}/detail?back=%2Faccount%2Fresources` : undefined
                 }
                 onDelete={() => handleDeleteFavouriteMealPlan(meal_plan.id, meal_plan.title)}
               />

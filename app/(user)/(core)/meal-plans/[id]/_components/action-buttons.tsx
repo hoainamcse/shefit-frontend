@@ -6,7 +6,7 @@ import type { UserSubscription } from '@/models/user-subscriptions'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { format } from 'date-fns'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query'
 
 import { Button } from '@/components/ui/button'
@@ -15,7 +15,12 @@ import { useSession } from '@/hooks/use-session'
 import { isActiveSubscription } from '@/utils/business'
 import { addFavouriteMealPlan, queryKeyFavouriteMealPlans } from '@/network/client/user-favourites'
 import { addUserSubscriptionMealPlan, queryKeyUserSubscriptions } from '@/network/client/user-subscriptions'
-import { getUserSubscriptions, checkUserAccessedResource, checkUserSavedResource, trackMealPlanClick } from '@/network/client/users'
+import {
+  getUserSubscriptions,
+  checkUserAccessedResource,
+  checkUserSavedResource,
+  trackMealPlanClick,
+} from '@/network/client/users'
 
 interface ActionButtonsProps {
   mealPlanID: MealPlan['id']
@@ -24,6 +29,9 @@ interface ActionButtonsProps {
 
 export function ActionButtons({ mealPlanID, query }: ActionButtonsProps) {
   const router = useRouter()
+  const pathname = usePathname()
+  const path = pathname + query
+
   const { session } = useSession()
   const queryClient = useQueryClient()
   const [openLogin, setOpenLogin] = useState(false)
@@ -115,11 +123,11 @@ export function ActionButtons({ mealPlanID, query }: ActionButtonsProps) {
       // Track meal plan click before redirecting
       await trackMealPlanClick(session.userId)
     } catch (error) {
-      console.error("Failed to track meal plan click:", error)
+      console.error('Failed to track meal plan click:', error)
       // Continue with redirection even if tracking fails
     }
 
-    router.push(`/meal-plans/${mealPlanID}/detail${query}`)
+    router.push(`/meal-plans/${mealPlanID}/detail?back=${encodeURIComponent(path)}`)
   }
 
   const handleShowSaveOptions = () => {
@@ -143,12 +151,12 @@ export function ActionButtons({ mealPlanID, query }: ActionButtonsProps) {
 
   // Navigate to login page
   const handleLoginClick = () => {
-    router.push(`/auth/login?redirect=${encodeURIComponent(`/meal-plans/${mealPlanID}${query}`)}`)
+    router.push(`/auth/login?redirect=${encodeURIComponent(path)}`)
   }
 
   // Navigate to packages page with course ID
   const handleBuyPackageClick = () => {
-    router.push(`/packages?redirect=${encodeURIComponent(`/meal-plans/${mealPlanID}${query}`)}`)
+    router.push(`/packages?redirect=${encodeURIComponent(path)}`)
   }
 
   // Extract saved status

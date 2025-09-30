@@ -22,7 +22,7 @@ export default function CoursePage() {
   const courseID = params.id as unknown as Course['id']
   const searchParams = useSearchParams()
   const query = searchParams ? `?${searchParams.toString()}` : ''
-  const back = searchParams?.get('back') || ''
+  const back = searchParams.get('back')
   const hidePackages = searchParams?.get('hide_packages') === 'true'
   const { session } = useSession()
 
