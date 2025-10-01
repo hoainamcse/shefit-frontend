@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { ArrowPinkIcon } from '@/components/icons/ArrowPinkIcon'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { sortByKey } from '@/utils/helpers'
 import { useSession } from '@/hooks/use-session'
 import { checkUserAccessedResource } from '@/network/client/users'
 import { getCourseWeeks, queryKeyCourseWeeks } from '@/network/client/courses'
@@ -38,9 +39,10 @@ export function VideoCourseDetail({ courseID, query }: { courseID: Course['id'];
     ],
   })
 
-  const courseWeeks = queries[0].data?.data || []
+  const weeksData = queries[0].data?.data || []
   const isCourseWeeksLoading = queries[0].isLoading
   const isAccessed = queries[1].data?.data || false
+  const courseWeeks = sortByKey(weeksData, 'week_number')
 
   if (isCourseWeeksLoading) {
     return (
@@ -86,7 +88,7 @@ export function VideoCourseDetail({ courseID, query }: { courseID: Course['id'];
             </AccordionTrigger>
             <AccordionContent>
               <ol className="flex flex-col gap-2 text-lg">
-                {week.days.map((day, index) => (
+                {sortByKey(week.days, 'day_number').map((day, index) => (
                   <li key={day.id} className="flex justify-between items-center">
                     <div className="flex gap-1 text-sm lg:text-lg">
                       <span className="font-semibold text-gray-900 dark:text-gray-50">Ngày </span>
