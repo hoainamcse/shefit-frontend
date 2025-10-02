@@ -1,22 +1,21 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { redirect } from 'next/navigation'
+// import { redirect } from 'next/navigation'
+// import { getServerSession } from '@/lib/session-server'
 
-import { auth } from '@/auth'
-
-export default async function AuthLayout({
+export default function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const session = await auth()
+  // const session = await getServerSession()
 
-  if (session?.user) {
-    if (session.role === 'admin' || session.role === 'sub_admin') {
-      return redirect('/admin')
-    }
-    return redirect('/account')
-  }
+  // if (session?.userId) {
+  //   if (session.role === 'admin' || session.role === 'sub_admin') {
+  //     return redirect('/admin')
+  //   }
+  //   return redirect('/account')
+  // }
 
   return (
     <div className="h-screen grid grid-cols-1 sm:grid-cols-7 overflow-auto">

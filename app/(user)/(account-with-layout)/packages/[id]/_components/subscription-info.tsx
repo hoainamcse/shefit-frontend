@@ -1,15 +1,15 @@
 import { Button } from '@/components/ui/button'
 import { format } from 'date-fns'
-import { auth } from '@/auth'
+import { getServerSession } from '@/lib/session-server'
 import { isActiveSubscription } from '@/utils/business'
 import { getUserSubscriptions } from '@/network/server/users'
 
 export default async function SubscriptionInfo({ subscriptionId }: { subscriptionId: string }) {
-  const session = await auth()
+  const session = await getServerSession()
 
-  if (!session?.user) return null
+  if (!session?.userId) return null
 
-  const { data: userSubscriptions } = await getUserSubscriptions(Number(session.user.id))
+  const { data: userSubscriptions } = await getUserSubscriptions(Number(session.userId))
 
   const userSubscription = userSubscriptions.find((sub) => sub.subscription.id === Number(subscriptionId))
 
@@ -45,3 +45,4 @@ export default async function SubscriptionInfo({ subscriptionId }: { subscriptio
     </div>
   )
 }
+

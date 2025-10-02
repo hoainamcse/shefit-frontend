@@ -9,6 +9,14 @@ export const generateToken = async (data: Omit<PasswordGrant, 'grant_type'>): Pr
   return response.json()
 }
 
+export const refreshToken = async (token: string): Promise<TokenResponse> => {
+  const response = await fetchData('/v1/auth/token', {
+    method: 'POST',
+    body: JSON.stringify({ grant_type: 'refresh_token', refresh_token: token }),
+  })
+  return response.json()
+}
+
 export async function register(data: any) {
   const response = await fetchData('/v1/auth:signUp', {
     method: 'POST',

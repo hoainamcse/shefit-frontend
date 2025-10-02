@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers'
-import { auth } from '@/auth'
+import { getServerSession } from '@/lib/session-server'
 import { statusCodeErrorMap } from '../errors/httpErrors'
 
 const baseUrl = process.env.SERVER_URL || process.env.NEXT_PUBLIC_SERVER_URL
@@ -10,7 +10,7 @@ if (!baseUrl) {
 
 /**
  * Server-side fetch function for API calls.
- * Token refresh is handled automatically by Auth.js.
+ * Uses custom session management from cookies.
  * @param endpoint - The API endpoint to fetch.
  * @param options - The optional RequestInit object for additional configuration.
  * @param useJson - Whether to add content-type header as application/json (defaults to true).
@@ -33,10 +33,10 @@ export async function fetchDataServer(
     ...(useJson && { 'Content-Type': 'application/json' }),
   }
 
-  // Get session from Auth.js
+  // Get session from cookies
   let session = null
   try {
-    session = await auth()
+    session = await getServerSession()
   } catch (error) {
     console.warn('Failed to get session on server:', error)
   }

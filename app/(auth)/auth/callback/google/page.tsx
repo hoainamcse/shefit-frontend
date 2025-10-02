@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { handleGoogleCallback, signIn } from '@/network/server/auth'
+import { sessionStorage } from '@/lib/session'
 import { toast } from 'sonner'
 import { Suspense } from 'react'
 
@@ -16,8 +17,17 @@ function GoogleCallback() {
       const res = await handleGoogleCallback(
         query + `&redirect_uri=${encodeURIComponent(`${process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}`)}`
       )
-      // Sign in with the tokens received from backend
-      await signIn(res)
+
+      // Sign in and set session
+      const { userId, scope } = await signIn(res)
+
+      // Also set in localStorage for client-side access
+      sessionStorage.set({
+        userId,
+        role: scope === 'user' ? 'normal_user' : (scope as 'admin' | 'sub_admin' | 'normal_user'),
+        accessToken: res.access_token,
+        refreshToken: res.refresh_token,
+      })
 
       if (redirectUri) {
         window.location.href = redirectUri

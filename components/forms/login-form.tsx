@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { MainButton } from '@/components/buttons/main-button'
 import { getOauth2AuthUrl, signIn } from '@/network/server/auth'
 import { generateToken } from '@/network/client/auth'
+import { sessionStorage } from '@/lib/session'
 import { BackIconBlack } from '../icons/BackIconBlack'
 import { FormInputField, FormPasswordField } from './fields'
 
@@ -99,9 +100,17 @@ export function LoginForm({
   async function onSubmit(values: LoginFormValues) {
     try {
       const res = await generateToken({ username: values.username, password: values.password })
-      const { scope } = await signIn(res)
+      const { userId, scope } = await signIn(res)
 
-      if (redirectTo) {
+      // Also set in localStorage for client-side access
+      sessionStorage.set({
+        userId,
+        role: scope === 'user' ? 'normal_user' : (scope as 'admin' | 'sub_admin' | 'normal_user'),
+        accessToken: res.access_token,
+        refreshToken: res.refresh_token,
+      })
+
+      if (redirectTo && !['/', "%2F"].includes(redirectTo)) {
         window.location.href = redirectTo
       } else if (scope === 'admin' || scope === 'sub_admin') {
         window.location.href = '/admin'

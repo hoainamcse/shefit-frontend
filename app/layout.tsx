@@ -131,11 +131,9 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <QueryProvider>
-            <AuthProvider>
-              <div id="google_translate_element" />
-              {children}
-              <Toaster richColors position="top-center" />
-            </AuthProvider>
+            <div id="google_translate_element" />
+            {children}
+            <Toaster richColors position="top-center" />
           </QueryProvider>
         </ThemeProvider>
         <PreventScrollRestoration />

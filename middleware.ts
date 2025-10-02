@@ -1,6 +1,5 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { auth } from '@/auth'
 
 const SUB_ADMIN_ALLOWED_ROUTES = [
   '/courses',
@@ -13,6 +12,8 @@ const SUB_ADMIN_ALLOWED_ROUTES = [
   '/users',
   '/images',
 ]
+
+const SESSION_COOKIE_NAME = 'shefit_session'
 
 function handleAdminAuthorization(
   role: 'admin' | 'sub_admin' | 'normal_user',
@@ -38,11 +39,21 @@ export async function middleware(request: NextRequest) {
   const isAdminRoute = pathname.startsWith('/admin')
 
   try {
-    const session = await auth()
+    // Get session from cookie
+    const sessionCookie = request.cookies.get(SESSION_COOKIE_NAME)
+    let session = null
+
+    if (sessionCookie?.value) {
+      try {
+        session = JSON.parse(sessionCookie.value)
+      } catch (error) {
+        console.error('Failed to parse session cookie:', error)
+      }
+    }
 
     // Handle admin route protection
     if (isAdminRoute) {
-      if (!session || !session.user) {
+      if (!session || !session.userId) {
         return NextResponse.redirect(new URL(`/auth/login?redirect=${encodeURIComponent(pathname)}`, request.url))
       }
 
