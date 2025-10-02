@@ -3,7 +3,7 @@ FROM alpine:3.18 as certificates
 ARG TAG
 ARG BOT_PRIVATE_TOKEN
 RUN apk --no-cache add curl
-RUN curl --header "PRIVATE-TOKEN: ${BOT_PRIVATE_TOKEN}" "https://gitlab.rockship.co/api/v4/projects/16/repository/files/frontend%2Fshefit%2F${TAG}%2F.env/raw?ref=master" > .env
+RUN curl --header "PRIVATE-TOKEN: ${BOT_PRIVATE_TOKEN}" "https://gitlab.rockitflow.com/api/v4/projects/1/repository/files/frontend%2Fshefit%2F${TAG}%2F.env/raw?ref=master" > .env
 
 FROM node:18-alpine AS build
 WORKDIR /app
