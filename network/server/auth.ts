@@ -4,9 +4,7 @@ import type { PasswordGrant, Register, TokenResponse } from '@/models/auth'
 import type { ApiResponse } from '@/models/response'
 
 import { decodeJwt } from 'jose'
-import { redirect } from 'next/navigation'
-
-import { createSession, deleteSession } from '@/lib/session'
+import { signIn as authSignIn, signOut as authSignOut } from '@/auth'
 
 import { fetchDataServer } from '../helpers/fetch-data-server'
 
@@ -56,16 +54,24 @@ export async function signIn(data: any) {
   const jwt = decodeJwt(data.access_token)
   const userId = jwt.sub ? Number(jwt.sub) : 0
   const role = Array.isArray(jwt.scopes) && jwt.scopes.length > 0 ? jwt.scopes[0] : 'user'
-  await createSession({
-    userId,
-    role: role === 'user' ? 'normal_user' : role,
-    accessToken: data.access_token,
-    refreshToken: data.refresh_token,
+
+  // Use Auth.js signIn with credentials provider
+  // We pass the tokens as username/password for the authorize function to handle
+  await authSignIn('credentials', {
+    username: data.access_token,
+    password: data.refresh_token,
+    redirect: false,
   })
+
   return { userId, scope: role }
 }
 
+export async function signInWithGoogle() {
+  await authSignIn('google')
+}
+
 export async function signOut(redirectTo = '') {
-  await deleteSession()
-  return redirect(`/auth/login${redirectTo ? `?redirect=${redirectTo}` : ''}`)
+  await authSignOut({
+    redirectTo: `/auth/login${redirectTo ? `?redirect=${redirectTo}` : ''}`,
+  })
 }

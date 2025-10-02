@@ -1,6 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useSession as useNextAuthSession } from 'next-auth/react'
 import type { SessionPayload } from '@/models/auth'
 
 interface UseSessionReturn {
@@ -14,33 +15,30 @@ interface UseSessionReturn {
 const SESSION_QUERY_KEY = ['session']
 
 /**
- * Client-side hook for session management using React Query
- * Fetches session data from the server and provides methods to refresh/clear session
- * Leverages React Query for caching, retrying, and automatic refetching
+ * Client-side hook for session management using Auth.js with React Query wrapper
+ * Maintains backward compatibility with the existing API interface
  */
 export function useSession(): UseSessionReturn {
   const queryClient = useQueryClient()
+  const { data: nextAuthSession, status, update } = useNextAuthSession()
 
-  // Fetch session query
-  const { data: session, isLoading } = useQuery({
-    queryKey: SESSION_QUERY_KEY,
-    queryFn: async () => {
-      const response = await fetch('/api/session')
-
-      if (!response.ok) {
-        return null
+  // Transform Auth.js session to match the old SessionPayload format
+  const session: SessionPayload | null = nextAuthSession
+    ? {
+        userId: Number(nextAuthSession.user.id),
+        role: nextAuthSession.role,
+        accessToken: nextAuthSession.accessToken,
+        refreshToken: nextAuthSession.refreshToken,
       }
+    : null
 
-      return response.json() as Promise<SessionPayload>
-    },
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    retry: false, // Don't retry if session fetch fails
-  })
+  const isLoading = status === 'loading'
 
   // Refresh session mutation
   const refreshSessionMutation = useMutation({
     mutationFn: async () => {
-      // Invalidate the session query to force a refetch
+      // Use Auth.js update method to refresh the session
+      await update()
       await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY })
     },
   })
@@ -48,21 +46,20 @@ export function useSession(): UseSessionReturn {
   // Clear session mutation
   const clearSessionMutation = useMutation({
     mutationFn: async () => {
-      await fetch('/api/session', { method: 'DELETE' })
+      // Auth.js handles sign out through its own API
+      await fetch('/api/auth/signout', { method: 'POST' })
     },
     onSuccess: () => {
-      // Set session data to null in the query cache
-      queryClient.setQueryData(SESSION_QUERY_KEY, null)
+      // Invalidate queries after sign out
+      queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY })
     },
     onError: (error) => {
       console.error('Failed to clear session:', error)
-      // Clear local state even if API call fails
-      queryClient.setQueryData(SESSION_QUERY_KEY, null)
     },
   })
 
   return {
-    session: session || null,
+    session,
     isLoading,
     refreshSession: refreshSessionMutation.mutateAsync,
     clearSession: clearSessionMutation.mutateAsync,

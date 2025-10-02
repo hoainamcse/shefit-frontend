@@ -16,6 +16,7 @@ function GoogleCallback() {
       const res = await handleGoogleCallback(
         query + `&redirect_uri=${encodeURIComponent(`${process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}`)}`
       )
+      // Sign in with the tokens received from backend
       await signIn(res)
 
       if (redirectUri) {
@@ -26,8 +27,10 @@ function GoogleCallback() {
     } catch (error) {
       console.error(error)
       toast.error('Đăng nhập thất bại!')
+      window.location.href = '/auth/login'
     }
   }
+
   useEffect(() => {
     if (searchParams) {
       handleCallback()

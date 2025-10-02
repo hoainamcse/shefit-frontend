@@ -1,15 +1,15 @@
 import { Button } from '@/components/ui/button'
 import { format } from 'date-fns'
-import { verifySession } from '@/lib/dal'
+import { auth } from '@/auth'
 import { isActiveSubscription } from '@/utils/business'
 import { getUserSubscriptions } from '@/network/server/users'
 
 export default async function SubscriptionInfo({ subscriptionId }: { subscriptionId: string }) {
-  const session = await verifySession()
+  const session = await auth()
 
-  if (!session) return null
+  if (!session?.user) return null
 
-  const { data: userSubscriptions } = await getUserSubscriptions(session?.userId || 0)
+  const { data: userSubscriptions } = await getUserSubscriptions(Number(session.user.id))
 
   const userSubscription = userSubscriptions.find((sub) => sub.subscription.id === Number(subscriptionId))
 

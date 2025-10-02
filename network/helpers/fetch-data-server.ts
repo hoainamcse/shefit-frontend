@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers'
-import { verifySession } from '@/lib/dal'
+import { auth } from '@/auth'
 import { statusCodeErrorMap } from '../errors/httpErrors'
 
 const baseUrl = process.env.SERVER_URL || process.env.NEXT_PUBLIC_SERVER_URL
@@ -9,7 +9,8 @@ if (!baseUrl) {
 }
 
 /**
- * Server-side fetch function with automatic token refresh.
+ * Server-side fetch function for API calls.
+ * Token refresh is handled automatically by Auth.js.
  * @param endpoint - The API endpoint to fetch.
  * @param options - The optional RequestInit object for additional configuration.
  * @param useJson - Whether to add content-type header as application/json (defaults to true).
@@ -32,13 +33,15 @@ export async function fetchDataServer(
     ...(useJson && { 'Content-Type': 'application/json' }),
   }
 
+  // Get session from Auth.js
   let session = null
   try {
-    session = await verifySession()
+    session = await auth()
   } catch (error) {
     console.warn('Failed to get session on server:', error)
   }
 
+  // Add access token to headers if available
   if (session?.accessToken) {
     headers = {
       ...headers,
@@ -47,26 +50,7 @@ export async function fetchDataServer(
   }
 
   try {
-    let response = await fetch(url, { ...options, headers })
-
-    if (response.status === 401 && session?.refreshToken) {
-      console.log('Access token expired, attempting to refresh...')
-
-      const refreshedTokens = await refreshTokens(session.refreshToken)
-
-      if (refreshedTokens) {
-        console.log('Token refreshed successfully, retrying request...')
-
-        const refreshedHeaders = {
-          ...headers,
-          Authorization: `Bearer ${refreshedTokens.access_token}`,
-        }
-
-        response = await fetch(url, { ...options, headers: refreshedHeaders })
-      } else {
-        console.log('Token refresh failed')
-      }
-    }
+    const response = await fetch(url, { ...options, headers })
 
     if (!response.ok) {
       const body = await response.json().catch(() => ({ error: 'Failed to parse error response' }))
@@ -88,30 +72,5 @@ export async function fetchDataServer(
     const message = error instanceof Error ? error.message : 'Unknown error occurred'
     console.error('Failed to fetch data on server:', message)
     throw new Error(`Failed to fetch data: ${message}`)
-  }
-}
-
-/**
- * Refresh tokens using the refresh token
- */
-async function refreshTokens(refreshToken: string): Promise<{ access_token: string; refresh_token: string } | null> {
-  try {
-    const response = await fetch(`${baseUrl}/v1/auth/token`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        grant_type: 'refresh_token',
-        refresh_token: refreshToken,
-      }),
-    })
-
-    if (response.ok) {
-      return response.json()
-    }
-
-    return null
-  } catch (error) {
-    console.error('Token refresh failed:', error)
-    return null
   }
 }

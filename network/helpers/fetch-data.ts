@@ -1,5 +1,4 @@
 import { statusCodeErrorMap } from '../errors/httpErrors'
-import { TokenManager } from '@/lib/token-manager'
 
 const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL
 
@@ -16,21 +15,31 @@ export async function fetchData(endpoint: RequestInfo, options: RequestInit = {}
     ...(useJson && { 'Content-Type': 'application/json' }),
   }
 
+  // Get session from Auth.js
   let session = null
   try {
-    const sessionResponse = await fetch('/api/session')
+    const sessionResponse = await fetch('/api/auth/session')
     if (sessionResponse.ok) {
-      session = await sessionResponse.json()
+      const authSession = await sessionResponse.json()
+      // Transform to our format if session exists
+      if (authSession?.user) {
+        session = {
+          userId: Number(authSession.user.id),
+          role: authSession.role,
+          accessToken: authSession.accessToken,
+          refreshToken: authSession.refreshToken,
+        }
+      }
     }
   } catch (error) {
     console.warn('Failed to get session:', error)
   }
 
-  const validToken = await TokenManager.getValidToken(session)
-  if (validToken) {
+  // Use access token directly from session
+  if (session?.accessToken) {
     headers = {
       ...headers,
-      Authorization: `Bearer ${validToken}`,
+      Authorization: `Bearer ${session.accessToken}`,
     }
   }
 

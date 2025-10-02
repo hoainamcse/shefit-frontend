@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
 import {
   Roboto_Flex,
   Roboto,
@@ -13,6 +12,7 @@ import localFont from 'next/font/local'
 
 import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
+import { AuthProvider } from '@/components/providers/auth-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { PreventScrollRestoration } from '@/components/prevent-scroll-restoration'
@@ -131,14 +131,14 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <QueryProvider>
-            <div id="google_translate_element" />
-            {children}
-            <Toaster richColors position="top-center" />
+            <AuthProvider>
+              <div id="google_translate_element" />
+              {children}
+              <Toaster richColors position="top-center" />
+            </AuthProvider>
           </QueryProvider>
         </ThemeProvider>
-        {/* <Suspense> */}
-          <PreventScrollRestoration />
-        {/* </Suspense> */}
+        <PreventScrollRestoration />
       </body>
     </html>
   )

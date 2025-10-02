@@ -2,16 +2,16 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
 
-import { verifySession } from '@/lib/dal'
+import { auth } from '@/auth'
 
 export default async function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const session = await verifySession()
+  const session = await auth()
 
-  if (session) {
+  if (session?.user) {
     if (session.role === 'admin' || session.role === 'sub_admin') {
       return redirect('/admin')
     }

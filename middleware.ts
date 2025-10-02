@@ -1,9 +1,6 @@
 import type { NextRequest } from 'next/server'
-import type { SessionPayload } from '@/models/auth'
-
-import { decodeJwt } from 'jose'
 import { NextResponse } from 'next/server'
-import { verifySession, refreshSessionTokens } from '@/lib/dal'
+import { auth } from '@/auth'
 
 const SUB_ADMIN_ALLOWED_ROUTES = [
   '/courses',
@@ -17,40 +14,16 @@ const SUB_ADMIN_ALLOWED_ROUTES = [
   '/images',
 ]
 
-async function handleTokenRefresh(session: SessionPayload, isAdminRoute: boolean): Promise<SessionPayload | null> {
-  try {
-    const accessTokenDecoded = decodeJwt(session.accessToken)
-    const now = Math.floor(Date.now() / 1000)
-
-    if (accessTokenDecoded.exp && accessTokenDecoded.exp <= now) {
-      const refreshedSession = await refreshSessionTokens(session.refreshToken)
-
-      if (!refreshedSession && isAdminRoute) {
-        return null
-      }
-
-      return refreshedSession || session
-    }
-
-    return session
-  } catch (error) {
-    console.error('Token validation/refresh error:', error)
-    return isAdminRoute ? null : session
-  }
-}
-
 function handleAdminAuthorization(
-  session: SessionPayload,
+  role: 'admin' | 'sub_admin' | 'normal_user',
   pathname: string,
   request: NextRequest
 ): NextResponse | null {
-  const userRole = session.role
-
-  if (userRole === 'admin') {
+  if (role === 'admin') {
     return null // Allow access
   }
 
-  if (userRole === 'sub_admin') {
+  if (role === 'sub_admin') {
     const isAllowedRoute =
       SUB_ADMIN_ALLOWED_ROUTES.some((route) => pathname.startsWith('/admin' + route)) || pathname === '/admin'
 
@@ -65,24 +38,15 @@ export async function middleware(request: NextRequest) {
   const isAdminRoute = pathname.startsWith('/admin')
 
   try {
-    const session = await verifySession()
-
-    // Handle token refresh for all routes
-    if (session) {
-      const updatedSession = await handleTokenRefresh(session, isAdminRoute)
-
-      if (!updatedSession && isAdminRoute) {
-        return NextResponse.redirect(new URL(`/auth/login?redirect=${encodeURIComponent(pathname)}`, request.url))
-      }
-    }
+    const session = await auth()
 
     // Handle admin route protection
     if (isAdminRoute) {
-      if (!session) {
+      if (!session || !session.user) {
         return NextResponse.redirect(new URL(`/auth/login?redirect=${encodeURIComponent(pathname)}`, request.url))
       }
 
-      const authResult = handleAdminAuthorization(session, pathname, request)
+      const authResult = handleAdminAuthorization(session.role, pathname, request)
       if (authResult) {
         return authResult
       }
