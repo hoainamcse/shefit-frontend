@@ -12,7 +12,6 @@ import localFont from 'next/font/local'
 
 import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
-import { AuthProvider } from '@/components/providers/auth-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { PreventScrollRestoration } from '@/components/prevent-scroll-restoration'
