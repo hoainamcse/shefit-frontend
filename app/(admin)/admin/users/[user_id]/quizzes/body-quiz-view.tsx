@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { Clipboard, Eye } from 'lucide-react'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 
 import { getBodyQuizzesHistoryByUser, queryKeyBodyQuizzes, updateBodyQuizHistory } from '@/network/client/body-quizzes'
@@ -19,6 +20,7 @@ import { MainButton } from '@/components/buttons/main-button'
 import { queryKeyUsers } from '@/network/client/users'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/spinner'
 import { Form } from '@/components/ui/form'
 import { htmlToText } from '@/utils/helpers'
@@ -89,23 +91,42 @@ export function UserBodyQuizzesTable({ userId }: BodyQuizViewProps) {
             </a>
           </div>
         ),
-        size: 120,
+        size: 180,
       },
       {
         header: 'Ngày làm',
         accessorKey: 'quiz_date',
         cell: ({ row }) => format(row.getValue('quiz_date'), 'Pp'),
-        size: 180,
+        size: 120,
       },
       {
         header: 'Câu trả lời',
         accessorKey: 'responses',
         cell: ({ row }) => (
-          <a href={`/quizzes/${row.original.id}/result`} target="_blank">
-            Xem trả lời
-          </a>
+          <div className="flex items-center gap-2">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => window.open(`/quizzes/${row.original.id}/result`, '_blank')}
+              title="Xem trả lời"
+            >
+              <Eye />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => {
+                const responseText = row.original.responses.join(', ')
+                navigator.clipboard.writeText(responseText)
+                toast.success('Đã sao chép câu trả lời vào bộ nhớ tạm')
+              }}
+              title="Sao chép câu trả lời"
+            >
+              <Clipboard />
+            </Button>
+          </div>
         ),
-        size: 180,
+        size: 100,
       },
       {
         header: 'Nhận xét',

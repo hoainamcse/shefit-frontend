@@ -12,6 +12,9 @@ export default async function AuthLayout({
   const session = await verifySession()
 
   if (session) {
+    if (session.role === 'admin' || session.role === 'sub_admin') {
+      return redirect('/admin')
+    }
     return redirect('/account')
   }
 

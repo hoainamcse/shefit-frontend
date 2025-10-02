@@ -21,7 +21,7 @@ function GoogleCallback() {
       if (redirectUri) {
         window.location.href = redirectUri
       } else {
-        window.location.href = '/'
+        window.location.href = '/account'
       }
     } catch (error) {
       console.error(error)

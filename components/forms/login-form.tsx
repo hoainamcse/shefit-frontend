@@ -106,7 +106,7 @@ export function LoginForm({
       } else if (scope === 'admin' || scope === 'sub_admin') {
         window.location.href = '/admin'
       } else {
-        window.location.href = '/'
+        window.location.href = '/account'
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Đăng nhập thất bại!'

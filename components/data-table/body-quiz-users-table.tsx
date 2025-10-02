@@ -142,19 +142,18 @@ function ExportDialog({ data, onSuccess }: { data?: BodyQuizUser[]; onSuccess?: 
   const onSubmit = async () => {
     setIsPending(true)
     try {
-      const res = await Promise.all(data.map((user) => getBodyQuizzesHistoryByUsers(user.id)))
-      const _data = res.flatMap((quiz) => quiz.data)
-      const exportedData = _data.map((item) => {
+      const { data } = await getBodyQuizzesHistoryByUsers()
+      const exportedData = data.map((dt) => {
         return {
-          user_id: item.user.id,
-          fullname: data.find((user) => user.id === item.user.id)?.user.fullname || 'N/A',
-          username: data.find((user) => user.id === item.user.id)?.user.username || 'N/A',
-          phone_number: data.find((user) => user.id === item.user.id)?.user.phone_number || 'N/A',
-          body_quiz_id: item.body_quiz.id,
-          body_quiz_title: item.body_quiz.title,
-          submitted_at: format(new Date(item.quiz_date), 'Pp'),
-          responses: item.responses.join(', '),
-          comment: htmlToText(item.comment || ''),
+          user_id: dt.user.id,
+          fullname: dt.user.fullname || 'N/A',
+          username: dt.user.username || 'N/A',
+          phone_number: dt.user.phone_number || 'N/A',
+          body_quiz_id: dt.body_quiz.id,
+          body_quiz_title: dt.body_quiz.title,
+          submitted_at: format(new Date(dt.quiz_date), 'Pp'),
+          responses: dt.responses.join(', '),
+          comment: htmlToText(dt.comment || ''),
         }
       })
 
