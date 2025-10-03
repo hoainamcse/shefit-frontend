@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -12,13 +12,14 @@ import { getUserCarts, createUserCart } from '@/network/client/users'
 import { toast } from 'sonner'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import { useSession } from '@/hooks/use-session'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useParams } from 'next/navigation'
 import { Product } from '@/models/product'
 import { BackIconBlack } from '@/components/icons/BackIconBlack'
 import Link from 'next/link'
 
-export default function ProductPage({ params }: { params: Promise<{ product_id: string }> }) {
-  const { product_id } = use(params)
+export default function ProductPage() {
+  const params = useParams()
+  const product_id = params.product_id as string
   const { session } = useSession()
   const [product, setProduct] = useState<Product | null>(null)
   const [colors, setColors] = useState<any[]>([])

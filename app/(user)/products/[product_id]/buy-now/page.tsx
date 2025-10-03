@@ -1,7 +1,7 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useSearchParams, useParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import { getCart, deleteCart, editCart, updateProductVariantQuantity } from '@/network/client/carts'
 import { getProduct } from '@/network/client/products'
@@ -22,8 +22,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Product, Variant } from '@/models/product'
 import { getCoupons } from '@/network/server/coupons'
 
-export default function BuyNowPage({ params }: { params: Promise<{ product_id: string }> }) {
-  const { product_id } = use(params)
+export default function BuyNowPage() {
+  const params = useParams()
+  const product_id = params.product_id as string
   const searchParams = useSearchParams()
   const router = useRouter()
   const { session } = useSession()
