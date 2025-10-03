@@ -3,6 +3,7 @@
 import * as z from 'zod'
 import Link from 'next/link'
 import { toast } from 'sonner'
+import { Suspense } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSearchParams } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -69,9 +70,9 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>
 
-export function LoginForm() {
+function LoginFormInner() {
   const searchParams = useSearchParams()
-  const redirectTo = searchParams.get('redirect')
+  const redirectTo = searchParams?.get('redirect') || ''
 
   // Initialize form with validation
   const form = useForm<LoginFormValues>({
@@ -172,6 +173,14 @@ export function LoginForm() {
         </Button>
       </form>
     </Form>
+  )
+}
+
+export function LoginForm() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center p-8">Đang tải...</div>}>
+      <LoginFormInner />
+    </Suspense>
   )
 }
 
