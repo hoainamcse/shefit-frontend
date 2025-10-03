@@ -1,6 +1,7 @@
 'use client'
 
 import * as z from 'zod'
+import React from 'react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
@@ -99,6 +100,14 @@ function LoginFormInner() {
     }
   }
 
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    // Use form.handleSubmit to get validated values
+    await form.handleSubmit(onSubmit)(e)
+  }
+
   async function onSubmit(values: LoginFormValues) {
     try {
       const res = await generateToken({ username: values.username, password: values.password })
@@ -136,7 +145,7 @@ function LoginFormInner() {
         </div>
         Quay về
       </Link>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleFormSubmit} className="space-y-6">
         <p className="text-ring">
           Đăng ký tài khoản để xem +100 khóa tập, +1000 động tác, +30 thực đơn giúp bạn Độ Dáng tại bất kì đâu!
         </p>
@@ -165,7 +174,12 @@ function LoginFormInner() {
           </Link>
         </div>
 
-        <MainButton type="submit" className="w-full p-3 rounded-3xl" text="Đăng nhập" />
+        <MainButton
+          type="button"
+          className="w-full p-3 rounded-3xl"
+          text="Đăng nhập"
+          onClick={() => form.handleSubmit(onSubmit)()}
+        />
 
         <Button variant="ghost" className="w-full p-3 rounded-3xl" asChild>
           <Link href="/auth/register">Đăng ký</Link>
